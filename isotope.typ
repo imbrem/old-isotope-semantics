@@ -38,30 +38,36 @@
 #let grammar(g, debug_stroke: none) = {
     let cells = ()
     for rule in g {
-        let lhs = if type(rule.symbol) == "array" {
-            $#rule.symbol.join($,$)$
-        } else {
-            $#rule.symbol$
+        let name = if "name" in rule { 
+            if rule.name != none { 
+                rect(stroke: debug_stroke, strong(rule.name + ":"))
+            } 
         };
-        let separator = $::=$;
-        if type(rule.productions) == "array" {
-            for row in rule.productions {
-                cells.push(align(right, rect(stroke: debug_stroke, lhs)));
-                let row = if type(row) == "array" {
-                    row.join(rect(stroke: debug_stroke, $ | $))
-                } else {
-                    row
-                }
-                cells.push(rect(stroke: debug_stroke, $#separator #row$));
-                lhs = $$;
-                separator = $|$;
-            }
+        let symbols = if type(rule.symbol) == "array" {
+            rule.symbol.join($,$)
         } else {
-            cells.push(align(right, rect(stroke: debug_stroke, lhs)));
-            cells.push(rect(stroke: debug_stroke, $#separator #rule.productions$));
+            rule.symbol
+        };
+        let lhs = $#symbols ::= $;
+        let productions = if type(rule.productions) == "array" {
+            rule.productions
+        } else {
+            (rule.productions,)
+        };
+        for row in productions {
+            cells.push(align(horizon, name))
+            cells.push(align(right + horizon, rect(stroke: debug_stroke, lhs)));
+            let row = if type(row) == "array" {
+                row.join(rect(stroke: debug_stroke, $ | $))
+            } else {
+                row
+            }
+            cells.push(align(horizon, rect(stroke: debug_stroke, $#row$)));
+            lhs = $|$;
+            name = none;
         }
     }
-    grid(columns: 2, ..cells)
+    grid(columns: 3, ..cells)
 }
 
 // Proof trees
@@ -124,15 +130,31 @@
 // Denotational semantics
 #let dnt(term) = $ [| term |] $
 
+// Math space
+#let aq = h(0.2778em); // 5mu from LaTeX
+
 // Symbols
 #let abort = $sans("abort")$
 #let llet = $sans("let")$
 #let lin = $sans("in")$
-#let tobj = $bold(0)$
-#let iobj = $bold(1)$
+#let iobj = $bold(0)$
+#let tobj = $bold(1)$
+#let bools = $bold(2)$
+#let ltt = $sans("true")$
+#let lff = $sans("false")$
 #let munit = $I$
 #let cnil = $dot.op$
 #let bcnil = $diamond.stroked.small$
+#let lbr = $sans("br")$
+#let br(..args) = {
+    let args = args.pos();
+    let result = $lbr #args.join(aq)$;
+    result
+};
+#let lbl(x) = $mono("'")#x$
+#let lif = $sans("if")$
+#let lelse = $sans("else")$
+#let lite(b, t, f) = $lif #b aq { #t } lelse { #f }$
 
 // Syntax macros
 #let splits(src, ..subctx) = {
