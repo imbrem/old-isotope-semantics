@@ -28,11 +28,52 @@
     ])
     [
     #title-page
+    #set heading(numbering: "1.")
+    //#set math.text(font: "Inria Serif")
     #outline(title: auto, depth: 2)
     #pagebreak()
     #doc
     ]
 }
+
+#let theorem-counter = counter("theorem")
+#let theorem(body, numbered: true) = locate(location => {
+  let lvl = counter(heading).at(location)
+  let i = theorem-counter.at(location).first()
+  theorem-counter.step()
+  let top = if lvl.len() > 0 { lvl.first() } else { 0 }
+  show: block.with(spacing: 11.5pt)
+  strong({
+    [Theorem]
+    if numbered [ #top.#i] + [.]
+  })
+  [ ]
+  emph(body)
+})
+
+#let definition-counter = counter("theorem")
+#let definition(body, name: none, numbered: true) = locate(location => {
+  let lvl = counter(heading).at(location)
+  let i = definition-counter.at(location).first()
+  definition-counter.step()
+  let top = if lvl.len() > 0 { lvl.first() } else { 0 }
+  show: block.with(spacing: 11.5pt)
+  {
+    strong([Definition])
+    if numbered [ *#top.#i*]
+    if name != none [ (#emph(name))]
+    if numbered or name != none [*.*]
+  }
+  [ ]
+  emph(body)
+})
+
+#let proof(body) = block(spacing: 11.5pt, {
+  emph[Proof.]
+  [ ] + body
+  h(1fr)
+  box(scale(160%, origin: bottom + right, sym.square.stroked))
+})
 
 // Syntax
 #let grammar(g, debug_stroke: none) = {
@@ -155,6 +196,18 @@
 #let lif = $sans("if")$
 #let lelse = $sans("else")$
 #let lite(b, t, f) = $lif #b aq { #t } lelse { #f }$
+#let idm = $sans("id")$
+#let Set = $sans("Set")$
+#let Pfn = $sans("Pfn")$
+#let Rel = $sans("Rel")$
+#let SetP = $Set_•$
+#let Pos = $sans("Pos")$
+#let Mon = $sans("Mon")$
+#let fcomp(functor, left, right) = $functor_(left, right)$
+#let qq = h(2em)
+#let opp(cat) = $cat^(sans("op"))$
+#let Cat = $sans("Cat")$
+#let niso = $≃$
 
 // Syntax macros
 #let splits(src, ..subctx) = {

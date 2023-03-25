@@ -11,6 +11,128 @@
     doc
 )
 
+/*
+= Introduction
+
+//TODO: this
+*/
+
+= Background
+
+== Elementary Category Theory
+
+=== Basic Notions
+
+We begin by going over some core notions from category theory, with the aim of fixing notations and conventions.
+
+#definition(name: "Category", ([
+    A *category* $cal(C)$ consists of
+    - A set of *objects* $|cal(C)|$
+    - For any two objects $A, B ∈ |cal(C)|$, a *hom-set* of *morphisms* $cal(C)(A, B)$ between them. When $cal(C)$ is clear from context, we may denote this set as $A → B$
+    - For each $A ∈ |cal(C)|$, an *identity morphism* $idm_A ∈ cal(C)(A, A)$. We omit the subscript where $A$ is clear from context.
+    //TODO: id should not be italicized in the bullet above.
+    - A *composition operator* $∘: cal(C)(B, C) → cal(C)(A, B) → cal(C)(A, C)$ such that
+        - $f ∘ (g ∘ h) = (f ∘ g) ∘ h$
+        - $f ∘ idm = idm ∘ f = f$
+    We define $f;g = g ∘ f$
+]))
+Some basic examples of categories we will be using include (all with the standard notion of composition):
+- The category of sets $Set$, with objects sets, morphisms functions
+- The category of _partial functions_ $Pfn$, with objects sets and morphisms _partial_ functions
+- The category of _relations_ $Rel$, with objects sets and morphisms _relations_
+- The category of _pointed sets_, $SetP$, with objects _pointed sets_ $(A, •)$ (where $A$ is a set and $• ∈ A$ is the _basepoint_) and morphisms $SetP((A, •_A), (B, •_B))$ _basepoint preserving maps_, i.e. functions $f: A → B$ such that
+$f •_A = •_B$
+- The category of _partially ordered sets_, $Pos$, with objects partially ordered sets $(A, ≼)$ (where $A$ is a set and $≼$ a partial order on $A$) and morphisms monotonically increasing functions
+- The category of _monoids_ $Mon$, with objects monoids $(M, *)$ (where $A$ is a set and $*: M → M → M$ a monoid operation) and morphisms monoid homomorphisms
+Note that in all three cases the "set" of objects is not really a set (since there is no set of all sets/monoids), but rather a class. However, for the purposes of this document, we will ignore size issues.
+#definition(name: "Isomorphism", ([
+    A morphism $f: cal(C)(A, B)$ is an *isomorphism* if there exists a morphism $g: cal(C)(B, A)$ such that $f;g = idm_A$, $g;f = idm_B$; in this case we say that $A$ and $B$ are *isomorphic*, written $A ≃ B$
+]))
+For example,
+- In $Set$, $Pfn$, and $Rel$, the isomorphisms are the bijections; in $SetP$ the isomorpisms are the basepoint-preserving bijections
+- In $Pos$ and $Mon$, we recover the usual mathematical notion of isomorphism
+/*
+TODO: intro to universal products and commutative diagrams, terminal and initial objects, Cartesian products and coproducts
+*/
+Given any category $cal(C)$, we may define the *opposite category* $opp(cal(C))$ with objects $|opp(cal(C))| = |cal(C)|$, morphisms $opp(cal(C))(A, B) = cal(C)(B, A)$, and composition $opp(f) ∘ opp(g) = opp(g ∘ f)$, where $opp(f)$ denotes reinterpreting $f: cal(C)(X, Y)$ as a morphism in $opp(cal(C))(Y, X)$ 
+/*
+TODO: flipping stuff in the opposite categeory
+*/
+#definition(name: "Functor", ([
+    A *functor* $F: cal(C) → cal(D)$ from a category $cal(C)$ to a category $cal(D)$ consists of
+    - A mapping $|F|: |cal(C)| → |cal(D)|$. We define $F A = F|A|$ for $A ∈ |cal(C)|$
+    - A mapping $fcomp(F, A, B): cal(C)(A, B) → cal(D)(F A, F B)$. We define $F f = fcomp(F, A, B) f$ for $f ∈ cal(C)(A, B)$ such that
+        - $F idm_A = idm_(F A)$
+        - $F (f; g) = F f ; F g$
+    We say a functor is *full* if each $fcomp(F, A, B)$ is surjective ("$F$ is surjective on hom-sets") and *faithful* if each $fcomp(F, A, B)$ is injective ("$F$ is injective on hom-sets"). A functor is *identity on objects* if $|F| = idm$. Composition on functors is defined componentwise as
+    $
+        |F ∘ G| = |F| ∘ |G|, qq
+        fcomp((F ∘ G), A, B) = fcomp(F, G A, G B) ∘ fcomp(G, A, B)
+    $
+    We will occasionally call a functor a *covariant functor*, with a *cotravariant functor* from $cal(C)$ to $cal(D)$ defined as a covariant functor from $opp(cal(C)) → cal(D)$.
+]))
+Some examples of important functors on our example categories include:
+- The *identity functor* $idm$, which is simply the identity on objects and morphisms
+- The #strong("inclusion functor")s $Set → Pfn$ (interpreting a function as a partial function), $Set → Rel$, $Pfn → Rel$ (mapping [partial] functions to their graphs). These functor are _faithful_, but not _full_.
+- The *forgetful functors* $SetP → Set$, $Pos → Set$, $Mon → Set$ mapping pointed sets/monoids/functors $(A, b), (A, ≼)$, $(A, *)$ to their carrier sets $A$ (with morphisms reinterpreted as plain functions)
+- The *Hom-functor* $cal(C)(A, -): cal(C) → Set$ mapping objects $X$ to $cal(C)(A, X)$ and morphisms $f: X → Y$ via $cal(C)(A, f) = (g ↦ g;f): cal(C)(A, X) → cal(C)(A, Y)$
+- The *contravariant Hom-functor* $cal(C)(-, B): opp(cal(C)) → Set$ mapping objects $X$ to $cal(C)(X, B)$ and morphisms $h: opp(cal(C))(Y, X)$ (i.e. $cal(C)(X, Y)$) via $cal(C)(h, B) = (g ↦ h;g): cal(C)(Y, B) → cal(C)(X, B)$
+The notion of functor allows us to define the *category of categories*, $Cat$, with objects categories $cal(C)$ and morphisms functors $F: cal(C) → cal(D)$. This immediately gives us a definition for isomorphism of categories; namely, that there exist two functors $F: cal(C) → cal(D)$, $G: cal(D) → cal(G)$ such that $F;G = idm_(cal(C))$, $G;F = idm_(cal(D))$. However, it turns out this is not the correct notion of "sameness" for categories; to define equivalence of categories, we must first introduce the concept of a *natural transformation*:
+#definition(name: "Natural Transformation", [
+    Given two functors $F, G: cal(C) → cal(D)$, a *natural transformation* $α: F => G$ is an assignment to every object $A ∈ |cal(C)|$ a morphism $α_A: cal(D)(F A, G A)$ (called the *component* of $α$ at $A$) such that, for any morphism $f: cal(C)(A, B)$, we have that
+    $
+    α_A;G f = F f;α_B
+    $
+])
+Given natural transformations $α: F => G$ and $β: G => H$, we find that they compose to yield a natural transformation $(α; β): F => H$ with components $(α; β)_A = α_A;β_A$. This allows us to define the *functor category* $[cal(C), cal(D)]$ with objects functors from $cal(C) → cal(D)$ and morphisms natural transformations. Note that in this category the identity morphism is simply the identity natural transformation $idm: F => F$ with components $idm_(F A): cal(C)(F A, F A)$. 
+/*
+TODO: examples of natural transformations beyond the identity?
+*/
+A *natural isomorphism* is then simply an isomorphism in this category or, more concretely, a natural transformation $η: F => G$ (often written $η: F niso G$) such that there exists a natural isomorphism $η^(-1): G => F$ such that
+$
+∀A ∈ |cal(C)|, η_A;η^(-1)_A = idm_(F A), qq η^(-1)_A;η_A = idm_(G A)
+$
+/*
+TODO: examples of natural isomorphisms?
+*/
+We may now define equivalence of categories as follows:
+#definition(name: "Equivalence of Categories", [
+        An *equivalence* between categories $cal(C), cal(D)$ is given by a pair of functors $F: cal(C) → cal(D)$, $G: cal(D) → cal(C)$ and a pair of natural isomorphisms $F;G niso idm_(cal(C))$, $G;F niso idm_(cal(D))$. If there exists an equivalence between $cal(C), cal(D)$, they are said to be *equivalent*.
+])
+Note that any two isomorphic categories are equivalent (by taking the functors to be the components of the isomorphism, and the natural transformations to be the identity), but not all equivalent categories are isomorphic.
+
+/*
+
+=== Monads
+
+//TODO: this
+
+=== Adjunctions
+
+//TODO: this
+
+*/
+
+/*
+
+== Monoidal Categories
+
+//TODO: this
+
+== Effectful Categories
+
+//TODO: this
+
+== Traced Monoidal Categories
+
+//TODO: this
+
+== Iterative and Elgot Monads
+
+//TODO: this
+
+*/
+
 = Syntax
 
 In this section, we present the core `isotope` calculus, followed by some sample programs and syntax sugar, with the aim of working towards a familiar, Rust-based human-readable syntax for the `isotope` intermediate representation.
@@ -256,6 +378,29 @@ let
 ;
 t
 ```
+
+/*
+= Typing
+
+//TODO: this
+
+= Semantics
+
+//TODO: this
+
+= Graphical Syntax
+
+//TODO: this
+
+= Threading Transformation
+
+//TODO: this
+
+= State-splitting
+
+//TODO: this
+
+*/
 
 #pagebreak()
 #bibliography("references.bib")
