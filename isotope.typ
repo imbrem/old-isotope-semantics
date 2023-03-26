@@ -36,6 +36,12 @@
     ]
 }
 
+#let isotope-appendix(doc) = {
+    set heading(numbering: "A.1.")
+    counter(heading).update(())
+    doc
+}
+
 #let theorem-counter = counter("theorem")
 #let theorem(body, numbered: true) = locate(location => {
   let lvl = counter(heading).at(location)
