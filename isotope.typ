@@ -221,6 +221,7 @@
 #let ltimes = $⋉$
 #let rtimes = $⋊$
 #let cen(cat) = $Z(#cat)$
+#let adj(left, right, unit: none, counit: none) = $#left ⊣ #right$
 
 // Syntax macros
 #let splits(src, ..subctx) = {

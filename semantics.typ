@@ -539,16 +539,31 @@ TODO: strong monads; or do we pull this down to the monoidal categories section?
 TODO: commutative monads?
 */
 
-/*
-
 == Adjunctions
+
+#definition(name: "Adjunction", [
+    Let $cal(C), cal(D)$ be categories and let $L: cal(C) -> cal(D)$, $R: cal(D) -> cal(C)$ be a pair of functors. This is called a pair of *adjoint functors*, with $L$ the *left adjoint* and $R$ the *right adjoint*, written $adj(L, R)$, if, equivalently,
+    - There exist, for all $C in |cal(C)|$, $D in |cal(D)|$, isomorphisms (bijections) $phi_(C, D): cal(D)(L(C), D) -> cal(C)(C, R(D))$ such that the following are natural isomorphisms
+        - $phi_(-, D): cal(D)(L(-), D) => cal(C)(-, R(D))$
+        - $phi_(C, -): cal(D)(L(C), -) => cal(C)(C, R(-))$
+    - There exist two natural transformations $epsilon: L;R => idm_(cal(C))$ (the *counit*) and $eta: idm_(cal(D)) => R;L$ (the *unit*) such that, for all $C in |cal(C)|, D in |cal(D)|$, we have
+        - $L eta_C; epsilon_(L C) = idm_(L C)$
+        - $eta_(R D); R(epsilon_D) = idm_(R D)$
+    If there exists such a pair $(L, R)$, we say that $L$ *is a left adjoint* or *has a right adjoint*, and likewise, $R$ *is a right adjoint* or *has a left adjoint*.
+])
+
+#definition(name: "Adjoint Equivalence", [
+    An *adjoint equivalence* between categories $cal(C), cal(D)$ is a pair of adjoint functors $adj(L, R)$ for which the unit $eta$ and counit $epsilon$ are natural _isomorphisms_.
+])
+Note that the counit and unit of an adjoint equivalence trivially induce an equivalence of categories via the natural isomorphisms $epsilon: L;R => idm_(cal(C))$, $eta^(-1): R;L => idm_(cal(D))$; similarly, any equivalence of categories with natural isomorphisms $epsilon: L;R => idm_(cal(C))$, $eta^(-1): R;L => idm_(cal(D))$ is an adjoint equivalence if and only if, for all $C in |cal(C)|, D in |cal(D)|$, we have $L eta_C; epsilon_(L C) = idm_(L C)$ and $eta_(R D); R(epsilon_D) = idm_(R D)$
+/*
+TODO: express these in terms of whiskering? Would need to define whiskering...
+*/
 
 /*
 TODO:
-- what is an adjunction
+- what is an adjunction (text)
 - examples, free functors
 - adjoint equivalence
 - adjoints and (co)continuity? Need the (co)limits section...
-*/
-
 */
