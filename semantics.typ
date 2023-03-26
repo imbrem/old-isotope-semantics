@@ -21,20 +21,81 @@
 
 In this section, we go over some background notions used in the semantics. For an overview of basic category theory and the notations in use, see @cats[Appendix].
 
-/*
+== Monoidal and Premonoidal Categories
 
-== Monoidal Categories
+#definition(name: "Binoidal Category", [
+    A *binoidal category* is a category $cal(C)$ equipped with
+    - A *tensor product* map on objects $⊗: |cal(C)| times |cal(C)| -> |cal(C)|$
+    - For each object $A in |cal(C)|$,
+        - A *right product functor* $A ⊗ -$ which is $B |-> A ⊗ B$ on objects
+        - A *left product functor* $- ⊗ A$ which is $B |-> B ⊗ A$ on objects
+    We define, for morphisms $f: A -> B$, $g: X -> Y$, the *left product* $f ltimes g = f ⊗ X; A ⊗ g$ and *right product* $f rtimes g: A ⊗ g; f ⊗ X$ morphisms $A ⊗ X -> B ⊗ Y$
+])
+#definition(name: "Central Morphism", [
+    A morphsm $f$ a binoidal category $cal(C)$ is *central* if, for all morphisms $g$, we have $f ltimes g = f rtimes g$; in this case, we write $f ltimes g = f rtimes g = f ⊗ g$.
+    We define the *center* of a binoidal category $cal(C)$, denoted $cen(cal(C))$, to be the wide subcategory with $|cen(cal(C))| = |cal(C)|$ and morphisms
+    $
+        cen(cal(C))(A, B) = {f in cal(C)(A, B) | f "is central"}
+    $
+    A natural transformation is central if all its components are.
+])
+#definition(name: "Premonoidal Category", [
+    A *premonoidal category* is a binoidal category $cal(C)$ equipped with
+    - An *identity object* $munit in |cal(C)|$
+    - For all objects $A, B, C in cal(C)$, a central isomorphism $alpha_(A, B, C): (A ⊗ B) ⊗ C \to A ⊗ (B ⊗ C)$ (the *associator*) such that the following are natural isomorphisms
+        - $alpha_(-, B, C): (- ⊗ B) ⊗ C => - ⊗ (B ⊗ C)$
+        - $alpha_(A, -, C): (A ⊗ -) ⊗ C => A ⊗ (- ⊗ C)$
+        - $alpha_(A, B, -): (A ⊗ B) ⊗ - => A ⊗ (B ⊗ -)$
+    - A central natural isomorphism $lambda: - ⊗ munit => idm$  (the *left unitor*) 
+    - A central natural isomorphism $rho: munit ⊗ - -> idm$ (the *right unitor*)
+    such that the *triangle identity*
+    $
+    rho_A ⊗ B = alpha_(A, munit, B); A ⊗ lambda_B: (A ⊗ munit) ⊗ B -> A ⊗ B
+    $
+    and *pentagon identity*
+    $
+    alpha_(A, B, C) ⊗ D; alpha_(A, B ⊗ C, D); A ⊗ alpha_(B, C, D) =
+    alpha_(A ⊗ B, C, D); alpha_(A, B, C ⊗ D)
+    $
+    hold for all $A, B, C, D in |cal(C)|$.
+
+    We say a premonoidal category is *strict* if $(A ⊗ B) ⊗ C = A ⊗ (B ⊗ C)$, $A ⊗ I = I ⊗ A = A$, and $alpha, rho, lambda$ are the identity transformations.
+])
+#definition(name: "Symmetric Premonoidal Category", [
+    We say a premonoidal category is *braided* if, in addition, it is equipped with, for all objects $A, B in cal(C)$, a central isomorphism $sigma_(A, B): A ⊗ B -> B ⊗ A$ such that
+    - $sigma_(-, B): (- ⊗ B) => (B ⊗ A)$ is a natural isomorphism
+    - $sigma_(A, -): (A ⊗ -) => (A ⊗ -)$ is a natural isomorphism
+    - $sigma_(A, B) = sigma_(B, A)^{-1}$
+    - The following *hexagon identities* hold:
+        - $alpha_(A, B, C);sigma_(A, B ⊗ C);alpha_(B, C, A)
+            = sigma_(A, B) ⊗ C;alpha_(B, A, C);B ⊗ sigma_(A, C)$
+        - $alpha_(A, B, C)^(-1);sigma_(A ⊗ B, C);alpha_(C, A, B)^(-1)
+            = A ⊗ sigma_(B, C);alpha_(A, C, B)^(-1);sigma_(C, A) ⊗ B$
+    We say a braided premonoidal category is *symmetric* if, in addition, we have $sigma_(A, B) = sigma_(B, A)^(-1)$; in this case, either hexagon identity implies the other.
+])
+#theorem(name: "Coherence", [
+    Let $cal(C)$ be a premonoidal category. Then the smallest wide subcategory of $cal(C)$ containing all components of $alpha$, $lambda$, and $rho$ is thin.
+])
+#definition(name: "(Symmetric) Monoidal Category", [
+    A (symmetric) monoidal category $cal(C)$ is a (symmetric) premonoidal category in which, equivalently,
+    - All morphisms are central, i.e. $cal(C) = cen(cal(C))$
+    - $ltimes = rtimes$, in which case we write both as $⊗$
+    - $⊗$ is a bifunctor
+])
+In particular, for every (symmetric) premonoidal category $cal(C)$, we have that $cen(cal(C))$ is (symmetric) monoidal.
 
 /*
 TODO:
-- binoidal
-- premonoidal
-- monoidal
+- binoidal text
+- premonoidal text
+- monoidal text
 - string diagrams
 - strong monads ==> premonoidal
 - commutative monads ==> monoidal
 - monoidal functors
 */
+
+/*
 
 == Effectful Categories
 

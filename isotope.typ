@@ -44,25 +44,27 @@
 }
 
 #let theorem-counter = counter("theorem")
-#let theorem(body, numbered: true) = locate(location => {
+#let theorem(body, name: none, numbered: true) = locate(location => {
   let lvl = counter(heading).at(location)
   let i = theorem-counter.at(location).first()
-  theorem-counter.step()
+  if numbered { theorem-counter.step() }
   let top = if lvl.len() > 0 { lvl.first() } else { 0 }
   show: block.with(spacing: 11.5pt)
-  strong({
-    [Theorem]
-    if numbered [ #top.#i] + [.]
-  })
+  {
+    strong([Theorem])
+    if numbered [ *#top.#i*]
+    if name != none [ (#emph(name))]
+    if numbered or name != none [*.*]
+  }
   [ ]
   emph(body)
 })
 
-#let definition-counter = counter("theorem")
+#let definition-counter = counter("definition")
 #let definition(body, name: none, numbered: true) = locate(location => {
   let lvl = counter(heading).at(location)
   let i = definition-counter.at(location).first()
-  definition-counter.step()
+  if numbered { definition-counter.step() }
   let top = if lvl.len() > 0 { lvl.first() } else { 0 }
   show: block.with(spacing: 11.5pt)
   {
@@ -215,7 +217,10 @@
 #let opp(cat) = $cat^(sans("op"))$
 #let Cat = $sans("Cat")$
 #let niso = $≃$
-#let pset = "cal(P)"
+#let pset = $cal(P)$
+#let ltimes = $⋉$
+#let rtimes = $⋊$
+#let cen(cat) = $Z(#cat)$
 
 // Syntax macros
 #let splits(src, ..subctx) = {
