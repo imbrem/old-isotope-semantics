@@ -369,6 +369,18 @@ For example,
 - In $Set$, $Pfn$, and $Rel$, the isomorphisms are the bijections; in $SetP$ the isomorpisms are the basepoint-preserving bijections
 - In $Pos$ and $Mon$, we recover the usual mathematical notion of isomorphism
 /*
+TODO: improve this segue + section?
+*/
+We would also like to generalize the notion of _inclusion_ to the categorical setting; to that end, we may introduce the notion of a _monomorphism_ as follows:
+#definition(name: "Monomorphism", ([
+    A morphism $f: cal(C)(B, C)$ is a *monomorphism* if
+    $forall g, g': cal(C)(A, B), g;f = g';f <==> g = g'$
+]))
+For example,
+- In $Set$, $Pfn$, and $Rel$, the monomorphisms are the injections; in $SetP$ the isomorpisms are the basepoint-preserving injections
+- In $Pos$ and $Mon$, we recover the usual mathematical notion of inclusion
+In particular, we note that all isomorphisms are monomorphisms.
+/*
 TODO: intro to universal products and commutative diagrams, terminal and initial objects, Cartesian products and coproducts
 */
 Given any category $cal(C)$, we may define the *opposite category* $opp(cal(C))$ with objects $|opp(cal(C))| = |cal(C)|$, morphisms $opp(cal(C))(A, B) = cal(C)(B, A)$, and composition $opp(f) ∘ opp(g) = opp(g ∘ f)$, where $opp(f)$ denotes reinterpreting $f: cal(C)(X, Y)$ as a morphism in $opp(cal(C))(Y, X)$ 
@@ -447,7 +459,7 @@ TODO: section for diagrams and (co)limits?
     - Morphisms $cal(C)_T(A, B) = cal(C)(A, T B)$
     - Composition of $f: cal(C)_T(A, B)$ followed by $g: cal(C)_T(B, C)$ given by $f;g^*$ where $f, g$ are taken as morphisms in $cal(C)$
 ])
-Monads can be viewed as capturing a "notion of computation" by considering \(TA\) to represent "computations yielding \(A\)," which may also have some side-effects and dependencies on external input. For example, we may encode
+Monads can be viewed as capturing a "notion of computation" by considering $T A$ to represent "computations yielding $A$," which may also have some side-effects and dependencies on external input. For example, we may encode
 - Partiality with $T A = A + 1$; in this case $Set_T tilde.eq Pfn$
 - Total nondeterminism with $T A = pset^+ A$
 - Partial nondeterminism with $T A = pset A$; in this case $Set_T tilde.eq Rel$

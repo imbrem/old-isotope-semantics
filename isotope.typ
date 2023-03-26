@@ -39,6 +39,7 @@
 #let isotope-appendix(doc) = {
     set heading(numbering: "A.1.")
     counter(heading).update(())
+    text(2em)[*Appendix*]
     doc
 }
 
