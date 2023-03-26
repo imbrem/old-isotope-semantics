@@ -208,6 +208,7 @@
 #let opp(cat) = $cat^(sans("op"))$
 #let Cat = $sans("Cat")$
 #let niso = $≃$
+#let pset = "cal(P)"
 
 // Syntax macros
 #let splits(src, ..subctx) = {

@@ -21,6 +21,10 @@
 
 == Elementary Category Theory
 
+/*
+TODO: pull this down into an appendix?
+*/
+
 === Basic Notions
 
 We begin by going over some core notions from category theory, with the aim of fixing notations and conventions.
@@ -59,7 +63,7 @@ Given any category $cal(C)$, we may define the *opposite category* $opp(cal(C))$
 TODO: flipping stuff in the opposite categeory
 */
 #definition(name: "Functor", ([
-    A *functor* $F: cal(C) → cal(D)$ from a category $cal(C)$ to a category $cal(D)$ consists of
+    A *(covariant) functor* $F: cal(C) → cal(D)$ from a category $cal(C)$ to a category $cal(D)$ consists of
     - A mapping $|F|: |cal(C)| → |cal(D)|$. We define $F A = F|A|$ for $A ∈ |cal(C)|$
     - A mapping $fcomp(F, A, B): cal(C)(A, B) → cal(D)(F A, F B)$. We define $F f = fcomp(F, A, B) f$ for $f ∈ cal(C)(A, B)$ such that
         - $F idm_A = idm_(F A)$
@@ -69,7 +73,7 @@ TODO: flipping stuff in the opposite categeory
         |F ∘ G| = |F| ∘ |G|, qq
         fcomp((F ∘ G), A, B) = fcomp(F, G A, G B) ∘ fcomp(G, A, B)
     $
-    We will occasionally call a functor a *covariant functor*, with a *cotravariant functor* from $cal(C)$ to $cal(D)$ defined as a covariant functor from $opp(cal(C)) → cal(D)$.
+    A functor $F: cal(C) -> cal(C)$ is called an *endofunctor*. A *cotravariant functor* from $cal(C)$ to $cal(D)$ is simply a covariant functor from $opp(cal(C)) → cal(D)$.
 ]))
 Some examples of important functors on our example categories include:
 - The *identity functor* $idm$, which is simply the identity on objects and morphisms
@@ -100,16 +104,66 @@ We may now define equivalence of categories as follows:
         An *equivalence* between categories $cal(C), cal(D)$ is given by a pair of functors $F: cal(C) → cal(D)$, $G: cal(D) → cal(C)$ and a pair of natural isomorphisms $F;G niso idm_(cal(C))$, $G;F niso idm_(cal(D))$. If there exists an equivalence between $cal(C), cal(D)$, they are said to be *equivalent*.
 ])
 Note that any two isomorphic categories are equivalent (by taking the functors to be the components of the isomorphism, and the natural transformations to be the identity), but not all equivalent categories are isomorphic.
+/*
+TODO: notation for equivalence of categories?
+*/
 
 /*
+TODO: section for diagrams and (co)limits?
+*/
 
 === Monads
 
-//TODO: this
+#definition(name: "Monad", [
+    A *monad* in a category $cal(C)$ is a tuple $(T, mu, eta)$ where
+    - $T: cal(C) -> cal(C)$ is an endofunctor
+    //TODO: name mu and eta?
+    - $mu: T compose T => T$ is a natural transformation
+    - $eta: idm => T$ is a natural transformation
+    A *Kliesli triple* in $cal(C)$ is a tuple $(T, eta, -^*)$ where
+    - $T: cal(C) -> cal(C)$ is an endofunctor
+    - $forall A in |cal(C)|, eta_A: A -> T A$
+    - $forall f: cal(C)(A, T B), f^*: T A -> T B$ //TODO: name bind?
+    such that $eta_A^* = idm_(T A)$, $eta_A;f^* = f$, and $f^*;g^* = (f;g^*)^*$
+
+    Every monad $(T, mu, eta)$ induces a Kliesli triple $(T, eta, -^*)$ with $f^* = T f;mu$; likewise, every Kliesli triple $(T, eta, -^*)$ induces a monad with $mu_A = idm_(T A)^*$; hence, we will use these names and notations interchangeably.
+])
+#definition(name: "Kliesli Category", [
+    Given a category $cal(C)$ equipped with a monad $T$, we may define its *Kliesli category* $cal(C)_T$ to have
+    - Objects $|cal(C)_T| = |cal(C)|$
+    - Morphisms $cal(C)_T(A, B) = cal(C)(A, T B)$
+    - Composition of $f: cal(C)_T(A, B)$ followed by $g: cal(C)_T(B, C)$ given by $f;g^*$ where $f, g$ are taken as morphisms in $cal(C)$
+])
+Monads can be viewed as capturing a ``notion of computation'' by considering \(TA\) to represent ``computations yielding \(A\),'' which may also have some side-effects and dependencies on external input. For example, we may encode
+- Partiality with $T A = A + 1$; in this case $Set_T tilde.eq Pfn$
+- Total nondeterminism with $T A = pset^+ A$
+- Partial nondeterminism with $T A = pset A$; in this case $Set_T tilde.eq Rel$
+- Printing outputs of type $B$ with $T A = A times B^*$, where $B^*$ denotes the _Kleene star_
+- Carrying around a mutable state of type $S$ with $T A = S -> A times S$
+/*
+TODO: pull these examples up? Also, might want to explicitly state what return/bind are (or join!)
+*/
+/*
+TODO: mono condition
+*/
+/*
+TODO: strong monads; or do we pull this down to the monoidal categories section?
+*/
+/*
+TODO: commutative monads?
+*/
+
+/*
 
 === Adjunctions
 
-//TODO: this
+/*
+TODO:
+- what is an adjunction
+- examples, free functors
+- adjoint equivalence
+- adjoints and (co)continuity? Need the (co)limits section...
+*/
 
 */
 
@@ -117,19 +171,42 @@ Note that any two isomorphic categories are equivalent (by taking the functors t
 
 == Monoidal Categories
 
-//TODO: this
+/*
+TODO:
+- binoidal
+- premonoidal
+- monoidal
+- string diagrams
+- strong monads ==> premonoidal
+- commutative monads ==> monoidal
+- monoidal functors
+*/
 
 == Effectful Categories
 
-//TODO: this
-
-== Traced Monoidal Categories
-
-//TODO: this
+/*
+TODO:
+- "effectful functors"; go figure out what these are supposed to be called again
+- "effectful categories are monoidal categories w/ runtime"
+- something something profunctors something something?
+*/
 
 == Iterative and Elgot Monads
 
-//TODO: this
+/*
+TODO:
+- iterative monads, Elgot monads
+- pointer to guardedness (NOT USED HERE! But could be for "coproducts ain't guarded")
+*/
+
+== Traced Monoidal Categories
+
+/*
+TODO:
+- trace, properties
+- pointer to premonoidal trace (NOT USED HERE!)
+- connection between iterative/Elgot and traced
+*/
 
 */
 
