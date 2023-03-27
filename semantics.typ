@@ -11,6 +11,8 @@
     doc
 )
 
+#let table-dbg = none;
+
 /*
 = Introduction
 
@@ -166,7 +168,7 @@ The `isotope` grammar is divided into following syntactic categories:
 #grammar(isotope-grammar)
 Note that we implicitly quotient up to α-equivalence, and that our grammar does not include a notion of function.
 
-The grammar given is parametrized over a set of _base types_ $X ∈ cal(V)$ and _instructions_ $f ∈ cal(I)$.
+The grammar given is parametrized over a set of _base types_ $X ∈ cal(V)$ and _instructions_ $f ∈ cal(I)$. We will denote the set of valid types with base types $cal(V)$ as $types(cal(V))$.
 
 A _term_ is interpreted as a regular value which may be passed as an argument or returned as a result of a computation. A _block_ is a computation that can either tail-call into another _block_ or return a value. For the rest of this section, we will assume the existence of fixed-width bitvector types (e.g. `u64`), basic arithmetic (e.g. `+`, `>=`), and constant values (e.g. 63) of these types (which we may interpret as functions called on the single argument `()`).
 
@@ -261,6 +263,9 @@ We provide a variety of syntax sugar to make reading and writing programs easier
 === Abbreviations
 
 We will write `br 'label` as an abbreviation for `br 'label ()`; likewise, for a set of _constant_ instructions $c ∈ cal(V)_C ⊆ cal(V)$ we will write $c$ as an abbreviation for $c aq ()$.
+
+//TODO: consider whether this is a good idea
+We may sometimes write `br a`, whre `a` is an expression, as `ret a` to emphasize the fact that this is the return value of a function. Generally, however, we will only do so in blocks which are *not* nested in an expression. This is purely syntactic and has no semantic significance.
 
 === Blocks and Expressions
 
@@ -370,11 +375,98 @@ let
 ;
 t
 ```
+== Typing
+
+In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
+- Predicates $sans("splits"), sans("drops") subset.eq cal(V)$
+- For each $A, B in types(cal(V))$, a subset $cal(I)(A, B) subset.eq cal(I)$. /* We say this is *fully specified* if each such subset is disjoint. */
+
+=== Judgements
+
+We introduce the following typing judgements:
+#align(center,
+    table(
+        columns: 2,
+        stroke: none,
+        column-gutter: 2em,
+        [*Syntax*],
+        [*Meaning*],
+        $istm(Gamma, a, A)$,
+        [$a$ is a term of type $A$ in context $Gamma$],
+        $isblk(sans(L), Gamma, t, B)$,
+        [$t$ is a block of type $B$ in control context $sans(L);Gamma$],
+        $splitctx(Gamma, Delta, Xi)$,
+        [$Gamma$ splits into contexts $Delta$, $Xi$],
+        $splits(A)$, [$A$ can be split],
+        $drops(A)$, [$A$ can be dropped]
+    )
+)
+
+=== Structural rules
+
+#let structural-rules = (
+    "fwd-drops": prft(name: "fwd-drops", $sans("drops")(X)$, $drops(X)$),
+    "unit-drops" : prft(name: "unit-drops", $drops(tobj)$),
+    "bool-drops": prft(name: "bool-drops", $drops(bools)$),
+    "pair-drops": prft(name: "pair-drops", $drops(A)$, $drops(B)$, $drops(A ⊗ B)$),
+    "fwd-splits": prft(name: "fwd-splits", $sans("splits")(X)$, $splits(X)$),
+    "unit-splits" : prft(name: "unit-splits", $splits(tobj)$),
+    "bool-splits": prft(name: "bool-splits", $splits(bools)$),
+    "pair-splits": prft(name: "pair-splits", $splits(A)$, $splits(B)$, $splits(A ⊗ B)$),
+    "ctx-nil": prft(name: "nil-splits", $splitctx(cnil, cnil, cnil)$),
+    "ctx-left": prft(name: "ctx-left", 
+        $splitctx(Gamma, Delta, Xi)$, 
+        $#splitctx($x: A, Gamma$, $x: A, Delta$, $Xi$)$),
+    "ctx-right": prft(name: "ctx-right", 
+        $splitctx(Gamma, Delta, Xi)$, 
+        $#splitctx($x: A, Gamma$, $Delta$, $x: A, Xi$)$),
+    "ctx-split": prft(name: "ctx-split", 
+        $splitctx(Gamma, Delta, Xi)$,
+        $splits(A)$, 
+        $#splitctx($x: A, Gamma$, $x: A, Delta$, $x: A, Xi$)$),
+    "ctx-drop": prft(name: "ctx-drop", 
+        $splitctx(Gamma, Delta, Xi)$,
+        $drops(A)$, 
+        $#splitctx($x: A, Gamma$, $Delta$, $Xi$)$)
+)
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.pair-drops),
+        dprf(structural-rules.pair-splits),
+    ),
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.fwd-drops),
+        dprf(structural-rules.unit-drops),
+        dprf(structural-rules.bool-drops),
+    ),
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.fwd-splits),
+        dprf(structural-rules.unit-splits),
+        dprf(structural-rules.bool-splits),
+    ),
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.ctx-nil),
+        dprf(structural-rules.ctx-left),
+        dprf(structural-rules.ctx-right),
+    ),
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.ctx-split),
+        dprf(structural-rules.ctx-drop),
+    ),
+))
 
 /*
-= Typing
+TODO: structural rules for label-sets
+*/
 
-//TODO: this
+/*
 
 = Semantics
 
@@ -400,7 +492,9 @@ t
 
 #show: isotope-appendix
 
-= Category Theory <cats>
+= Category Theory
+
+== Elementary Category Theory <cats>
 
 In this section, we go over some core notions from category theory, with the aim of fixing notations and conventions.
 #definition(name: "Category", ([
@@ -498,7 +592,7 @@ TODO: notation for equivalence of categories?
 TODO: section for diagrams and (co)limits?
 */
 
-== Monads
+=== Monads
 
 #definition(name: "Monad", [
     A *monad* in a category $cal(C)$ is a tuple $(T, mu, eta)$ where
@@ -539,7 +633,7 @@ TODO: strong monads; or do we pull this down to the monoidal categories section?
 TODO: commutative monads?
 */
 
-== Adjunctions
+=== Adjunctions
 
 #definition(name: "Adjunction", [
     Let $cal(C), cal(D)$ be categories and let $L: cal(C) -> cal(D)$, $R: cal(D) -> cal(C)$ be a pair of functors. This is called a pair of *adjoint functors*, with $L$ the *left adjoint* and $R$ the *right adjoint*, written $adj(L, R)$, if, equivalently,
@@ -566,4 +660,9 @@ TODO:
 - examples, free functors
 - adjoint equivalence
 - adjoints and (co)continuity? Need the (co)limits section...
+*/
+
+/*
+TODO:
+- results on polygraphs, explicit runtime constructions?
 */

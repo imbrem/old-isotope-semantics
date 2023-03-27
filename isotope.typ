@@ -130,7 +130,7 @@
     let premises = stack(dir: ltr, ..p.premises);
     block(
         [$
-            #text(maroon)[#p.name] premises / 
+            #text(size: 0.7em, maroon)[#p.name] premises / 
             #rect(stroke: debug_stroke, $#p.conclusion$)
         $]
     )
@@ -224,10 +224,13 @@
 #let adj(left, right, unit: none, counit: none) = $#left ⊣ #right$
 
 // Syntax macros
-#let splits(src, ..subctx) = {
+#let splitctx(src, ..subctx) = {
     let subctx = subctx.pos().join($;$);
     $src arrow.r.bar subctx$
 }
-#let istm(ctx, tm, ty) = $ctx models tm: ty$
+#let types(base) = $sans("Type")(#base)$
+#let splits(ty) = $#ty sans("splits")$
+#let drops(ty) = $#ty sans("drops")$
+#let istm(ctx, tm, ty) = $ctx ⊢ tm: ty$
 #let isblk(bctx, ctx, blk, ty) = $
-    bctx;ctx models blk triangle.stroked.small ty$
+    bctx;ctx ⊢ blk triangle.stroked.small ty$
