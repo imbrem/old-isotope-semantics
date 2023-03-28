@@ -1,11 +1,10 @@
-name: CI
+# Compiles semantics.pdf and uploads it as an artifact
+
+name: build
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
-
   workflow_dispatch:
 
 jobs:
