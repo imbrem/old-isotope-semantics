@@ -1,3 +1,6 @@
+// Commutative diagrams
+#import "typst-cd/typst-cd.typ": node, arr, commutative_diagram
+
 // Template
 #let isotope-report(
   title: none,
