@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Download and unzip Typst
+      - name: Download Typst
+        run: |
+          curl -L https://github.com/typst/typst/releases/download/v23-03-28/typst-x86_64-unknown-linux-gnu.tar.gz -o typst.tar.gz
+          tar -xvf typst.tar.gz
+
+      # Compile semantics.pdf
+      - name: Compile Document
+        run: ./typst-x86_64-unknown-linux-gnu/typst semantics.typ
+
+      # Archive result
+      - name: Archive compiled document
+        uses: actions/upload-artifact@v3
+        with:
+          name: semantics
+          path: semantics.pdf
