@@ -24,9 +24,33 @@ jobs:
       - name: Compile Document
         run: ./typst-x86_64-unknown-linux-gnu/typst semantics.typ
 
-      # Archive result
-      - name: Archive compiled document
-        uses: actions/upload-artifact@v3
+      # Copy over semantics.pdf and README.md to public directory
+      - name: Build public directory
+        run: |
+          mkdir public
+          cp README.md public/
+          cp semantics.pdf public/
+
+      # Upload GitHub pages artifact
+      - uses: actions/upload-pages-artifact@v1
         with:
-          name: semantics
-          path: semantics.pdf
+          path: public
+
+  # Deploy GitHub pages site
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write      
+      id-token: write 
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
