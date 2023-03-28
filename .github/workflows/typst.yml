@@ -28,7 +28,7 @@ jobs:
       - name: Build public directory
         run: |
           mkdir public
-          cp index.md public/
+          cp README.md public/index.md
           cp semantics.pdf public/
 
       # Upload GitHub pages artifact
