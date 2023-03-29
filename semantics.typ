@@ -397,6 +397,8 @@ We introduce the following typing judgements:
         [$t$ is a block of type $B$ in control context $sans(L);Gamma$],
         $splitctx(Gamma, Delta, Xi)$,
         [$Gamma$ splits into contexts $Delta$, $Xi$],
+        $joinctx(sans(J), sans(K), sans(L))$,
+        [$sans(J)$, $sans(K)$ merge into context $sans(L)$],
         $splits(A)$, [$A$ can be split],
         $drops(A)$, [$A$ can be dropped]
     )
@@ -413,7 +415,7 @@ We introduce the following typing judgements:
     "unit-splits" : prft(name: "unit-splits", $splits(tobj)$),
     "bool-splits": prft(name: "bool-splits", $splits(bools)$),
     "pair-splits": prft(name: "pair-splits", $splits(A)$, $splits(B)$, $splits(A ⊗ B)$),
-    "ctx-nil": prft(name: "nil-splits", $splitctx(cnil, cnil, cnil)$),
+    "ctx-nil": prft(name: "ctx-nil", $splitctx(cnil, cnil, cnil)$),
     "ctx-left": prft(name: "ctx-left", 
         $splitctx(Gamma, Delta, Xi)$, 
         $#splitctx($x: A, Gamma$, $x: A, Delta$, $Xi$)$),
@@ -427,7 +429,20 @@ We introduce the following typing judgements:
     "ctx-drop": prft(name: "ctx-drop", 
         $splitctx(Gamma, Delta, Xi)$,
         $drops(A)$, 
-        $#splitctx($x: A, Gamma$, $Delta$, $Xi$)$)
+        $#splitctx($x: A, Gamma$, $Delta$, $Xi$)$),
+    "join-nil": prft(name: "join-nil", $joinctx(bcnil, bcnil, bcnil)$),
+    "join-none": prft(name: "join-none", 
+        $joinctx(sans(J), sans(K), sans(L))$,
+        joinctx($sans(J)$, $sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+    "join-left": prft(name: "join-left", 
+        $joinctx(sans(J), sans(K), sans(L))$,
+        joinctx($lhyp(Gamma, lbl(ell), A), sans(J)$, $sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+    "join-right": prft(name: "join-right", 
+        $joinctx(bcnil, bcnil, bcnil)$,
+        joinctx($sans(J)$, $lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+    "join-both": prft(name: "join-both", 
+        $joinctx(sans(J), sans(K), sans(L))$,
+        joinctx($lhyp(Gamma, lbl(ell), A), sans(J)$, $lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
 )
 
 #align(center, table(
@@ -460,6 +475,17 @@ We introduce the following typing judgements:
         dprf(structural-rules.ctx-split),
         dprf(structural-rules.ctx-drop),
     ),
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.join-nil),
+        dprf(structural-rules.join-none),
+    ),
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.join-left),
+        dprf(structural-rules.join-right),
+    ),
+    dprf(structural-rules.join-both),
 ))
 
 /*

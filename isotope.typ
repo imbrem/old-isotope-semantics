@@ -225,11 +225,18 @@
 #let rtimes = $⋊$
 #let cen(cat) = $Z(#cat)$
 #let adj(left, right, unit: none, counit: none) = $#left ⊣ #right$
+#let lhyp(ctx, label, arg) = $ctx triangle label(arg)$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
     let subctx = subctx.pos().join($;$);
     $src arrow.r.bar subctx$
+}
+#let joinctx(..args) = {
+    let subctx = args.pos();
+    let dest = subctx.pop()
+    let subctx = subctx.join($;$)
+    $subctx arrow.r.squiggly dest$
 }
 #let types(base) = $sans("Type")(#base)$
 #let splits(ty) = $#ty sans("splits")$
