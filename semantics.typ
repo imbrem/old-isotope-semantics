@@ -397,8 +397,8 @@ We introduce the following typing judgements:
         [$t$ is a block of type $B$ in control context $sans(L);Gamma$],
         $splitctx(Gamma, Delta, Xi)$,
         [$Gamma$ splits into contexts $Delta$, $Xi$],
-        $joinctx(sans(J), sans(K), sans(L))$,
-        [$sans(J)$, $sans(K)$ merge into context $sans(L)$],
+        $joinctx(sans(K), sans(L))$,
+        [$sans(K)$ is a subset of label-set $sans(L)$],
         $splits(A)$, [$A$ can be split],
         $drops(A)$, [$A$ can be dropped]
     )
@@ -430,19 +430,13 @@ We introduce the following typing judgements:
         $splitctx(Gamma, Delta, Xi)$,
         $drops(A)$, 
         $#splitctx($x: A, Gamma$, $Delta$, $Xi$)$),
-    "join-nil": prft(name: "join-nil", $joinctx(bcnil, bcnil, bcnil)$),
-    "join-none": prft(name: "join-none", 
-        $joinctx(sans(J), sans(K), sans(L))$,
-        joinctx($sans(J)$, $sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
-    "join-left": prft(name: "join-left", 
-        $joinctx(sans(J), sans(K), sans(L))$,
-        joinctx($lhyp(Gamma, lbl(ell), A), sans(J)$, $sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
-    "join-right": prft(name: "join-right", 
-        $joinctx(bcnil, bcnil, bcnil)$,
-        joinctx($sans(J)$, $lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
-    "join-both": prft(name: "join-both", 
-        $joinctx(sans(J), sans(K), sans(L))$,
-        joinctx($lhyp(Gamma, lbl(ell), A), sans(J)$, $lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+    "label-nil": prft(name: "label-nil", $joinctx(bcnil, bcnil)$),
+    "label-join": prft(name: "label-join", 
+        $joinctx(sans(K), sans(L))$,
+        joinctx($sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+    "label-ext": prft(name: "label-ext", 
+        $joinctx(sans(K), sans(L))$,
+        joinctx($lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
 )
 
 #align(center, table(
@@ -476,21 +470,12 @@ We introduce the following typing judgements:
         dprf(structural-rules.ctx-drop),
     ),
     table(
-        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.join-nil),
-        dprf(structural-rules.join-none),
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(structural-rules.label-nil),
+        dprf(structural-rules.label-ext),
+        dprf(structural-rules.label-join),
     ),
-    table(
-        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.join-left),
-        dprf(structural-rules.join-right),
-    ),
-    dprf(structural-rules.join-both),
 ))
-
-/*
-TODO: structural rules for label-sets
-*/
 
 /*
 
