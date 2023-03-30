@@ -229,7 +229,7 @@
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
-    let subctx = subctx.pos().join($;$);
+    let subctx = subctx.pos().join(";");
     $src arrow.r.bar subctx$
 }
 #let joinctx(..args) = {
@@ -242,5 +242,5 @@
 #let splits(ty) = $#ty sans("splits")$
 #let drops(ty) = $#ty sans("drops")$
 #let istm(ctx, tm, ty) = $ctx ⊢ tm: ty$
-#let isblk(bctx, ctx, blk, ty) = $
-    bctx;ctx ⊢ blk triangle.stroked.small ty$
+#let isblk(ctx, bctx, blk, ty) = $
+    ctx;bctx ⊢ blk triangle.stroked.small ty$

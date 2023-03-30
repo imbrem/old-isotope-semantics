@@ -156,11 +156,11 @@ The `isotope` grammar is divided into following syntactic categories:
         symbol: ("s", "t"),
         productions: (
             (
-                $br(a)$, $br(lbl(ℓ), a)$, $lite(e, t, s)$,
+                $br(a)$, $br(lbl(ℓ), a)$, $lite(e, s, t)$,
                 $llet x = a; t$, $llet (x, y) = a; t$
             ),
             (
-                $llet [lbl(ℓ_i)(x_i: A) => { t_i }]_i; s$
+                $llet [lbl(ℓ_i)(x_i: A_i) => { t_i }]_i; s$
             )
         ),
     )
@@ -393,8 +393,8 @@ We introduce the following typing judgements:
         [*Meaning*],
         $istm(Gamma, a, A)$,
         [$a$ is a term of type $A$ in context $Gamma$],
-        $isblk(sans(L), Gamma, t, B)$,
-        [$t$ is a block of type $B$ in control context $sans(L);Gamma$],
+        $isblk(Gamma, sans(L), t, B)$,
+        [$t$ is a block of type $B$ in control context $Gamma;sans(L)$],
         $splitctx(Gamma, Delta, Xi)$,
         [$Gamma$ splits into contexts $Delta$, $Xi$],
         $joinctx(sans(K), sans(L))$,
@@ -406,7 +406,7 @@ We introduce the following typing judgements:
 
 === Structural rules
 
-#let structural-rules = (
+#let typing-rules = (
     "fwd-drops": prft(name: "fwd-drops", $sans("drops")(X)$, $drops(X)$),
     "unit-drops" : prft(name: "unit-drops", $drops(tobj)$),
     "bool-drops": prft(name: "bool-drops", $drops(bools)$),
@@ -437,44 +437,167 @@ We introduce the following typing judgements:
     "label-ext": prft(name: "label-ext", 
         $joinctx(sans(K), sans(L))$,
         joinctx($lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+    "var": prft(name: "var", 
+        splitctx($Gamma$, $x: A$), $istm(Gamma, x, A)$),
+    "app": prft(name: "app",
+        $f in cal(I)(A, B)$, $istm(Gamma, a, A)$, 
+        $istm(Gamma, f aq a, B)$),
+    "nil": prft(name: "nil",
+        splitctx($Gamma$, $cnil$), $istm(Gamma, (), tobj)$),
+    "true": prft(name: "true",
+        splitctx($Gamma$, $cnil$), $istm(Gamma, ltt, bools)$),
+    "false": prft(name: "false",
+        splitctx($Gamma$, $cnil$), $istm(Gamma, lff, bools)$),
+    "pair": prft(name: "pair",
+        splitctx($Gamma$, $Delta$, $Xi$),
+        $istm(Delta, a, A)$,
+        $istm(Xi, b, B)$,
+        istm($Gamma$, $(a, b)$, $A ⊗ B$)
+    ),
+    "let": prft(name: "let",
+        splitctx($Gamma$, $Delta$, $Xi$),
+        $istm(Delta, a, A)$,
+        istm($x: A, Xi$, $e$, $B$),
+        istm($Gamma$, $llet x = a; e$, $B$)
+    ),
+    "blk": prft(name: "blk",
+        $isblk(Gamma, bcnil, t, B)$,
+        $istm(Gamma, {t}, B)$
+    ),
+    "let2": prft(name: "let2",
+        splitctx($Gamma$, $Delta$, $Xi$),
+        $istm(Delta, e, A ⊗ B)$,
+        istm($x: A, y: B, Xi$, $e'$, $C$),
+        istm($Gamma$, $llet (x, y) = e; e'$, $C$)
+    ),
+    "br": prft(name: "br", 
+        $istm(Gamma, a, A)$,
+        $isblk(Gamma, sans(L), br(a), A)$,
+    ),
+    "jmp": prft(name: "jmp",
+        $splitctx(Gamma, Delta, Xi)$,
+        $istm(Delta, a, A)$,
+        $joinctx(lhyp(Xi, lbl(l), A), sans(L))$,
+        $isblk(Gamma, sans(L), br(lbl(ell), a), B)$,
+    ),
+    "ite": prft(name: "ite",
+        $splitctx(Gamma, Delta, Xi)$,
+        $istm(Delta, e, bools)$,
+        $isblk(Xi, sans(L), s, B)$,
+        $isblk(Xi, sans(L), t, B)$,
+        $isblk(Gamma, sans(L), lite(e, s, t), B)$
+    ),
+    "let-blk": prft(name: "let-blk",
+        splitctx($Gamma$, $Delta$, $Xi$),
+        $istm(Delta, a, A)$,
+        isblk($x: A, Xi$, $sans(L)$, $t$, $B$),
+        isblk($Gamma$, $sans(L)$, $llet x = a; t$, $B$)
+    ),
+    "let2-blk": prft(name: "let2-blk",
+        splitctx($Gamma$, $Delta$, $Xi$),
+        $istm(Delta, e, A ⊗ B)$,
+        isblk($x: A, y: B, Xi$, $sans(L)$, $t$, $B$),
+        isblk($Gamma$, $sans(L)$, $llet (x, y) = e; t$, $B$)
+    ),
+    "tr": prft(name: "tr",
+        $forall i, 
+            #[
+                #isblk(
+                $x_i: A_i, Delta_i$, 
+                $[lhyp(Delta_j, lbl(ell)_j, A_j)]_j, sans(L)$,
+                $t_i$,
+                $B$
+            )]$,
+        isblk(
+            $Gamma$, 
+            $[lhyp(Delta_j, lbl(ell)_j, A_j)]_j, sans(L)$,
+            $s$,
+            $B$),
+        isblk(
+            $Gamma$,
+            $sans(L)$,
+            $llet [lbl(ell)_j(x_j: A_j) => {t_i}]_j; s$,
+            $B$
+        )
+    )
 )
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
     table(
         columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.pair-drops),
-        dprf(structural-rules.pair-splits),
+        dprf(typing-rules.pair-drops),
+        dprf(typing-rules.pair-splits),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.fwd-drops),
-        dprf(structural-rules.unit-drops),
-        dprf(structural-rules.bool-drops),
+        dprf(typing-rules.fwd-drops),
+        dprf(typing-rules.unit-drops),
+        dprf(typing-rules.bool-drops),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.fwd-splits),
-        dprf(structural-rules.unit-splits),
-        dprf(structural-rules.bool-splits),
+        dprf(typing-rules.fwd-splits),
+        dprf(typing-rules.unit-splits),
+        dprf(typing-rules.bool-splits),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.ctx-nil),
-        dprf(structural-rules.ctx-left),
-        dprf(structural-rules.ctx-right),
+        dprf(typing-rules.ctx-nil),
+        dprf(typing-rules.ctx-left),
+        dprf(typing-rules.ctx-right),
     ),
     table(
         columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.ctx-split),
-        dprf(structural-rules.ctx-drop),
+        dprf(typing-rules.ctx-split),
+        dprf(typing-rules.ctx-drop),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(structural-rules.label-nil),
-        dprf(structural-rules.label-ext),
-        dprf(structural-rules.label-join),
+        dprf(typing-rules.label-nil),
+        dprf(typing-rules.label-ext),
+        dprf(typing-rules.label-join),
     ),
+))
+We write $splitctx(Gamma, Delta)$ as syntax sugar for $splitctx(Gamma, Delta, cnil)$.
+
+=== Term Typing
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.var),
+        dprf(typing-rules.app),
+        dprf(typing-rules.nil),
+    ),
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.true),
+        dprf(typing-rules.false),
+        dprf(typing-rules.pair),
+    ),
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.let),
+        dprf(typing-rules.blk),
+    ),
+    dprf(typing-rules.let2),
+))
+
+=== Block Typing
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.br),
+        dprf(typing-rules.jmp),
+    ),
+    dprf(typing-rules.ite),
+    dprf(typing-rules.let-blk),
+    dprf(typing-rules.let2-blk),
+    dprf(typing-rules.tr),
 ))
 
 /*
