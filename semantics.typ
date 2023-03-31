@@ -379,7 +379,9 @@ t
 
 In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
 - Predicates $sans("splits"), sans("drops") subset.eq cal(V)$
-- For each $A, B in types(cal(V))$, a subset $cal(I)(A, B) subset.eq cal(I)$. /* We say this is *fully specified* if each such subset is disjoint. */
+- For each $A, B in types(cal(V))$, 
+    - A subset $cal(I)_0(A, B) subset.eq cal(I)$ of *instructions*.
+    - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions*.
 
 === Judgements
 
@@ -391,10 +393,10 @@ We introduce the following typing judgements:
         column-gutter: 2em,
         [*Syntax*],
         [*Meaning*],
-        $istm(Gamma, a, A)$,
-        [$a$ is a term of type $A$ in context $Gamma$],
-        $isblk(Gamma, sans(L), t, B)$,
-        [$t$ is a block of type $B$ in control context $Gamma;sans(L)$],
+        $istm(Gamma, p, a, A)$,
+        [$a$ is a term of type $A$ in context $Gamma$ with purity $p in {0, 1}$],
+        $isblk(Gamma, sans(L), p, t, B)$,
+        [$t$ is a block of type $B$ in control context $Gamma;sans(L)$with purity $p in {0, 1}$],
         $splitctx(Gamma, Delta, Xi)$,
         [$Gamma$ splits into contexts $Delta$, $Xi$],
         $joinctx(sans(K), sans(L))$,
@@ -433,89 +435,92 @@ We introduce the following typing judgements:
     "label-nil": prft(name: "label-nil", $joinctx(bcnil, bcnil)$),
     "label-join": prft(name: "label-join", 
         $joinctx(sans(K), sans(L))$,
-        joinctx($sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+        joinctx($sans(K)$, $lhyp(Gamma, lbl(ell), p, A), sans(L)$)),
     "label-ext": prft(name: "label-ext", 
         $joinctx(sans(K), sans(L))$,
-        joinctx($lhyp(Gamma, lbl(ell), A), sans(K)$, $lhyp(Gamma, lbl(ell), A), sans(L)$)),
+        joinctx($lhyp(Gamma, lbl(ell), p, A), sans(K)$, $lhyp(Gamma, lbl(ell), p, A), sans(L)$)),
     "var": prft(name: "var", 
-        splitctx($Gamma$, $x: A$), $istm(Gamma, x, A)$),
+        splitctx($Gamma$, $x: A$), $istm(Gamma, p, x, A)$),
     "app": prft(name: "app",
-        $f in cal(I)(A, B)$, $istm(Gamma, a, A)$, 
-        $istm(Gamma, f aq a, B)$),
+        $f in cal(I)_p(A, B)$, $istm(Gamma, p, a, A)$, 
+        $istm(Gamma, p, f aq a, B)$),
     "nil": prft(name: "nil",
-        splitctx($Gamma$, $cnil$), $istm(Gamma, (), tobj)$),
+        splitctx($Gamma$, $cnil$), $istm(Gamma, p, (), tobj)$),
     "true": prft(name: "true",
-        splitctx($Gamma$, $cnil$), $istm(Gamma, ltt, bools)$),
+        splitctx($Gamma$, $cnil$), $istm(Gamma, p, ltt, bools)$),
     "false": prft(name: "false",
-        splitctx($Gamma$, $cnil$), $istm(Gamma, lff, bools)$),
+        splitctx($Gamma$, $cnil$), $istm(Gamma, p, lff, bools)$),
     "pair": prft(name: "pair",
         splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, a, A)$,
-        $istm(Xi, b, B)$,
-        istm($Gamma$, $(a, b)$, $A ⊗ B$)
+        $istm(Delta, p, a, A)$,
+        $istm(Xi, p, b, B)$,
+        istm($Gamma$, $p$, $(a, b)$, $A ⊗ B$)
     ),
     "let": prft(name: "let",
         splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, a, A)$,
-        istm($x: A, Xi$, $e$, $B$),
-        istm($Gamma$, $llet x = a; e$, $B$)
+        $istm(Delta, p, a, A)$,
+        istm($x: A, Xi$, $p$, $e$, $B$),
+        istm($Gamma$, $p$, $llet x = a; e$, $B$)
     ),
     "blk": prft(name: "blk",
-        $isblk(Gamma, bcnil, t, B)$,
-        $istm(Gamma, {t}, B)$
+        $isblk(Gamma, bcnil, p, t, B)$,
+        $istm(Gamma, p, {t}, B)$
     ),
     "let2": prft(name: "let2",
         splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, e, A ⊗ B)$,
-        istm($x: A, y: B, Xi$, $e'$, $C$),
-        istm($Gamma$, $llet (x, y) = e; e'$, $C$)
+        $istm(Delta, p, e, A ⊗ B)$,
+        istm($x: A, y: B, Xi$, $p$, $e'$, $C$),
+        istm($Gamma$, $p$, $llet (x, y) = e; e'$, $C$)
     ),
     "br": prft(name: "br", 
-        $istm(Gamma, a, A)$,
-        $isblk(Gamma, sans(L), br(a), A)$,
+        $istm(Gamma, p, a, A)$,
+        $isblk(Gamma, sans(L), p, br(a), A)$,
     ),
     "jmp": prft(name: "jmp",
         $splitctx(Gamma, Delta, Xi)$,
-        $istm(Delta, a, A)$,
-        $joinctx(lhyp(Xi, lbl(l), A), sans(L))$,
-        $isblk(Gamma, sans(L), br(lbl(ell), a), B)$,
+        $istm(Delta, p, a, A)$,
+        $joinctx(lhyp(Xi, lbl(l), p, A), sans(L))$,
+        $isblk(Gamma, sans(L), p, br(lbl(ell), a), B)$,
     ),
     "ite": prft(name: "ite",
         $splitctx(Gamma, Delta, Xi)$,
-        $istm(Delta, e, bools)$,
-        $isblk(Xi, sans(L), s, B)$,
-        $isblk(Xi, sans(L), t, B)$,
-        $isblk(Gamma, sans(L), lite(e, s, t), B)$
+        $istm(Delta, p, e, bools)$,
+        $isblk(Xi, sans(L), p, s, B)$,
+        $isblk(Xi, sans(L), p, t, B)$,
+        $isblk(Gamma, sans(L), p, lite(e, s, t), B)$
     ),
     "let-blk": prft(name: "let-blk",
         splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, a, A)$,
-        isblk($x: A, Xi$, $sans(L)$, $t$, $B$),
-        isblk($Gamma$, $sans(L)$, $llet x = a; t$, $B$)
+        $istm(Delta, p, a, A)$,
+        isblk($x: A, Xi$, $sans(L)$, $p$, $t$, $B$),
+        isblk($Gamma$, $sans(L)$, $p$, $llet x = a; t$, $B$)
     ),
     "let2-blk": prft(name: "let2-blk",
         splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, e, A ⊗ B)$,
-        isblk($x: A, y: B, Xi$, $sans(L)$, $t$, $B$),
-        isblk($Gamma$, $sans(L)$, $llet (x, y) = e; t$, $B$)
+        $istm(Delta, p, e, A ⊗ B)$,
+        isblk($x: A, y: B, Xi$, $sans(L)$, $p$, $t$, $B$),
+        isblk($Gamma$, $sans(L)$, $p$, $llet (x, y) = e; t$, $B$)
     ),
     "tr": prft(name: "tr",
         $forall i, 
             #[
                 #isblk(
                 $x_i: A_i, Delta_i$, 
-                $[lhyp(Delta_j, lbl(ell)_j, A_j)]_j, sans(L)$,
+                $[lhyp(Delta_j, lbl(ell)_j, 0, A_j)]_j, sans(L)$,
+                $p$,
                 $t_i$,
                 $B$
             )]$,
         isblk(
             $Gamma$, 
-            $[lhyp(Delta_j, lbl(ell)_j, A_j)]_j, sans(L)$,
+            $[lhyp(Delta_j, lbl(ell)_j, p, A_j)]_j, sans(L)$,
+            $p$,
             $s$,
             $B$),
         isblk(
             $Gamma$,
             $sans(L)$,
+            $p$,
             $llet [lbl(ell)_j(x_j: A_j) => {t_i}]_j; s$,
             $B$
         )

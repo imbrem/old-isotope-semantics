@@ -225,7 +225,7 @@
 #let rtimes = $⋊$
 #let cen(cat) = $Z(#cat)$
 #let adj(left, right, unit: none, counit: none) = $#left ⊣ #right$
-#let lhyp(ctx, label, arg) = $ctx triangle label(arg)$
+#let lhyp(ctx, label, purity, arg) = $ctx triangle_purity label(arg)$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
@@ -241,6 +241,6 @@
 #let types(base) = $sans("Type")(#base)$
 #let splits(ty) = $#ty sans("splits")$
 #let drops(ty) = $#ty sans("drops")$
-#let istm(ctx, tm, ty) = $ctx ⊢ tm: ty$
-#let isblk(ctx, bctx, blk, ty) = $
-    ctx;bctx ⊢ blk triangle.stroked.small ty$
+#let istm(ctx, purity, tm, ty) = $ctx ⊢_purity tm: ty$
+#let isblk(ctx, bctx, purity, blk, ty) = $
+    ctx;bctx ⊢_purity blk triangle.stroked.small ty$
