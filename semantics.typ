@@ -87,6 +87,15 @@ In this section, we go over some background notions used in the semantics. For a
 In particular, for every (symmetric) premonoidal category $cal(C)$, we have that $cen(cal(C))$ is (symmetric) monoidal.
 
 /*
+#definition(name: "Monoidal Functor", [
+    A *(strong) monoidal functor* between monoidal categories $(cal(C), ⊗^cal(C), I^cal(C), alpha^cal(C), lambda^cal(C), rho^cal(C))$, $(cal(D), ⊗^cal(D), I^cal(D), alpha^cal(D), lambda^cal(D), rho^cal(D))$ is a functor $F: cal(C) -> cal(D)$ equipped with natural isomorphisms $epsilon: I^cal(D) => F(I^cal(C))$ and $mu: F(A ⊗^cal(C) B) => F(A) ⊗^cal(D) F(B)$ such that
+    - $alpha^cal(D)_(F A, F B, F C);(F A ⊗^cal(C) mu_(B, C));mu_(A, B ⊗^cal(C) C) = (mu_(A, B) ⊗^cal(C) F C);mu_(A ⊗^cal(C) B,C);F(alpha^cal(C)_(A, B, C))$
+    - left unitor...
+    - right unitor...
+])
+*/
+
+/*
 TODO:
 - binoidal text
 - premonoidal text
@@ -97,9 +106,14 @@ TODO:
 - monoidal functors
 */
 
-/*
 
 == Effectful Categories
+
+#definition(name: "Effectful Category", [
+    An *effectful category* is an identity-on-objects premonoidal functor $cal(V) -> cal(C)$ from a monoidal categorty $cal(V)$ (of "*values*") to a premonoidal category $cal(C)$ (of "*computations*") whose image is central. It is *symmetric* when both $cal(V), cal(C)$ are.
+
+    A *Freyd category* is an effectful category in which $cal(V)$ is cartesian monoidal.
+])
 
 /*
 TODO:
@@ -107,6 +121,8 @@ TODO:
 - "effectful categories are monoidal categories w/ runtime"
 - something something profunctors something something?
 */
+
+/*
 
 == Iterative and Elgot Monads
 
