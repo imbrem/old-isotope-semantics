@@ -507,13 +507,13 @@ We introduce the following typing judgements:
                 #isblk(
                 $x_i: A_i, Delta_i$, 
                 $[lhyp(Delta_j, lbl(ell)_j, 0, A_j)]_j, sans(L)$,
-                $p$,
+                $p_i$,
                 $t_i$,
                 $B$
             )]$,
         isblk(
             $Gamma$, 
-            $[lhyp(Delta_j, lbl(ell)_j, p, A_j)]_j, sans(L)$,
+            $[lhyp(Delta_j, lbl(ell)_j, p_j, A_j)]_j, sans(L)$,
             $p$,
             $s$,
             $B$),
