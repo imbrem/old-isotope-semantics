@@ -44,10 +44,7 @@ In this section, we go over some background notions used in the semantics. For a
 #definition(name: "Premonoidal Category", [
     A *premonoidal category* is a binoidal category $cal(C)$ equipped with
     - An *identity object* $munit in |cal(C)|$
-    - For all objects $A, B, C in cal(C)$, a central isomorphism $alpha_(A, B, C): (A ⊗ B) ⊗ C \to A ⊗ (B ⊗ C)$ (the *associator*) such that the following are natural isomorphisms
-        - $alpha_(-, B, C): (- ⊗ B) ⊗ C => - ⊗ (B ⊗ C)$
-        - $alpha_(A, -, C): (A ⊗ -) ⊗ C => A ⊗ (- ⊗ C)$
-        - $alpha_(A, B, -): (A ⊗ B) ⊗ - => A ⊗ (B ⊗ -)$
+    - A family of central isomorphisms $alpha_(A, B, C): (A ⊗ B) ⊗ C \to A ⊗ (B ⊗ C)$ (the *associator*) natural in $A, B, C in cal(C)$
     - A central natural isomorphism $lambda: - ⊗ munit => idm$  (the *left unitor*) 
     - A central natural isomorphism $rho: munit ⊗ - -> idm$ (the *right unitor*)
     such that the *triangle identity*
@@ -64,9 +61,7 @@ In this section, we go over some background notions used in the semantics. For a
     We say a premonoidal category is *strict* if $(A ⊗ B) ⊗ C = A ⊗ (B ⊗ C)$, $A ⊗ I = I ⊗ A = A$, and $alpha, rho, lambda$ are the identity transformations.
 ])
 #definition(name: "Symmetric Premonoidal Category", [
-    We say a premonoidal category is *braided* if, in addition, it is equipped with, for all objects $A, B in cal(C)$, a central isomorphism $sigma_(A, B): A ⊗ B -> B ⊗ A$ such that
-    - $sigma_(-, B): (- ⊗ B) => (B ⊗ A)$ is a natural isomorphism
-    - $sigma_(A, -): (A ⊗ -) => (A ⊗ -)$ is a natural isomorphism
+    We say a premonoidal category is *braided* if, in addition, it is equipped with a family of central isomorphisms $sigma_(A, B): A ⊗ B -> B ⊗ A$ natural in $C in |cal(C)|$ and $D in |cal(D)|$ such that
     - $sigma_(A, B) = sigma_(B, A)^{-1}$
     - The following *hexagon identities* hold:
         - $alpha_(A, B, C);sigma_(A, B ⊗ C);alpha_(B, C, A)
@@ -86,14 +81,29 @@ In this section, we go over some background notions used in the semantics. For a
 ])
 In particular, for every (symmetric) premonoidal category $cal(C)$, we have that $cen(cal(C))$ is (symmetric) monoidal.
 
-/*
 #definition(name: "Monoidal Functor", [
-    A *(strong) monoidal functor* between monoidal categories $(cal(C), ⊗^cal(C), I^cal(C), alpha^cal(C), lambda^cal(C), rho^cal(C))$, $(cal(D), ⊗^cal(D), I^cal(D), alpha^cal(D), lambda^cal(D), rho^cal(D))$ is a functor $F: cal(C) -> cal(D)$ equipped with natural isomorphisms $epsilon: I^cal(D) => F(I^cal(C))$ and $mu: F(A ⊗^cal(C) B) => F(A) ⊗^cal(D) F(B)$ such that
-    - $alpha^cal(D)_(F A, F B, F C);(F A ⊗^cal(C) mu_(B, C));mu_(A, B ⊗^cal(C) C) = (mu_(A, B) ⊗^cal(C) F C);mu_(A ⊗^cal(C) B,C);F(alpha^cal(C)_(A, B, C))$
-    - left unitor...
-    - right unitor...
+    A *monoidal functor* $F: cal(C) -> cal(D)$ between monoidal categories $cal(C), cal(D)$ is a functor equipped with
+    - A morphism $epsilon: munit_(cal(D)) -> F(munit_(cal(C)))$ (where $munit_(cal(C)), munit_(cal(D))$ are the monoidal units of $cal(C), cal(D)$ resp.)
+    - A family of morphisms $mu_(A, B): F A ⊗_(cal(D)) F B -> F(A ⊗_(cal(C)) B)$ natural in $A, B in |cal(C)|$ (where $⊗_(cal(C)), ⊗_(cal(D))$ are the tensor products of $cal(C), cal(D)$ resp.)
+    satisfying the following conditions:
+    - *associativity*: for all $A, B, C in |cal(C)|$, the following diagram commutes:
+    #align(center)[#commutative_diagram(
+        node((0, 0), [$(F A ⊗_(cal(D)) F B) ⊗_(cal(D)) F C$]),
+        node((0, 2), [$F A ⊗_(cal(D) (F B ⊗_(cal(D)) F C)$]),
+        arr((0, 0), (0, 2), [$alpha^(cal(D))_(F(A), F(B), F(C))$], label_pos: 0),
+        node((1, 0), [$F(A ⊗_(cal(C)) B) ⊗_(cal(D)) F C$]),
+        arr((0, 0), (1, 0), [$mu_(A, B) ⊗_(cal(D)) F C$], label_pos: 0),
+        node((2, 0), [$F((A ⊗_(cal(C)) B) ⊗_(cal(C)) C)$]),
+        arr((1, 0), (2, 0), 
+            rect($mu_(A ⊗_(cal(C)) B, C)$, stroke: none), label_pos: 0),
+        node((1, 2), [$F A ⊗_(cal(D)) F(B ⊗_(cal(C)) C)$]),
+        arr((0, 2), (1, 2), [$F A ⊗_(cal(D)) mu_(C, D)$], label_pos: 0),
+        node((2, 2), [$F(A ⊗_(cal(C)) (B ⊗_(cal(C)) D))$]),
+        arr((2, 0), (2, 2), [$F(alpha^(cal(C))_(A, B, C))$], label_pos: 0),
+        arr((1, 2), (2, 2), [$mu_(A, B ⊗_(cal(C)) C)$], label_pos: 0)
+    )]
+    - *unitality*: ...
 ])
-*/
 
 /*
 TODO:
@@ -722,7 +732,9 @@ The notion of functor allows us to define the *category of categories*, $Cat$, w
     $
     α_A;G f = F f;α_B
     $
+    We say a family $α_A: cal(D)(F A, G A)$ is *natural* in the index $A$ if it induces a natural transformation $alpha: F A => G B$
 ])
+
 Given natural transformations $α: F => G$ and $β: G => H$, we find that they compose to yield a natural transformation $(α; β): F => H$ with components $(α; β)_A = α_A;β_A$. This allows us to define the *functor category* $[cal(C), cal(D)]$ with objects functors from $cal(C) → cal(D)$ and morphisms natural transformations. Note that in this category the identity morphism is simply the identity natural transformation $idm: F => F$ with components $idm_(F A): cal(C)(F A, F A)$. 
 /*
 TODO: examples of natural transformations beyond the identity?
@@ -792,9 +804,7 @@ TODO: commutative monads?
 
 #definition(name: "Adjunction", [
     Let $cal(C), cal(D)$ be categories and let $L: cal(C) -> cal(D)$, $R: cal(D) -> cal(C)$ be a pair of functors. This is called a pair of *adjoint functors*, with $L$ the *left adjoint* and $R$ the *right adjoint*, written $adj(L, R)$, if, equivalently,
-    - There exist, for all $C in |cal(C)|$, $D in |cal(D)|$, isomorphisms (bijections) $phi_(C, D): cal(D)(L(C), D) -> cal(C)(C, R(D))$ such that the following are natural isomorphisms
-        - $phi_(-, D): cal(D)(L(-), D) => cal(C)(-, R(D))$
-        - $phi_(C, -): cal(D)(L(C), -) => cal(C)(C, R(-))$
+    - There exist a family of isomorphisms (bijections) $phi_(C, D): cal(D)(L(C), D) -> cal(C)(C, R(D))$ natural in $C in |cal(C)|$ and $D in |cal(D)|$
     - There exist two natural transformations $epsilon: L;R => idm_(cal(C))$ (the *counit*) and $eta: idm_(cal(D)) => R;L$ (the *unit*) such that, for all $C in |cal(C)|, D in |cal(D)|$, we have
         - $L eta_C; epsilon_(L C) = idm_(L C)$
         - $eta_(R D); R(epsilon_D) = idm_(R D)$
