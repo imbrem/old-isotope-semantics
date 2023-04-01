@@ -732,6 +732,10 @@ TODO: category used
 TODO: cal(C)_0 = cal(V), cal(C)_1 = cal(C) or smt like that?
 */
 
+/*
+TODO: note on coercion
+*/
+
 === Types and Contexts
 
 #let syntax-den(..args) = {
@@ -842,10 +846,6 @@ $
 
 === Term Typing
 
-/*
-TODO: note on coercion
-*/
-
 $
 #rect([$dnt(istm(Γ, p, a, A)): cal(C)_p(dnt(Γ), dnt(A))$])
 $
@@ -878,6 +878,9 @@ $
 $
 dnt(dprf(#typing-rules.blk)) = dnt(#typing-rules.blk.premises.at(0));α^⊕
 $
+/*
+TODO: effectful string diagrams?
+*/
 
 === Block Typing
 
@@ -932,6 +935,9 @@ $
 /*
 TODO: notes on guardedness...
 */
+/*
+TODO: string diagrams for control flow?
+*/
 
 /*
 == Properties
@@ -954,6 +960,10 @@ TODO: notes on guardedness...
 //TODO: this
 
 = Optimization
+
+//TODO: this
+
+= Related Work
 
 //TODO: this
 
