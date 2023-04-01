@@ -25,6 +25,11 @@ In this section, we go over some background notions used in the semantics. For a
 
 == Monoidal and Premonoidal Categories
 
+/*
+TODO:
+- binoidal text
+*/
+
 #definition(name: "Binoidal Category", [
     A *binoidal category* is a category $cal(C)$ equipped with
     - A *tensor product* map on objects $⊗: |cal(C)| times |cal(C)| -> |cal(C)|$
@@ -41,6 +46,12 @@ In this section, we go over some background notions used in the semantics. For a
     $
     A natural transformation is central if all its components are.
 ])
+
+/*
+TODO:
+- premonoidal text
+*/
+
 #definition(name: "Premonoidal Category", [
     A *premonoidal category* is a binoidal category $cal(C)$ equipped with
     - An *identity object* $munit in |cal(C)|$
@@ -73,6 +84,12 @@ In this section, we go over some background notions used in the semantics. For a
 #theorem(name: "Coherence", [
     Let $cal(C)$ be a premonoidal category. Then the smallest wide subcategory of $cal(C)$ containing all components of $alpha$, $lambda$, and $rho$ is thin.
 ])
+
+/*
+TODO:
+- monoidal text
+*/
+
 #definition(name: "(Symmetric) Monoidal Category", [
     A (symmetric) monoidal category $cal(C)$ is a (symmetric) premonoidal category in which, equivalently,
     - All morphisms are central, i.e. $cal(C) = cen(cal(C))$
@@ -81,8 +98,16 @@ In this section, we go over some background notions used in the semantics. For a
 ])
 In particular, for every (symmetric) premonoidal category $cal(C)$, we have that $cen(cal(C))$ is (symmetric) monoidal.
 
-#definition(name: "Monoidal Functor", [
-    A *monoidal functor* $F: cal(C) -> cal(D)$ between monoidal categories $cal(C), cal(D)$ is a functor equipped with
+/*
+TODO:
+- string diagrams
+- strong monads ==> premonoidal
+- commutative monads ==> monoidal
+- monoidal functor text
+*/
+
+#definition(name: "(Pre)monoidal Functor", [
+    A *lax (pre)monoidal functor* $F: cal(C) -> cal(D)$ between (pre)monoidal categories $cal(C), cal(D)$ is a functor equipped with
     - A morphism $epsilon: munit_(cal(D)) -> F(munit_(cal(C)))$ (where $munit_(cal(C)), munit_(cal(D))$ are the monoidal units of $cal(C), cal(D)$ resp.)
     - A family of morphisms $mu_(A, B): F A ⊗_(cal(D)) F B -> F(A ⊗_(cal(C)) B)$ natural in $A, B in |cal(C)|$ (where $⊗_(cal(C)), ⊗_(cal(D))$ are the tensor products of $cal(C), cal(D)$ resp.)
     satisfying the following conditions:
@@ -102,25 +127,60 @@ In particular, for every (symmetric) premonoidal category $cal(C)$, we have that
         arr((2, 0), (2, 2), [$F(alpha^(cal(C))_(A, B, C))$], label_pos: 0),
         arr((1, 2), (2, 2), [$mu_(A, B ⊗_(cal(C)) C)$], label_pos: 0)
     )]
-    - *unitality*: ...
+    (where $alpha^(cal(C)), alpha^(cal(D))$ are the associators of $cal(C), cal(D)$ resp.)
+    - *unitality*: for all $A in cal(C)$, the following diagrams commute:
+    #grid(
+        columns: 2,
+        align(center)[#commutative_diagram(
+            node((0, 0), [$munit_(cal(D)) ⊗_(cal(D)) F A $]),
+            node((0, 1), [$F munit_(cal(C)) ⊗_(cal(D)) F A$]),
+            node((1, 1), [$F(munit_(cal(C)) ⊗_(cal(C)) A)$]),
+            node((1, 0), [$F A$]),
+            arr((0, 0), (0, 1), $epsilon ⊗_(cal(D)) F A$, label_pos: 0),
+            arr((0, 1), (1, 1), rect($mu_(munit_(cal(C)), a)$, stroke: none), label_pos: 0),
+            arr((1, 1), (1, 0), $F(lambda^(cal(C))_A)$, label_pos: 0),
+            arr((0, 0), (1, 0), rect($lambda^(cal(D))_(F A)$, stroke: none), label_pos: 0)
+        )],
+        align(center)[#commutative_diagram(
+            node((0, 0), [$F A ⊗_(cal(D)) munit_(cal(D))$]),
+            node((0, 1), [$F A ⊗_(cal(D)) F munit_(cal(C))$]),
+            node((1, 1), [$F(A ⊗_(cal(C)) munit_(cal(C)))$]),
+            node((1, 0), [$F A$]),
+            arr((0, 0), (0, 1), $epsilon ⊗_(cal(D)) F A$, label_pos: 0),
+            arr((0, 1), (1, 1), rect($mu_(A, munit_(cal(C)))$, stroke: none), label_pos: 0),
+            arr((1, 1), (1, 0), $F(rho^(cal(C))_A)$, label_pos: 0),
+            arr((0, 0), (1, 0), rect($rho^(cal(D))_(F A)$, stroke: none), label_pos: 0)
+        )],
+    )
+    A *(strong) (pre)monoidal functor* is a weak (pre)monoidal functor for which $epsilon$ and all $mu_(A, B)$ are isomorphisms. If they are all the identity morphism, then $F$ is called a *strict (pre)monoidal functor*.
+
+    A (lax) (pre)monoidal functor is said to be *symmetric* if, for all $A, B in |cal(C)|$, the following diagram commutes:
+    #align(center)[#commutative_diagram(
+        node((0, 0), [$F A ⊗_(cal(D)) F B$]),
+        node((0, 1), [$F B ⊗_(cal(D)) F A$]),
+        node((1, 0), [$F(A ⊗_(cal(C)) B)$]),
+        node((1, 1), [$F(B ⊗_(cal(C)) A)$]),
+        arr((0, 0), (0, 1), $sigma^(cal(D))_(F A, F B)$, label_pos: 0),
+        arr((0, 1), (1, 1), $mu_(B, A)$, label_pos: 0),
+        arr((0, 0), (1, 0), $mu_(A, B)$, label_pos: 0),
+        arr((1, 0), (1, 1), $F sigma^(cal(C))_(A, B)$, label_pos: 0)
+    )]
+    where $sigma^(cal(C)), sigma^(cal(D))$ denote the symmetry of $cal(C), cal(D)$ resp.
 ])
 
 /*
-TODO:
-- binoidal text
-- premonoidal text
-- monoidal text
-- string diagrams
-- strong monads ==> premonoidal
-- commutative monads ==> monoidal
-- monoidal functors
+TODO: problems with the above definition in the premonoidal case, justification for effectful categories
 */
 
 
 == Effectful Categories
 
+/*
+TODO: effectful category text
+*/
+
 #definition(name: "Effectful Category", [
-    An *effectful category* is an identity-on-objects premonoidal functor $cal(V) -> cal(C)$ from a monoidal categorty $cal(V)$ (of "*values*") to a premonoidal category $cal(C)$ (of "*computations*") whose image is central. It is *symmetric* when both $cal(V), cal(C)$ are.
+    An *effectful category* is an identity-on-objects premonoidal functor $F: cal(V) -> cal(C)$ from a monoidal categorty $cal(V)$ (of "*values*") to a premonoidal category $cal(C)$ (of "*computations*") whose image is central. It is *symmetric* when $F$ is symmetric premonoidal.
 
     A *Freyd category* is an effectful category in which $cal(V)$ is cartesian monoidal.
 ])
@@ -660,6 +720,10 @@ We write $splitctx(Gamma, Delta)$ as syntax sugar for $splitctx(Gamma, Delta, cn
 = Category Theory
 
 == Elementary Category Theory <cats>
+
+/*
+TODO: define thin categories, etc.
+*/
 
 In this section, we go over some core notions from category theory, with the aim of fixing notations and conventions.
 #definition(name: "Category", ([
