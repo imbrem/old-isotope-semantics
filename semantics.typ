@@ -81,9 +81,15 @@ TODO:
             = A ⊗ σ_(B, C);α_(A, C, B)^(-1);σ_(C, A) ⊗ B$
     We say a braided premonoidal category is *symmetric* if, in addition, we have $σ_(A, B) = σ_(B, A)^(-1)$; in this case, either hexagon identity implies the other.
 ])
+/*
+TODO: naming
+*/
 #theorem(name: "Coherence", [
     Let $cal(C)$ be a premonoidal category. Then the smallest wide subcategory of $cal(C)$ containing all components of $α$, $λ$, and $ρ$ is thin.
 ])
+/*
+TODO: due to this, α syntax sugar
+*/
 
 /*
 TODO:
@@ -478,7 +484,7 @@ TODO: rename split/drop to relevant/affine?
 */
 
 In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
-- Predicates $sans("splits"), sans("drops") subset.eq cal(V)$
+- Predicates $sans("rel"), sans("aff") subset.eq cal(V)$
 - For each $A, B in types(cal(V))$, 
     - A subset $cal(I)_0(A, B) subset.eq cal(I)$ of *instructions*.
     - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions*.
@@ -502,25 +508,25 @@ We introduce the following typing judgements:
         $isblk(Γ, sans(L), p, t, B)$,
         [$t$ is a block of type $B$ in control context $Γ;sans(L)$with purity $p in {0, 1}$],
         $splitctx(Γ, Δ, Ξ)$,
-        [$Γ$ splits into contexts $Δ$, $Ξ$],
+        [$Γ$ rel into contexts $Δ$, $Ξ$],
         $joinctx(sans(K), sans(L))$,
         [$sans(K)$ is a subset of label-set $sans(L)$],
-        $splits(A)$, [$A$ can be split],
-        $drops(A)$, [$A$ can be dropped]
+        $rel(A)$, [$A$ can be split],
+        $aff(A)$, [$A$ can be dropped]
     )
 )
 
 === Structural rules
 
 #let typing-rules = (
-    "fwd-drops": prft(name: "fwd-drops", $sans("drops")(X)$, $drops(X)$),
-    "unit-drops" : prft(name: "unit-drops", $drops(tobj)$),
-    "bool-drops": prft(name: "bool-drops", $drops(bools)$),
-    "pair-drops": prft(name: "pair-drops", $drops(A)$, $drops(B)$, $drops(A ⊗ B)$),
-    "fwd-splits": prft(name: "fwd-splits", $sans("splits")(X)$, $splits(X)$),
-    "unit-splits" : prft(name: "unit-splits", $splits(tobj)$),
-    "bool-splits": prft(name: "bool-splits", $splits(bools)$),
-    "pair-splits": prft(name: "pair-splits", $splits(A)$, $splits(B)$, $splits(A ⊗ B)$),
+    "fwd-aff": prft(name: "fwd-aff", $sans("aff")(X)$, $aff(X)$),
+    "unit-aff" : prft(name: "1-aff", $aff(tobj)$),
+    "bool-aff": prft(name: "2-aff", $aff(bools)$),
+    "pair-aff": prft(name: "pair-aff", $aff(A)$, $aff(B)$, $aff(A ⊗ B)$),
+    "fwd-rel": prft(name: "fwd-rel", $sans("rel")(X)$, $rel(X)$),
+    "unit-rel" : prft(name: "1-rel", $rel(tobj)$),
+    "bool-rel": prft(name: "2-rel", $rel(bools)$),
+    "pair-rel": prft(name: "pair-rel", $rel(A)$, $rel(B)$, $rel(A ⊗ B)$),
     "ctx-nil": prft(name: "ctx-nil", $splitctx(cnil, cnil, cnil)$),
     "ctx-left": prft(name: "ctx-left", 
         $splitctx(Γ, Δ, Ξ)$, 
@@ -528,13 +534,13 @@ We introduce the following typing judgements:
     "ctx-right": prft(name: "ctx-right", 
         $splitctx(Γ, Δ, Ξ)$, 
         $#splitctx($x: A, Γ$, $Δ$, $x: A, Ξ$)$),
-    "ctx-split": prft(name: "ctx-split", 
+    "ctx-rel": prft(name: "ctx-rel", 
         $splitctx(Γ, Δ, Ξ)$,
-        $splits(A)$, 
+        $rel(A)$, 
         $#splitctx($x: A, Γ$, $x: A, Δ$, $x: A, Ξ$)$),
-    "ctx-drop": prft(name: "ctx-drop", 
+    "ctx-aff": prft(name: "ctx-aff", 
         $splitctx(Γ, Δ, Ξ)$,
-        $drops(A)$, 
+        $aff(A)$, 
         $#splitctx($x: A, Γ$, $Δ$, $Ξ$)$),
     "label-nil": prft(name: "label-nil", $joinctx(bcnil, bcnil)$),
     "label-join": prft(name: "label-join", 
@@ -577,6 +583,7 @@ We introduce the following typing judgements:
         istm($Γ$, $p$, $llet (x, y) = e; e'$, $C$)
     ),
     "br": prft(name: "br", 
+        $joinctx(bcnil, sans(L))$,
         $istm(Γ, p, a, A)$,
         $isblk(Γ, sans(L), p, br(a), A)$,
     ),
@@ -635,20 +642,20 @@ We introduce the following typing judgements:
     align: center + horizon, stroke: table-dbg,
     table(
         columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(typing-rules.pair-drops),
-        dprf(typing-rules.pair-splits),
+        dprf(typing-rules.pair-aff),
+        dprf(typing-rules.pair-rel),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(typing-rules.fwd-drops),
-        dprf(typing-rules.unit-drops),
-        dprf(typing-rules.bool-drops),
+        dprf(typing-rules.fwd-aff),
+        dprf(typing-rules.unit-aff),
+        dprf(typing-rules.bool-aff),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(typing-rules.fwd-splits),
-        dprf(typing-rules.unit-splits),
-        dprf(typing-rules.bool-splits),
+        dprf(typing-rules.fwd-rel),
+        dprf(typing-rules.unit-rel),
+        dprf(typing-rules.bool-rel),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
@@ -658,8 +665,8 @@ We introduce the following typing judgements:
     ),
     table(
         columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(typing-rules.ctx-split),
-        dprf(typing-rules.ctx-drop),
+        dprf(typing-rules.ctx-rel),
+        dprf(typing-rules.ctx-aff),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
@@ -709,6 +716,11 @@ We write $splitctx(Γ, Δ)$ as syntax sugar for $splitctx(Γ, Δ, cnil)$.
     dprf(typing-rules.tr),
 ))
 
+/*
+=== Properties
+//TODO: syntactic substitution/weakening
+*/
+
 = Semantics
 
 In this section, we give a denotational semantics to well-typed `isotope` programs in an effectful category $(cal(C)_1, cal(C)_0)$ equipped with some auxiliary structure. We then prove some basic properties of our semantics.
@@ -721,36 +733,110 @@ TODO: cal(C)_0 = cal(V), cal(C)_1 = cal(C) or smt like that?
 */
 
 === Types and Contexts
-$
-#rect([$dnt(A): |cal(C)_1|$])
-$
-//TODO: this
-$
-#rect([$dnt(Γ): |cal(C)_1|$])
-$
-//TODO: this
-$
-#rect([$dnt(sans(L)): |cal(C)_1|$])
-$
+
+#let syntax-den(..args) = {
+    align(left)[#table(
+        columns: args.pos().len(),
+        column-gutter: 2em,
+        align: horizon,
+        stroke: none,
+        ..args
+    )]
+};
+
+#syntax-den(
+    rect($dnt(A): |cal(C)_1|$),
+    $dnt(X) = sans("base")(X)$,
+    $dnt(tobj) = munit$,
+    $dnt(bools) = bools$,
+    $dnt(A ⊗ B) = dnt(A) ⊗ dnt(B)$,
+)
+#syntax-den(
+    rect([$dnt(Γ): |cal(C)_1|$]),
+    $dnt(cnil) = munit$,
+    $dnt(#[$x: A, Γ$]) = dnt(A) ⊗ dnt(Γ)$,
+)
+#syntax-den(
+    rect([$dnt(sans(L)): |cal(C)_1|$]),
+    $dnt(bcnil) = iobj$,
+    $dnt(#[$lhyp(Γ, lbl(ell), p, A), sans(L)$]) = (dnt(Gamma) ⊗ dnt(A)) ⊕ dnt(sans(L))$,
+)
 //TODO: this
 
 === Structural Rules
+
+#let row-den(..args) = {
+    align(center)[#table(
+        columns: args.pos().len(),
+        column-gutter: 2em,
+        align: horizon,
+        stroke: none,
+        ..args
+    )]
+};
+
 $
-#rect([$dnt(drops(A)): cal(C)_1(dnt(A), munit)$])
+#rect([$dnt(aff(A)): cal(C)_1(dnt(A), munit)$])
 $
-//TODO: this
+#row-den(
+    $dnt(dprf(#typing-rules.fwd-aff)) = sans("aff")(X)$,
+    $dnt(dprf(#typing-rules.unit-aff)) = idm$
+)
+#row-den(
+    $dnt(#dprf(typing-rules.bool-aff)) = sans("aff")(bools)$,
+    $dnt(#dprf(typing-rules.pair-aff)) = dnt(#typing-rules.pair-aff.premises.at(0)) ⊗ dnt(#typing-rules.pair-aff.premises.at(1)); α$)
 $
-#rect([$dnt(splits(A)): cal(C)_1(dnt(A), dnt(A) ⊗ dnt(A))$])
+#rect([$dnt(rel(A)): cal(C)_1(dnt(A), dnt(A) ⊗ dnt(A))$])
 $
-//TODO: this
+#row-den(
+    $dnt(dprf(#typing-rules.fwd-rel)) = sans("rel")(X)$,
+    $dnt(dprf(#typing-rules.unit-rel)) = α$,
+    $dnt(dprf(#typing-rules.bool-rel)) = sans("rel")(bools)$,
+)
+$
+    dnt(dprf(#typing-rules.pair-rel)) =
+    dnt(#typing-rules.pair-rel.premises.at(0)) ⊗ dnt(#typing-rules.pair-rel.premises.at(1));α;
+    idm_(dnt(A)) ⊗ σ_(dnt(A), dnt(B)) ⊗ idm_(dnt(B));
+    α
+$
 $
 #rect([$dnt(joinctx(sans(K), sans(L))): cal(C)_1(dnt(sans(K)), dnt(sans(L)))$])
 $
-//TODO: this
+#row-den(
+    $dnt(dprf(#typing-rules.label-nil)) = idm$,
+    $dnt(dprf(#typing-rules.label-join)) = dnt(#typing-rules.label-join.premises.at(0)); α^⊕;0_(dnt(A) ⊗ dnt(Γ)) ⊕ dnt(L)$
+)
+$
+dnt(dprf(#typing-rules.label-ext)) 
+= (dnt(A) ⊗ dnt(Γ)) ⊕ dnt(#typing-rules.label-ext.premises.at(0))
+$
 $
 #rect([$dnt(splitctx(Γ, Δ, Ξ)): cal(C)_1(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$])
 $
-//TODO: this
+#row-den(
+    $dnt(dprf(#typing-rules.ctx-nil)) = α$,
+    $dnt(dprf(#typing-rules.ctx-left)) = dnt(A) ⊗ dnt(#typing-rules.ctx-left.premises.at(0));α$
+)
+$
+dnt(dprf(#typing-rules.ctx-right)) =
+dnt(A) ⊗ dnt(#typing-rules.ctx-right.premises.at(0));
+α;σ_(dnt(A), dnt(Δ)) ⊗ dnt(Ξ);α
+$
+$
+dnt(dprf(#typing-rules.ctx-rel)) =
+dnt(#typing-rules.ctx-rel.premises.at(1)) ⊗ dnt(#typing-rules.ctx-rel.premises.at(0));
+α;dnt(A) ⊗ σ_(dnt(A), dnt(Δ)) ⊗ dnt(Ξ);α
+$
+$
+dnt(dprf(#typing-rules.ctx-aff)) =
+dnt(#typing-rules.ctx-aff.premises.at(1)) ⊗ dnt(#typing-rules.ctx-aff.premises.at(0));α
+$
+$
+#rect([$dnt(splitctx(Γ, Δ)): cal(C)_1(dnt(Γ), dnt(Δ))$])
+$
+$
+dnt(prf(splitctx(Γ, Δ, cnil), splitctx(Γ, Δ))) = dnt(splitctx(Γ, Δ, cnil));α
+$
 
 //TODO: string diagrams, since all structrure is in cal(C)_1?
 
@@ -763,18 +849,97 @@ TODO: note on coercion
 $
 #rect([$dnt(istm(Γ, p, a, A)): cal(C)_p(dnt(Γ), dnt(A))$])
 $
-//TODO: this
+#row-den(
+    $dnt(dprf(#typing-rules.var)) = upg(dnt(#typing-rules.var.premises.at(0)), purity: p)$,
+    $dnt(dprf(#typing-rules.nil)) = upg(dnt(#typing-rules.nil.premises.at(0)), purity: p)$,
+)
+$
+dnt(dprf(#typing-rules.app)) = sans("inst")_p(f) ∘ dnt(#typing-rules.var.premises.at(0))
+$
+#row-den(
+    $dnt(dprf(#typing-rules.true)) = upg(dnt(#typing-rules.true.premises.at(0)), purity: p);sans("tt")$,
+    $dnt(dprf(#typing-rules.false)) = upg(dnt(#typing-rules.false.premises.at(0)), purity: p);sans("ff")$,
+)
+$
+dnt(dprf(#typing-rules.pair)) = upg(dnt(#typing-rules.pair.premises.at(0)), purity: p);dnt(#typing-rules.pair.premises.at(1)) ⋉_p dnt(#typing-rules.pair.premises.at(2))
+$
+$
+dnt(dprf(#typing-rules.let)) 
+\ #h(5em) = upg(dnt(#typing-rules.let.premises.at(0)), purity: p);
+    dnt(#typing-rules.let.premises.at(1)) ⊗ dnt(Ξ);
+    dnt(#typing-rules.let.premises.at(2))
+$
+$
+dnt(dprf(#typing-rules.let2))
+\ #h(5em) = upg(dnt(#typing-rules.let2.premises.at(0)), purity: p);
+    dnt(#typing-rules.let2.premises.at(1)) ⊗ dnt(Ξ);α;
+    dnt(#typing-rules.let2.premises.at(2))
+$
+$
+dnt(dprf(#typing-rules.blk)) = dnt(#typing-rules.blk.premises.at(0));α^⊕
+$
 
 === Block Typing
 
 $
 #rect([$dnt(isblk(Γ, sans(L), p, t, B)): cal(C)_p(dnt(Γ), dnt(B) ⊕ dnt(sans(L)))$])
 $
-//TODO: this
+
+
+$
+dnt(dprf(#typing-rules.br)) = dnt(#typing-rules.br.premises.at(1));α^⊕;dnt(A) ⊕ upg(dnt(#typing-rules.br.premises.at(0)), purity: p)
+$
+$
+dnt(dprf(#typing-rules.jmp)) 
+\ #h(5em) =
+upg(dnt(#typing-rules.jmp.premises.at(0)), purity: p);dnt(#typing-rules.jmp.premises.at(1)) ⊗ Ξ;α^⊕;0_B ⊕ upg(dnt(#typing-rules.jmp.premises.at(2)), purity: p)
+$
+$
+dnt(dprf(#typing-rules.ite))
+\ #h(5em) =
+upg(dnt(#typing-rules.ite.premises.at(0)), purity: p);
+dnt(#typing-rules.ite.premises.at(1)) ⊗ Ξ;
+sans("ite");
+dnt(#typing-rules.ite.premises.at(2)) ⊕ dnt(#typing-rules.ite.premises.at(3))
+$
+$
+dnt(dprf(#typing-rules.let-blk))
+\ #h(5em) =
+upg(dnt(#typing-rules.let-blk.premises.at(0)), purity: p);
+dnt(#typing-rules.let-blk.premises.at(1)) ⊗ Ξ;
+dnt(#typing-rules.let-blk.premises.at(2))
+$
+$
+dnt(dprf(#typing-rules.let2-blk))
+\ #h(5em) =
+upg(dnt(#typing-rules.let2-blk.premises.at(0)), purity: p);
+dnt(#typing-rules.let2-blk.premises.at(1)) ⊗ Ξ;
+α;
+dnt(#typing-rules.let2-blk.premises.at(2))
+$
+$
+dnt(dprf(#typing-rules.tr))
+\ =
+sans("Tr")_(dnt(Γ), dnt(B) ⊕ dnt(sans(L)))^(⊕_i dnt(A_j) ⊗ dnt(Δ_j))
+[
+    (dnt(#typing-rules.tr.premises.at(1));α^⊕) ⊕ D; j
+]
+$
+where
+$
+D = j^i ∘ plus.circle.big_i dnt(isblk(Δ_i, #[$[lhyp(Δ_j, lbl(ℓ_j), 0, A_j)]_j, sans(L)$], p, t_i, B))
+$
+/*
+TODO: notes on guardedness...
+*/
 
 /*
+== Properties
 
-//TODO: this
+//TODO: semantic substitution
+*/
+
+/*
 
 = Graphical Syntax
 

@@ -130,7 +130,7 @@
     p, 
     spacing: 0.2cm,
     debug_stroke: none) = {
-    let premises = stack(dir: ltr, ..p.premises);
+    let premises = stack(dir: ltr, ..p.premises)
     block(
         [$
             #text(size: 0.7em, maroon)[#p.name] premises / 
@@ -145,6 +145,9 @@
     ..args) = {
     let premises = ()
     let first = true;
+    if p.premises.len() == 0 {
+        p.premises.push($$)
+    }
     for premise in p.premises {
         let premise = if type(premise) == "dictionary" {
             dprf(
@@ -239,8 +242,9 @@
     $subctx arrow.r.squiggly dest$
 }
 #let types(base) = $sans("Type")(#base)$
-#let splits(ty) = $#ty sans("splits")$
-#let drops(ty) = $#ty sans("drops")$
+#let rel(ty) = $#ty sans("rel")$
+#let aff(ty) = $#ty sans("aff")$
 #let istm(ctx, purity, tm, ty) = $ctx ⊢_purity tm: ty$
 #let isblk(ctx, bctx, purity, blk, ty) = $
     ctx;bctx ⊢_purity blk triangle.stroked.small ty$
+#let upg(body, purity: none) = $body^(↑_purity)$
