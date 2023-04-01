@@ -34,12 +34,12 @@ TODO:
     A *binoidal category* is a category $cal(C)$ equipped with
     - A *tensor product* map on objects $⊗: |cal(C)| times |cal(C)| -> |cal(C)|$
     - For each object $A in |cal(C)|$,
-        - A *right product functor* $A ⊗ -$ which is $B |-> A ⊗ B$ on objects
-        - A *left product functor* $- ⊗ A$ which is $B |-> B ⊗ A$ on objects
-    We define, for morphisms $f: A -> B$, $g: X -> Y$, the *left product* $f ltimes g = f ⊗ X; A ⊗ g$ and *right product* $f rtimes g: A ⊗ g; f ⊗ X$ morphisms $A ⊗ X -> B ⊗ Y$
+        - A *right product functor* $A ⊗ -$ which is $B ↦ A ⊗ B$ on objects
+        - A *left product functor* $- ⊗ A$ which is $B ↦ B ⊗ A$ on objects
+    We define, for morphisms $f: A -> B$, $g: X -> Y$, the *left product* $f ⋉ g = f ⊗ X; A ⊗ g$ and *right product* $f ⋊ g: A ⊗ g; f ⊗ X$ morphisms $A ⊗ X -> B ⊗ Y$
 ])
 #definition(name: "Central Morphism", [
-    A morphsm $f$ a binoidal category $cal(C)$ is *central* if, for all morphisms $g$, we have $f ltimes g = f rtimes g$; in this case, we write $f ltimes g = f rtimes g = f ⊗ g$.
+    A morphsm $f$ a binoidal category $cal(C)$ is *central* if, for all morphisms $g$, we have $f ⋉ g = f ⋊ g$; in this case, we write $f ltimes g = f rtimes g = f ⊗ g$.
     We define the *center* of a binoidal category $cal(C)$, denoted $cen(cal(C))$, to be the wide subcategory with $|cen(cal(C))| = |cal(C)|$ and morphisms
     $
         cen(cal(C))(A, B) = {f in cal(C)(A, B) | f "is central"}
@@ -55,34 +55,34 @@ TODO:
 #definition(name: "Premonoidal Category", [
     A *premonoidal category* is a binoidal category $cal(C)$ equipped with
     - An *identity object* $munit in |cal(C)|$
-    - A family of central isomorphisms $alpha_(A, B, C): (A ⊗ B) ⊗ C \to A ⊗ (B ⊗ C)$ (the *associator*) natural in $A, B, C in cal(C)$
-    - A central natural isomorphism $lambda: - ⊗ munit => idm$  (the *left unitor*) 
-    - A central natural isomorphism $rho: munit ⊗ - -> idm$ (the *right unitor*)
+    - A family of central isomorphisms $α_(A, B, C): (A ⊗ B) ⊗ C -> A ⊗ (B ⊗ C)$ (the *associator*) natural in $A, B, C in cal(C)$
+    - A central natural isomorphism $λ: - ⊗ munit => idm$  (the *left unitor*) 
+    - A central natural isomorphism $ρ: munit ⊗ - -> idm$ (the *right unitor*)
     such that the *triangle identity*
     $
-    rho_A ⊗ B = alpha_(A, munit, B); A ⊗ lambda_B: (A ⊗ munit) ⊗ B -> A ⊗ B
+    ρ_A ⊗ B = α_(A, munit, B); A ⊗ λ_B: (A ⊗ munit) ⊗ B -> A ⊗ B
     $
     and *pentagon identity*
     $
-    alpha_(A, B, C) ⊗ D; alpha_(A, B ⊗ C, D); A ⊗ alpha_(B, C, D) =
-    alpha_(A ⊗ B, C, D); alpha_(A, B, C ⊗ D)
+    α_(A, B, C) ⊗ D; α_(A, B ⊗ C, D); A ⊗ α_(B, C, D) =
+    α_(A ⊗ B, C, D); α_(A, B, C ⊗ D)
     $
     hold for all $A, B, C, D in |cal(C)|$.
 
-    We say a premonoidal category is *strict* if $(A ⊗ B) ⊗ C = A ⊗ (B ⊗ C)$, $A ⊗ I = I ⊗ A = A$, and $alpha, rho, lambda$ are the identity transformations.
+    We say a premonoidal category is *strict* if $(A ⊗ B) ⊗ C = A ⊗ (B ⊗ C)$, $A ⊗ I = I ⊗ A = A$, and $α, ρ, λ$ are the identity transformations.
 ])
 #definition(name: "Symmetric Premonoidal Category", [
-    We say a premonoidal category is *braided* if, in addition, it is equipped with a family of central isomorphisms $sigma_(A, B): A ⊗ B -> B ⊗ A$ natural in $C in |cal(C)|$ and $D in |cal(D)|$ such that
-    - $sigma_(A, B) = sigma_(B, A)^{-1}$
+    We say a premonoidal category is *braided* if, in addition, it is equipped with a family of central isomorphisms $σ_(A, B): A ⊗ B -> B ⊗ A$ natural in $C in |cal(C)|$ and $D in |cal(D)|$ such that
+    - $σ_(A, B) = σ_(B, A)^{-1}$
     - The following *hexagon identities* hold:
-        - $alpha_(A, B, C);sigma_(A, B ⊗ C);alpha_(B, C, A)
-            = sigma_(A, B) ⊗ C;alpha_(B, A, C);B ⊗ sigma_(A, C)$
-        - $alpha_(A, B, C)^(-1);sigma_(A ⊗ B, C);alpha_(C, A, B)^(-1)
-            = A ⊗ sigma_(B, C);alpha_(A, C, B)^(-1);sigma_(C, A) ⊗ B$
-    We say a braided premonoidal category is *symmetric* if, in addition, we have $sigma_(A, B) = sigma_(B, A)^(-1)$; in this case, either hexagon identity implies the other.
+        - $α_(A, B, C);σ_(A, B ⊗ C);α_(B, C, A)
+            = σ_(A, B) ⊗ C;α_(B, A, C);B ⊗ σ_(A, C)$
+        - $α_(A, B, C)^(-1);σ_(A ⊗ B, C);α_(C, A, B)^(-1)
+            = A ⊗ σ_(B, C);α_(A, C, B)^(-1);σ_(C, A) ⊗ B$
+    We say a braided premonoidal category is *symmetric* if, in addition, we have $σ_(A, B) = σ_(B, A)^(-1)$; in this case, either hexagon identity implies the other.
 ])
 #theorem(name: "Coherence", [
-    Let $cal(C)$ be a premonoidal category. Then the smallest wide subcategory of $cal(C)$ containing all components of $alpha$, $lambda$, and $rho$ is thin.
+    Let $cal(C)$ be a premonoidal category. Then the smallest wide subcategory of $cal(C)$ containing all components of $α$, $λ$, and $ρ$ is thin.
 ])
 
 /*
@@ -93,7 +93,7 @@ TODO:
 #definition(name: "(Symmetric) Monoidal Category", [
     A (symmetric) monoidal category $cal(C)$ is a (symmetric) premonoidal category in which, equivalently,
     - All morphisms are central, i.e. $cal(C) = cen(cal(C))$
-    - $ltimes = rtimes$, in which case we write both as $⊗$
+    - $⋉ = ⋊$, in which case we write both as $⊗$
     - $⊗$ is a bifunctor
 ])
 In particular, for every (symmetric) premonoidal category $cal(C)$, we have that $cen(cal(C))$ is (symmetric) monoidal.
@@ -108,26 +108,26 @@ TODO:
 
 #definition(name: "(Pre)monoidal Functor", [
     A *lax (pre)monoidal functor* $F: cal(C) -> cal(D)$ between (pre)monoidal categories $cal(C), cal(D)$ is a functor equipped with
-    - A morphism $epsilon: munit_(cal(D)) -> F(munit_(cal(C)))$ (where $munit_(cal(C)), munit_(cal(D))$ are the monoidal units of $cal(C), cal(D)$ resp.)
-    - A family of morphisms $mu_(A, B): F A ⊗_(cal(D)) F B -> F(A ⊗_(cal(C)) B)$ natural in $A, B in |cal(C)|$ (where $⊗_(cal(C)), ⊗_(cal(D))$ are the tensor products of $cal(C), cal(D)$ resp.)
+    - A morphism $ε: munit_(cal(D)) -> F(munit_(cal(C)))$ (where $munit_(cal(C)), munit_(cal(D))$ are the monoidal units of $cal(C), cal(D)$ resp.)
+    - A family of morphisms $μ_(A, B): F A ⊗_(cal(D)) F B -> F(A ⊗_(cal(C)) B)$ natural in $A, B in |cal(C)|$ (where $⊗_(cal(C)), ⊗_(cal(D))$ are the tensor products of $cal(C), cal(D)$ resp.)
     satisfying the following conditions:
     - *associativity*: for all $A, B, C in |cal(C)|$, the following diagram commutes:
     #align(center)[#commutative_diagram(
         node((0, 0), [$(F A ⊗_(cal(D)) F B) ⊗_(cal(D)) F C$]),
         node((0, 2), [$F A ⊗_(cal(D) (F B ⊗_(cal(D)) F C)$]),
-        arr((0, 0), (0, 2), [$alpha^(cal(D))_(F(A), F(B), F(C))$], label_pos: 0),
+        arr((0, 0), (0, 2), [$α^(cal(D))_(F(A), F(B), F(C))$], label_pos: 0),
         node((1, 0), [$F(A ⊗_(cal(C)) B) ⊗_(cal(D)) F C$]),
-        arr((0, 0), (1, 0), [$mu_(A, B) ⊗_(cal(D)) F C$], label_pos: 0),
+        arr((0, 0), (1, 0), [$μ_(A, B) ⊗_(cal(D)) F C$], label_pos: 0),
         node((2, 0), [$F((A ⊗_(cal(C)) B) ⊗_(cal(C)) C)$]),
         arr((1, 0), (2, 0), 
-            rect($mu_(A ⊗_(cal(C)) B, C)$, stroke: none), label_pos: 0),
+            rect($μ_(A ⊗_(cal(C)) B, C)$, stroke: none), label_pos: 0),
         node((1, 2), [$F A ⊗_(cal(D)) F(B ⊗_(cal(C)) C)$]),
-        arr((0, 2), (1, 2), [$F A ⊗_(cal(D)) mu_(C, D)$], label_pos: 0),
+        arr((0, 2), (1, 2), [$F A ⊗_(cal(D)) μ_(C, D)$], label_pos: 0),
         node((2, 2), [$F(A ⊗_(cal(C)) (B ⊗_(cal(C)) D))$]),
-        arr((2, 0), (2, 2), [$F(alpha^(cal(C))_(A, B, C))$], label_pos: 0),
-        arr((1, 2), (2, 2), [$mu_(A, B ⊗_(cal(C)) C)$], label_pos: 0)
+        arr((2, 0), (2, 2), [$F(α^(cal(C))_(A, B, C))$], label_pos: 0),
+        arr((1, 2), (2, 2), [$μ_(A, B ⊗_(cal(C)) C)$], label_pos: 0)
     )]
-    (where $alpha^(cal(C)), alpha^(cal(D))$ are the associators of $cal(C), cal(D)$ resp.)
+    (where $α^(cal(C)), α^(cal(D))$ are the associators of $cal(C), cal(D)$ resp.)
     - *unitality*: for all $A in cal(C)$, the following diagrams commute:
     #grid(
         columns: 2,
@@ -136,23 +136,23 @@ TODO:
             node((0, 1), [$F munit_(cal(C)) ⊗_(cal(D)) F A$]),
             node((1, 1), [$F(munit_(cal(C)) ⊗_(cal(C)) A)$]),
             node((1, 0), [$F A$]),
-            arr((0, 0), (0, 1), $epsilon ⊗_(cal(D)) F A$, label_pos: 0),
-            arr((0, 1), (1, 1), rect($mu_(munit_(cal(C)), a)$, stroke: none), label_pos: 0),
-            arr((1, 1), (1, 0), $F(lambda^(cal(C))_A)$, label_pos: 0),
-            arr((0, 0), (1, 0), rect($lambda^(cal(D))_(F A)$, stroke: none), label_pos: 0)
+            arr((0, 0), (0, 1), $ε ⊗_(cal(D)) F A$, label_pos: 0),
+            arr((0, 1), (1, 1), rect($μ_(munit_(cal(C)), a)$, stroke: none), label_pos: 0),
+            arr((1, 1), (1, 0), $F(λ^(cal(C))_A)$, label_pos: 0),
+            arr((0, 0), (1, 0), rect($λ^(cal(D))_(F A)$, stroke: none), label_pos: 0)
         )],
         align(center)[#commutative_diagram(
             node((0, 0), [$F A ⊗_(cal(D)) munit_(cal(D))$]),
             node((0, 1), [$F A ⊗_(cal(D)) F munit_(cal(C))$]),
             node((1, 1), [$F(A ⊗_(cal(C)) munit_(cal(C)))$]),
             node((1, 0), [$F A$]),
-            arr((0, 0), (0, 1), $epsilon ⊗_(cal(D)) F A$, label_pos: 0),
-            arr((0, 1), (1, 1), rect($mu_(A, munit_(cal(C)))$, stroke: none), label_pos: 0),
-            arr((1, 1), (1, 0), $F(rho^(cal(C))_A)$, label_pos: 0),
-            arr((0, 0), (1, 0), rect($rho^(cal(D))_(F A)$, stroke: none), label_pos: 0)
+            arr((0, 0), (0, 1), $ε ⊗_(cal(D)) F A$, label_pos: 0),
+            arr((0, 1), (1, 1), rect($μ_(A, munit_(cal(C)))$, stroke: none), label_pos: 0),
+            arr((1, 1), (1, 0), $F(ρ^(cal(C))_A)$, label_pos: 0),
+            arr((0, 0), (1, 0), rect($ρ^(cal(D))_(F A)$, stroke: none), label_pos: 0)
         )],
     )
-    A *(strong) (pre)monoidal functor* is a weak (pre)monoidal functor for which $epsilon$ and all $mu_(A, B)$ are isomorphisms. If they are all the identity morphism, then $F$ is called a *strict (pre)monoidal functor*.
+    A *(strong) (pre)monoidal functor* is a weak (pre)monoidal functor for which $ε$ and all $μ_(A, B)$ are isomorphisms. If they are all the identity morphism, then $F$ is called a *strict (pre)monoidal functor*. 
 
     A (lax) (pre)monoidal functor is said to be *symmetric* if, for all $A, B in |cal(C)|$, the following diagram commutes:
     #align(center)[#commutative_diagram(
@@ -160,12 +160,12 @@ TODO:
         node((0, 1), [$F B ⊗_(cal(D)) F A$]),
         node((1, 0), [$F(A ⊗_(cal(C)) B)$]),
         node((1, 1), [$F(B ⊗_(cal(C)) A)$]),
-        arr((0, 0), (0, 1), $sigma^(cal(D))_(F A, F B)$, label_pos: 0),
-        arr((0, 1), (1, 1), $mu_(B, A)$, label_pos: 0),
-        arr((0, 0), (1, 0), $mu_(A, B)$, label_pos: 0),
-        arr((1, 0), (1, 1), $F sigma^(cal(C))_(A, B)$, label_pos: 0)
+        arr((0, 0), (0, 1), $σ^(cal(D))_(F A, F B)$, label_pos: 0),
+        arr((0, 1), (1, 1), $μ_(B, A)$, label_pos: 0),
+        arr((0, 0), (1, 0), $μ_(A, B)$, label_pos: 0),
+        arr((1, 0), (1, 1), $F σ^(cal(C))_(A, B)$, label_pos: 0)
     )]
-    where $sigma^(cal(C)), sigma^(cal(D))$ denote the symmetry of $cal(C), cal(D)$ resp.
+    where $σ^(cal(C)), σ^(cal(D))$ denote the symmetry of $cal(C), cal(D)$ resp.
 ])
 
 /*
@@ -253,6 +253,10 @@ The `isotope` grammar is divided into following syntactic categories:
 );
 #grammar(isotope-grammar)
 Note that we implicitly quotient up to α-equivalence, and that our grammar does not include a notion of function.
+
+/*
+TODO: change syntax for set of base types, instructions to avoid conflicting with effectful categories
+*/
 
 The grammar given is parametrized over a set of _base types_ $X ∈ cal(V)$ and _instructions_ $f ∈ cal(I)$. We will denote the set of valid types with base types $cal(V)$ as $types(cal(V))$.
 
@@ -463,11 +467,25 @@ t
 ```
 == Typing
 
+/*
+TODO: conditions on pure instructions, set of splittable/droppable types
+*/
+/*
+TODO: copy types as split + drop?
+*/
+/*
+TODO: rename split/drop to relevant/affine?
+*/
+
 In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
 - Predicates $sans("splits"), sans("drops") subset.eq cal(V)$
 - For each $A, B in types(cal(V))$, 
     - A subset $cal(I)_0(A, B) subset.eq cal(I)$ of *instructions*.
     - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions*.
+
+/*
+TODO: grammar for typing contexts, label contexts
+*/
 
 === Judgements
 
@@ -479,12 +497,12 @@ We introduce the following typing judgements:
         column-gutter: 2em,
         [*Syntax*],
         [*Meaning*],
-        $istm(Gamma, p, a, A)$,
-        [$a$ is a term of type $A$ in context $Gamma$ with purity $p in {0, 1}$],
-        $isblk(Gamma, sans(L), p, t, B)$,
-        [$t$ is a block of type $B$ in control context $Gamma;sans(L)$with purity $p in {0, 1}$],
-        $splitctx(Gamma, Delta, Xi)$,
-        [$Gamma$ splits into contexts $Delta$, $Xi$],
+        $istm(Γ, p, a, A)$,
+        [$a$ is a term of type $A$ in context $Γ$ with purity $p in {0, 1}$],
+        $isblk(Γ, sans(L), p, t, B)$,
+        [$t$ is a block of type $B$ in control context $Γ;sans(L)$with purity $p in {0, 1}$],
+        $splitctx(Γ, Δ, Ξ)$,
+        [$Γ$ splits into contexts $Δ$, $Ξ$],
         $joinctx(sans(K), sans(L))$,
         [$sans(K)$ is a subset of label-set $sans(L)$],
         $splits(A)$, [$A$ can be split],
@@ -505,87 +523,87 @@ We introduce the following typing judgements:
     "pair-splits": prft(name: "pair-splits", $splits(A)$, $splits(B)$, $splits(A ⊗ B)$),
     "ctx-nil": prft(name: "ctx-nil", $splitctx(cnil, cnil, cnil)$),
     "ctx-left": prft(name: "ctx-left", 
-        $splitctx(Gamma, Delta, Xi)$, 
-        $#splitctx($x: A, Gamma$, $x: A, Delta$, $Xi$)$),
+        $splitctx(Γ, Δ, Ξ)$, 
+        $#splitctx($x: A, Γ$, $x: A, Δ$, $Ξ$)$),
     "ctx-right": prft(name: "ctx-right", 
-        $splitctx(Gamma, Delta, Xi)$, 
-        $#splitctx($x: A, Gamma$, $Delta$, $x: A, Xi$)$),
+        $splitctx(Γ, Δ, Ξ)$, 
+        $#splitctx($x: A, Γ$, $Δ$, $x: A, Ξ$)$),
     "ctx-split": prft(name: "ctx-split", 
-        $splitctx(Gamma, Delta, Xi)$,
+        $splitctx(Γ, Δ, Ξ)$,
         $splits(A)$, 
-        $#splitctx($x: A, Gamma$, $x: A, Delta$, $x: A, Xi$)$),
+        $#splitctx($x: A, Γ$, $x: A, Δ$, $x: A, Ξ$)$),
     "ctx-drop": prft(name: "ctx-drop", 
-        $splitctx(Gamma, Delta, Xi)$,
+        $splitctx(Γ, Δ, Ξ)$,
         $drops(A)$, 
-        $#splitctx($x: A, Gamma$, $Delta$, $Xi$)$),
+        $#splitctx($x: A, Γ$, $Δ$, $Ξ$)$),
     "label-nil": prft(name: "label-nil", $joinctx(bcnil, bcnil)$),
     "label-join": prft(name: "label-join", 
         $joinctx(sans(K), sans(L))$,
-        joinctx($sans(K)$, $lhyp(Gamma, lbl(ell), p, A), sans(L)$)),
+        joinctx($sans(K)$, $lhyp(Γ, lbl(ell), p, A), sans(L)$)),
     "label-ext": prft(name: "label-ext", 
         $joinctx(sans(K), sans(L))$,
-        joinctx($lhyp(Gamma, lbl(ell), p, A), sans(K)$, $lhyp(Gamma, lbl(ell), p, A), sans(L)$)),
+        joinctx($lhyp(Γ, lbl(ell), p, A), sans(K)$, $lhyp(Γ, lbl(ell), p, A), sans(L)$)),
     "var": prft(name: "var", 
-        splitctx($Gamma$, $x: A$), $istm(Gamma, p, x, A)$),
+        splitctx($Γ$, $x: A$), $istm(Γ, p, x, A)$),
     "app": prft(name: "app",
-        $f in cal(I)_p(A, B)$, $istm(Gamma, p, a, A)$, 
-        $istm(Gamma, p, f aq a, B)$),
+        $f in cal(I)_p(A, B)$, $istm(Γ, p, a, A)$, 
+        $istm(Γ, p, f aq a, B)$),
     "nil": prft(name: "nil",
-        splitctx($Gamma$, $cnil$), $istm(Gamma, p, (), tobj)$),
+        splitctx($Γ$, $cnil$), $istm(Γ, p, (), tobj)$),
     "true": prft(name: "true",
-        splitctx($Gamma$, $cnil$), $istm(Gamma, p, ltt, bools)$),
+        splitctx($Γ$, $cnil$), $istm(Γ, p, ltt, bools)$),
     "false": prft(name: "false",
-        splitctx($Gamma$, $cnil$), $istm(Gamma, p, lff, bools)$),
+        splitctx($Γ$, $cnil$), $istm(Γ, p, lff, bools)$),
     "pair": prft(name: "pair",
-        splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, p, a, A)$,
-        $istm(Xi, p, b, B)$,
-        istm($Gamma$, $p$, $(a, b)$, $A ⊗ B$)
+        splitctx($Γ$, $Δ$, $Ξ$),
+        $istm(Δ, p, a, A)$,
+        $istm(Ξ, p, b, B)$,
+        istm($Γ$, $p$, $(a, b)$, $A ⊗ B$)
     ),
     "let": prft(name: "let",
-        splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, p, a, A)$,
-        istm($x: A, Xi$, $p$, $e$, $B$),
-        istm($Gamma$, $p$, $llet x = a; e$, $B$)
+        splitctx($Γ$, $Δ$, $Ξ$),
+        $istm(Δ, p, a, A)$,
+        istm($x: A, Ξ$, $p$, $e$, $B$),
+        istm($Γ$, $p$, $llet x = a; e$, $B$)
     ),
     "blk": prft(name: "blk",
-        $isblk(Gamma, bcnil, p, t, B)$,
-        $istm(Gamma, p, {t}, B)$
+        $isblk(Γ, bcnil, p, t, B)$,
+        $istm(Γ, p, {t}, B)$
     ),
     "let2": prft(name: "let2",
-        splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, p, e, A ⊗ B)$,
-        istm($x: A, y: B, Xi$, $p$, $e'$, $C$),
-        istm($Gamma$, $p$, $llet (x, y) = e; e'$, $C$)
+        splitctx($Γ$, $Δ$, $Ξ$),
+        $istm(Δ, p, e, A ⊗ B)$,
+        istm($x: A, y: B, Ξ$, $p$, $e'$, $C$),
+        istm($Γ$, $p$, $llet (x, y) = e; e'$, $C$)
     ),
     "br": prft(name: "br", 
-        $istm(Gamma, p, a, A)$,
-        $isblk(Gamma, sans(L), p, br(a), A)$,
+        $istm(Γ, p, a, A)$,
+        $isblk(Γ, sans(L), p, br(a), A)$,
     ),
     "jmp": prft(name: "jmp",
-        $splitctx(Gamma, Delta, Xi)$,
-        $istm(Delta, p, a, A)$,
-        $joinctx(lhyp(Xi, lbl(l), p, A), sans(L))$,
-        $isblk(Gamma, sans(L), p, br(lbl(ell), a), B)$,
+        $splitctx(Γ, Δ, Ξ)$,
+        $istm(Δ, p, a, A)$,
+        $joinctx(lhyp(Ξ, lbl(l), p, A), sans(L))$,
+        $isblk(Γ, sans(L), p, br(lbl(ell), a), B)$,
     ),
     "ite": prft(name: "ite",
-        $splitctx(Gamma, Delta, Xi)$,
-        $istm(Delta, p, e, bools)$,
-        $isblk(Xi, sans(L), p, s, B)$,
-        $isblk(Xi, sans(L), p, t, B)$,
-        $isblk(Gamma, sans(L), p, lite(e, s, t), B)$
+        $splitctx(Γ, Δ, Ξ)$,
+        $istm(Δ, p, e, bools)$,
+        $isblk(Ξ, sans(L), p, s, B)$,
+        $isblk(Ξ, sans(L), p, t, B)$,
+        $isblk(Γ, sans(L), p, lite(e, s, t), B)$
     ),
     "let-blk": prft(name: "let-blk",
-        splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, p, a, A)$,
-        isblk($x: A, Xi$, $sans(L)$, $p$, $t$, $B$),
-        isblk($Gamma$, $sans(L)$, $p$, $llet x = a; t$, $B$)
+        splitctx($Γ$, $Δ$, $Ξ$),
+        $istm(Δ, p, a, A)$,
+        isblk($x: A, Ξ$, $sans(L)$, $p$, $t$, $B$),
+        isblk($Γ$, $sans(L)$, $p$, $llet x = a; t$, $B$)
     ),
     "let2-blk": prft(name: "let2-blk",
-        splitctx($Gamma$, $Delta$, $Xi$),
-        $istm(Delta, p, e, A ⊗ B)$,
-        isblk($x: A, y: B, Xi$, $sans(L)$, $p$, $t$, $B$),
-        isblk($Gamma$, $sans(L)$, $p$, $llet (x, y) = e; t$, $B$)
+        splitctx($Γ$, $Δ$, $Ξ$),
+        $istm(Δ, p, e, A ⊗ B)$,
+        isblk($x: A, y: B, Ξ$, $sans(L)$, $p$, $t$, $B$),
+        isblk($Γ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $B$)
     ),
     "tr": prft(name: "tr",
         $forall i, 
@@ -598,13 +616,13 @@ We introduce the following typing judgements:
                 $B$
             )]$,
         isblk(
-            $Gamma$, 
+            $Γ$, 
             $[lhyp(Delta_j, lbl(ell)_j, p_j, A_j)]_j, sans(L)$,
             $p$,
             $s$,
             $B$),
         isblk(
-            $Gamma$,
+            $Γ$,
             $sans(L)$,
             $p$,
             $llet [lbl(ell)_j(x_j: A_j) => {t_i}]_j; s$,
@@ -650,7 +668,7 @@ We introduce the following typing judgements:
         dprf(typing-rules.label-join),
     ),
 ))
-We write $splitctx(Gamma, Delta)$ as syntax sugar for $splitctx(Gamma, Delta, cnil)$.
+We write $splitctx(Γ, Δ)$ as syntax sugar for $splitctx(Γ, Δ, cnil)$.
 
 === Term Typing
 
@@ -691,9 +709,70 @@ We write $splitctx(Gamma, Delta)$ as syntax sugar for $splitctx(Gamma, Delta, cn
     dprf(typing-rules.tr),
 ))
 
-/*
-
 = Semantics
+
+In this section, we give a denotational semantics to well-typed `isotope` programs in an effectful category $(cal(C)_1, cal(C)_0)$ equipped with some auxiliary structure. We then prove some basic properties of our semantics.
+
+== Denotational Semantics
+
+/*
+TODO: category used
+TODO: cal(C)_0 = cal(V), cal(C)_1 = cal(C) or smt like that?
+*/
+
+=== Types and Contexts
+$
+#rect([$dnt(A): |cal(C)_1|$])
+$
+//TODO: this
+$
+#rect([$dnt(Γ): |cal(C)_1|$])
+$
+//TODO: this
+$
+#rect([$dnt(sans(L)): |cal(C)_1|$])
+$
+//TODO: this
+
+=== Structural Rules
+$
+#rect([$dnt(drops(A)): cal(C)_1(dnt(A), munit)$])
+$
+//TODO: this
+$
+#rect([$dnt(splits(A)): cal(C)_1(dnt(A), dnt(A) ⊗ dnt(A))$])
+$
+//TODO: this
+$
+#rect([$dnt(joinctx(sans(K), sans(L))): cal(C)_1(dnt(sans(K)), dnt(sans(L)))$])
+$
+//TODO: this
+$
+#rect([$dnt(splitctx(Γ, Δ, Ξ)): cal(C)_1(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$])
+$
+//TODO: this
+
+//TODO: string diagrams, since all structrure is in cal(C)_1?
+
+=== Term Typing
+
+/*
+TODO: note on coercion
+*/
+
+$
+#rect([$dnt(istm(Γ, p, a, A)): cal(C)_p(dnt(Γ), dnt(A))$])
+$
+//TODO: this
+
+=== Block Typing
+
+$
+#rect([$dnt(isblk(Γ, sans(L), p, t, B)): cal(C)_p(dnt(Γ), dnt(B) ⊕ dnt(sans(L)))$])
+$
+//TODO: this
+
+/*
 
 //TODO: this
 
@@ -706,6 +785,10 @@ We write $splitctx(Gamma, Delta)$ as syntax sugar for $splitctx(Gamma, Delta, cn
 //TODO: this
 
 = State-splitting
+
+//TODO: this
+
+= Optimization
 
 //TODO: this
 
@@ -796,7 +879,7 @@ The notion of functor allows us to define the *category of categories*, $Cat$, w
     $
     α_A;G f = F f;α_B
     $
-    We say a family $α_A: cal(D)(F A, G A)$ is *natural* in the index $A$ if it induces a natural transformation $alpha: F A => G B$
+    We say a family $α_A: cal(D)(F A, G A)$ is *natural* in the index $A$ if it induces a natural transformation $α: F A => G B$
 ])
 
 Given natural transformations $α: F => G$ and $β: G => H$, we find that they compose to yield a natural transformation $(α; β): F => H$ with components $(α; β)_A = α_A;β_A$. This allows us to define the *functor category* $[cal(C), cal(D)]$ with objects functors from $cal(C) → cal(D)$ and morphisms natural transformations. Note that in this category the identity morphism is simply the identity natural transformation $idm: F => F$ with components $idm_(F A): cal(C)(F A, F A)$. 
@@ -826,18 +909,18 @@ TODO: section for diagrams and (co)limits?
 === Monads
 
 #definition(name: "Monad", [
-    A *monad* in a category $cal(C)$ is a tuple $(T, mu, eta)$ where
+    A *monad* in a category $cal(C)$ is a tuple $(T, μ, η)$ where
     - $T: cal(C) -> cal(C)$ is an endofunctor
-    //TODO: name mu and eta?
-    - $mu: T compose T => T$ is a natural transformation
-    - $eta: idm => T$ is a natural transformation
-    A *Kliesli triple* in $cal(C)$ is a tuple $(T, eta, -^*)$ where
+    //TODO: name μ and η?
+    - $μ: T compose T => T$ is a natural transformation
+    - $η: idm => T$ is a natural transformation
+    A *Kliesli triple* in $cal(C)$ is a tuple $(T, η, -^*)$ where
     - $T: cal(C) -> cal(C)$ is an endofunctor
-    - $forall A in |cal(C)|, eta_A: A -> T A$
+    - $forall A in |cal(C)|, η_A: A -> T A$
     - $forall f: cal(C)(A, T B), f^*: T A -> T B$ //TODO: name bind?
-    such that $eta_A^* = idm_(T A)$, $eta_A;f^* = f$, and $f^*;g^* = (f;g^*)^*$
+    such that $η_A^* = idm_(T A)$, $η_A;f^* = f$, and $f^*;g^* = (f;g^*)^*$
 
-    Every monad $(T, mu, eta)$ induces a Kliesli triple $(T, eta, -^*)$ with $f^* = T f;mu$; likewise, every Kliesli triple $(T, eta, -^*)$ induces a monad with $mu_A = idm_(T A)^*$; hence, we will use these names and notations interchangeably.
+    Every monad $(T, μ, η)$ induces a Kliesli triple $(T, η, -^*)$ with $f^* = T f;μ$; likewise, every Kliesli triple $(T, η, -^*)$ induces a monad with $μ_A = idm_(T A)^*$; hence, we will use these names and notations interchangeably.
 ])
 #definition(name: "Kliesli Category", [
     Given a category $cal(C)$ equipped with a monad $T$, we may define its *Kliesli category* $cal(C)_T$ to have
@@ -846,11 +929,11 @@ TODO: section for diagrams and (co)limits?
     - Composition of $f: cal(C)_T(A, B)$ followed by $g: cal(C)_T(B, C)$ given by $f;g^*$ where $f, g$ are taken as morphisms in $cal(C)$
 ])
 Monads can be viewed as capturing a "notion of computation" by considering $T A$ to represent "computations yielding $A$," which may also have some side-effects and dependencies on external input. For example, we may encode
-- Partiality with $T A = A + 1$; in this case $Set_T tilde.eq Pfn$
+- Partiality with $T A = A + 1$; in this case $Set_T ≃ Pfn$
 - Total nondeterminism with $T A = pset^+ A$
-- Partial nondeterminism with $T A = pset A$; in this case $Set_T tilde.eq Rel$
-- Printing outputs of type $B$ with $T A = A times B^*$, where $B^*$ denotes the _Kleene star_
-- Carrying around a mutable state of type $S$ with $T A = S -> A times S$
+- Partial nondeterminism with $T A = pset A$; in this case $Set_T ≃ Rel$
+- Printing outputs of type $B$ with $T A = A × B^*$, where $B^*$ denotes the _Kleene star_
+- Carrying around a mutable state of type $S$ with $T A = S -> A × S$
 /*
 TODO: pull these examples up? Also, might want to explicitly state what return/bind are (or join!)
 */
@@ -869,16 +952,16 @@ TODO: commutative monads?
 #definition(name: "Adjunction", [
     Let $cal(C), cal(D)$ be categories and let $L: cal(C) -> cal(D)$, $R: cal(D) -> cal(C)$ be a pair of functors. This is called a pair of *adjoint functors*, with $L$ the *left adjoint* and $R$ the *right adjoint*, written $adj(L, R)$, if, equivalently,
     - There exist a family of isomorphisms (bijections) $phi_(C, D): cal(D)(L(C), D) -> cal(C)(C, R(D))$ natural in $C in |cal(C)|$ and $D in |cal(D)|$
-    - There exist two natural transformations $epsilon: L;R => idm_(cal(C))$ (the *counit*) and $eta: idm_(cal(D)) => R;L$ (the *unit*) such that, for all $C in |cal(C)|, D in |cal(D)|$, we have
-        - $L eta_C; epsilon_(L C) = idm_(L C)$
-        - $eta_(R D); R(epsilon_D) = idm_(R D)$
+    - There exist two natural transformations $ε: L;R => idm_(cal(C))$ (the *counit*) and $η: idm_(cal(D)) => R;L$ (the *unit*) such that, for all $C in |cal(C)|, D in |cal(D)|$, we have
+        - $L η_C; ε_(L C) = idm_(L C)$
+        - $η_(R D); R(ε_D) = idm_(R D)$
     If there exists such a pair $(L, R)$, we say that $L$ *is a left adjoint* or *has a right adjoint*, and likewise, $R$ *is a right adjoint* or *has a left adjoint*.
 ])
 
 #definition(name: "Adjoint Equivalence", [
-    An *adjoint equivalence* between categories $cal(C), cal(D)$ is a pair of adjoint functors $adj(L, R)$ for which the unit $eta$ and counit $epsilon$ are natural _isomorphisms_.
+    An *adjoint equivalence* between categories $cal(C), cal(D)$ is a pair of adjoint functors $adj(L, R)$ for which the unit $η$ and counit $ε$ are natural _isomorphisms_.
 ])
-Note that the counit and unit of an adjoint equivalence trivially induce an equivalence of categories via the natural isomorphisms $epsilon: L;R => idm_(cal(C))$, $eta^(-1): R;L => idm_(cal(D))$; similarly, any equivalence of categories with natural isomorphisms $epsilon: L;R => idm_(cal(C))$, $eta^(-1): R;L => idm_(cal(D))$ is an adjoint equivalence if and only if, for all $C in |cal(C)|, D in |cal(D)|$, we have $L eta_C; epsilon_(L C) = idm_(L C)$ and $eta_(R D); R(epsilon_D) = idm_(R D)$
+Note that the counit and unit of an adjoint equivalence trivially induce an equivalence of categories via the natural isomorphisms $ε: L;R => idm_(cal(C))$, $η^(-1): R;L => idm_(cal(D))$; similarly, any equivalence of categories with natural isomorphisms $ε: L;R => idm_(cal(C))$, $η^(-1): R;L => idm_(cal(D))$ is an adjoint equivalence if and only if, for all $C in |cal(C)|, D in |cal(D)|$, we have $L η_C; ε_(L C) = idm_(L C)$ and $η_(R D); R(ε_D) = idm_(R D)$
 /*
 TODO: express these in terms of whiskering? Would need to define whiskering...
 */
