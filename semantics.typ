@@ -509,7 +509,9 @@ We introduce the following typing judgements:
         $isblk(Γ, sans(L), p, t, B)$,
         [$t$ is a block of type $B$ in control context $Γ;sans(L)$with purity $p in {0, 1}$],
         $splitctx(Γ, Δ, Ξ)$,
-        [$Γ$ rel into contexts $Δ$, $Ξ$],
+        [$Γ$ splits into contexts $Δ$, $Ξ$],
+        $dropctx(Γ, Δ)$,
+        [$Γ$ is a weakening of $Δ$],
         $joinctx(sans(K), sans(L))$,
         [$sans(K)$ is a subset of label-set $sans(L)$],
         $rel(A)$, [$A$ can be split],
@@ -539,10 +541,17 @@ We introduce the following typing judgements:
         $splitctx(Γ, Δ, Ξ)$,
         $rel(A)$, 
         $#splitctx($x: A, Γ$, $x: A, Δ$, $x: A, Ξ$)$),
-    "ctx-aff": prft(name: "ctx-aff", 
-        $splitctx(Γ, Δ, Ξ)$,
+    "wk-nil": prft(name: "wk-nil", 
+        $dropctx(cnil, cnil)$,
         $aff(A)$, 
         $#splitctx($x: A, Γ$, $Δ$, $Ξ$)$),
+    "wk-add": prft(name: "wk-add", 
+        $dropctx(Γ, Δ)$,
+        $#dropctx($x: A, Γ$, $x: A, Δ$)$),
+    "wk-aff": prft(name: "wk-aff", 
+        $dropctx(Γ, Δ)$,
+        $aff(A)$, 
+        $#dropctx($x: A, Γ$, $Δ$)$),
     "label-nil": prft(name: "label-nil", $joinctx(bcnil, bcnil)$),
     "label-join": prft(name: "label-join", 
         $joinctx(sans(K), sans(L))$,
@@ -551,16 +560,16 @@ We introduce the following typing judgements:
         $joinctx(sans(K), sans(L))$,
         joinctx($lhyp(Γ, lbl(ell), p, A), sans(K)$, $lhyp(Γ, lbl(ell), p, A), sans(L)$)),
     "var": prft(name: "var", 
-        splitctx($Γ$, $x: A$), $istm(Γ, p, x, A)$),
+        dropctx($Γ$, $x: A$), $istm(Γ, p, x, A)$),
     "app": prft(name: "app",
         $f in cal(I)_p(A, B)$, $istm(Γ, p, a, A)$, 
         $istm(Γ, p, f aq a, B)$),
     "nil": prft(name: "nil",
-        splitctx($Γ$, $cnil$), $istm(Γ, p, (), tobj)$),
+        dropctx($Γ$, $cnil$), $istm(Γ, p, (), tobj)$),
     "true": prft(name: "true",
-        splitctx($Γ$, $cnil$), $istm(Γ, p, ltt, bools)$),
+        dropctx($Γ$, $cnil$), $istm(Γ, p, ltt, bools)$),
     "false": prft(name: "false",
-        splitctx($Γ$, $cnil$), $istm(Γ, p, lff, bools)$),
+        dropctx($Γ$, $cnil$), $istm(Γ, p, lff, bools)$),
     "pair": prft(name: "pair",
         splitctx($Γ$, $Δ$, $Ξ$),
         $istm(Δ, p, a, A)$,
@@ -643,21 +652,18 @@ We introduce the following typing judgements:
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
     table(
-        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(typing-rules.pair-aff),
-        dprf(typing-rules.pair-rel),
-    ),
-    table(
-        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        columns: 4, align: bottom, column-gutter: 2em, stroke: table-dbg,
         dprf(typing-rules.fwd-aff),
         dprf(typing-rules.unit-aff),
         dprf(typing-rules.bool-aff),
+        dprf(typing-rules.pair-aff),
     ),
     table(
-        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        columns: 4, align: bottom, column-gutter: 2em, stroke: table-dbg,
         dprf(typing-rules.fwd-rel),
         dprf(typing-rules.unit-rel),
         dprf(typing-rules.bool-rel),
+        dprf(typing-rules.pair-rel),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
@@ -665,10 +671,12 @@ We introduce the following typing judgements:
         dprf(typing-rules.ctx-left),
         dprf(typing-rules.ctx-right),
     ),
+    dprf(typing-rules.ctx-rel),
     table(
-        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
-        dprf(typing-rules.ctx-rel),
-        dprf(typing-rules.ctx-aff),
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.wk-nil),
+        dprf(typing-rules.wk-add),
+        dprf(typing-rules.wk-aff),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
@@ -677,7 +685,6 @@ We introduce the following typing judgements:
         dprf(typing-rules.label-join),
     ),
 ))
-We write $splitctx(Γ, Δ)$ as syntax sugar for $splitctx(Γ, Δ, cnil)$.
 
 === Term Typing
 
@@ -718,9 +725,42 @@ We write $splitctx(Γ, Δ)$ as syntax sugar for $splitctx(Γ, Δ, cnil)$.
     dprf(typing-rules.tr),
 ))
 
-=== Properties
+== Syntactic Metatheory
 
-#let upgrade-stmt = theorem(name: "Upgrade")[
+We begin by defining the notion of one context being a *subcontext* of another via the following rules:
+#row-den(
+    $prf(subctx(cnil, cnil), name: "sub-nil")$,
+    $prf(subctx(Γ, Δ), #[#subctx($x: A, Γ$, $x: A, Δ$)], name: "sub-add")$,
+    $prf(subctx(Γ, Δ), #[#subctx($x: A, Γ$, $Δ$)], name: "sub-ext")$
+)
+We state the following basic properties of this relation:
+- $subctx(Γ, Δ)$ is a partial order on contexts (i.e. is reflexive, transitive, and antisymmetric)
+- $splitctx(Γ, Δ, Ξ) ==> subctx(Δ, Γ) and subctx(Ξ, Γ)$
+- $dropctx(Γ, Δ) ==> subctx(Δ, Γ)$
+// We now define the notion of the *union* of two contexts, $Γ ∪ Δ$, to be the unique context, if it exists, given by the following rules:
+// #row-den(
+//     $prf(cnil ∪ Γ = Γ, name: "union-lnil")$,
+//     $prf(Γ ∪ cnil = Γ, name: "union-rnil")$,
+//     prf($Γ ∪ Δ = Ξ$, $rel(A)$, $x: A, Γ ∪ x: A, Δ = x: A, Ξ$, name: "union-rel")
+// )
+// $
+// #[
+//     #prf($Γ ∪ Δ = Ξ$, $x ∉ Δ$, $x: A, Γ ∪ Δ = x: A, Ξ$, name: "union-ext")
+// ]
+// $
+// Some basic properties of the union include
+// - $splitctx(Γ ∪ Δ, Γ, Δ)$; furthermore, if $∃Ξ, splitctx(Ξ, Γ, Δ)$, then $Γ ∪ Δ$ exists and $Ξ$ is a permutation of it.
+// - $Γ ∪ Γ = Γ$ if the former exists
+// - $Γ ∪ (Δ ∪ Ξ) = (Γ ∪ Δ) ∪ Ξ$, with one side defined if the other is
+// This allows us to define the union $union.big_x Δ_x$ of an ordered, finite collection of contexts $Δ_x$.
+
+We now state a few basic lemmas about splitting and weakening contexts:
+- $dropctx(Γ, Δ) <=> ∃Ξ, splitctx(Γ, Δ, Ξ) and dropctx(Ξ, cnil)$; furthermore, if it exists, this $Ξ$ is unique.
+- $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$
+- $∃K, splitctx(Γ, Δ, K) ∧ splitctx(K, Ξ, Θ) <==> ∃K', splitctx(Γ, K', Ξ) and splitctx(K', Δ, Θ)$ //TODO: think about this one...
+
+We may now state some basic theorems and definitions:
+#let upgrade-stmt = lemma(name: "Upgrade")[
     If $istm(Γ, 1, a, A)$, then $istm(Γ, 0, a, A)$. Similarly, if $isblk(Γ, sans(L), 1, t, B)$, then $isblk(Γ, sans(L), 0, t, B)$.
 ]
 #upgrade-stmt
@@ -729,12 +769,14 @@ We write $splitctx(Γ, Δ)$ as syntax sugar for $splitctx(Γ, Δ, cnil)$.
 ]
 
 #definition(name: "Substitution")[
-    We define a *substitution* $γ: Δ -> Γ$ to be an assignment of a pure term $istm(Δ, 1, a, A)$ to each variable $x: A ∈ Γ$. Capture-avoiding $[γ]a$ of terms and blocks $a$ is defined as usual.
-    // with $[ssub(b, x)]a$ as shorthand for ...
+    We define a *substitution* $γ: Δ -> Γ$ to be an assignment of a context $Δ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $splitctx(Δ, [Δ_x]_(x ∈ Γ))$.
+
+    We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. We define the substitution of a _context_ $Ξ$ to be given by $[γ]Ξ = ⋃_(x: A ∈ Ξ)Δ_x$ where, for $x: A ∉ Γ$, we have $Δ_x = {x: A}$.
 ]
 
-#let syntactic-substitution-stmt = theorem(name: "Syntactic Substitution")[
+#let syntactic-substitution-stmt = lemma(name: "Syntactic Substitution")[
     Given a substitution $γ: Δ -> Γ$, for all terms $istm(Γ, p, a, A)$ and blocks $isblk(Γ, sans(L), p, t, B)$, we have $istm(Δ, p, [γ]a, A)$ and $isblk(Δ, sans(L), p, [γ]t, B)$
+    //TODO: proper statement for label contexts...
 ];
 #syntactic-substitution-stmt
 #proof[
@@ -789,16 +831,6 @@ TODO: note on coercion
 
 === Structural Rules
 
-#let row-den(..args) = {
-    align(center)[#table(
-        columns: args.pos().len(),
-        column-gutter: 2em,
-        align: horizon,
-        stroke: none,
-        ..args
-    )]
-};
-
 $
 #rect([$dnt(aff(A)): cal(C)_1(dnt(A), munit)$])
 $
@@ -852,15 +884,12 @@ dnt(#typing-rules.ctx-rel.premises.at(1)) ⊗ dnt(#typing-rules.ctx-rel.premises
 α;dnt(A) ⊗ σ_(dnt(A), dnt(Δ)) ⊗ dnt(Ξ);α
 $
 $
-dnt(dprf(#typing-rules.ctx-aff)) =
-dnt(#typing-rules.ctx-aff.premises.at(1)) ⊗ dnt(#typing-rules.ctx-aff.premises.at(0));α
+#rect([$dnt(dropctx(Γ, Δ)): cal(C)_1(dnt(Γ), dnt(Δ))$])
 $
-$
-#rect([$dnt(splitctx(Γ, Δ)): cal(C)_1(dnt(Γ), dnt(Δ))$])
-$
-$
-dnt(prf(splitctx(Γ, Δ, cnil), splitctx(Γ, Δ))) = dnt(splitctx(Γ, Δ, cnil));α
-$
+#row-den(
+    $dnt(dprf(#typing-rules.wk-nil)) = idm$,
+    $dnt(dprf(#typing-rules.wk-add)) = dnt(A) ⊗ dnt(dropctx(Γ, Δ))$
+)
 
 //TODO: string diagrams, since all structrure is in cal(C)_1?
 
@@ -1185,12 +1214,12 @@ TODO:
     #let rname(rule) = [
         $#typing-rules.at(rule).conclusion$ #h(0.2em) (#text(typing-rules.at(rule).name, maroon))
     ];
-    - #rname("var"): since by assumption #splitctx($Γ$, $x: A$), we may apply #rstyle("var") to derive $istm(Γ, 0, x, A)$ as desired.
+    - #rname("var"): since by assumption #dropctx($Γ$, $x: A$), we may apply #rstyle("var") to derive $istm(Γ, 0, x, A)$ as desired.
     - #rname("app"): since by assumption $f ∈ cal(I)_1(A, B) ⊆ cal(I)_0(A, B)$, and by induction $istm(Γ, 0, a, A)$, we may apply #rstyle("app") to derive $istm(Γ, 0, f aq a, A)$ as desired.
     - #rname("jmp"): by induction, we have that $istm(Δ, 0, a, A)$, by assumption we have that $joinctx(lhyp(Ξ, q, lbl(ℓ), A), sans(L))$ for some $q ∈ {0, 1}$. Since $0 ≤ q$, we may apply #rstyle("jmp") to derive $isblk(Γ, sans(L), 0, br(lbl(l), a), B)$, as desired.
     - #rname("tr"): by assumption, we have that $∀i, #[#isblk($x_i: A_i, Δ_i$, $[lhyp(Δ_j, 0, lbl(ℓ_j), A_j)]_j, sans(L)$, $p_i$, $t_i$, $B$)]$. By induction, we have that #isblk($Γ$, $[lhyp(Δ_j, 0, lbl(ℓ_j), A_j)]_j, sans(L)$, $0$, $s$, $B$). Hence, we may apply #rstyle("tr") to yield the desired conclusion.
     The other cases are direct application of the respective typing rule to the inductive hypotheses.
-    // - #rname("nil"), #rname("true"), #rname("false"): since by assumption $splitctx(Γ, cnil)$, we may apply the original rule to recover the desired conclusion.
+    // - #rname("nil"), #rname("true"), #rname("false"): since by assumption $dropctx(Γ, cnil)$, we may apply the original rule to recover the desired conclusion.
     // - #rname("pair"): since by induction $istm(Δ, 0, a, A)$, $istm(Ξ, 0, b, B)$, we may apply #rstyle("pair") to derive #istm($Γ$, $0$, $(a, b)$, $A ⊗ B$) as desired.
     // - #rname("let"): since by induction $istm(Δ, 0, a, A)$, #istm($x: A, Ξ$, $0$, $e$, $B$), we may apply #rstyle("let") to derive #istm($Γ$, $0$, $llet x = a; e$, $B$) as desired.
     // - #rname("let2"): since by induction $istm(Δ, 0, e, A ⊗ B)$, #istm($x: A, y: B, Ξ$, $0$, $e'$, $C$), we may apply #rstyle("let2") to derive #istm($Γ$, $0$, $llet (x, y) = e; e'$, $C$) as desired.
@@ -1207,7 +1236,7 @@ TODO:
     #let rname(rule) = [
         $#typing-rules.at(rule).conclusion$ #h(0.2em) (#text(typing-rules.at(rule).name, maroon))
     ];
-    - #rname("var"): Since $γ: Γ -> Δ$ is a substitution, we by assumption have that $istm(Δ, 1, [γ]x, A)$; hence, by upgrade, we have that $istm(Δ, p, [γ]x, A)$, as desired.
+    - #rname("var"): Since $γ: Γ -> Δ$ is a substitution, we by assumption have that $istm(Δ, 1, [γ]x, A)$; hence, by upgrade, we have that $istm(Δ_x, p, [γ]x, A)$, as desired.
     - #rname("app"): //TODO: this
     - #rname("nil"), #rname("true"), #rname("false"): //TODO: this
     - #rname("pair"): //TODO: this

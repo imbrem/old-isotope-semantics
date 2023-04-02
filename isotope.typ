@@ -62,6 +62,22 @@
   [ ]
   emph(body)
 })
+//Note: lemmas use the theorem counter for now
+#let lemma(body, name: none, numbered: true) = locate(location => {
+  let lvl = counter(heading).at(location)
+  let i = theorem-counter.at(location).first()
+  if numbered { theorem-counter.step() }
+  let top = if lvl.len() > 0 { lvl.first() } else { 0 }
+  show: block.with(spacing: 11.5pt)
+  {
+    strong([Lemma])
+    if numbered [ *#top.#i*]
+    if name != none [ (#emph(name))]
+    if numbered or name != none [*.*]
+  }
+  [ ]
+  emph(body)
+})
 
 #let definition-counter = counter("definition")
 #let definition(body, name: none, numbered: true) = locate(location => {
@@ -236,12 +252,16 @@
     let subctx = subctx.pos().join(";");
     $src arrow.r.bar subctx$
 }
+#let dropctx(src, subctx) = {
+    $src arrow.r.bar subctx$
+}
 #let joinctx(..args) = {
     let subctx = args.pos();
     let dest = subctx.pop()
     let subctx = subctx.join($;$)
     $subctx arrow.r.squiggly dest$
 }
+#let subctx(small, big) = $small ≤ big$
 #let types(base) = $sans("Type")(#base)$
 #let rel(ty) = $#ty sans("rel")$
 #let aff(ty) = $#ty sans("aff")$
@@ -249,3 +269,13 @@
 #let isblk(ctx, bctx, purity, blk, ty) = $
     ctx;bctx ⊢_purity blk triangle.stroked.small ty$
 #let upg(body, purity: none) = $body^(↑_purity)$
+
+#let row-den(..args) = {
+    align(center)[#table(
+        columns: args.pos().len(),
+        column-gutter: 2em,
+        align: horizon,
+        stroke: none,
+        ..args
+    )]
+};
