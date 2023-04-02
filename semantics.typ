@@ -30,29 +30,29 @@ TODO:
 - binoidal text
 */
 
-#definition(name: "Binoidal Category", [
+#definition(name: "Binoidal Category")[
     A *binoidal category* is a category $cal(C)$ equipped with
     - A *tensor product* map on objects $⊗: |cal(C)| times |cal(C)| -> |cal(C)|$
     - For each object $A in |cal(C)|$,
         - A *right product functor* $A ⊗ -$ which is $B ↦ A ⊗ B$ on objects
         - A *left product functor* $- ⊗ A$ which is $B ↦ B ⊗ A$ on objects
     We define, for morphisms $f: A -> B$, $g: X -> Y$, the *left product* $f ⋉ g = f ⊗ X; A ⊗ g$ and *right product* $f ⋊ g: A ⊗ g; f ⊗ X$ morphisms $A ⊗ X -> B ⊗ Y$
-])
-#definition(name: "Central Morphism", [
+]
+#definition(name: "Central Morphism")[
     A morphsm $f$ a binoidal category $cal(C)$ is *central* if, for all morphisms $g$, we have $f ⋉ g = f ⋊ g$; in this case, we write $f ltimes g = f rtimes g = f ⊗ g$.
     We define the *center* of a binoidal category $cal(C)$, denoted $cen(cal(C))$, to be the wide subcategory with $|cen(cal(C))| = |cal(C)|$ and morphisms
     $
         cen(cal(C))(A, B) = {f in cal(C)(A, B) | f "is central"}
     $
     A natural transformation is central if all its components are.
-])
+]
 
 /*
 TODO:
 - premonoidal text
 */
 
-#definition(name: "Premonoidal Category", [
+#definition(name: "Premonoidal Category")[
     A *premonoidal category* is a binoidal category $cal(C)$ equipped with
     - An *identity object* $munit in |cal(C)|$
     - A family of central isomorphisms $α_(A, B, C): (A ⊗ B) ⊗ C -> A ⊗ (B ⊗ C)$ (the *associator*) natural in $A, B, C in cal(C)$
@@ -70,8 +70,8 @@ TODO:
     hold for all $A, B, C, D in |cal(C)|$.
 
     We say a premonoidal category is *strict* if $(A ⊗ B) ⊗ C = A ⊗ (B ⊗ C)$, $A ⊗ I = I ⊗ A = A$, and $α, ρ, λ$ are the identity transformations.
-])
-#definition(name: "Symmetric Premonoidal Category", [
+]
+#definition(name: "Symmetric Premonoidal Category")[
     We say a premonoidal category is *braided* if, in addition, it is equipped with a family of central isomorphisms $σ_(A, B): A ⊗ B -> B ⊗ A$ natural in $C in |cal(C)|$ and $D in |cal(D)|$ such that
     - $σ_(A, B) = σ_(B, A)^{-1}$
     - The following *hexagon identities* hold:
@@ -80,13 +80,13 @@ TODO:
         - $α_(A, B, C)^(-1);σ_(A ⊗ B, C);α_(C, A, B)^(-1)
             = A ⊗ σ_(B, C);α_(A, C, B)^(-1);σ_(C, A) ⊗ B$
     We say a braided premonoidal category is *symmetric* if, in addition, we have $σ_(A, B) = σ_(B, A)^(-1)$; in this case, either hexagon identity implies the other.
-])
+]
 /*
 TODO: naming
 */
-#theorem(name: "Coherence", [
+#theorem(name: "Coherence")[
     Let $cal(C)$ be a premonoidal category. Then the smallest wide subcategory of $cal(C)$ containing all components of $α$, $λ$, and $ρ$ is thin.
-])
+]
 /*
 TODO: due to this, α syntax sugar
 */
@@ -96,12 +96,12 @@ TODO:
 - monoidal text
 */
 
-#definition(name: "(Symmetric) Monoidal Category", [
+#definition(name: "(Symmetric) Monoidal Category")[
     A (symmetric) monoidal category $cal(C)$ is a (symmetric) premonoidal category in which, equivalently,
     - All morphisms are central, i.e. $cal(C) = cen(cal(C))$
     - $⋉ = ⋊$, in which case we write both as $⊗$
     - $⊗$ is a bifunctor
-])
+]
 In particular, for every (symmetric) premonoidal category $cal(C)$, we have that $cen(cal(C))$ is (symmetric) monoidal.
 
 /*
@@ -112,7 +112,7 @@ TODO:
 - monoidal functor text
 */
 
-#definition(name: "(Pre)monoidal Functor", [
+#definition(name: "(Pre)monoidal Functor")[
     A *lax (pre)monoidal functor* $F: cal(C) -> cal(D)$ between (pre)monoidal categories $cal(C), cal(D)$ is a functor equipped with
     - A morphism $ε: munit_(cal(D)) -> F(munit_(cal(C)))$ (where $munit_(cal(C)), munit_(cal(D))$ are the monoidal units of $cal(C), cal(D)$ resp.)
     - A family of morphisms $μ_(A, B): F A ⊗_(cal(D)) F B -> F(A ⊗_(cal(C)) B)$ natural in $A, B in |cal(C)|$ (where $⊗_(cal(C)), ⊗_(cal(D))$ are the tensor products of $cal(C), cal(D)$ resp.)
@@ -172,7 +172,7 @@ TODO:
         arr((1, 0), (1, 1), $F σ^(cal(C))_(A, B)$, label_pos: 0)
     )]
     where $σ^(cal(C)), σ^(cal(D))$ denote the symmetry of $cal(C), cal(D)$ resp.
-])
+]
 
 /*
 TODO: problems with the above definition in the premonoidal case, justification for effectful categories
@@ -185,11 +185,11 @@ TODO: problems with the above definition in the premonoidal case, justification 
 TODO: effectful category text
 */
 
-#definition(name: "Effectful Category", [
+#definition(name: "Effectful Category")[
     An *effectful category* is an identity-on-objects premonoidal functor $F: cal(V) -> cal(C)$ from a monoidal categorty $cal(V)$ (of "*values*") to a premonoidal category $cal(C)$ (of "*computations*") whose image is central. It is *symmetric* when $F$ is symmetric premonoidal.
 
     A *Freyd category* is an effectful category in which $cal(V)$ is cartesian monoidal.
-])
+]
 
 /*
 TODO:
@@ -487,7 +487,7 @@ In this section, we go over the rules defining well-typed `isotope` syntax. Our 
 - Predicates $sans("rel"), sans("aff") subset.eq cal(V)$
 - For each $A, B in types(cal(V))$, 
     - A subset $cal(I)_0(A, B) subset.eq cal(I)$ of *instructions*.
-    - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions*.
+    - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions* such that, if $cal(I)_I(A, B)$ is nonempty, then $rel(B) => rel(A)$ and $aff(B) => aff(A)$.
 
 /*
 TODO: grammar for typing contexts, label contexts
@@ -501,6 +501,7 @@ We introduce the following typing judgements:
         columns: 2,
         stroke: none,
         column-gutter: 2em,
+        align: left,
         [*Syntax*],
         [*Meaning*],
         $istm(Γ, p, a, A)$,
@@ -609,8 +610,8 @@ We introduce the following typing judgements:
     "let2-blk": prft(name: "let2-blk",
         splitctx($Γ$, $Δ$, $Ξ$),
         $istm(Δ, p, e, A ⊗ B)$,
-        isblk($x: A, y: B, Ξ$, $sans(L)$, $p$, $t$, $B$),
-        isblk($Γ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $B$)
+        isblk($x: A, y: B, Ξ$, $sans(L)$, $p$, $t$, $C$),
+        isblk($Γ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)
     ),
     "tr": prft(name: "tr",
         $forall i, 
@@ -716,10 +717,28 @@ We write $splitctx(Γ, Δ)$ as syntax sugar for $splitctx(Γ, Δ, cnil)$.
     dprf(typing-rules.tr),
 ))
 
-/*
 === Properties
-//TODO: syntactic substitution/weakening
-*/
+
+#let upgrade-stmt = theorem(name: "Upgrade")[
+    If $istm(Γ, 1, a, A)$, then $istm(Γ, 0, a, A)$. Similarly, if $isblk(Γ, sans(L), 1, t, B)$, then $isblk(Γ, sans(L), 0, t, B)$.
+]
+#upgrade-stmt
+#proof[
+    See @syntactic-properties[Appendix]
+]
+
+#definition(name: "Substitution")[
+    We define a *substitution* $γ: Δ -> Γ$ to be an assignment of a pure term $istm(Δ, 1, a, A)$ to each variable $x: A ∈ Γ$. Capture-avoiding $[γ]a$ of terms and blocks $a$ is defined as usual.
+    // with $[ssub(b, x)]a$ as shorthand for ...
+]
+
+#let syntactic-substitution-stmt = theorem(name: "Syntactic Substitution")[
+    Given a substitution $γ: Δ -> Γ$, for all terms $istm(Γ, p, a, A)$ and blocks $isblk(Γ, sans(L), p, t, B)$, we have $istm(Δ, p, [γ]a, A)$ and $isblk(Δ, sans(L), p, [γ]t, B)$
+];
+#syntactic-substitution-stmt
+#proof[
+    See @syntactic-properties[Appendix]
+]
 
 = Semantics
 
@@ -984,7 +1003,7 @@ TODO: define thin categories, etc.
 */
 
 In this section, we go over some core notions from category theory, with the aim of fixing notations and conventions.
-#definition(name: "Category", ([
+#definition(name: "Category")[
     A *category* $cal(C)$ consists of
     - A set of *objects* $|cal(C)|$
     - For any two objects $A, B ∈ |cal(C)|$, a *hom-set* of *morphisms* $cal(C)(A, B)$ between them. When $cal(C)$ is clear from context, we may denote this set as $A → B$
@@ -994,7 +1013,7 @@ In this section, we go over some core notions from category theory, with the aim
         - $f ∘ (g ∘ h) = (f ∘ g) ∘ h$
         - $f ∘ idm = idm ∘ f = f$
     We define $f;g = g ∘ f$
-]))
+]
 Some basic examples of categories we will be using include (all with the standard notion of composition):
 - The category of sets $Set$, with objects sets, morphisms functions
 - The category of _partial functions_ $Pfn$, with objects sets and morphisms _partial_ functions
@@ -1004,9 +1023,9 @@ $f •_A = •_B$
 - The category of _partially ordered sets_, $Pos$, with objects partially ordered sets $(A, ≼)$ (where $A$ is a set and $≼$ a partial order on $A$) and morphisms monotonically increasing functions
 - The category of _monoids_ $Mon$, with objects monoids $(M, *)$ (where $A$ is a set and $*: M → M → M$ a monoid operation) and morphisms monoid homomorphisms
 Note that in all three cases the "set" of objects is not really a set (since there is no set of all sets/monoids), but rather a class. However, for the purposes of this document, we will ignore size issues.
-#definition(name: "Isomorphism", ([
+#definition(name: "Isomorphism")[
     A morphism $f: cal(C)(A, B)$ is an *isomorphism* if there exists a morphism $g: cal(C)(B, A)$ such that $f;g = idm_A$, $g;f = idm_B$; in this case we say that $A$ and $B$ are *isomorphic*, written $A ≃ B$
-]))
+]
 For example,
 - In $Set$, $Pfn$, and $Rel$, the isomorphisms are the bijections; in $SetP$ the isomorpisms are the basepoint-preserving bijections
 - In $Pos$ and $Mon$, we recover the usual mathematical notion of isomorphism
@@ -1014,10 +1033,10 @@ For example,
 TODO: improve this segue + section?
 */
 We would also like to generalize the notion of _inclusion_ to the categorical setting; to that end, we may introduce the notion of a _monomorphism_ as follows:
-#definition(name: "Monomorphism", ([
+#definition(name: "Monomorphism")[
     A morphism $f: cal(C)(B, C)$ is a *monomorphism* if
     $forall g, g': cal(C)(A, B), g;f = g';f <==> g = g'$
-]))
+]
 For example,
 - In $Set$, $Pfn$, and $Rel$, the monomorphisms are the injections; in $SetP$ the isomorpisms are the basepoint-preserving injections
 - In $Pos$ and $Mon$, we recover the usual mathematical notion of inclusion
@@ -1029,7 +1048,7 @@ Given any category $cal(C)$, we may define the *opposite category* $opp(cal(C))$
 /*
 TODO: flipping stuff in the opposite categeory
 */
-#definition(name: "Functor", ([
+#definition(name: "Functor")[
     A *(covariant) functor* $F: cal(C) → cal(D)$ from a category $cal(C)$ to a category $cal(D)$ consists of
     - A mapping $|F|: |cal(C)| → |cal(D)|$. We define $F A = F|A|$ for $A ∈ |cal(C)|$
     - A mapping $fcomp(F, A, B): cal(C)(A, B) → cal(D)(F A, F B)$. We define $F f = fcomp(F, A, B) f$ for $f ∈ cal(C)(A, B)$ such that
@@ -1041,7 +1060,7 @@ TODO: flipping stuff in the opposite categeory
         fcomp((F ∘ G), A, B) = fcomp(F, G A, G B) ∘ fcomp(G, A, B)
     $
     A functor $F: cal(C) -> cal(C)$ is called an *endofunctor*. A *cotravariant functor* from $cal(C)$ to $cal(D)$ is simply a covariant functor from $opp(cal(C)) → cal(D)$.
-]))
+]
 Some examples of important functors on our example categories include:
 - The *identity functor* $idm$, which is simply the identity on objects and morphisms
 - The #strong("inclusion functor")s $Set → Pfn$ (interpreting a function as a partial function), $Set → Rel$, $Pfn → Rel$ (mapping [partial] functions to their graphs). These functor are _faithful_, but not _full_.
@@ -1049,13 +1068,13 @@ Some examples of important functors on our example categories include:
 - The *Hom-functor* $cal(C)(A, -): cal(C) → Set$ mapping objects $X$ to $cal(C)(A, X)$ and morphisms $f: X → Y$ via $cal(C)(A, f) = (g ↦ g;f): cal(C)(A, X) → cal(C)(A, Y)$
 - The *contravariant Hom-functor* $cal(C)(-, B): opp(cal(C)) → Set$ mapping objects $X$ to $cal(C)(X, B)$ and morphisms $h: opp(cal(C))(Y, X)$ (i.e. $cal(C)(X, Y)$) via $cal(C)(h, B) = (g ↦ h;g): cal(C)(Y, B) → cal(C)(X, B)$
 The notion of functor allows us to define the *category of categories*, $Cat$, with objects categories $cal(C)$ and morphisms functors $F: cal(C) → cal(D)$. This immediately gives us a definition for isomorphism of categories; namely, that there exist two functors $F: cal(C) → cal(D)$, $G: cal(D) → cal(G)$ such that $F;G = idm_(cal(C))$, $G;F = idm_(cal(D))$. However, it turns out this is not the correct notion of "sameness" for categories; to define equivalence of categories, we must first introduce the concept of a *natural transformation*:
-#definition(name: "Natural Transformation", [
+#definition(name: "Natural Transformation")[
     Given two functors $F, G: cal(C) → cal(D)$, a *natural transformation* $α: F => G$ is an assignment to every object $A ∈ |cal(C)|$ a morphism $α_A: cal(D)(F A, G A)$ (called the *component* of $α$ at $A$) such that, for any morphism $f: cal(C)(A, B)$, we have that
     $
     α_A;G f = F f;α_B
     $
     We say a family $α_A: cal(D)(F A, G A)$ is *natural* in the index $A$ if it induces a natural transformation $α: F A => G B$
-])
+]
 
 Given natural transformations $α: F => G$ and $β: G => H$, we find that they compose to yield a natural transformation $(α; β): F => H$ with components $(α; β)_A = α_A;β_A$. This allows us to define the *functor category* $[cal(C), cal(D)]$ with objects functors from $cal(C) → cal(D)$ and morphisms natural transformations. Note that in this category the identity morphism is simply the identity natural transformation $idm: F => F$ with components $idm_(F A): cal(C)(F A, F A)$. 
 /*
@@ -1069,9 +1088,9 @@ $
 TODO: examples of natural isomorphisms?
 */
 We may now define equivalence of categories as follows:
-#definition(name: "Equivalence of Categories", [
+#definition(name: "Equivalence of Categories")[
         An *equivalence* between categories $cal(C), cal(D)$ is given by a pair of functors $F: cal(C) → cal(D)$, $G: cal(D) → cal(C)$ and a pair of natural isomorphisms $F;G niso idm_(cal(C))$, $G;F niso idm_(cal(D))$. If there exists an equivalence between $cal(C), cal(D)$, they are said to be *equivalent*.
-])
+]
 Note that any two isomorphic categories are equivalent (by taking the functors to be the components of the isomorphism, and the natural transformations to be the identity), but not all equivalent categories are isomorphic.
 /*
 TODO: notation for equivalence of categories?
@@ -1083,7 +1102,7 @@ TODO: section for diagrams and (co)limits?
 
 === Monads
 
-#definition(name: "Monad", [
+#definition(name: "Monad")[
     A *monad* in a category $cal(C)$ is a tuple $(T, μ, η)$ where
     - $T: cal(C) -> cal(C)$ is an endofunctor
     //TODO: name μ and η?
@@ -1096,13 +1115,13 @@ TODO: section for diagrams and (co)limits?
     such that $η_A^* = idm_(T A)$, $η_A;f^* = f$, and $f^*;g^* = (f;g^*)^*$
 
     Every monad $(T, μ, η)$ induces a Kliesli triple $(T, η, -^*)$ with $f^* = T f;μ$; likewise, every Kliesli triple $(T, η, -^*)$ induces a monad with $μ_A = idm_(T A)^*$; hence, we will use these names and notations interchangeably.
-])
-#definition(name: "Kliesli Category", [
+]
+#definition(name: "Kliesli Category")[
     Given a category $cal(C)$ equipped with a monad $T$, we may define its *Kliesli category* $cal(C)_T$ to have
     - Objects $|cal(C)_T| = |cal(C)|$
     - Morphisms $cal(C)_T(A, B) = cal(C)(A, T B)$
     - Composition of $f: cal(C)_T(A, B)$ followed by $g: cal(C)_T(B, C)$ given by $f;g^*$ where $f, g$ are taken as morphisms in $cal(C)$
-])
+]
 Monads can be viewed as capturing a "notion of computation" by considering $T A$ to represent "computations yielding $A$," which may also have some side-effects and dependencies on external input. For example, we may encode
 - Partiality with $T A = A + 1$; in this case $Set_T ≃ Pfn$
 - Total nondeterminism with $T A = pset^+ A$
@@ -1124,18 +1143,18 @@ TODO: commutative monads?
 
 === Adjunctions
 
-#definition(name: "Adjunction", [
+#definition(name: "Adjunction")[
     Let $cal(C), cal(D)$ be categories and let $L: cal(C) -> cal(D)$, $R: cal(D) -> cal(C)$ be a pair of functors. This is called a pair of *adjoint functors*, with $L$ the *left adjoint* and $R$ the *right adjoint*, written $adj(L, R)$, if, equivalently,
     - There exist a family of isomorphisms (bijections) $phi_(C, D): cal(D)(L(C), D) -> cal(C)(C, R(D))$ natural in $C in |cal(C)|$ and $D in |cal(D)|$
     - There exist two natural transformations $ε: L;R => idm_(cal(C))$ (the *counit*) and $η: idm_(cal(D)) => R;L$ (the *unit*) such that, for all $C in |cal(C)|, D in |cal(D)|$, we have
         - $L η_C; ε_(L C) = idm_(L C)$
         - $η_(R D); R(ε_D) = idm_(R D)$
     If there exists such a pair $(L, R)$, we say that $L$ *is a left adjoint* or *has a right adjoint*, and likewise, $R$ *is a right adjoint* or *has a left adjoint*.
-])
+]
 
-#definition(name: "Adjoint Equivalence", [
+#definition(name: "Adjoint Equivalence")[
     An *adjoint equivalence* between categories $cal(C), cal(D)$ is a pair of adjoint functors $adj(L, R)$ for which the unit $η$ and counit $ε$ are natural _isomorphisms_.
-])
+]
 Note that the counit and unit of an adjoint equivalence trivially induce an equivalence of categories via the natural isomorphisms $ε: L;R => idm_(cal(C))$, $η^(-1): R;L => idm_(cal(D))$; similarly, any equivalence of categories with natural isomorphisms $ε: L;R => idm_(cal(C))$, $η^(-1): R;L => idm_(cal(D))$ is an adjoint equivalence if and only if, for all $C in |cal(C)|, D in |cal(D)|$, we have $L η_C; ε_(L C) = idm_(L C)$ and $η_(R D); R(ε_D) = idm_(R D)$
 /*
 TODO: express these in terms of whiskering? Would need to define whiskering...
@@ -1153,3 +1172,51 @@ TODO:
 TODO:
 - results on polygraphs, explicit runtime constructions?
 */
+
+= Proofs
+
+== Syntactic Properties <syntactic-properties>
+
+#upgrade-stmt
+#proof[
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ with $p = 1$. We generate one case for each possible rule:
+    #let rstyle(rule) = [(#text(typing-rules.at(rule).name, maroon))];
+    #let rname(rule) = [
+        $#typing-rules.at(rule).conclusion$ #h(0.2em) (#text(typing-rules.at(rule).name, maroon))
+    ];
+    - #rname("var"): since by assumption #splitctx($Γ$, $x: A$), we may apply #rstyle("var") to derive $istm(Γ, 0, x, A)$ as desired.
+    - #rname("app"): since by assumption $f ∈ cal(I)_1(A, B) ⊆ cal(I)_0(A, B)$, and by induction $istm(Γ, 0, a, A)$, we may apply #rstyle("app") to derive $istm(Γ, 0, f aq a, A)$ as desired.
+    - #rname("jmp"): //TODO: this
+    - #rname("tr"): //TODO: this
+    The other cases are direct application of the respective typing rule to the inductive hypotheses.
+    // - #rname("nil"), #rname("true"), #rname("false"): since by assumption $splitctx(Γ, cnil)$, we may apply the original rule to recover the desired conclusion.
+    // - #rname("pair"): since by induction $istm(Δ, 0, a, A)$, $istm(Ξ, 0, b, B)$, we may apply #rstyle("pair") to derive #istm($Γ$, $0$, $(a, b)$, $A ⊗ B$) as desired.
+    // - #rname("let"): since by induction $istm(Δ, 0, a, A)$, #istm($x: A, Ξ$, $0$, $e$, $B$), we may apply #rstyle("let") to derive #istm($Γ$, $0$, $llet x = a; e$, $B$) as desired.
+    // - #rname("let2"): since by induction $istm(Δ, 0, e, A ⊗ B)$, #istm($x: A, y: B, Ξ$, $0$, $e'$, $C$), we may apply #rstyle("let2") to derive #istm($Γ$, $0$, $llet (x, y) = e; e'$, $C$) as desired.
+    // - #rname("blk"): since by induction $isblk(Γ, sans(L), 0, t, B)$, we may apply #rstyle("blk") to derive $istm(Γ, 0, {t}, B)$ as desired.
+    // - #rname("br"): since by induction $istm(Γ, 0, a, A)$, we may apply #rstyle("br") to derive $isblk(Γ, sans(L), 0, br(a), A)$ as desired.
+    // - #rname("ite"): since by induction $istm(Δ, 0, e, bools)$, $isblk(Ξ, sans(L), 0, s, B)$, $isblk(Ξ, sans(L), 0, t, B)$, we may apply #rstyle("ite") to derive $isblk(Γ, sans(L), 0, lite(e, s, t), B)$ as desired
+    // - #rname("let-blk"): since by induction $istm(Δ, 0, a, A)$, #isblk($x: A, Ξ$, $sans(L)$, $0$, $t$, $B$), we may apply #rstyle("let-blk") to derive #isblk($Γ$, $sans(L)$, $0$, $llet x = a; t$, $B$) as desired.
+    // - #rname("let2-blk"): since by induction $istm(Δ, 0, e, A ⊗ B)$, #isblk($x: A, y: B, Ξ$, $sans(L)$, $0$, $t$, $C$), we may apply #rstyle("let2") to derive #isblk($Γ$, $sans(L)$, $0$, $llet (x, y) = e; t$, $C$) as desired.
+]
+
+#syntactic-substitution-stmt
+#proof[
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$. We generate one case for each possible rule:
+    #let rname(rule) = [
+        $#typing-rules.at(rule).conclusion$ #h(0.2em) (#text(typing-rules.at(rule).name, maroon))
+    ];
+    - #rname("var"): Since $γ: Γ -> Δ$ is a substitution, we by assumption have that $istm(Δ, 1, [γ]x, A)$; hence, by upgrade, we have that $istm(Δ, p, [γ]x, A)$, as desired.
+    - #rname("app"): //TODO: this
+    - #rname("nil"), #rname("true"), #rname("false"): //TODO: this
+    - #rname("pair"): //TODO: this
+    - #rname("let"): //TODO: this
+    - #rname("let2"): //TODO: this
+    - #rname("blk"): //TODO: this
+    - #rname("br"): //TODO: this
+    - #rname("jmp"): //TODO: this
+    - #rname("ite"): //TODO: this
+    - #rname("let-blk"): //TODO: this
+    - #rname("let2-blk"): //TODO: this
+    - #rname("tr"): //TODO: this
+]

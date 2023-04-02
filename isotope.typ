@@ -229,6 +229,7 @@
 #let cen(cat) = $Z(#cat)$
 #let adj(left, right, unit: none, counit: none) = $#left ⊣ #right$
 #let lhyp(ctx, label, purity, arg) = $ctx triangle_purity label(arg)$
+#let ssub(tm, var) = $tm slash var$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
