@@ -591,7 +591,8 @@ We introduce the following typing judgements:
     "jmp": prft(name: "jmp",
         $splitctx(Γ, Δ, Ξ)$,
         $istm(Δ, p, a, A)$,
-        $joinctx(lhyp(Ξ, lbl(l), p, A), sans(L))$,
+        $joinctx(lhyp(Ξ, lbl(ℓ), q, A), sans(L))$,
+        $p ≤ q$,
         $isblk(Γ, sans(L), p, br(lbl(ell), a), B)$,
     ),
     "ite": prft(name: "ite",
@@ -1186,8 +1187,8 @@ TODO:
     ];
     - #rname("var"): since by assumption #splitctx($Γ$, $x: A$), we may apply #rstyle("var") to derive $istm(Γ, 0, x, A)$ as desired.
     - #rname("app"): since by assumption $f ∈ cal(I)_1(A, B) ⊆ cal(I)_0(A, B)$, and by induction $istm(Γ, 0, a, A)$, we may apply #rstyle("app") to derive $istm(Γ, 0, f aq a, A)$ as desired.
-    - #rname("jmp"): //TODO: this
-    - #rname("tr"): //TODO: this
+    - #rname("jmp"): by induction, we have that $istm(Δ, 0, a, A)$, by assumption we have that $joinctx(lhyp(Ξ, q, lbl(ℓ), A), sans(L))$ for some $q ∈ {0, 1}$. Since $0 ≤ q$, we may apply #rstyle("jmp") to derive $isblk(Γ, sans(L), 0, br(lbl(l), a), B)$, as desired.
+    - #rname("tr"): by assumption, we have that $∀i, #[#isblk($x_i: A_i, Δ_i$, $[lhyp(Δ_j, 0, lbl(ℓ_j), A_j)]_j, sans(L)$, $p_i$, $t_i$, $B$)]$. By induction, we have that #isblk($Γ$, $[lhyp(Δ_j, 0, lbl(ℓ_j), A_j)]_j, sans(L)$, $0$, $s$, $B$). Hence, we may apply #rstyle("tr") to yield the desired conclusion.
     The other cases are direct application of the respective typing rule to the inductive hypotheses.
     // - #rname("nil"), #rname("true"), #rname("false"): since by assumption $splitctx(Γ, cnil)$, we may apply the original rule to recover the desired conclusion.
     // - #rname("pair"): since by induction $istm(Δ, 0, a, A)$, $istm(Ξ, 0, b, B)$, we may apply #rstyle("pair") to derive #istm($Γ$, $0$, $(a, b)$, $A ⊗ B$) as desired.
