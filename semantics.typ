@@ -757,7 +757,7 @@ We state the following basic properties of this relation:
 We now state a few basic lemmas about splitting and weakening contexts:
 - $dropctx(Γ, Δ) <=> ∃Ξ, splitctx(Γ, Δ, Ξ) and dropctx(Ξ, cnil)$; furthermore, if it exists, this $Ξ$ is unique.
 - $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$
-- $∃K, splitctx(Γ, Δ, K) ∧ splitctx(K, Ξ, Θ) <==> ∃K', splitctx(Γ, K', Ξ) and splitctx(K', Δ, Θ)$ //TODO: think about this one...
+// - $∃K, splitctx(Γ, Δ, K) ∧ splitctx(K, Ξ, Θ) <==> ∃K', splitctx(Γ, K', Ξ) and splitctx(K', Δ, Θ)$ //TODO: think about this one...
 
 We may now state some basic theorems and definitions:
 #let upgrade-stmt = lemma(name: "Upgrade")[
@@ -768,11 +768,33 @@ We may now state some basic theorems and definitions:
     See @syntactic-properties[Appendix]
 ]
 
-#definition(name: "Substitution")[
-    We define a *substitution* $γ: Δ -> Γ$ to be an assignment of a context $Δ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $splitctx(Δ, [Δ_x]_(x ∈ Γ))$.
+#let substitution-rules = (
+    "subst-nil": prft($cnil: cnil -> cnil$, name: "subst-nil"),
+    "subst-cons": prft(
+        $issub(γ, Δ_Γ, Γ)$, 
+        $istm(Δ_x, 1, a, A)$,
+        $splitctx(Δ, Δ_x, Δ_Γ)$,
+        issub($[x ↦ a]γ$, $Δ$, $x: A, Γ$),
+        name: "subst-cons")
+)
 
-    We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. We define the substitution of a _context_ $Ξ$ to be given by $[γ]Ξ = ⋃_(x: A ∈ Ξ)Δ_x$ where, for $x: A ∉ Γ$, we have $Δ_x = {x: A}$.
+#definition(name: "Substitution")[
+    We define a *substitution* $issub(γ, Δ, Γ)$ to be an assignment of a context $Δ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Δ$ splits into subcontexts $Δ_x$, as defined by the following rules:
+    #row-den(
+        dprf(substitution-rules.subst-nil),
+        dprf(substitution-rules.subst-cons)
+    )
+    We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. We define the substitution of a _context_ $Ξ$ to be given by the list comprehension
+    $
+    [γ]Ξ = [y: B ∈ Δ | ∃x ∈ Ξ, y ∈ Δ_x]
+    $
+    We define the *lifting* of a substitution $slft(γ) = [x ↦ x]γ: x: A, Δ -> x: A, Γ$.
 ]
+For example, given the substitution and context
+$
+#[issub($γ = [x ↦ 2, y ↦ a, z ↦ b + c]$, $(x: ℕ, y: ℕ, z: ℕ)$, $(a: ℕ, b: ℕ, c: ℕ)$)], qq Ξ = x: ℕ, z: ℕ
+$
+we have $[γ]Ξ = b: ℕ, c ∈ ℕ$.
 
 #let syntactic-substitution-stmt = lemma(name: "Syntactic Substitution")[
     Given a substitution $γ: Δ -> Γ$, for all terms $istm(Γ, p, a, A)$ and blocks $isblk(Γ, sans(L), p, t, B)$, we have $istm(Δ, p, [γ]a, A)$ and $isblk(Δ, sans(L), p, [γ]t, B)$
@@ -971,7 +993,7 @@ dnt(#typing-rules.let2-blk.premises.at(2))
 $
 $
 dnt(dprf(#typing-rules.tr))
-\ =
+\ #h(5em) = 
 sans("Tr")_(dnt(Γ), dnt(B) ⊕ dnt(sans(L)))^(⊕_i dnt(A_j) ⊗ dnt(Δ_j))
 [
     (dnt(#typing-rules.tr.premises.at(1));α^⊕) ⊕ D; j
@@ -988,11 +1010,27 @@ TODO: notes on guardedness...
 TODO: string diagrams for control flow?
 */
 
-/*
 == Properties
 
+//TODO: split into sections?
+
+//TODO: weakening, lemmas on weakening
+
+We begin by giving a denotational semantics for substititons:
+$
+#rect([$dnt(#[$γ: Δ -> Γ$]): cal(C)_1(dnt(Δ), dnt(Γ))$])
+$
+$
+dnt(dprf(#substitution-rules.subst-nil)) =& idm \
+dnt(dprf(#substitution-rules.subst-cons)) =& dnt(#substitution-rules.subst-cons.premises.at(2)); \
+&
+    dnt(#substitution-rules.subst-cons.premises.at(1)) ⊗
+    dnt(#substitution-rules.subst-cons.premises.at(0))
+$
+
 //TODO: semantic substitution
-*/
+
+//TODO: lemmas on substititon; e.g. semantic splitting
 
 /*
 
