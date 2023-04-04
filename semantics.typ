@@ -1312,25 +1312,30 @@ TODO:
 
 #syntactic-substitution-stmt
 #proof[
-    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$. We generate one case for each possible rule:
-    #let rstyle(rule) = [(#text(typing-rules.at(rule).name, maroon))];
-    #let rname(rule) = [
-        $#typing-rules.at(rule).conclusion$ #h(0.2em) (#text(typing-rules.at(rule).name, maroon))
-    ];
-    - #rname("var"): since $issub(γ, Θ, Γ)$ is a substitution, we by assumption have that $istm(Θ_x, 1, [γ]x, A)$; hence, by upgrade, we have that $istm(Θ_x, p, [γ]x, A)$. We have by assumption that $dropctx(Γ, #[$x: A$])$, and hence that $dropctx(Θ, Θ_x)$ by weakening substitution. It follows by weakening that $istm(Θ, p, [γ]x, A)$, as desired.
-    - #rname("app"): by induction, we have that $istm(Θ, p, a, A)$; hence, applying #rstyle("app"), we have $istm(Θ, p, [γ](f aq a), B)$ as desired.
-    - #rname("nil"), #rname("true"), #rname("false"): 
-    we have $dropctx(Γ, cnil)$ by assumption; hence, by substititon weakening, we have $dropctx(Δ, cnil)$ and therefore applying #rstyle("nil")/#rstyle("true")/#rstyle("false") gives the desired result.
-    - #rname("pair"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, $issub(γ_Ξ, Θ_Ξ, Ξ)$, by induction, we have that $istm(Θ_Δ, p, [γ_Δ]a, A)$ and $istm(Θ_Ξ, p, [γ_Ξ]b, B)$. Hence, since $[γ_Δ]a = [γ]a$ and $[γ_Ξ]b = [γ]b$, we may apply #rstyle("pair") to conclude that #istm($Θ$, $p$, $[γ](a, b)$, $A ⊗ B$) as desired.
-    - #rname("let"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(γ_Ξ)$, $x: A, Θ_Ξ$, $x: A, Ξ$), by induction, we have that $istm(Θ_Δ, p, [γ_Δ]a, A)$ and #istm($x: A, Θ_Ξ$, $p$, $[slft(γ_Ξ)]e$, $B$). Hence, since $[γ_Δ]a = [γ]a$ and $[slft(γ_Ξ)]e = [slft(γ)]e$, we may apply #rstyle("let") to conclude that #istm($Θ$, $p$, $[γ](llet x = a; e)$, $B$) as desired.
-    - #rname("let2"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(slft(γ_Ξ))$, $x: A, y: B, Θ_Ξ$, $x: A, y: B, Ξ$). By induction, we have that $istm(Θ_Δ, p, [γ_Δ]e, A)$ and #istm($x: A, y: B, Θ_Ξ$, $p$, $[slft(slft(γ_Ξ))]e'$, $C$). Hence, since $[γ_Δ]e = [γ]e$ and $[slft(slft(γ_Ξ))]e' = [slft(slft(γ))]e'$, we may apply #rstyle("let2") to conclude that #istm($Θ$, $p$, $[γ](llet (x, y) = e; e')$, $C$) as desired.
-    - #rname("blk"): by induction, we have that $isblk(Θ, bcnil, p, t, B)$, and hence we may apply #rstyle("blk") to conclude that $istm(Θ, p, [γ]{t}, B)$
-    - #rname("br"): by induction, we have that $istm(Θ, p, a, A)$, and hence we may apply #rstyle("br") to conclude that $isblk(Θ, [γ]sans(L), p, [γ](br(a)), A)$
-    - #rname("jmp"): by assumption we have that $splitctx(Γ, Δ, Ξ)$, $joinctx(lhyp(Ξ, q, lbl(ℓ), A), sans(L))$; hence, by split and join substitution respectively, that $splitctx(Θ, Θ_Δ, Θ_Ξ)$, $joinctx(lhyp(Θ_Ξ, q, lbl(ℓ), A), [γ]sans(L))$. By induction we have that $istm(Θ_Δ, p, a, A)$. Hence, since by assumption $p ≤ q$, we may apply #rstyle("jmp") to conclude that $isblk(Θ, [γ]sans(L), p, [γ](br(lbl(ℓ), a)), B)$
-    - #rname("ite"): by assumption we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution, that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. By induction we have that $istm(Θ_Δ, p, e, bools)$, $isblk(Θ_Ξ, [γ]sans(L), p, s, B)$, $isblk(Θ_Ξ, [γ]sans(L), p, t, B)$; hence, we may apply #rstyle("ite") to yield $isblk(Θ, [γ]sans(L), p, [γ](lite(e, s, t)), B)$
-    - #rname("let-blk"): //TODO: this
-    - #rname("let2-blk"):  by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(slft(γ_Ξ))$, $x: A, y: B, Θ_Ξ$, $x: A, y: B, Ξ$). By induction, we have that $istm(Θ_Δ, p, [γ_Δ]e, A)$ and #isblk($x: A, y: B, Θ_Ξ$, $[γ]sans(L)$, $p$, $[slft(slft(γ_Ξ))]t$, $C$). Hence, since $[γ_Δ]e = [γ]e$ and $[slft(slft(γ_Ξ))]e' = [slft(slft(γ))]e'$, we may apply #rstyle("let2-blk") to conclude that #isblk($Θ$, $p$, $[γ]sans(L)$, $[γ](llet (x, y) = e; t)$, $C$) as desired.
-    - #rname("tr"): //TODO: this
+    //TODO: fix labels, clean up
+
+    // We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$. We generate one case for each possible rule:
+    // #let rstyle(rule) = [(#text(typing-rules.at(rule).name, maroon))];
+    // #let rname(rule) = [
+    //     $#typing-rules.at(rule).conclusion$ #h(0.2em) (#text(typing-rules.at(rule).name, maroon))
+    // ];
+    // - #rname("var"): since $issub(γ, Θ, Γ)$ is a substitution, we by assumption have that $istm(Θ_x, 1, [γ]x, A)$; hence, by upgrade, we have that $istm(Θ_x, p, [γ]x, A)$. We have by assumption that $dropctx(Γ, #[$x: A$])$, and hence that $dropctx(Θ, Θ_x)$ by weakening substitution. It follows by weakening that $istm(Θ, p, [γ]x, A)$, as desired.
+    // - #rname("app"): by induction, we have that $istm(Θ, p, a, A)$; hence, applying #rstyle("app"), we have $istm(Θ, p, [γ](f aq a), B)$ as desired.
+    // - #rname("nil"), #rname("true"), #rname("false"): 
+    // we have $dropctx(Γ, cnil)$ by assumption; hence, by substititon weakening, we have $dropctx(Δ, cnil)$ and therefore applying #rstyle("nil")/#rstyle("true")/#rstyle("false") gives the desired result.
+    // - #rname("pair"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, $issub(γ_Ξ, Θ_Ξ, Ξ)$, by induction, we have that $istm(Θ_Δ, p, [γ_Δ]a, A)$ and $istm(Θ_Ξ, p, [γ_Ξ]b, B)$. Hence, since $[γ_Δ]a = [γ]a$ and $[γ_Ξ]b = [γ]b$, we may apply #rstyle("pair") to conclude that #istm($Θ$, $p$, $[γ](a, b)$, $A ⊗ B$) as desired.
+    // - #rname("let"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(γ_Ξ)$, $x: A, Θ_Ξ$, $x: A, Ξ$), by induction, we have that $istm(Θ_Δ, p, [γ_Δ]a, A)$ and #istm($x: A, Θ_Ξ$, $p$, $[slft(γ_Ξ)]e$, $B$). Hence, since $[γ_Δ]a = [γ]a$ and $[slft(γ_Ξ)]e = [slft(γ)]e$, we may apply #rstyle("let") to conclude that #istm($Θ$, $p$, $[γ](llet x = a; e)$, $B$) as desired.
+    // - #rname("let2"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(slft(γ_Ξ))$, $x: A, y: B, Θ_Ξ$, $x: A, y: B, Ξ$). By induction, we have that $istm(Θ_Δ, p, [γ_Δ]e, A)$ and #istm($x: A, y: B, Θ_Ξ$, $p$, $[slft(slft(γ_Ξ))]e'$, $C$). Hence, since $[γ_Δ]e = [γ]e$ and $[slft(slft(γ_Ξ))]e' = [slft(slft(γ))]e'$, we may apply #rstyle("let2") to conclude that #istm($Θ$, $p$, $[γ](llet (x, y) = e; e')$, $C$) as desired.
+    // - #rname("blk"): by induction, we have that $isblk(Θ, bcnil, p, t, B)$, and hence we may apply #rstyle("blk") to conclude that $istm(Θ, p, [γ]{t}, B)$
+    // - #rname("br"): by induction, we have that $istm(Θ, p, a, A)$, and hence we may apply #rstyle("br") to conclude that $isblk(Θ, [γ]sans(L), p, [γ](br(a)), A)$
+    // - #rname("jmp"): by assumption we have that $splitctx(Γ, Δ, Ξ)$, $joinctx(lhyp(Ξ, q, lbl(ℓ), A), sans(L))$; hence, by split and join substitution respectively, that $splitctx(Θ, Θ_Δ, Θ_Ξ)$, $joinctx(lhyp(Θ_Ξ, q, lbl(ℓ), A), [γ]sans(L))$. By induction we have that $istm(Θ_Δ, p, a, A)$. Hence, since by assumption $p ≤ q$, we may apply #rstyle("jmp") to conclude that $isblk(Θ, [γ]sans(L), p, [γ](br(lbl(ℓ), a)), B)$
+    // - #rname("ite"): by assumption we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution, that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. By induction we have that $istm(Θ_Δ, p, e, bools)$, $isblk(Θ_Ξ, [γ]sans(L), p, s, B)$, $isblk(Θ_Ξ, [γ]sans(L), p, t, B)$; hence, we may apply #rstyle("ite") to yield $isblk(Θ, [γ]sans(L), p, [γ](lite(e, s, t)), B)$
+    // - #rname("let-blk"): by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution that $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(γ_Ξ)$, $x: A, Θ_Ξ$, $x: A, Ξ$), by induction, we have that $istm(Θ_Δ, p, [γ_Δ]a, A)$ and #isblk($x: A, Θ_Ξ$, $[slft(γ_Ξ)]sans(L)$, $p$, $[slft(γ_Ξ)]t$, $B$). Hence, since $[γ_Δ]a = [γ]a$, $[slft(γ_Ξ)]t = [slft(γ)]t$, and  $[slft(γ_Ξ)]sans(L) = [γ]sans(L)$, we may apply #rstyle("let-blk") to conclude that #isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet x = a; e)$, $B$) as desired.
+    // - #rname("let2-blk"):  by assumption, we have that $splitctx(Γ, Δ, Ξ)$; hence, by split substitution $splitctx(Θ, Θ_Δ, Θ_Ξ)$. Since $issub(γ_Δ, Θ_Δ, Δ)$, #issub($slft(slft(γ_Ξ))$, $x: A, y: B, Θ_Ξ$, $x: A, y: B, Ξ$). By induction, we have that $istm(Θ_Δ, p, [γ_Δ]e, A)$ and #isblk($x: A, y: B, Θ_Ξ$, $[slft(slft(γ_Ξ))]sans(L)$, $p$, $[slft(slft(γ_Ξ))]t$, $C$). Hence, since $[γ_Δ]e = [γ]e$, $[slft(slft(γ_Ξ))]t = [slft(slft(γ))]t$, and $[slft(slft(γ_Ξ))]sans(L) = [γ]sans(L)$, we may apply #rstyle("let2-blk") to conclude that #isblk($Θ$, $p$, $[γ]sans(L)$, $[γ](llet (x, y) = e; t)$, $C$) as desired.
+    // - #rname("tr"): by induction, we have that
+    //     - $∀i, #[#isblk($x_i: A_i, Θ_(Δ_i)$, $[lhyp(Θ_(Δ_j), 0, lbl(ℓ)_j, A_j)]_j, [γ]sans(L)$, $p_i$, $[γ_(Δ_i)]t_i$, $B$)]$
+    //     - #isblk($Θ$, $[lhyp(Θ_(Δ_j), p_j, lbl(ℓ)_j, A_j)]_j, [γ]sans(L)$, $p$, $s$, $B$)
+    //   We may hence apply #rstyle("tr") to obtain the desired conclusion.
 ]
 
 /*
