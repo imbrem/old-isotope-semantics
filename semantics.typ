@@ -494,6 +494,25 @@ TODO: grammar for typing contexts, label contexts
 
 === Judgements
 
+We begin by giving a grammar for *contexts* and *label contexts* as follows:
+#let isotope-ctx-grammar = (
+    (
+        name: "Context",
+        symbol: ($Γ$, $Δ$, $Ξ$, $Θ$, $Φ$),
+        productions: (
+            ($cnil$, $x: A, Γ$),
+        )
+    ),
+    (
+        name: "Label Context",
+        symbol: ($sans(J)$, $sans(K)$, $sans(L)$),
+        productions: ((
+            $bcnil$,
+            $lhyp(Γ, p, lbl(ℓ), A), sans(L)$
+        ),),
+    ),
+);
+#grammar(isotope-ctx-grammar)
 We introduce the following typing judgements:
 #align(center,
     table(
@@ -513,8 +532,8 @@ We introduce the following typing judgements:
         [$Γ$ is a weakening of $Δ$],
         $joinctx(sans(K), sans(L))$,
         [$sans(K)$ is a subset of label-set $sans(L)$],
-        $rel(A)$, [$A$ can be split],
-        $aff(A)$, [$A$ can be dropped]
+        $rel(A)$, [$A$ is relevant (can be split)],
+        $aff(A)$, [$A$ is affine (can be dropped)]
     )
 )
 
@@ -732,16 +751,17 @@ TODO: text for typing rules
 
 == Syntactic Metatheory
 
-We begin by defining the notion of one context being a *subcontext* of another via the following rules:
+We now define the notion of one context being a *subcontext* of another via the following rules:
 #row-den(
     $prf(subctx(cnil, cnil), name: "sub-nil")$,
     $prf(subctx(Γ, Δ), #[#subctx($x: A, Γ$, $x: A, Δ$)], name: "sub-add")$,
     $prf(subctx(Γ, Δ), #[#subctx($x: A, Γ$, $Δ$)], name: "sub-ext")$
 )
 We state the following basic properties of this relation:
-- $subctx(Γ, Δ)$ is a partial order on contexts (i.e. is reflexive, transitive, and antisymmetric)
-- $splitctx(Γ, Δ, Ξ) ==> subctx(Δ, Γ) and subctx(Ξ, Γ)$
-- $dropctx(Γ, Δ) ==> subctx(Δ, Γ)$
+- $subctx(Γ, Δ)$ is a partial order on contexts
+- $∃Ξ, splitctx(Γ, Δ, Ξ) <==> subctx(Γ, Δ)$
+- In particular, $dropctx(Γ, Δ)$ induces a partial order on contexts refining $subctx(Γ, Δ)$
+
 // We now define the notion of the *union* of two contexts, $Γ ∪ Δ$, to be the unique context, if it exists, given by the following rules:
 // #row-den(
 //     $prf(cnil ∪ Γ = Γ, name: "union-lnil")$,
@@ -760,8 +780,8 @@ We state the following basic properties of this relation:
 // This allows us to define the union $union.big_x Δ_x$ of an ordered, finite collection of contexts $Δ_x$.
 
 We now state a few basic lemmas about splitting and weakening contexts:
-- $dropctx(Γ, Δ) <=> ∃Ξ, splitctx(Γ, Δ, Ξ) and dropctx(Ξ, cnil)$; furthermore, if it exists, this $Ξ$ is unique.
-- $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$
+/ Splitting commutes: $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$. In particular, $splitctx(Γ, Δ, Ξ) ==> subctx(Δ, Γ) and subctx(Ξ, Γ)$
+/* / Splitting associates: If $splitctx(Γ, Δ, Ξ)$, $splitctx(Δ, Θ, Φ)$, and $subctx(K, Γ)$, then $splitctx(Γ, Θ, K)$ if and only if $splitctx(K, Φ, Δ)$, and there is always such a $K$ */
 // - $∃K, splitctx(Γ, Δ, K) ∧ splitctx(K, Ξ, Θ) <==> ∃K', splitctx(Γ, K', Ξ) and splitctx(K', Δ, Θ)$ //TODO: think about this one...
 
 We may now state some basic theorems and definitions:
@@ -816,9 +836,11 @@ $
 we have $[γ]Ξ = b: ℕ, c ∈ ℕ$.
 We note the following basic properties about substitutions:
 - For all substitutions $γ$, $submap(γ, slft(γ))$
-- The relation $submap(γ', γ)$ is reflexive and transitive
+- The relation $submap(γ', γ)$ is a partial order on substitutions
 - If $submap(γ', γ)$, then for all label-contexts $sans(L)$, if $[γ']sans(L)$ is defined, then $[γ]sans(L) = [γ']sans(L)$
 - There is only one substitution $issub(cnil, cnil, cnil)$; in this case context-substitution is only defined for the empty context $[cnil]cnil = cnil$.
+- For all $x$, $subctx(Θ_x, Θ)$
+- For all $Ξ$, $subctx(Θ_Ξ, Θ)$, $subctx(Ξ, Ξ') ==> subctx(Θ_Ξ, Θ_(Ξ'))$, and $x: A ∈ Ξ ==> subctx(Θ_x, Θ_Ξ)$
 
 //TODO: segue?
 
@@ -828,6 +850,7 @@ We may now state the following basic lemmas w.r.t substitution
     If $joinctx(sans(K), sans(L))$ and $issub(γ, Θ, Γ)$, then $joinctx([γ]sans(K), [γ]sans(L))$
 ]
 #proof[By a trivial induction on derivations of $joinctx(sans(K), sans(L))$]
+
 //TODO: better name
 #lemma(name: "Split Substitution")[
     If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then $splitctx(Γ, Θ_Δ, Θ_Ξ)$, and there exist substitutions $γ_Δ$, $γ_Ξ$ such that 
@@ -838,7 +861,19 @@ We may now state the following basic lemmas w.r.t substitution
 #proof[
     We proceed by induction on derivations of $splitctx(Γ, Δ, Ξ)$:
     - #rname("ctx-nil"): take $γ_cnil = cnil$; the desired properties hold trivially.
-    - #rname("ctx-left"): // TODO: this
+    - #rname("ctx-left"): /* let $γ_(x: A, Δ) = [x ↦ [γ]x]γ_Δ$. Then $γ_Δ, γ_Ξ$ have the desired properties, since:
+        - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
+        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
+        - $subctx(Θ_(x: A, Δ), Θ)$, $subctx(Θ_Δ, Θ_(x: A, Δ))$, $subctx(Θ_x, Θ_(x: A, Δ))$ by definition 
+        - Therefore $splitctx(Θ_(x: A,Δ), Θ_x, Θ_Δ)$ since splitting assocates
+        - Hence, we may derive
+        #prf(
+            name: "subst-add", 
+            $issub(γ_Δ, Θ_Δ, Δ) " by ind."$,
+            $istm(Θ_x, p, γ[x], A)$,
+            $splitctx(Θ_(x: A, Δ), Θ_x, Θ_Δ) " since " issub(γ, Θ, Γ)$,
+            issub($[x ↦ [γ]x]γ_Δ$, $Θ_(x: A, Δ)$, $(x: A, Δ)$)
+        ) */
     - #rname("ctx-right"): // TODO: this
     - #rname("ctx-rel"): //TODO: this
     - #rname("ctx-aff"): //TODO: this
@@ -868,6 +903,8 @@ We may immediately deduce the following corollary:
 #proof[
     See @syntactic-properties[Appendix]
 ]
+
+//TODO: label substitution and unfolding
 
 = Semantics
 
