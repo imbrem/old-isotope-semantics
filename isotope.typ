@@ -248,6 +248,7 @@
 #let issub(name, defctx, varctx) = $name: defctx -> varctx$
 #let ssub(tm, var) = $tm slash var$
 #let slft(subst) = $subst^↑$
+#let submap(lsub, rsub) = $lsub ≤ rsub$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
