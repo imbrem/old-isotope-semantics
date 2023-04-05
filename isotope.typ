@@ -35,6 +35,13 @@
     //#set math.text(font: "Inria Serif")
     #outline(title: auto, depth: 2)
     #pagebreak()
+
+    #show raw.where(lang: "isotope"): it => [
+        #show regex("\b(let|br|if|else|for|in|match|while|loop|ret|where)\b") : keyword => text(weight:"bold", keyword, maroon)
+        #show regex("\b[0-9][a-zA-Z0-9_]*\b") : cnst => text(cnst, olive)
+        #it
+    ]
+
     #doc
     ]
 }
