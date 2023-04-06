@@ -751,13 +751,7 @@ TODO: text for typing rules
 
 == Syntactic Metatheory
 
-We begin by stating a few basic lemmas about splitting and weakening contexts:
-- There can be at most one derivation of $splitctx(Γ, Δ, Ξ)$ and hence of $dropctx(Γ, Δ)$
-- $dropctx(Γ, Δ)$ is a partial order on contexts.
-- If $splitctx(Γ, Δ, Ξ)$ and $dropctx(Ξ, Θ)$, then $splitctx(Γ, Δ, Θ)$.
-- *Splitting commutes:* $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$.
-- *Splitting associates:* if $splitctx(Γ, Δ, Ξ)$ and $splitctx(Δ, Θ, Φ)$, then there exists $K$ such that $splitctx(Γ, θ, K)$ and $splitctx(K, Δ, Φ)$.
-We now introduce a few auxiliary judgments regarding contexts:
+We begin by introducing a few auxiliary judgments regarding contexts:
 #align(center)[#table(
     columns: 2,
     stroke: none,
@@ -792,7 +786,16 @@ These have the following derivations:
     $x ∈ Γ <==> ∃A, x: A ∈ Γ$,
     $x: A ∈ Γ <==> #subctx($x: A$, $Γ$)$,
 )
-We state the following basic properties of these relations:
+We now state some basic properties and definitions:
+- There can be at most one derivation of $splitctx(Γ, Δ, Ξ)$ and hence of $dropctx(Γ, Δ)$
+- $dropctx(Γ, Δ)$ is a partial order on contexts.
+- If $splitctx(Γ, Δ, Ξ)$ and $dropctx(Ξ, Θ)$, then $splitctx(Γ, Δ, Θ)$.
+- We say a context $splitctx(Γ, Δ, Ξ)$ is *minimal* if $∀x ∈ Γ, x ∈ Δ or x ∈ Ξ$.
+- *Splitting commutes:* $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$.
+- If $splitctx(Γ, Δ, Ξ)$, $splitctx(Ξ, Θ, Φ)$
+    - If $splitctx(K, Δ, Θ)$ and $K$ is minimal, then $splitctx(Γ, K, Φ)$
+    - If $splitctx(K, Δ, Θ)$, $splitctx(K', Δ, Φ)$ and $rel(Δ)$, then $splitctx(Γ, K, K')$
+    - If $aff(Δ)$, then $splitctx(Γ, Θ, Φ)$
 - $subctx(Γ, Δ)$ is a partial order on contexts
 - $∃Ξ, splitctx(Γ, Δ, Ξ) <==> subctx(Δ, Γ)$; in particular, $dropctx(Γ, Δ) => subctx(Δ, Γ)$
 - $splitctx(Γ, Δ, Ξ) ==> subctx(Δ, Γ) and subctx(Ξ, Γ)$
@@ -812,6 +815,7 @@ This has the following basic properties:
 - $[x: A ∈ Γ | x: A ∈ Ξ] = [x: A ∈ Ξ | x: A ∈ Γ]$
 - If $P ==> Q$, then $subctx([x: A ∈ Γ | P], [x: A ∈ Γ | Q])$
 - If $subctx(Γ, Δ)$, then $subctx([x: A ∈ Γ | P], [x: A ∈ Δ | P])$
+- If $subctx(Θ_Δ, Δ)$, $subctx(Θ_Ξ, Ξ)$, and $splitctx(Γ, Δ, Ξ)$, then, for $Θ = [x: A ∈ Γ | x ∈ Θ_Δ or x ∈ Θ_Ξ]$, we have $splitctx(Θ, Θ_Δ, Θ_Ξ)$, with $Θ$ minimal.
 
 // We now define the notion of the *union* of two contexts, $Γ ∪ Δ$, to be the unique context, if it exists, given by the following rules:
 // #row-den(
@@ -904,6 +908,7 @@ We note the following basic properties about substitutions:
 - There is only one substitution $issub(cnil, Θ, cnil)$; in this case context-substitution is given by $[cnil]Ξ = Θ$.
 - For all $x$, $subctx(Θ_x, Θ)$
 - For all $Ξ$, $subctx(Θ_Ξ, Θ)$, $subctx(Ξ, Ξ') ==> subctx(Θ_Ξ, Θ_(Ξ'))$, and $x: A ∈ Ξ ==> subctx(Θ_x, Θ_Ξ)$
+- For all #issub($γ$, $Θ$, $x: A, Γ$) with #subctx($Ξ$, $Γ$), we have $splitctx(Θ_(x: A, Ξ), Θ_x, Θ_Ξ)$ with $Θ_(x: A, Ξ)$ minimal (since $subctx(Θ_x, Θ_x)$, $subctx(Θ_Ξ, Θ_Γ)$, and $splitctx(Θ, Θ_x, Θ_Γ)$)
 
 //TODO: segue?
 
@@ -916,7 +921,7 @@ We may now state the following basic lemmas w.r.t substitution
 
 //TODO: better name
 #lemma(name: "Split Substitution")[
-    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then $splitctx(Γ, Θ_Δ, Θ_Ξ)$, and there exist substitutions $γ_Δ$, $γ_Ξ$ such that 
+    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and there exist substitutions $γ_Δ$, $γ_Ξ$ such that 
     - $issub(γ_Δ, Θ_Δ, Δ)$, $issub(γ_Ξ, Θ_Ξ, Ξ)$. 
     - $submap(γ_Δ, γ)$, $submap(γ_Ξ, γ)$
     //TODO: these substitutions should be unique?
@@ -924,22 +929,56 @@ We may now state the following basic lemmas w.r.t substitution
 #proof[
     We proceed by induction on derivations of $splitctx(Γ, Δ, Ξ)$:
     - #rname("ctx-nil"): take $γ_cnil = cnil$; the desired properties hold trivially.
-    - #rname("ctx-left"): /* let $γ_(x: A, Δ) = [x ↦ [γ]x]γ_Δ$. Then $γ_Δ, γ_Ξ$ have the desired properties, since:
+    - #rname("ctx-left"): let $γ_(x: A, Δ) = [x ↦ [γ]x]γ_Δ$, where $γ_Δ, γ_Ξ$ are given by induction. Then $γ_(x: A, Δ), γ_Ξ$ have the desired properties, since:
         - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
         - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
-        - $subctx(Θ_(x: A, Δ), Θ)$, $subctx(Θ_Δ, Θ_(x: A, Δ))$, $subctx(Θ_x, Θ_(x: A, Δ))$ by definition 
-        - Therefore $splitctx(Θ_(x: A,Δ), Θ_x, Θ_Δ)$ since splitting assocates
+        - Therefore $splitctx(Θ_(x: A,Δ), Θ_x, Θ_Δ)$ is minimal; hence we have $splitctx(Θ, Θ_(x: A, Δ), Θ_Ξ)$
+        - Furthermore, we may derive
+        #prf(
+            name: "subst-add", 
+            $issub(γ_Δ, Θ_Δ, Δ) " by ind."$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $splitctx(Θ_(x: A, Δ), Θ_x, Θ_Δ)$,
+            issub($[x ↦ [γ]x]γ_Δ$, $Θ_(x: A, Δ)$, $(x: A, Δ)$)
+        )
+        - Finally, $issub(γ_Ξ, Θ_Ξ, Ξ)$ by induction
+    - #rname("ctx-right"): let $γ_(x: A, Ξ) = [x ↦ [γ]x]γ_Ξ$, where $γ_Δ, γ_Ξ$ are given by induction. Then $γ_Δ, γ_(x: A, Ξ)$ have the desired properties, since:
+        - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
+        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
+        - Therefore $splitctx(Θ_(x: A,Ξ), Θ_x, Θ_Ξ)$ is minimal; hence we have $splitctx(Θ, Θ_Δ, Θ_(x: A, Ξ))$
+        - Furthermore, we may derive
+        #prf(
+            name: "subst-add", 
+            $issub(γ_Ξ, Θ_Ξ, Ξ) " by ind."$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $splitctx(Θ_(x: A, Ξ), Θ_x, Θ_Ξ)$,
+            issub($[x ↦ [γ]x]γ_Ξ$, $Θ_(x: A, Ξ)$, $(x: A, Ξ)$)
+        )
+        - Finally, $issub(γ_Δ, Θ_Δ, Δ)$ by induction
+    - #rname("ctx-rel"): let $γ_(x: A, Δ) = [x ↦ [γ]x]γ_Δ$, $γ_(x: A, Ξ) = [x ↦ [γ]x]γ_Ξ$, where $γ_Δ, γ_Ξ$ are given by induction. Then $γ_(x: A, Δ), γ_(x: A, Ξ)$ have the desired properties, since:
+        - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
+        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
+        - Therefore $splitctx(Θ_(x: A,Δ), Θ_x, Θ_Δ)$ and $splitctx(Θ_(x: A,Ξ), Θ_x, Θ_Ξ)$
         - Hence, we may derive
         #prf(
             name: "subst-add", 
             $issub(γ_Δ, Θ_Δ, Δ) " by ind."$,
-            $istm(Θ_x, p, γ[x], A)$,
-            $splitctx(Θ_(x: A, Δ), Θ_x, Θ_Δ) " since " issub(γ, Θ, Γ)$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $splitctx(Θ_(x: A, Δ), Θ_x, Θ_Δ)$,
             issub($[x ↦ [γ]x]γ_Δ$, $Θ_(x: A, Δ)$, $(x: A, Δ)$)
-        ) */
-    - #rname("ctx-right"): // TODO: this
-    - #rname("ctx-rel"): //TODO: this
-    - #rname("ctx-aff"): //TODO: this
+        )
+        #prf(
+            name: "subst-add", 
+            $issub(γ_Ξ, Θ_Ξ, Ξ) " by ind."$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $splitctx(Θ_(x: A, Ξ), Θ_x, Θ_Ξ)$,
+            issub($[x ↦ [γ]x]γ_Ξ$, $Θ_(x: A, Ξ)$, $(x: A, Ξ)$)
+        )
+        - Since $rel(A)$ and #issub($γ$, $Θ$, $x: A, Γ$), we have $rel(Θ_x)$; hence, we have $splitctx(Θ, Θ_(x: A, Δ), Θ_(x: A, Ξ))$
+    - #rname("ctx-aff"): Let $γ_Δ, γ_Ξ$ be given by induction. Then $γ_Δ, γ_Ξ$ have the desired properties, since:
+        - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
+        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
+        - Since $aff(A)$ and #issub($γ$, $Θ$, $x: A, Γ$), we have $aff(Θ_x)$; hence, we have $splitctx(Θ, Θ_Δ, Θ_Ξ)$
 ]
 We may immediately deduce the following corollary:
 //TODO: rename to corollary?
