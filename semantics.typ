@@ -864,6 +864,7 @@ We may now state some basic theorems and definitions:
         $issub(γ, Θ_Γ, Γ)$, 
         $istm(Θ_x, 1, a, A)$,
         $rel(A) => rel(Θ_x)$,
+        $aff(A) => aff(Θ_x)$,
         $splitctx(Θ, Θ_x, Θ_Γ)$,
         issub($[x ↦ a]γ$, $Θ$, $x: A, Γ$),
         name: "subst-cons")
@@ -871,10 +872,8 @@ We may now state some basic theorems and definitions:
 
 #definition(name: "Substitution")[
     We define a *substitution* $issub(γ, Θ, Γ)$ to be an assignment of a context $Θ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Θ$ splits into subcontexts $Θ_x$ and $θ_cnil$, as defined by the following rules:
-    #row-den(
-        dprf(substitution-rules.subst-nil),
-        dprf(substitution-rules.subst-cons)
-    )
+    #dprf(substitution-rules.subst-nil)
+    #dprf(substitution-rules.subst-cons)
     We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. We define the substitution of a _context_ $Ξ$ to be given by the list comprehension
     $
     [γ]Ξ = [y: B ∈ Θ | ∃x ∈ Ξ, y ∈ Θ_x]
