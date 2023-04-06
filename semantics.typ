@@ -486,7 +486,9 @@ In this section, we go over the rules defining well-typed `isotope` syntax. Our 
 - Predicates $sans("rel"), sans("aff") subset.eq cal(V)$
 - For each $A, B in types(cal(V))$, 
     - A subset $cal(I)_0(A, B) subset.eq cal(I)$ of *instructions*.
-    - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions* such that, if $cal(I)_I(A, B)$ is nonempty, then $rel(B) => rel(A)$ and $aff(B) => aff(A)$.
+    - A subset $cal(I)_1(A, B) subset.eq cal(I)_0(A, B)$ of *pure instructions* 
+    /*such that, if $cal(I)_I(A, B)$ is nonempty, then*/ /*$rel(B) => rel(A)$ and $aff(B) => aff(A)$*/ /*$rel(B) or aff(B) => rel(A) and aff(A)$*/
+Throughout this section, we assume variable names are _unique_, performing $α$-conversion as necessary to maintain this invariant
 
 /*
 TODO: grammar for typing contexts, label contexts
@@ -768,7 +770,11 @@ We now introduce a few auxiliary judgments regarding contexts:
     $rel(Γ)$,
     [$Γ$ is relevant (i.e. has relevant components)],
     $aff(Γ)$,
-    [$Γ$ is affine (i.e. has affine components)]
+    [$Γ$ is affine (i.e. has affine components)],
+    $x: A ∈ Γ$,
+    [$x: A$ is contained in $Γ$],
+    $x ∈ Γ$,
+    [$x$ is contained in $Γ$]
 )]
 These have the following derivations:
 #row-den(
@@ -782,13 +788,30 @@ These have the following derivations:
     $prf(aff(cnil), name: "aff-nil")$,
     prf($aff(A)$, $aff(Γ)$, aff($x: A, Γ$), name: "aff-add"),
 )
+#row-den(
+    $x ∈ Γ <==> ∃A, x: A ∈ Γ$,
+    $x: A ∈ Γ <==> #subctx($x: A$, $Γ$)$,
+)
 We state the following basic properties of these relations:
 - $subctx(Γ, Δ)$ is a partial order on contexts
 - $∃Ξ, splitctx(Γ, Δ, Ξ) <==> subctx(Δ, Γ)$; in particular, $dropctx(Γ, Δ) => subctx(Δ, Γ)$
 - $splitctx(Γ, Δ, Ξ) ==> subctx(Δ, Γ) and subctx(Ξ, Γ)$
-- If $subctx(Γ, Δ)$, then $aff(Γ) => aff(Δ)$ and $rel(Γ) => rel(Δ)$
+- If $subctx(Γ, Δ)$, then $aff(Γ) <=> aff(Δ)$
+- If $subctx(Γ, Δ)$, then $rel(Γ) => rel(Δ)$
 - $aff(Γ) <==> dropctx(Γ, cnil)$ and $rel(Γ) <==> splitctx(Γ, Γ, Γ)$
 - If $aff(Γ)$ then $dropctx(Γ, Δ) <==> subctx(Δ, Γ)$
+- If $subctx(Δ, Γ)$ and $x: A ∈ Γ$, then $x ∈ Δ <==> x: A ∈ Δ$
+We define the *comprehension* of a context as follows:
+$
+    [x: A ∈ cnil | P] &= cnil \
+    [x: A ∈ y: A, Γ | P] &= y: B,[x: A ∈ Γ | P] & "where" [ssub(y, x)][ssub(B, A)]P \
+    [x: A ∈ y: A, Γ | P] &= [x: A ∈ Γ | P] & "otherwise"
+$
+This has the following basic properties:
+- $subctx([x: A ∈ Γ | P], Γ)$
+- $[x: A ∈ Γ | x: A ∈ Ξ] = [x: A ∈ Ξ | x: A ∈ Γ]$
+- If $P ==> Q$, then $subctx([x: A ∈ Γ | P], [x: A ∈ Γ | Q])$
+- If $subctx(Γ, Δ)$, then $subctx([x: A ∈ Γ | P], [x: A ∈ Δ | P])$
 
 // We now define the notion of the *union* of two contexts, $Γ ∪ Δ$, to be the unique context, if it exists, given by the following rules:
 // #row-den(
@@ -816,27 +839,34 @@ We may now state some basic theorems and definitions:
     See @syntactic-properties[Appendix]
 ]
 
-#let rel-aff-stmt = lemma(name: "Pure Terms are Relevant/Affine")[
-    If $istm(Γ, 1, a, A)$ or $isblk(Γ, sans(L), 1, t, A)$, then $aff(A) => aff(Γ)$ and $rel(A) => rel(Γ)$
-]
-#rel-aff-stmt
-#proof[
-    See @syntactic-properties[Appendix]
-]
-
+//NOTE: as of writing, this is *NOT TRUE*
+// #let rel-aff-stmt = lemma(name: "Pure Terms are Pseudolinear")[
+//     If $istm(Γ, 1, a, A)$ or $isblk(Γ, sans(L), 1, t, A)$, then $∃Θ$ such that
+//     - $dropctx(Γ, Θ)$
+//     - $istm(Θ, 1, a, A)$ or $isblk(Θ, sans(L), 1, a, A)$
+//     - $rel(A) ==> rel(Θ)$
+//     - $aff(A) ==> aff(Θ)$ (and therefore $aff(A) ==> aff(Γ)$)
+// ]
+// #rel-aff-stmt
+// #proof[
+//     See @syntactic-properties[Appendix]
+// ]
 
 #let substitution-rules = (
-    "subst-nil": prft($cnil: cnil -> cnil$, name: "subst-nil"),
+    "subst-nil": prft(
+        $dropctx(Θ_cnil, cnil)$, $cnil: Θ_cnil -> cnil$, 
+        name: "subst-nil"),
     "subst-cons": prft(
         $issub(γ, Θ_Γ, Γ)$, 
         $istm(Θ_x, 1, a, A)$,
+        $rel(A) => rel(Θ_x)$,
         $splitctx(Θ, Θ_x, Θ_Γ)$,
         issub($[x ↦ a]γ$, $Θ$, $x: A, Γ$),
         name: "subst-cons")
 )
 
 #definition(name: "Substitution")[
-    We define a *substitution* $issub(γ, Θ, Γ)$ to be an assignment of a context $Θ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Θ$ splits into subcontexts $Θ_x$, as defined by the following rules:
+    We define a *substitution* $issub(γ, Θ, Γ)$ to be an assignment of a context $Θ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Θ$ splits into subcontexts $Θ_x$ and $θ_cnil$, as defined by the following rules:
     #row-den(
         dprf(substitution-rules.subst-nil),
         dprf(substitution-rules.subst-cons)
@@ -845,9 +875,10 @@ We may now state some basic theorems and definitions:
     $
     [γ]Ξ = [y: B ∈ Θ | ∃x ∈ Ξ, y ∈ Θ_x]
     $
-    In particular, we note that
+    This may be alternatively defined recursively as
     $
-    [γ](x: A) = Θ_x, qq [γ](cnil) = cnil
+    [γ]cnil &= cnil \
+    [γ](x: A, Ξ) = [y: B ∈ Θ | y: B ∈ Θ_x or y: B ∈ [γ]Ξ]
     $
     We will often write $[γ]Ξ$ as $Θ_Ξ$ where the substitution $γ$ is clear from context.
     We may then define the substitution of a _label context_ as follows:
@@ -870,7 +901,7 @@ We note the following basic properties about substitutions:
 - For all substitutions $γ$, $submap(γ, slft(γ))$
 - The relation $submap(γ', γ)$ is a partial order on substitutions
 - If $submap(γ', γ)$, then for all label-contexts $sans(L)$, if $[γ']sans(L)$ is defined, then $[γ]sans(L) = [γ']sans(L)$
-- There is only one substitution $issub(cnil, cnil, cnil)$; in this case context-substitution is only defined for the empty context $[cnil]cnil = cnil$.
+- There is only one substitution $issub(cnil, Θ, cnil)$; in this case context-substitution is given by $[cnil]Ξ = Θ$.
 - For all $x$, $subctx(Θ_x, Θ)$
 - For all $Ξ$, $subctx(Θ_Ξ, Θ)$, $subctx(Ξ, Ξ') ==> subctx(Θ_Ξ, Θ_(Ξ'))$, and $x: A ∈ Ξ ==> subctx(Θ_x, Θ_Ξ)$
 
@@ -1404,17 +1435,61 @@ TODO:
     // - #rname("let2-blk"): since by induction $istm(Δ, 0, e, A ⊗ B)$, #isblk($x: A, y: B, Ξ$, $sans(L)$, $0$, $t$, $C$), we may apply #rstyle("let2") to derive #isblk($Γ$, $sans(L)$, $0$, $llet (x, y) = e; t$, $C$) as desired.
 ]
 
-#rel-aff-stmt
-#proof[
-    //TODO: this
-]
+//NOTE: as of writing, this is *NOT TRUE*
+// #rel-aff-stmt
+// #proof[
+//     We proceed by mutual induction on derivations $istm(Γ, 1, a, A)$, $isblk(Γ, sans(L), 1, t, B)$:
+//     - #rname("var"): 
+//         - By assumption, #dropctx($Γ$, $x: A$); taking $Θ = x: A$, we have $aff(A) => aff(Θ)$ and $rel(A) => rel(Θ)$ as desired.
+//     - #rname("app"): 
+//         - Since $f ∈ cal(I)_1(A, B)$, $aff(B) => aff(A)$ and $rel(B) => rel(A)$
+//         - By induction, there exists $Θ$ such that $istm(Θ, 1, a, A)$, $dropctx(Γ, Θ)$, $aff(A) => aff(Θ)$, $rel(A) => rel(Θ)$. Fixing such $Θ$; we have
+//         - $aff(B) => aff(Θ)$ and $rel(B) => rel(Θ)$ by transitivity of implication and $istm(Θ, 1, f aq a, B)$ by #rstyle("app") as desired
+//     - #rname("nil"), #rname("true"), #rname("false"): 
+//         since $dropctx(Γ, cnil)$, setting $Θ = cnil$, we have $aff(Δ)$ and $rel(Θ)$ yielding the desired result.
+//     - #rname("pair"): 
+//         - By assumption, $splitctx(Γ, Δ, Ξ)$
+//         - By induction, we can find $dropctx(Δ, Θ_Δ)$, $dropctx(Ξ, Θ_Ξ)$ such that $istm(Θ_Δ, 1, a, A)$, $istm(Θ_Ξ, 1, b, B)$ with $aff(A) => aff(Θ_Δ)$, $rel(A) => rel(Θ_Δ)$, $aff(B) => aff(Θ_Ξ)$, $rel(B) => rel(Θ_Ξ)$,
+//         - Choosing $Θ = [x: A ∈ Γ | x ∈ Θ_Δ or x ∈ Θ_Ξ]$, we have
+//             - $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and therefore #istm($Θ$, $1$, $(a, b)$, $A ⊗ B$)
+//             - $aff(θ) = aff(Θ_Δ) and aff(Θ_Ξ)$
+//             - $rel(θ) = rel(Θ_Δ) and rel(Θ_Ξ)$
+//             - $dropctx(Γ, Θ)$
+//         - Hence, since $aff(A ⊗ B) = aff(A) and aff(B)$ and $rel(A ⊗ B) = rel(A) and rel(B)$; $Θ$ satisfies all the desired properties.
+//     - #rname("let"): 
+//         - By assumption, $splitctx(Γ, Δ, Ξ)$
+//         - By induction, we can find $dropctx(Δ, Θ_Δ)$, #dropctx($x: A, Ξ$, $Θ_(x: A, Ξ)$) such that:
+//             - $istm(Θ_Δ, 1, a, A)$
+//             - #istm($Θ_(x: A, Ξ))$, $1$, $e$, $B$)
+//             - $aff(A) => aff(Θ_Δ)$, $rel(A) => rel(Θ_Δ)$
+//             - $aff(B) => aff(Θ_(x: A, Ξ))$, $rel(B) => rel(Θ_(x: A, Ξ))$
+//         - Let $Φ_Ξ = [y: A ∈ x: A, Ξ | y ∈ Θ_(x: A, Ξ) or y ∈ (x: A)]$; we have:
+//             - $dropctx(Φ_Ξ, Θ_(x: A, Ξ))$, #subctx($Φ_Ξ, x: A$, $Ξ$) and therefore #dropctx($x: A, Ξ$, $Φ_Ξ$).
+//             - $Φ_Ξ = x: A, Θ_Ξ$ for some $Θ_Ξ$; hence, by inversion,$dropctx(Ξ, Θ_Ξ)$.
+//             - By weakening, #istm($x: A, Θ_Ξ$, $1$, $e$, $B$)
+//             - $subctx(Θ_Ξ, Θ_(x: A, Ξ))$ and therefore $aff(B) => aff(Θ_Ξ)$, $rel(B) => rel(Θ_Ξ)$
+//         - Choosing $Θ = [y: A ∈ Γ | y ∈ Θ_Δ or y ∈ Θ_Ξ]$, we have
+//             - $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and therefore #istm($Θ$, $1$, $llet x = a; e$, $B$)
+//             - $aff(θ) = aff(Θ_Δ) and aff(Θ_Ξ)$
+//             - $rel(θ) = rel(Θ_Δ) and rel(Θ_Ξ)$
+//             - $dropctx(Γ, Θ)$
+//         - Hence, since $aff(A) and aff(B) => aff(A)$ and $rel(A) and rel(B) => rel(B)$; $Θ$ satisfies all the desired properties.
+//     - #rname("let2"): //TODO: this
+//     - #rname("blk"): //TODO: this
+//     - #rname("br"): //TODO: this
+//     - #rname("jmp"): //TODO: this
+//     - #rname("ite"): //TODO: this
+//     - #rname("let-blk"): //TODO: this
+//     - #rname("let2-blk"): //TODO: this
+//     - #rname("tr"): //TODO: this
+// ]
 
 #syntactic-weakening-stmt
 #proof[
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$:
     - #rname("var"): //TODO: this
     - #rname("app"): //TODO: this
-    - #rname("nil"): //TODO: this
+    - #rname("nil"), #rname("true"), #rname("false"): //TODO: this
     - #rname("pair"): //TODO: this
     - #rname("let"): //TODO: this
     - #rname("let2"): //TODO: this
