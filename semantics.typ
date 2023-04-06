@@ -661,7 +661,7 @@ TODO: text for typing rules
             $Γ$,
             $sans(L)$,
             $p$,
-            $llet [lbl(ell)_j(x_j: A_j) => {t_i}]_j; s$,
+            $llet [lbl(ell)_j(x_j: A_j) => {t_j}]_j; s$,
             $B$
         )
     )
@@ -1228,9 +1228,11 @@ $
 #rect([$dnt(#[$γ: Δ -> Γ$]): cal(C)_1(dnt(Δ), dnt(Γ))$])
 $
 $
-dnt(dprf(#substitution-rules.subst-nil)) =& idm \
-dnt(dprf(#substitution-rules.subst-cons)) =& dnt(#substitution-rules.subst-cons.premises.at(2)); \
-&
+dnt(dprf(#substitution-rules.subst-nil)) = idm 
+$
+$
+dnt(dprf(#substitution-rules.subst-cons)) \
+= dnt(#substitution-rules.subst-cons.premises.at(4));
     dnt(#substitution-rules.subst-cons.premises.at(1)) ⊗
     dnt(#substitution-rules.subst-cons.premises.at(0))
 $
@@ -1474,62 +1476,45 @@ TODO:
 ]
 
 //NOTE: as of writing, this is *NOT TRUE*
-// #rel-aff-stmt
-// #proof[
-//     We proceed by mutual induction on derivations $istm(Γ, 1, a, A)$, $isblk(Γ, sans(L), 1, t, B)$:
-//     - #rname("var"): 
-//         - By assumption, #dropctx($Γ$, $x: A$); taking $Θ = x: A$, we have $aff(A) => aff(Θ)$ and $rel(A) => rel(Θ)$ as desired.
-//     - #rname("app"): 
-//         - Since $f ∈ cal(I)_1(A, B)$, $aff(B) => aff(A)$ and $rel(B) => rel(A)$
-//         - By induction, there exists $Θ$ such that $istm(Θ, 1, a, A)$, $dropctx(Γ, Θ)$, $aff(A) => aff(Θ)$, $rel(A) => rel(Θ)$. Fixing such $Θ$; we have
-//         - $aff(B) => aff(Θ)$ and $rel(B) => rel(Θ)$ by transitivity of implication and $istm(Θ, 1, f aq a, B)$ by #rstyle("app") as desired
-//     - #rname("nil"), #rname("true"), #rname("false"): 
-//         since $dropctx(Γ, cnil)$, setting $Θ = cnil$, we have $aff(Δ)$ and $rel(Θ)$ yielding the desired result.
-//     - #rname("pair"): 
-//         - By assumption, $splitctx(Γ, Δ, Ξ)$
-//         - By induction, we can find $dropctx(Δ, Θ_Δ)$, $dropctx(Ξ, Θ_Ξ)$ such that $istm(Θ_Δ, 1, a, A)$, $istm(Θ_Ξ, 1, b, B)$ with $aff(A) => aff(Θ_Δ)$, $rel(A) => rel(Θ_Δ)$, $aff(B) => aff(Θ_Ξ)$, $rel(B) => rel(Θ_Ξ)$,
-//         - Choosing $Θ = [x: A ∈ Γ | x ∈ Θ_Δ or x ∈ Θ_Ξ]$, we have
-//             - $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and therefore #istm($Θ$, $1$, $(a, b)$, $A ⊗ B$)
-//             - $aff(θ) = aff(Θ_Δ) and aff(Θ_Ξ)$
-//             - $rel(θ) = rel(Θ_Δ) and rel(Θ_Ξ)$
-//             - $dropctx(Γ, Θ)$
-//         - Hence, since $aff(A ⊗ B) = aff(A) and aff(B)$ and $rel(A ⊗ B) = rel(A) and rel(B)$; $Θ$ satisfies all the desired properties.
-//     - #rname("let"): 
-//         - By assumption, $splitctx(Γ, Δ, Ξ)$
-//         - By induction, we can find $dropctx(Δ, Θ_Δ)$, #dropctx($x: A, Ξ$, $Θ_(x: A, Ξ)$) such that:
-//             - $istm(Θ_Δ, 1, a, A)$
-//             - #istm($Θ_(x: A, Ξ))$, $1$, $e$, $B$)
-//             - $aff(A) => aff(Θ_Δ)$, $rel(A) => rel(Θ_Δ)$
-//             - $aff(B) => aff(Θ_(x: A, Ξ))$, $rel(B) => rel(Θ_(x: A, Ξ))$
-//         - Let $Φ_Ξ = [y: A ∈ x: A, Ξ | y ∈ Θ_(x: A, Ξ) or y ∈ (x: A)]$; we have:
-//             - $dropctx(Φ_Ξ, Θ_(x: A, Ξ))$, #subctx($Φ_Ξ, x: A$, $Ξ$) and therefore #dropctx($x: A, Ξ$, $Φ_Ξ$).
-//             - $Φ_Ξ = x: A, Θ_Ξ$ for some $Θ_Ξ$; hence, by inversion,$dropctx(Ξ, Θ_Ξ)$.
-//             - By weakening, #istm($x: A, Θ_Ξ$, $1$, $e$, $B$)
-//             - $subctx(Θ_Ξ, Θ_(x: A, Ξ))$ and therefore $aff(B) => aff(Θ_Ξ)$, $rel(B) => rel(Θ_Ξ)$
-//         - Choosing $Θ = [y: A ∈ Γ | y ∈ Θ_Δ or y ∈ Θ_Ξ]$, we have
-//             - $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and therefore #istm($Θ$, $1$, $llet x = a; e$, $B$)
-//             - $aff(θ) = aff(Θ_Δ) and aff(Θ_Ξ)$
-//             - $rel(θ) = rel(Θ_Δ) and rel(Θ_Ξ)$
-//             - $dropctx(Γ, Θ)$
-//         - Hence, since $aff(A) and aff(B) => aff(A)$ and $rel(A) and rel(B) => rel(B)$; $Θ$ satisfies all the desired properties.
-//     - #rname("let2"): //TODO: this
-//     - #rname("blk"): //TODO: this
-//     - #rname("br"): //TODO: this
-//     - #rname("jmp"): //TODO: this
-//     - #rname("ite"): //TODO: this
-//     - #rname("let-blk"): //TODO: this
-//     - #rname("let2-blk"): //TODO: this
-//     - #rname("tr"): //TODO: this
-// ]
-
-#syntactic-weakening-stmt
+/*
+#rel-aff-stmt
 #proof[
-    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$:
-    - #rname("var"): //TODO: this
-    - #rname("app"): //TODO: this
-    - #rname("nil"), #rname("true"), #rname("false"): //TODO: this
-    - #rname("pair"): //TODO: this
-    - #rname("let"): //TODO: this
+    We proceed by mutual induction on derivations $istm(Γ, 1, a, A)$, $isblk(Γ, sans(L), 1, t, B)$:
+    - #rname("var"): 
+        - By assumption, #dropctx($Γ$, $x: A$); taking $Θ = x: A$, we have $aff(A) => aff(Θ)$ and $rel(A) => rel(Θ)$ as desired.
+    - #rname("app"): 
+        - Since $f ∈ cal(I)_1(A, B)$, $aff(B) => aff(A)$ and $rel(B) => rel(A)$
+        - By induction, there exists $Θ$ such that $istm(Θ, 1, a, A)$, $dropctx(Γ, Θ)$, $aff(A) => aff(Θ)$, $rel(A) => rel(Θ)$. Fixing such $Θ$; we have
+        - $aff(B) => aff(Θ)$ and $rel(B) => rel(Θ)$ by transitivity of implication and $istm(Θ, 1, f aq a, B)$ by #rstyle("app") as desired
+    - #rname("nil"), #rname("true"), #rname("false"): 
+        since $dropctx(Γ, cnil)$, setting $Θ = cnil$, we have $aff(Δ)$ and $rel(Θ)$ yielding the desired result.
+    - #rname("pair"): 
+        - By assumption, $splitctx(Γ, Δ, Ξ)$
+        - By induction, we can find $dropctx(Δ, Θ_Δ)$, $dropctx(Ξ, Θ_Ξ)$ such that $istm(Θ_Δ, 1, a, A)$, $istm(Θ_Ξ, 1, b, B)$ with $aff(A) => aff(Θ_Δ)$, $rel(A) => rel(Θ_Δ)$, $aff(B) => aff(Θ_Ξ)$, $rel(B) => rel(Θ_Ξ)$,
+        - Choosing $Θ = [x: A ∈ Γ | x ∈ Θ_Δ or x ∈ Θ_Ξ]$, we have
+            - $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and therefore #istm($Θ$, $1$, $(a, b)$, $A ⊗ B$)
+            - $aff(θ) = aff(Θ_Δ) and aff(Θ_Ξ)$
+            - $rel(θ) = rel(Θ_Δ) and rel(Θ_Ξ)$
+            - $dropctx(Γ, Θ)$
+        - Hence, since $aff(A ⊗ B) = aff(A) and aff(B)$ and $rel(A ⊗ B) = rel(A) and rel(B)$; $Θ$ satisfies all the desired properties.
+    - #rname("let"): 
+        - By assumption, $splitctx(Γ, Δ, Ξ)$
+        - By induction, we can find $dropctx(Δ, Θ_Δ)$, #dropctx($x: A, Ξ$, $Θ_(x: A, Ξ)$) such that:
+            - $istm(Θ_Δ, 1, a, A)$
+            - #istm($Θ_(x: A, Ξ))$, $1$, $e$, $B$)
+            - $aff(A) => aff(Θ_Δ)$, $rel(A) => rel(Θ_Δ)$
+            - $aff(B) => aff(Θ_(x: A, Ξ))$, $rel(B) => rel(Θ_(x: A, Ξ))$
+        - Let $Φ_Ξ = [y: A ∈ x: A, Ξ | y ∈ Θ_(x: A, Ξ) or y ∈ (x: A)]$; we have:
+            - $dropctx(Φ_Ξ, Θ_(x: A, Ξ))$, #subctx($Φ_Ξ, x: A$, $Ξ$) and therefore #dropctx($x: A, Ξ$, $Φ_Ξ$).
+            - $Φ_Ξ = x: A, Θ_Ξ$ for some $Θ_Ξ$; hence, by inversion,$dropctx(Ξ, Θ_Ξ)$.
+            - By weakening, #istm($x: A, Θ_Ξ$, $1$, $e$, $B$)
+            - $subctx(Θ_Ξ, Θ_(x: A, Ξ))$ and therefore $aff(B) => aff(Θ_Ξ)$, $rel(B) => rel(Θ_Ξ)$
+        - Choosing $Θ = [y: A ∈ Γ | y ∈ Θ_Δ or y ∈ Θ_Ξ]$, we have
+            - $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and therefore #istm($Θ$, $1$, $llet x = a; e$, $B$)
+            - $aff(θ) = aff(Θ_Δ) and aff(Θ_Ξ)$
+            - $rel(θ) = rel(Θ_Δ) and rel(Θ_Ξ)$
+            - $dropctx(Γ, Θ)$
+        - Hence, since $aff(A) and aff(B) => aff(A)$ and $rel(A) and rel(B) => rel(B)$; $Θ$ satisfies all the desired properties.
     - #rname("let2"): //TODO: this
     - #rname("blk"): //TODO: this
     - #rname("br"): //TODO: this
@@ -1539,10 +1524,57 @@ TODO:
     - #rname("let2-blk"): //TODO: this
     - #rname("tr"): //TODO: this
 ]
+*/
+
+#syntactic-weakening-stmt
+#proof[
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a weakening $dropctx(Θ, Γ)$:
+    - #rname("var"): 
+        - By transitivity of weakening, $#subctx($Γ$, $x: A$) ==> #subctx($Θ$, $x: A$)$ 
+        - Hence, by #rstyle("var"), $istm(Θ, p, x, A)$, as desired.
+    - #rname("app"):
+        - By induction, $istm(Θ, p, a, A)$
+        - Hence, by #rstyle("app"), $istm(Θ, p, f aq a, B)$, as desired.
+    - #rname("nil"), #rname("true"), #rname("false"): 
+        - By transitivity of weakening, $#subctx($Γ$, $x: A$) ==> #subctx($Θ$, $cnil$)$ 
+        - Hence, by #rstyle("nil")/#rstyle("true")/#rstyle("false"), we may derive the desired conclusion
+    // - #rname("pair"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("pair"), $istm(Θ, p, (a, b), A ⊗ B)$
+    // - #rname("let"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("let"), #istm($Θ$, $p$, $llet x = a; b$, $B$)
+    // - #rname("let2"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("let2"), #istm($Θ$, $p$, $llet (x, y) = e; e'$, $C$)
+    - #rname("blk"):
+        - By induction, $isblk(Θ, bcnil, p, t, B)$
+        - Hence, by #rstyle("blk"), #istm($Θ$, $p$, ${t}$, $B$)
+    - #rname("br"): 
+        - By induction, $istm(Θ, p, a, A)$
+        - Hence, by #rstyle("br"), $isblk(Θ, sans(L), p, br(a), A)$, as desired.
+    // - #rname("jmp"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("jmp"), #isblk($Θ$, $sans(L)$, $p$, $br(lbl(ℓ), a)$, $B$)
+    // - #rname("ite"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("ite"), #isblk($Θ$, $sans(L)$, $p$, $lite(e, s, t)$, $B$)
+    // - #rname("let-blk"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("let-blk"), #isblk($Θ$, $sans(L)$, $p$, $llet x = a; t$, $B$)
+    // - #rname("let2-blk"): 
+    //     - By assumption, $splitctx(Γ, Δ, Ξ)$; hence, by composition, $splitctx(Θ, Δ, Ξ)$
+    //     - Hence, by #rstyle("let2-blk"), #isblk($Θ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)
+    - #rname("tr"): 
+        - By induction, #isblk($Θ$, $[lhyp(Δ_j, p_j, lbl(ℓ)_j, A_j)]_j, sans(L)$, $p$, $s$, $B$)
+        - Hence, by #rstyle("tr"), #isblk($Θ$, $sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s$, $B$)
+    - The remainder of the cases may be discharged by noting that, as by assumption, $splitctx(Γ, Δ, Ξ)$; and hence, by composition, $splitctx(Θ, Δ, Ξ)$, the appropriate typing rule may simply be applied directly.
+]
+
 
 #syntactic-substitution-stmt
 #proof[
-    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$:
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a substitution $issub(γ, Θ, Γ)$:
     - #rname("var"): 
         - By assumption, we have that $istm(Θ_x, 1, [γ]x, A)$ (since $issub(γ, Θ, Γ)$ is a substitution); 
         - Hence, by upgrade, we have that $istm(Θ_x, p, [γ]x, A)$. 
