@@ -53,6 +53,7 @@
     doc
 }
 
+//TODO: fix counter for duplicate theorems...
 #let theorem-counter = counter("theorem")
 #let theorem(body, name: none, numbered: true) = locate(location => {
   let lvl = counter(heading).at(location)
@@ -256,6 +257,7 @@
 #let ssub(tm, var) = $tm slash var$
 #let slft(subst) = $subst^↑$
 #let submap(lsub, rsub) = $lsub ≤ rsub$
+#let labmap(label, subst) = $sans("labmap")(label, subst)$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {

@@ -1219,13 +1219,30 @@ TODO: string diagrams for control flow?
 
 == Metatheory
 
-//TODO: split into sections?
+//TODO: text, segue
 
-//TODO: weakening, lemmas on weakening
-
-We begin by giving a denotational semantics for substititons:
+We begin by stating a few basic properties of weakenings:
+- Since derivations $splitctx(Γ, Δ, Ξ)$, $dropctx(Γ, Δ)$, $joinctx(sans(L), sans(K))$ are unique, it follows their denotations are unique, if they exist, justifying the syntax $dnt(splitctx(Γ, Δ, Ξ))$, $dnt(dropctx(Γ, Δ))$, $dnt(joinctx(sans(L), sans(K)))$
+- In particular, we have that $dnt(dropctx(Γ, Γ)) = idm$, and, if $dropctx(Γ, Δ), dropctx(Δ, Ξ)$, then 
 $
-#rect([$dnt(#[$γ: Δ -> Γ$]): cal(C)_1(dnt(Δ), dnt(Γ))$])
+dnt(dropctx(Γ, Ξ)) = dnt(dropctx(Γ, Δ));dnt(dropctx(Δ, Ξ))
+$
+
+#let weakening-stmt = theorem(name: "Semantic Weakening")[
+    - If $D_Γ$ is a derivation of $istm(Γ, p, a, A)$, then for all $dropctx(Γ, Δ)$, for all derivations $D_Θ$ of $istm(Θ, p, a, A)$, $dnt(D_Γ) = dnt(dropctx(Γ, Θ));dnt(D_Θ)$
+    - If $D_Γ$ is a derivation of $isblk(Γ, sans(L), p, t, B)$, then for all $dropctx(Γ, Θ)$, for all derivations $D_Θ$ of $isblk(Θ, sans(L), p, t, B)$, $dnt(D_Γ) = dnt(dropctx(Γ, Θ));dnt(D_Θ)$
+    In particular, all derivations of $istm(Γ, p, a, A)$ and $isblk(Γ, sans(L), p, t, B)$ have equal denotations, justifying the syntax $dnt(istm(Γ, p, a, A))$, $dnt(isblk(Γ, sans(L), p, t, B))$
+]
+#weakening-stmt
+#proof[
+    See @semantic-properties[Appendix]
+]
+
+//TODO: text, segue
+
+We now give a denotational semantics for substititons:
+$
+#rect([$dnt(#[$issub(γ, Θ, Γ)$]): cal(C)_1(dnt(Θ), dnt(Γ))$])
 $
 $
 dnt(dprf(#substitution-rules.subst-nil)) = idm 
@@ -1236,10 +1253,36 @@ dnt(dprf(#substitution-rules.subst-cons)) \
     dnt(#substitution-rules.subst-cons.premises.at(1)) ⊗
     dnt(#substitution-rules.subst-cons.premises.at(0))
 $
+Since the denotations of derivations $istm(Γ, 1, a, A)$ and $splitctx(Γ, Δ, Ξ)$ are unique, it follows by a trivial induction that the denotations of $issub(γ, Θ, Γ)$ are unique, justifying the syntax $dnt(issub(γ, Θ, Γ))$.
 
-//TODO: semantic substitution
+A substitution $issub(γ, Θ, Γ)$ also induces a map on label contexts as follows:
+$
+#rect([$labmap(sans(L), γ): cal(C)_1(dnt([γ]sans(L)), dnt(sans(L)))$])
+$
+$
+labmap(bcnil, γ) & = idm \
+labmap((lhyp(Δ, p, lbl(ℓ), A), sans(L)), γ) & = dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ A
+$
+with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
+
+//TODO: text, segue
 
 //TODO: lemmas on substititon; e.g. semantic splitting
+
+We may now state the semantic substitution theorem:
+#let substitution-stmt = theorem(name: "Semantic Substitution")[
+    If $issub(γ, Θ, Γ)$ and $istm(Γ, p, a, A)$ or $isblk(Γ, sans(L), p, t, B)$, then
+    $
+        dnt(istm(Θ, p, [γ]a, A)) = dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, [γ]a, A))
+    $
+    $
+        dnt(isblk(Θ, [γ]sans(L), p, [γ]t, B));(B ⊕ labmap(sans(L), γ)) = dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, [γ]sans(L), p, [γ]t, A))
+    $
+]
+#substitution-stmt
+#proof[
+    See @semantic-properties[Appendix]
+]
 
 /*
 
@@ -1627,8 +1670,42 @@ TODO:
         - Hence, by #rstyle("tr"), #isblk($Θ$, $[γ]sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; [γ]s$, $B$), as desired.
 ]
 
-/*
-== Syntactic Properties
+== Semantic Properties <semantic-properties>
+
+#weakening-stmt
+#proof[
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a weakening $dropctx(Γ, Θ)$ and a corresponding derivation $istm(Θ, p, a, A)$ or $isblk(Θ, sans(L), p, t, B)$.
+    - #rname("var"): //TODO: this 
+    - #rname("app"): //TODO: this 
+    - #rname("nil"), #rname("true"), #rname("false"): //TODO: this  
+    - #rname("pair"): //TODO: this 
+    - #rname("let"): //TODO: this 
+    - #rname("let2"): //TODO: this 
+    - #rname("blk"): //TODO: this 
+    - #rname("br"): //TODO: this 
+    - #rname("jmp"): //TODO: this 
+    - #rname("ite"): //TODO: this 
+    - #rname("let-blk"): //TODO: this 
+    - #rname("let2-blk"): //TODO: this 
+    - #rname("tr"): //TODO: this 
+]
+
+#substitution-stmt
+#proof[
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a substitution $issub(γ, Θ, Γ)$
+    - #rname("var"): //TODO: this 
+    - #rname("app"): //TODO: this 
+    - #rname("nil"), #rname("true"), #rname("false"): //TODO: this  
+    - #rname("pair"): //TODO: this 
+    - #rname("let"): //TODO: this 
+    - #rname("let2"): //TODO: this 
+    - #rname("blk"): //TODO: this 
+    - #rname("br"): //TODO: this 
+    - #rname("jmp"): //TODO: this 
+    - #rname("ite"): //TODO: this 
+    - #rname("let-blk"): //TODO: this 
+    - #rname("let2-blk"): //TODO: this 
+    - #rname("tr"): //TODO: this 
+]
 
 //TODO: this
-*/
