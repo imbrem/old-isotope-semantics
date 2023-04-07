@@ -807,8 +807,8 @@ We now state some basic properties and definitions:
 We define the *comprehension* of a context as follows:
 $
     [x: A ∈ cnil | P] &= cnil \
-    [x: A ∈ y: A, Γ | P] &= y: B,[x: A ∈ Γ | P] & "where" [ssub(y, x)][ssub(B, A)]P \
-    [x: A ∈ y: A, Γ | P] &= [x: A ∈ Γ | P] & "otherwise"
+    [x: A ∈ y: B, Γ | P] &= y: B,[x: A ∈ Γ | P] & "where" [ssub(y, x)][ssub(B, A)]P \
+    [x: A ∈ y: B, Γ | P] &= [x: A ∈ Γ | P] & "otherwise"
 $
 This has the following basic properties:
 - $subctx([x: A ∈ Γ | P], Γ)$
@@ -871,7 +871,7 @@ We may now state some basic theorems and definitions:
 )
 
 #definition(name: "Substitution")[
-    We define a *substitution* $issub(γ, Θ, Γ)$ to be an assignment of a context $Θ_x$ and a pure term $istm(Δ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Θ$ splits into subcontexts $Θ_x$ and $θ_cnil$, as defined by the following rules:
+    We define a *substitution* $issub(γ, Θ, Γ)$ to be an assignment of a context $Θ_x$ and a pure term $istm(Θ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Θ$ splits into subcontexts $Θ_x$ and $θ_cnil$, as defined by the following rules:
     #dprf(substitution-rules.subst-nil)
     #dprf(substitution-rules.subst-cons)
     We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. We define the substitution of a _context_ $Ξ$ to be given by the list comprehension
@@ -900,6 +900,37 @@ $
 #[#issub($γ = [x ↦ 2, y ↦ a, z ↦ b + c]$, $(x: ℕ, y: ℕ, z: ℕ)$, $(a: ℕ, b: ℕ, c: ℕ)$)], qq Ξ = x: ℕ, z: ℕ
 $
 we have $[γ]Ξ = b: ℕ, c ∈ ℕ$.
+
+The rules for determining whether a substitution is valid may seem somewhat strange; to understand them, consider the following value, where $f ∈ cal(I)_1(A, B)$ is a pure instruction mapping intuitionistic $A$ to affine $B$ and $g ∈ cal(I)_1(B, C)$ is a pure instruction mapping affine $B$ to intuitionistic $C$:
+$
+#istm($a: A$, $1$, $g aq (f aq a)$, $C$)
+$
+We may construct a perfectly valid substitution
+$
+#issub($[c ↦ g aq (f aq a)]$, $a: A$, $c: C$)
+$
+This works as expected, since both $(c, c)$ and
+$
+[c ↦ g aq (f aq a)](c, c) = (g aq (f aq a), g aq (f aq a))
+$
+are perfectly well-typed values of $C ⊗ C$. However, the following substitution is *rejected*:
+$
+#issub($[c ↦ g aq b]$, $b: B$, $c: C$)
+$
+This is because, even though #istm($b: B$, $1$, $g aq b$, $C$), we have #rel($c: C$) but _not_ #rel($b: B$), and hence do not have $#rel($c: C$) => #rel($b: B$)$, which does not allow us to use the rule (#text("subst-cons", maroon)). This is good, as otherwise substitution would not hold, since while $(c, c)$ is a well-typed value of type $C ⊗ C$,
+$
+[c ↦ g aq b](c, c) = (g aq b, g aq b)
+$
+is obviously ill-typed (since the affine variable, $b$, is used twice). Unfortunately, simply banning such instructions $g$ from being pure (by, e.g., requiring that for any pure instruction $g ∈ cal(I)_1(B, C)$, $rel(C) => rel(B)$) does _not_ work, since we could instead just use, e.g., the substitution $[c ↦ llet \_ = b; ltt]$, where $C = bools$, since
+$
+#istm($b: B$, $1$, $llet \_ = b; ltt$, $bools$)
+$
+to again obtain the exact same issue, since
+$
+[c ↦ llet \_ = b; ltt](c, c) = (llet \_ = b; ltt, llet \_ = b; ltt)
+$
+is ill-typed for the same reason ($b$ is used twice). And $g$, just like the above let-binding, should be allowed to be used in pure instructions if it is _semantically_ pure, i.e., if executing it twice or none at all is the same as executing it once _as long as the results are disposed of properly_.
+
 We note the following basic properties about substitutions:
 - For all substitutions $γ$, $submap(γ, slft(γ))$
 - The relation $submap(γ', γ)$ is a partial order on substitutions
