@@ -799,7 +799,7 @@ We now state some basic properties and definitions:
 - $subctx(Γ, Δ)$ is a partial order on contexts
 - $∃Ξ, splitctx(Γ, Δ, Ξ) <==> subctx(Δ, Γ)$; in particular, $dropctx(Γ, Δ) => subctx(Δ, Γ)$
 - $splitctx(Γ, Δ, Ξ) ==> subctx(Δ, Γ) and subctx(Ξ, Γ)$
-- If $subctx(Γ, Δ)$, then $aff(Γ) => aff(Δ)$
+- If $subctx(Γ, Δ)$, then $aff(Γ) => aff(Δ)$. If $dropctx(Γ, Δ)$, then $aff(Γ) <=> aff(Δ)$.
 - If $subctx(Γ, Δ)$, then $rel(Γ) => rel(Δ)$
 - $aff(Γ) <==> dropctx(Γ, cnil)$ and $rel(Γ) <==> splitctx(Γ, Γ, Γ)$
 - If $aff(Γ)$ then $dropctx(Γ, Δ) <==> subctx(Δ, Γ)$
