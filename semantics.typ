@@ -1300,14 +1300,24 @@ with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
 
 //TODO: lemmas on substititon; e.g. semantic splitting
 
+#let substitution-wk-stmt = lemma(name: "Semantic Substitution Weakening")[
+    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then
+    $
+    dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ)) = dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(issub(γ, Θ, Δ)) ⊗ dnt(issub(γ, Θ, Ξ))
+    $
+    In particular, $dnt(issub(γ, Θ, cnil)) = dnt(dropctx(Θ, cnil))$ and therefore
+    $
+    dnt(issub(γ, Θ, Γ));dnt(dropctx(Γ, Δ)) = dnt(dropctx(Θ_Γ, Θ_Δ));dnt(issub(γ_Δ, Θ, Δ))
+    $
+]
+#substitution-wk-stmt
+
 We may now state the semantic substitution theorem:
 #let substitution-stmt = theorem(name: "Semantic Substitution")[
     If $issub(γ, Θ, Γ)$ and $istm(Γ, p, a, A)$ or $isblk(Γ, sans(L), p, t, B)$, then
     $
-        dnt(istm(Θ, p, [γ]a, A)) = dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, [γ]a, A))
-    $
-    $
-        dnt(isblk(Θ, [γ]sans(L), p, [γ]t, B));(B ⊕ labmap(sans(L), γ)) = dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, [γ]sans(L), p, [γ]t, A))
+        dnt(istm(Θ, p, [γ]a, A)) &= dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, [γ]a, A)) \
+        dnt(isblk(Θ, [γ]sans(L), p, [γ]t, B));(B ⊕ labmap(sans(L), γ)) &= dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, [γ]sans(L), p, [γ]t, A))
     $
 ]
 #substitution-stmt
