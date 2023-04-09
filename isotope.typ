@@ -285,6 +285,7 @@
 #let isblk(ctx, bctx, purity, blk, ty) = $
     ctx;bctx ⊢_purity blk triangle.stroked.small ty$
 #let upg(body, purity: none) = $body^(↑_purity)$
+#let instof(purity, func) = $sans("inst")_purity(func)$
 
 #let row-den(..args) = {
     align(center)[#table(

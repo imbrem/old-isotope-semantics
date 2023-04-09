@@ -1163,7 +1163,7 @@ $
     $dnt(dprf(#typing-rules.nil)) = upg(dnt(#typing-rules.nil.premises.at(0)), purity: p)$,
 )
 $
-dnt(dprf(#typing-rules.app)) = sans("inst")_p(f) ∘ dnt(#typing-rules.var.premises.at(0))
+dnt(dprf(#typing-rules.app)) = instof(p, f) ∘ dnt(#typing-rules.var.premises.at(0))
 $
 #row-den(
     $dnt(dprf(#typing-rules.true)) = upg(dnt(#typing-rules.true.premises.at(0)), purity: p);sans("tt")$,
@@ -1716,11 +1716,134 @@ TODO:
 #weakening-stmt
 #proof[
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a weakening $dropctx(Γ, Θ)$ and a corresponding derivation $istm(Θ, p, a, A)$ or $isblk(Θ, sans(L), p, t, B)$.
-    - #rname("var"): //TODO: this 
-    - #rname("app"): //TODO: this 
-    - #rname("nil"), #rname("true"), #rname("false"): //TODO: this  
-    - #rname("pair"): //TODO: this 
-    - #rname("let"): //TODO: this 
+    - #rname("var"): we have that, given a derivation of $istm(Θ, p, x, A)$, since $#dropctx($Θ$, $x: A$)$ and weakening composes,
+    $
+        dnt(istm(Γ, p, x, A)) 
+        = dnt(#dropctx($Γ$, $x: A$)) 
+        = dnt(dropctx(Γ, Θ));dnt(#dropctx($Θ$, $x: A$))
+        = dnt(dropctx(Γ, Θ));dnt(istm(Θ, p, x, A))
+    $
+    - #rname("app"): 
+        - By inversion,
+            - $istm(Γ, p, a, A)$
+            - $f ∈ cal(I)_p(A, B)$
+        - We assume by induction that, for all derivations of $istm(Γ, p, a, A)$, $istm(Θ, p, a, A)$,
+        $
+        dnt(istm(Γ, p, a, A)) = dnt(dropctx(Γ, Θ));dnt(istm(Θ, p, a, A))
+        $
+        - Assume $istm(Θ, p, f aq a, B)$. Then, by inversion, $istm(Θ, p, a, A)$
+        - Hence,
+        $
+            & dnt(istm(Γ, p, f aq a, B))  #h(12em) &
+            \ &= instof(p, f) ∘ dnt(istm(Γ, p, a, A)) 
+            & "by definition"
+            \ &= instof(p, f) ∘ 
+                (dnt(dropctx(Γ, Θ)); dnt(istm(Θ, p, a, A))) 
+            & "by induction"
+            \ &= dnt(dropctx(Γ, Θ)); 
+                (instof(p, f) ∘ dnt(istm(Θ, p, a, A)))
+            & "by associativity"
+            \ &=
+            dnt(dropctx(Γ, Θ)); dnt(istm(Θ, p, f aq a, B))
+            & "by definition"
+        $
+    - #rname("nil"), #rname("true"), #rname("false"): 
+        in each case, the desired result follows trivially from the fact that weakening composes.
+    - #rname("pair"): 
+        - By inversion,
+            - $splitctx(Γ, Δ, Ξ)$
+            - $istm(Δ, p, a, A)$
+            - #istm($Ξ$, $p$, $b$, $B$)
+        - We assume by induction that: 
+            - For all $Δ, Θ_Δ$, for all derivations $istm(Δ, p, a, A)$, $istm(Θ_Δ, p, a, A)$, $dropctx(Δ, Θ_Δ)$, 
+            $
+            dnt(istm(Δ, p, a, A)) = 
+            dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))
+            $
+            - For all $Ξ, Θ_Ξ$, for all derivations $istm(Ξ, p, b, A)$, $istm(Θ_Ξ, p, b, A)$, $dropctx(Ξ, Θ_Ξ)$, 
+            $
+            dnt(istm(Ξ, p, b, B)) = 
+            dnt(dropctx(Ξ, Θ_Ξ));dnt(istm(Θ_Ξ, p, b, B))
+            $
+        - Assume $istm(Θ, p, (a, b), A ⊗ B)$ and $dropctx(Γ, Θ)$. By inversion,
+            - $splitctx(Θ, Θ_Δ, Θ_Ξ)$
+            - $istm(Θ_Δ, p, a, A)$
+            - $istm(Θ_Ξ, p, b, A)$
+        - By syntactic weakening, $dropctx(Δ, Θ_Δ)$ and $dropctx(Ξ, Θ_Ξ)$ (TODO: justify properly, expand)
+        - Hence,
+        $
+        & dnt(istm(Γ, p, (a, b), A ⊗ B)) #h(24em) &
+        \ &= dnt(splitctx(Γ, Δ, Ξ));
+            dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, A)) 
+        & "by definition"
+        \ &= dnt(splitctx(Γ, Δ, Ξ));
+            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⋉
+            (dnt(dropctx(Ξ, Θ_Ξ));dnt(istm(Θ_Ξ, p, b, B)))
+        & "by induction"
+        \ &= dnt(splitctx(Γ, Δ, Ξ));
+            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(dropctx(Ξ, Θ_Ξ));
+            dnt(istm(Θ_Δ, p, a, A)) ⋉
+            dnt(istm(Θ_Ξ, p, b, B))
+        & "by centrality"
+        \ &= dnt(dropctx(Γ, Θ));
+            dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+            dnt(istm(Θ_Δ, p, a, A)) ⋉
+            dnt(istm(Θ_Ξ, p, b, B))
+        & "TODO"
+        \ &= dnt(dropctx(Γ, Θ));
+            dnt(istm(Θ, p, (a, b), A ⊗ B))
+        & "by definition"
+        $
+    - #rname("let"): 
+        - By inversion,
+            - $splitctx(Γ, Δ, Ξ)$
+            - $istm(Δ, p, a, A)$
+            - #istm($x: A, Ξ$, $p$, $e$, $B$)
+        - We assume by induction that:
+            - For all $Δ, Θ_Δ$, for all derivations $istm(Δ, p, a, A)$, $istm(Θ_Δ, p, a, A)$, $dropctx(Δ, Θ_Δ)$, 
+            $
+            dnt(istm(Δ, p, a, A)) = 
+            dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))
+            $
+            - For all $Ξ', Θ_Ξ'$, for all derivations $istm(Ξ', p, b, A)$, $istm(Θ_Ξ', p, b, A)$, $dropctx(Ξ', Θ_Ξ')$, 
+            $
+            dnt(istm(Ξ', p, e, B)) = 
+            dnt(dropctx(Ξ', Θ_Ξ'));dnt(istm(Θ_Ξ', p, e, B))
+            $
+        - Assume #istm($Θ$, $p$, $llet x = a; e$, $B$) and $dropctx(Γ, Θ)$. By inversion,
+            - $splitctx(Θ, Θ_Δ, Θ_Ξ)$
+            - $istm(Θ_Δ, p, a, A)$
+            - #istm($x: A, Θ_Ξ$, $p$, $b$, $A$)
+        - By syntactic weakening, $dropctx(Δ, Θ_Δ)$ and $dropctx(Ξ, Θ_Ξ)$ (TODO: justify properly, expand)
+        - Hence,
+        $
+        & dnt(#istm($Γ$, $p$, $llet x = a; e$, $B$)) #h(20em) &
+        \ &= dnt(splitctx(Γ, Δ, Ξ));
+            dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);
+            dnt(#istm($x: A, Ξ$, $p$, $e$, $b$))
+        & "by definition"
+        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
+            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
+        & "by induction"
+        \ #h(4em) dnt(#dropctx($x: A, Ξ$, $x: A, Θ_Ξ$));
+            dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $b$))
+        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
+            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
+        & "by definition"
+        \ #h(4em) A ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
+            dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $b$))
+        \ &= dnt(splitctx(Γ, Δ, Ξ));
+            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
+        & "by centrality"
+        \ #h(4em) dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
+            dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $b$))
+        \ &= dnt(dropctx(Γ, Θ));
+        & "TODO"
+        \ #h(4em) dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
+            dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $b$))
+        \ &= dnt(dropctx(Γ, Θ));dnt(#istm($Θ$, $p$, $llet x = a; e$, $B$))
+        & "by definition"
+        $
     - #rname("let2"): //TODO: this 
     - #rname("blk"): //TODO: this 
     - #rname("br"): //TODO: this 
