@@ -262,6 +262,7 @@
 #let slft(subst) = $subst^↑$
 #let submap(lsub, rsub) = $lsub ≤ rsub$
 #let labmap(label, subst) = $sans("labmap")(label, subst)$
+#let smite(base) = $sans("ite")_base$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
