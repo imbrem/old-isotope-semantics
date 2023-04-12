@@ -870,10 +870,12 @@ We may now state some basic theorems and definitions:
 )
 
 #definition(name: "Substitution")[
-    We define a *substitution* $issub(γ, Θ, Γ)$ to be an assignment of a context $Θ_x$ and a pure term $istm(Θ_x, 1, a, A)$ to each variable $x: A ∈ Γ$ such that $Θ$ splits into subcontexts $Θ_x$ and $θ_cnil$, as defined by the following rules:
+    We define a *raw substitution* $γ$ from $Θ$ to be an assignment of an expression $a$ to each variable in $Θ$. We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. 
+    We define a substitution to be *well-typed*, written $issub(γ, Θ, Γ)$, via the following rules
     #dprf(substitution-rules.subst-nil)
     #dprf(substitution-rules.subst-cons)
-    We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. We define the substitution of a _context_ $Ξ$ to be given by the list comprehension
+    We will refer to a well-typed substitution $issub(γ, Θ, Γ)$ as simply a *substitution*.
+    We define the substitution of a _context_ $Ξ$ by a well-typed substitution to be given by the list comprehension
     $
     [γ]Ξ = [y: B ∈ Θ | ∃x ∈ Ξ, y ∈ Θ_x]
     $
@@ -1019,12 +1021,18 @@ We may immediately deduce the following corollary:
 //TODO: text
 
 #let syntactic-weakening-stmt = lemma(name: "Weakening")[
-    If $dropctx(Γ, Δ)$ and $istm(Δ, p, a, A)$, then $istm(Γ, p, a, A)$
+    If $dropctx(Γ, Δ)$ and $istm(Δ, p, a, A)$, then $istm(Γ, p, a, A)$; similarly, if $isblk(Δ, sans(L), p, t, B)$ then $isblk(Γ, sans(L), p, t, B)$.
 ];
 #syntactic-weakening-stmt
 #proof[
     See @syntactic-properties[Appendix]
 ]
+
+
+#let syntactic-join-weakening-stmt = lemma(name: "Join Weakening")[
+    If $joinctx(sans(K), sans(L))$ and $isblk(Γ, sans(K), p, t, B)$, then $isblk(Γ, sans(L), p, t, B)$
+];
+#syntactic-join-weakening-stmt
 
 #let syntactic-substitution-stmt = lemma(name: "Syntactic Substitution")[
     Given a substitution $issub(γ, Θ, Γ)$, for all terms $istm(Γ, p, a, A)$ and blocks $isblk(Γ, sans(L), p, t, B)$, we have $istm(Θ, p, [γ]a, A)$ and $isblk(Θ, [γ]sans(L), p, [γ]t, B)$
@@ -1034,8 +1042,6 @@ We may immediately deduce the following corollary:
 #proof[
     See @syntactic-properties[Appendix]
 ]
-
-//TODO: label substitution and unfolding
 
 = Semantics
 
@@ -1287,6 +1293,14 @@ $
     See @semantic-properties[Appendix]
 ]
 
+#let weakening-stmt = theorem(name: "Semantic Join Weakening")[
+    If $joinctx(sans(K), sans(L))$, then
+    $
+    dnt(isblk(Γ, sans(L), p, t, A)) = dnt(isblk(Γ, sans(K), p, t, A));dnt(B) ⊕ dnt(joinctx(sans(K), sans(L)))
+    $
+]
+#weakening-stmt
+
 //TODO: text, segue
 
 We now give a denotational semantics for substititons:
@@ -1316,9 +1330,20 @@ with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
 
 //TODO: text, segue
 
-//TODO: lemmas on substititon; e.g. semantic splitting
+#let wk-split-stmt = lemma(name: "Semantic Splitting")[
+    If $dropctx(Γ, Θ)$ and $splitctx(Γ, Δ, Ξ)$, then
+    $
+    dnt(splitctx(Γ, Δ, Ξ));(dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(dropctx(Ξ, Θ_Ξ))) =
+    dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Θ_Ξ))
+    $
+    In particular,
+    $
+    dnt(dropctx(Γ, Δ));dnt(dropctx(Δ, Ξ)) = dnt(dropctx(Γ, Ξ))
+    $
+]
+#wk-split-stmt
 
-#let substitution-wk-stmt = lemma(name: "Semantic Substitution Weakening")[
+#let substitution-wk-stmt = lemma(name: "Semantic Substitution Splitting")[
     If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then
     $
     dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ)) = dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(issub(γ, Θ, Δ)) ⊗ dnt(issub(γ, Θ, Ξ))
@@ -1342,6 +1367,12 @@ We may now state the semantic substitution theorem:
 #proof[
     See @semantic-properties[Appendix]
 ]
+
+// #let rewriting-stmt = theorem(name: "Rewriting")[
+//     If $a$ is a term or $t$ is a block and $γ, γ'$ are raw substitutions such that:
+//     - $istm(Γ, p, [γ]a, A)$ and $istm(Γ, p, [γ']a, A)$ or $isblk(Γ, sans(L), p, [γ]t, B)$ and $isblk(Γ, sans(L), p, [γ']t, B)$
+//     //TODO: equality...
+// ]
 
 /*
 
