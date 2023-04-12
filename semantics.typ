@@ -1231,14 +1231,33 @@ $
 $
 dnt(dprf(#typing-rules.tr))
 \ #h(5em) = 
-sans("Tr")_(dnt(Γ),  dnt(sans(L)))^(⊕_i dnt(A_j) ⊗ dnt(Δ_j) ⊕ dnt(B))
+dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;
+sans("Tr")_(dnt(Γ), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))
 [
-    (dnt(#typing-rules.tr.premises.at(1));α^⊕) ⊕ D; j
+    (dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕) ⊕ D; j
 ]
 $
 where
 $
-D = j^i ∘ plus.circle.big_i dnt(isblk(Δ_i, #[$[lhyp(Δ_j, lbl(ℓ_j), 0, A_j)]_j, sans(L)$], p, t_i, B))
+sans(S)_0 &= [lhyp(Δ_j, lbl(ℓ)_j, 0, A_j)]_j \
+sans(S) &= [lhyp(Δ_j, lbl(ℓ)_j, p_j, A_j)]_j \
+D &= σ^⊕ ∘ α^⊕ ∘ j^i ∘ plus.circle.big_i dnt(#isblk($x_i: A_i, Δ_i$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$))
+    &: cal(C)_p(dnt(sans(S)_0), (sans(L) ⊕ sans(B)) ⊕ dnt(sans(S)_0))
+$
+noting that $dnt(sans(S)) = dnt(sans(S)_0)$.
+
+We note also that we may alternatively write
+$
+&dnt(dprf(#typing-rules.tr))
+\ &=  sans("Tr")_(dnt(Γ), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))
+[
+    (dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕) ⊕ D; j
+] 
+& "by definition"
+\ &= dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans("Tr")_(dnt(sans(L)) ⊕ dnt(B), dnt(sans(L)) ⊕ dnt(B) ⊕ dnt(sans(S)))^(dnt(sans(S)))(dnt(sans(L)) ⊕ dnt(B) ⊕ D;j)
+& "TODO"
+\ &= dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
+& "TODO"
 $
 /*
 TODO: notes on guardedness...
@@ -2095,19 +2114,41 @@ TODO:
     $ 
     - #rname("tr"): Let
     $
-    sans(S) &= [lhyp(Δ_j, lbl(ℓ)_j, p_j, A_j)]_j \
     sans(S)_0 &= [lhyp(Δ_j, lbl(ℓ)_j, 0, A_j)]_j \
-    D &= α^⊕ ∘ j^n ∘ plus.circle.big_i dnt(#isblk($x: A_i, Δ_i$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$)): cal(C)_p(dnt(sans(S)_0), dnt(sans(S)_0) ⊕ dnt(sans(L)) ⊕ dnt(B)) \
-    D_γ &= α^⊕ ∘ j^n ∘ plus.circle.big_i dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)): cal(C)_p(dnt([γ]sans(S)_0), dnt([γ]sans(S)_0) ⊕ dnt([γ]sans(L)) ⊕ dnt([γ]B))
+    sans(S) &= [lhyp(Δ_j, lbl(ℓ)_j, p_j, A_j)]_j \
+    D &= σ^⊕ ∘ α^⊕ ∘ j^i ∘ plus.circle.big_i dnt(#isblk($x_i: A_i, Δ_i$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$))
+        &: cal(C)_p(dnt(sans(S)_0), (sans(L) ⊕ sans(B)) ⊕ dnt(sans(S)_0)) \
+    D_γ &= σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)): cal(C)_p((dnt([γ]sans(L)) ⊕ dnt([γ]B)) ⊕ dnt([γ]sans(S)_0))
     $
     We note that $dnt(sans(S)) = dnt(sans(S)_0)$, and, by induction, that
     $
     & labmap(sans(S)_0, γ);D
-    \ &= α^⊕ ∘ j^n ∘ plus.circle.big_i [dnt(#isblk($x: A_i, Δ_i$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$));dnt(A_i) ⊗ dnt(issub(γ_(Δ_i), Θ_(Δ_i), Δ_i))]
-    \ &= α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)); labmap(sans(S)_0, γ) ⊕ labmap(sans(L)_0, γ) ⊕ dnt(B)]
-    \ &= D_γ;labmap(sans(S)_0, γ) ⊕ labmap(sans(L)_0, γ) ⊕ dnt(B)
+    \ &= σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i [dnt(A_i) ⊗ dnt(issub(γ_(Δ_i), Θ_(Δ_i), Δ_i)); dnt(#isblk($x: A_i, Δ_i$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$))]
+    \ &= σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)); labmap(sans(S)_0, γ) ⊕ labmap(sans(L)_0, γ) ⊕ dnt(B)]
+    \ &= (σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$))]);  labmap(sans(L)_0, γ) ⊕ dnt(B) ⊕ labmap(sans(S)_0, γ)
+    \ &= D_γ;labmap(sans(L), γ) ⊕ dnt(B) ⊕ labmap(sans(S)_0, γ)
     $
-    ...TODO
+    It follows that
+    $
+    & labmap(sans(S), γ);sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D)
+    \ &= sans("Tr")_(dnt([γ]sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ;(labmap(sans(L), γ) ⊕ dnt(B) ⊕ dnt(sans(S))))
+    \ &= sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);(labmap(sans(L), γ) ⊕ dnt(B))
+    $
+    Therefore, we have that
+    $
+    & dnt(issub(γ, Θ, Γ));dnt(#isblk($Γ$, $sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s$, $B$))
+    #h(12em) & 
+    \ &= dnt(issub(γ, Θ, Γ));dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
+    & "by definition" \
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));#labmap($sans(S), sans(L)$, $γ$);α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
+    & "by induction"
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;labmap(sans(L), γ) ⊕ dnt(B) ⊕ (labmap(sans(S), γ);sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D));j
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;
+    \ #h(5em) labmap(sans(L), γ) ⊕ dnt(B) ⊕ sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);(labmap(sans(L), γ) ⊕ dnt(B)));j
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;dnt(sans(L)) ⊕ dnt(B) ⊕ sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);j;labmap(sans(L), γ) ⊕ dnt(B)
+    \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s)$, $B$));labmap(sans(L), γ) ⊕ dnt(B)
+    & "by definition"
+    $
 ]
 
 //TODO: this
