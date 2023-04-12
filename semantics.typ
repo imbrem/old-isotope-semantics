@@ -1278,8 +1278,8 @@ dnt(dropctx(Γ, Ξ)) = dnt(dropctx(Γ, Δ));dnt(dropctx(Δ, Ξ))
 $
 
 #let weakening-stmt = theorem(name: "Semantic Weakening")[
-    - If $D_Γ$ is a derivation of $istm(Γ, p, a, A)$, then for all $dropctx(Γ, Δ)$, for all derivations $D_Θ$ of $istm(Θ, p, a, A)$, $dnt(D_Γ) = dnt(dropctx(Γ, Θ));dnt(D_Θ)$
-    - If $D_Γ$ is a derivation of $isblk(Γ, sans(L), p, t, B)$, then for all $dropctx(Γ, Θ)$, for all derivations $D_Θ$ of $isblk(Θ, sans(L), p, t, B)$, $dnt(D_Γ) = dnt(dropctx(Γ, Θ));dnt(D_Θ)$
+    - If $D_Γ$ is a derivation of $istm(Γ, p, a, A)$, then for all $dropctx(Γ, Δ)$, for all derivations $D_Θ$ of $istm(Θ, p, a, A)$, $dnt(D_Γ) = upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(D_Θ)$
+    - If $D_Γ$ is a derivation of $isblk(Γ, sans(L), p, t, B)$, then for all $dropctx(Γ, Θ)$, for all derivations $D_Θ$ of $isblk(Θ, sans(L), p, t, B)$, $dnt(D_Γ) = upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(D_Θ)$
     In particular, all derivations of $istm(Γ, p, a, A)$ and $isblk(Γ, sans(L), p, t, B)$ have equal denotations, justifying the syntax $dnt(istm(Γ, p, a, A))$, $dnt(isblk(Γ, sans(L), p, t, B))$
 ]
 #weakening-stmt
@@ -1321,7 +1321,7 @@ with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
 #let substitution-wk-stmt = lemma(name: "Semantic Substitution Weakening")[
     If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then
     $
-    dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ)) = dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(issub(γ, Θ, Δ)) ⊗ dnt(issub(γ, Θ, Ξ))
+    dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ)) = dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(issub(γ, Θ, Δ)) ⊗ dnt(issub(γ, Θ, Ξ))
     $
     In particular, $dnt(issub(γ, Θ, cnil)) = dnt(dropctx(Θ, cnil))$ and therefore
     $
@@ -1334,8 +1334,8 @@ We may now state the semantic substitution theorem:
 #let substitution-stmt = theorem(name: "Semantic Substitution")[
     If $issub(γ, Θ, Γ)$ and $istm(Γ, p, a, A)$ or $isblk(Γ, sans(L), p, t, B)$, then
     $
-        dnt(istm(Θ, p, [γ]a, A)) &= dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, [γ]a, A)) \
-        dnt(isblk(Θ, [γ]sans(L), p, [γ]t, B));(B ⊕ labmap(sans(L), γ)) &= dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, [γ]sans(L), p, [γ]t, A))
+        dnt(istm(Θ, p, [γ]a, A)) &= upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, [γ]a, A)) \
+        dnt(isblk(Θ, [γ]sans(L), p, [γ]t, B));(B ⊕ upg(purity: p, labmap(sans(L), γ))) &= upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(isblk(Γ, [γ]sans(L), p, [γ]t, A))
     $
 ]
 #substitution-stmt
@@ -1731,130 +1731,73 @@ TODO:
 
 == Semantic Properties <semantic-properties>
 
-//TODO: add explicit upgrades
-
 #weakening-stmt
 #proof[
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a weakening $dropctx(Γ, Θ)$ and a corresponding derivation $istm(Θ, p, a, A)$ or $isblk(Θ, sans(L), p, t, B)$.
     - #rname("var"): we have that
     $
-        & dnt(dropctx(Γ, Θ));dnt(istm(Θ, p, x, A)) #h(12em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(#dropctx($Θ$, $x: A$)) & "by definition"
-        \ &= dnt(#dropctx($Γ$, $x: A$)) & "weakening composes"
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(istm(Θ, p, x, A)) #h(12em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(#dropctx($Θ$, $x: A$))) & "by definition"
+        \ &= upg(purity: p, dnt(#dropctx($Γ$, $x: A$))) & "weakening composes"
         \ &= dnt(istm(Γ, p, x, A)) & "by definition"
     $
     - #rname("app"): 
-        // - By inversion,
-        //     - $istm(Γ, p, a, A)$
-        //     - $f ∈ cal(I)_p(A, B)$
-        // - We assume by induction that, for all derivations of $istm(Γ, p, a, A)$, $istm(Θ, p, a, A)$,
-        // $
-        // dnt(istm(Γ, p, a, A)) = dnt(dropctx(Γ, Θ));dnt(istm(Θ, p, a, A))
-        // $
-        // - Assume $istm(Θ, p, f aq a, B)$. Then, by inversion, $istm(Θ, p, a, A)$
-        // - Hence,
         We have that
         $
-            & dnt(dropctx(Γ, Θ)); dnt(istm(Θ, p, f aq a, B)) #h(12em) &
-            \ &= dnt(dropctx(Γ, Θ)); dnt(istm(Θ, p, a, A)); instof(p, f) & "by definition"
+            & upg(purity: p, dnt(dropctx(Γ, Θ))); dnt(istm(Θ, p, f aq a, B)) #h(12em) &
+            \ &= upg(purity: p, dnt(dropctx(Γ, Θ))); dnt(istm(Θ, p, a, A)); instof(p, f) & "by definition"
             \ &= dnt(istm(Γ, p, a, A));  instof(p, f) & "by induction"
             \ &= dnt(istm(Γ, p, f aq a, B)) & "by definition"
         $
     - #rname("nil"), #rname("true"), #rname("false"): 
         in each case, the desired result follows trivially from the fact that weakening composes.
     - #rname("pair"): 
-        // - By inversion,
-        //     - $splitctx(Γ, Δ, Ξ)$
-        //     - $istm(Δ, p, a, A)$
-        //     - #istm($Ξ$, $p$, $b$, $B$)
-        // - We assume by induction that: 
-        //     - For all $Δ, Θ_Δ$, for all derivations $istm(Δ, p, a, A)$, $istm(Θ_Δ, p, a, A)$, $dropctx(Δ, Θ_Δ)$, 
-        //     $
-        //     dnt(istm(Δ, p, a, A)) = 
-        //     dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))
-        //     $
-        //     - For all $Ξ, Θ_Ξ$, for all derivations $istm(Ξ, p, b, A)$, $istm(Θ_Ξ, p, b, A)$, $dropctx(Ξ, Θ_Ξ)$, 
-        //     $
-        //     dnt(istm(Ξ, p, b, B)) = 
-        //     dnt(dropctx(Ξ, Θ_Ξ));dnt(istm(Θ_Ξ, p, b, B))
-        //     $
-        // - Assume $istm(Θ, p, (a, b), A ⊗ B)$ and $dropctx(Γ, Θ)$. By inversion,
-        //     - $splitctx(Θ, Θ_Δ, Θ_Ξ)$
-        //     - $istm(Θ_Δ, p, a, A)$
-        //     - $istm(Θ_Ξ, p, b, A)$
-        // - By syntactic weakening, $dropctx(Δ, Θ_Δ)$ and $dropctx(Ξ, Θ_Ξ)$ (TODO: justify properly, expand)
-        // - Hence,
         We have that
         $
-        & dnt(dropctx(Γ, Θ));
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));
             dnt(istm(Θ, p, (a, b), A ⊗ B)) #h(20em) &
-        \ &= dnt(dropctx(Γ, Θ));
-            dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));
+            upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(istm(Θ_Δ, p, a, A)) ⋉
             dnt(istm(Θ_Ξ, p, b, B))
             & "by definition"
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
-            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(dropctx(Ξ, Θ_Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+            upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));
             dnt(istm(Θ_Δ, p, a, A)) ⋉
             dnt(istm(Θ_Ξ, p, b, B))
             & "weakening splits"
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⋉
-            (dnt(dropctx(Ξ, Θ_Ξ));dnt(istm(Θ_Ξ, p, b, B)))
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, a, A))) ⋉
+            (upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, b, B)))
             & "by centrality"
-        \ &= dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, A)) 
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, A)) 
             & "by induction"
-        // \ &= dnt(splitctx(Γ, Θ_Δ, Θ_Ξ));
-        //     dnt(istm(Θ_Δ, p, a, A)) ⋉
-        //     dnt(istm(Θ_Ξ, p, b, B))
-        //     & "weakening composes"
         \ &= dnt(istm(Γ, p, (a, b), A ⊗ B)) & "by definition"
         $
     - #rname("let"): 
-        // - By inversion,
-        //     - $splitctx(Γ, Δ, Ξ)$
-        //     - $istm(Δ, p, a, A)$
-        //     - #istm($x: A, Ξ$, $p$, $e$, $B$)
-        // - We assume by induction that:
-        //     - For all $Δ, Θ_Δ$, for all derivations $istm(Δ, p, a, A)$, $istm(Θ_Δ, p, a, A)$, $dropctx(Δ, Θ_Δ)$, 
-        //     $
-        //     dnt(istm(Δ, p, a, A)) = 
-        //     dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))
-        //     $
-        //     - For all $Ξ', Θ_Ξ'$, for all derivations $istm(Ξ', p, e, B)$, $istm(Θ_Ξ', p, e, B)$, $dropctx(Ξ', Θ_Ξ')$, 
-        //     $
-        //     dnt(istm(Ξ', p, e, B)) = 
-        //     dnt(dropctx(Ξ', Θ_Ξ'));dnt(istm(Θ_Ξ', p, e, B))
-        //     $
-        // - Assume #istm($Θ$, $p$, $llet x = a; e$, $B$) and $dropctx(Γ, Θ)$. By inversion,
-        //     - $splitctx(Θ, Θ_Δ, Θ_Ξ)$
-        //     - $istm(Θ_Δ, p, a, A)$
-        //     - #istm($x: A, Θ_Ξ$, $p$, $e$, $B$)
-        // - By syntactic weakening, $dropctx(Δ, Θ_Δ)$ and $dropctx(Ξ, Θ_Ξ)$ (TODO: justify properly, expand)
-        // - Hence,
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(#istm($Θ$, $p$, $llet x = a; e$, $B$)) #h(20em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(#istm($Θ$, $p$, $llet x = a; e$, $B$)) #h(20em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
             dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $B$))
         & "by definition"
         \ #h(4em) 
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
-            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+            upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
         & "by splitting"
         \ #h(4em) dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
             dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $B$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
         & "by centrality"
         \ #h(4em) dnt(A) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
             dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $B$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
         & "by definition"
         \ #h(4em) dnt(#dropctx($x: A, Ξ$, $x: A, Θ_Ξ$));
             dnt(#istm($x: A, Θ_Ξ$, $p$, $e$, $B$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);
             dnt(#istm($x: A, Ξ$, $p$, $e$, $B$))
         & "by induction"
@@ -1863,27 +1806,27 @@ TODO:
     - #rname("let2"): 
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(#istm($Θ$, $p$, $llet (x, y) = e; e'$, $C$)) #h(15em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(#istm($Θ$, $p$, $llet (x, y) = e; e'$, $C$)) #h(15em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
         & "by definition"
         \ #h(4em) 
             dnt(#istm($x: A, y: B, Θ_Ξ$, $p$, $e'$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
-            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+            upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
         & "by splitting"
         \ #h(4em) dnt(istm(Θ_Δ, p, e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
             dnt(#istm($x: A, y: B, Θ_Ξ$, $p$, $e'$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
         & "by centrality"
         \ #h(4em) dnt(A) ⊗ dnt(B) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
             dnt(#istm($x: A, y: B, Θ_Ξ$, $p$, $e'$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
         & "by centrality"
         \ #h(4em) dnt(#dropctx($x: A, y: B, Ξ$, $x: A, y: B, Θ_Ξ$));
             dnt(#istm($x: A, y: B, Θ_Ξ$, $p$, $e'$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;
             dnt(#istm($x: A, y: B, Ξ$, $p$, $e'$, $C$))
         & "by induction"
@@ -1893,70 +1836,70 @@ TODO:
     - #rname("blk"): 
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(istm(Θ, p, {t}, B)) #h(12em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(isblk(Θ, bcnil, p, t, B));α^⊕ & "by definition"
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(istm(Θ, p, {t}, B)) #h(12em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(isblk(Θ, bcnil, p, t, B));α^⊕ & "by definition"
         \ &= dnt(isblk(Γ, bcnil, p, t, B));α^⊕ & "by induction"
         \ &= dnt(istm(Γ, p, {t}, B)) & "by definition"
         $
     - #rname("br"): 
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(isblk(Θ, sans(L), p, br(a), A)) #h(12em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(istm(Θ, p, a, A));α^⊕;dnt(A) ⊕ 0_(dnt(sans(L))) & "by definition"
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(isblk(Θ, sans(L), p, br(a), A)) #h(12em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(istm(Θ, p, a, A));α^⊕;dnt(A) ⊕ 0_(dnt(sans(L))) & "by definition"
         \ &= dnt(istm(Γ, p, a, A));α^⊕;dnt(A) ⊕ 0_(dnt(sans(L))) & "by induction"
         \ &= dnt(isblk(Γ, sans(L), p, br(a), A)) & "by definition"
         $
     - #rname("jmp"): 
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(isblk(Θ, sans(L), p, br(lbl(ℓ), a), B)) #h(17em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Ξ));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Θ_Ξ, lbl(ℓ), p, A), sans(L))) & "by definition"
-        \ &= dnt(splitctx(Γ, Δ, Ξ));dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(Ξ);dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L))) & "by splitting"
-        \ &= dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ));α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L))) & "by induction"
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(isblk(Θ, sans(L), p, br(lbl(ℓ), a), B)) #h(17em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Ξ)));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) & "by definition"
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(Ξ);dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L))) & "by splitting"
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ));α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) & "by induction"
         \ &= dnt(isblk(Γ, sans(L), p, br(lbl(ℓ), a), A)) & "by definition"
         $
         Note that $splitctx(Θ, Θ_Δ, Ξ)$ since the hypothesis corresponding to $lbl(ℓ)$ must be $lhyp(Ξ, lbl(ℓ), p, A)$, as the label-context is unchanged. //TODO: allow weakening label contexts...
     - #rname("ite"):
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(isblk(Θ, sans(L), p, lite(e, s, t), B)) #h(15em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(isblk(Θ, sans(L), p, lite(e, s, t), B)) #h(15em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(istm(Θ_Δ, p, e, bools)) ⊗ dnt(Θ_Ξ);
             smite(dnt(Θ_Ξ)); & "by definition"
         \ &#h(5em)    dnt(isblk(Θ_Ξ, sans(L), p, s, B)) ⊕ dnt(isblk(Θ_Ξ, sans(L), p, t, B))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(dropctx(Ξ, Θ_Ξ));dnt(istm(Θ_Δ, p, e, bools)) ⊗ dnt(Θ_Ξ);smite(dnt(Θ_Ξ)); & "by splitting"
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Δ, p, e, bools)) ⊗ dnt(Θ_Ξ);smite(dnt(Θ_Ξ)); & "by splitting"
         \ &#h(5em) dnt(isblk(Θ_Ξ, sans(L), p, s, B)) ⊕ dnt(isblk(Θ_Ξ, sans(L), p, t, B))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));(dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, e, bools))) ⊗ dnt(Ξ);smite(dnt(Ξ))
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));(upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, e, bools))) ⊗ dnt(Ξ);smite(dnt(Ξ))
         & "by centrality"
-        \ &#h(5em) (dnt(dropctx(Ξ, Θ_Ξ));dnt(isblk(Θ_Ξ, sans(L), p, s, B))) ⊕ (dnt(dropctx(Ξ, Θ_Ξ));dnt(isblk(Θ_Ξ, sans(L), p, t, B)))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, e, bools));smite(dnt(Ξ));dnt(isblk(Ξ, sans(L), p, s, B)) ⊕ dnt(isblk(Ξ, sans(L), p, t, B)) 
+        \ &#h(5em) (upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(isblk(Θ_Ξ, sans(L), p, s, B))) ⊕ (upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(isblk(Θ_Ξ, sans(L), p, t, B)))
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, e, bools));smite(dnt(Ξ));dnt(isblk(Ξ, sans(L), p, s, B)) ⊕ dnt(isblk(Ξ, sans(L), p, t, B)) 
         & "by induction"
         \ &= dnt(isblk(Γ, sans(L), p, lite(e, s, t), B)) & "by definition"
         $
     - #rname("let-blk"): 
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet x = a; t$, $B$)) #h(20em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet x = a; t$, $B$)) #h(20em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
             dnt(#isblk($x: A, Θ_Ξ$, $sans(L)$, $p$, $t$, $B$))
         & "by definition"
         \ #h(4em) 
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
-            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+            upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
         & "by splitting"
         \ #h(4em) dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);
             dnt(#isblk($x: A, Θ_Ξ$, $sans(L)$, $p$, $t$, $B$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
         & "by centrality"
         \ #h(4em) dnt(A) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
             dnt(#isblk($x: A, Θ_Ξ$, $sans(L)$, $p$, $t$, $B$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, a, A))) ⊗ dnt(Ξ);
         & "by definition"
         \ #h(4em) dnt(#dropctx($x: A, Ξ$, $x: A, Θ_Ξ$));
             dnt(#isblk($x: A, Θ_Ξ$, $sans(L)$, $p$, $t$, $B$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);
             dnt(#isblk($x: A, Ξ$, $sans(L)$, $p$, $t$, $B$))
         & "by induction"
@@ -1965,27 +1908,27 @@ TODO:
     - #rname("let2-blk"): 
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)) #h(15em) &
-        \ &= dnt(dropctx(Γ, Θ));dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)) #h(15em) &
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
         & "by definition"
         \ #h(4em) 
             dnt(#isblk($x: A, y: B, Θ_Ξ$, $sans(L)$, $p$, $t$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
-            dnt(dropctx(Δ, Θ_Δ)) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+            upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
         & "by splitting"
         \ #h(4em) dnt(istm(Θ_Δ, p, e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
             dnt(#isblk($x: A, y: B, Θ_Ξ$, $sans(L)$, $p$, $t$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
         & "by centrality"
         \ #h(4em) dnt(A) ⊗ dnt(B) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
             dnt(#isblk($x: A, y: B, Θ_Ξ$, $sans(L)$, $p$, $t$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ)); 
-            (dnt(dropctx(Δ, Θ_Δ));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
+            (upg(purity: p, dnt(dropctx(Δ, Θ_Δ)));dnt(istm(Θ_Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
         & "by centrality"
         \ #h(4em) dnt(#dropctx($x: A, y: B, Ξ$, $x: A, y: B, Θ_Ξ$));
             dnt(#isblk($x: A, y: B, Θ_Ξ$, $sans(L)$, $p$, $t$, $C$))
-        \ &= dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;
             dnt(#isblk($x: A, y: B, Θ_Ξ$, $sans(L)$, $p$, $t$, $C$))
         & "by induction"
@@ -1995,9 +1938,9 @@ TODO:
     - #rname("tr"):
         We have that
         $
-        & dnt(dropctx(Γ, Θ));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s$, $B$))
+        & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s$, $B$))
         #h(12em) & 
-        \ &= dnt(dropctx(Γ, Θ));dnt(#isblk($Θ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(#isblk($Θ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
         & "by definition" \
         \ &= dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
         & "by induction"
@@ -2012,16 +1955,15 @@ TODO:
         $
 ]
 
-//TODO: explicit substitution lifting?
 #substitution-stmt
 #proof[
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a substitution $issub(γ, Θ, Γ)$
     - #rname("var"): By semantic substitution weakening, we have
         $
-        & dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, x, A)) #h(5em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(#dropctx($Γ$, $x: A$))
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, x, A)) #h(5em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));upg(purity: p, dnt(#dropctx($Γ$, $x: A$)))
         & "by definition"
-        \ &= dnt(dropctx(Θ, Θ_x));dnt(#issub($γ_x$, $Θ_x$, $x: A$))
+        \ &= dnt(dropctx(Θ, Θ_x));upg(purity: p, dnt(#issub($γ_x$, $Θ_x$, $x: A$)))
         & "by semantic substitution weakening"
         \ &= dnt(dropctx(Θ, Θ_x));dnt(istm(Θ_x, p, [γ]x, A))
         & "by definition"
@@ -2030,8 +1972,8 @@ TODO:
         $
     - #rname("app"): We have that
         $
-        & dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, f aq a, B)) #h(5em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, a, A));instof(p, f)
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, f aq a, B)) #h(5em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, a, A));instof(p, f)
         & "by definition"
         \ &= dnt(istm(Θ, p, [γ]a, A));instof(p, f)
         & "by induction"
@@ -2040,62 +1982,62 @@ TODO:
         $
     - #rname("nil"), #rname("true"), #rname("false"): each of these cases holds trivially by virtue of the fact that, by semantic substitution weakening,
     $
-        dnt(issub(γ, Θ, Γ));dnt(dropctx(Γ, cnil)) = dnt(dropctx(Θ, cnil))
+        upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(dropctx(Γ, cnil)) = dnt(dropctx(Θ, cnil))
     $  
     - #rname("pair"): We have that
         $
-        & dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, (a, b), A ⊗ B)) #h(15em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, B))
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, (a, b), A ⊗ B)) #h(15em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, B))
         & "by definition"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, B))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, B))
         & "by splitting" 
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));(dnt(issub(γ_Δ, Θ_Δ, Δ));dnt(istm(Δ, p, a, A))) ⋉ (dnt(istm(Ξ, p, b, B)dnt(issub(γ_Ξ, Θ_Ξ, Ξ))))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));(upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ)));dnt(istm(Δ, p, a, A))) ⋉ (upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));dnt(istm(Ξ, p, b, B)))
         & "by centrality"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, [γ]a, A)) ⋉ dnt(istm(Θ_Ξ, p, [γ]b, B))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, [γ]a, A)) ⋉ dnt(istm(Θ_Ξ, p, [γ]b, B))
         & "by induction"
         \ &= dnt(istm(Θ, p, [γ](a, b), A ⊗ B))
         & "by definition"
         $
     - #rname("let"): 
         $
-        & dnt(issub(γ, Θ, Γ));dnt(#istm($Γ$, $p$, $llet x = a; e$, $B$)) #h(15em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);dnt(#istm($x: A, Ξ$, $p$, $e$, $B$))
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(#istm($Γ$, $p$, $llet x = a; e$, $B$)) #h(15em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);dnt(#istm($x: A, Ξ$, $p$, $e$, $B$))
         & "by definition"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)))
         & "by splitting" 
         \ #h(5em) dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);dnt(#istm($x: A, Ξ$, $p$, $e$, $B$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));(dnt(issub(γ_Δ, Θ_Δ, Δ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));(upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ)));
         dnt(istm(Δ, p, a, A))) ⊗ dnt(Ξ);
         & "by centrality"
-        \ #h(5em) dnt(A) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ)); dnt(#istm($x: A, Ξ$, $p$, $e$, $B$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ dnt(Ξ);dnt(#istm($x: A, Θ_Ξ$, $p$, $[γ]e$, $B$))
+        \ #h(5em) dnt(A) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ))); dnt(#istm($x: A, Ξ$, $p$, $e$, $B$))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ dnt(Ξ);dnt(#istm($x: A, Θ_Ξ$, $p$, $[γ]e$, $B$))
         & "by induction"
         \ &= dnt(#istm($Θ$, $p$, $[γ](llet x = a; e)$, $B$))
         & "by definition"
         $
     - #rname("let2"): 
         $
-        & dnt(issub(γ, Θ, Γ));dnt(#istm($Γ$, $p$, $llet (x, y) = e; e'$, $C$)) #h(15em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;dnt(#istm($x: A, y: B, Ξ$, $p$, $e'$, $C$))
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(#istm($Γ$, $p$, $llet (x, y) = e; e'$, $C$)) #h(15em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;dnt(#istm($x: A, y: B, Ξ$, $p$, $e'$, $C$))
         & "by definition"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)))
         & "by splitting" 
         \ #h(5em) dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;dnt(#istm($x: A, y: B, Ξ$, $p$, $e'$, $C$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));(dnt(issub(γ_Δ, Θ_Δ, Δ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));(upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ)));
         dnt(istm(Δ, p, e, A ⊗ B))) ⊗ dnt(Ξ);α;
         & "by centrality"
-        \ #h(5em) dnt(A) ⊗ dnt(B) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));α; dnt(#istm($x: A, y: A, Ξ$, $p$, $e'$, $C$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, [γ]e, A ⊗ B)) ⊗ dnt(Ξ);α;dnt(#istm($x: A, y: A, Θ_Ξ$, $p$, $[γ]e'$, $C$))
+        \ #h(5em) dnt(A) ⊗ dnt(B) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));α; dnt(#istm($x: A, y: A, Ξ$, $p$, $e'$, $C$))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, [γ]e, A ⊗ B)) ⊗ dnt(Ξ);α;dnt(#istm($x: A, y: A, Θ_Ξ$, $p$, $[γ]e'$, $C$))
         & "by induction"
         \ &= dnt(#istm($Θ$, $p$, $[γ](llet (x, y) = e; e')$, $C$))
         & "by definition"
         $
     - #rname("blk"): We have that
         $
-        & dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, {t}, B)) #h(10em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, bcnil, p, t, B));α^⊕
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, {t}, B)) #h(10em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(isblk(Γ, bcnil, p, t, B));α^⊕
         & "by definition"
-        \ &= dnt(isblk(Θ, bcnil, p, [γ]t, B));B ⊕ labmap(bcnil, γ);α^⊕
+        \ &= dnt(isblk(Θ, bcnil, p, [γ]t, B));B ⊕ upg(purity: p, labmap(bcnil, γ));α^⊕
         & "by induction"
         \ &= dnt(isblk(Θ, bcnil, p, [γ]t, B));α^⊕
         & "by definition"
@@ -2104,146 +2046,146 @@ TODO:
         $
     - #rname("br"): We have that
         $
-        & dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, sans(L), p, br(a), A)) #h(10em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(istm(Γ, p, a, A));α^⊕;0_(dnt(sans(L))) ⊕ dnt(A)
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(isblk(Γ, sans(L), p, br(a), A)) #h(10em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, a, A));α^⊕;0_(dnt(sans(L))) ⊕ dnt(A)
         & "by definition"
         \ &= dnt(istm(Θ, p, [γ]a, A));α^⊕;0_(dnt(sans(L))) ⊕ dnt(A)
         & "by induction"
-        \ &= dnt(istm(Θ, p, [γ]a, A));α^⊕;0_(dnt(sans(L))) ⊕ dnt(A);dnt(A) ⊕ labmap(sans(L), γ)
+        \ &= dnt(istm(Θ, p, [γ]a, A));α^⊕;0_(dnt(sans(L))) ⊕ dnt(A);dnt(A) ⊕ upg(purity: p, labmap(sans(L), γ))
         & "by absorption"
-        \ &= dnt(isblk(Θ, [γ]sans(L), p, [γ]br(a), A));labmap(sans(L), γ) ⊕ dnt(A)
+        \ &= dnt(isblk(Θ, [γ]sans(L), p, [γ]br(a), A));upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(A)
         & "by definition"
         $
     - #rname("jmp"): We have that
         $
-        & dnt(issub(γ, Θ, Γ));
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));
             dnt(isblk(Γ, sans(L), p, br(lbl(ℓ), a), B)) #h(20em) &
-        \ &= dnt(issub(γ, Θ, Γ));
-            dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));
+            upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p , a, A)) ⊗ dnt(Ξ);
         & "by definition"
         \ &   #h(5em)
             α^⊕;
-            dnt(joinctx(lhyp(Ξ, p, lbl(ℓ), A), sans(L))) ⊕ 0_(dnt(B))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+            upg(purity: p,dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) ⊕ 0_(dnt(B))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(issub(y_Δ, Θ_Δ, Δ)) ⊗
-            dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+            upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
             dnt(istm(Δ, p , a, A)) ⊗ dnt(Ξ);
         & "by splitting"
         \ &   #h(5em)
             α^⊕;
-            dnt(joinctx(lhyp(Ξ, p, lbl(ℓ), A), sans(L))) ⊕ 0_(dnt(B))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+            upg(purity: p,dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) ⊕ 0_(dnt(B))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by induction"
         \ & #h(5em)
             α^⊕;
-            dnt(joinctx(lhyp(Ξ, p, lbl(ℓ), A), sans(L))) ⊕  0_(dnt(B))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(istm(Θ_Δ, p , [γ]a, A)) ⊗ dnt(Θ_Ξ);
+            upg(purity: p,dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) ⊕  0_(dnt(B))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(istm(Θ_Δ, p , [γ]a, A)) ⊗ dnt(Θ_Ξ);
         & "by definition"
         \ & #h(5em)
             α^⊕;
-             dnt(joinctx(lhyp(Θ_Ξ, p, lbl(ℓ), A), [γ]sans(L))) ⊕ 0_(dnt(B)); labmap(sans(L), γ) ⊕ dnt(B)
-        \ &= dnt(isblk(Θ, [γ]sans(L), p, br(lbl(ℓ), a), B)); labmap(sans(L), γ) ⊕ dnt(B) 
+             upg(purity: p, dnt(joinctx(lhyp(Θ_Ξ, lbl(ℓ), p, A), [γ]sans(L)))) ⊕ 0_(dnt(B)); upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
+        \ &= dnt(isblk(Θ, [γ]sans(L), p, br(lbl(ℓ), a), B)); upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) 
         & "by definition"
         $
     - #rname("ite"): 
         $
-        & dnt(issub(γ, Θ, Γ));dnt(isblk(Γ, sans(L), p, lite(e, s, t), B)) #h(16em) &
-        \ &= dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, e, bools)) ⊗ dnt(Ξ);
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(isblk(Γ, sans(L), p, lite(e, s, t), B)) #h(16em) &
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, e, bools)) ⊗ dnt(Ξ);
         & "by definition"
         \ & #h(5em) smite(dnt(Ξ));
         dnt(isblk(Ξ, sans(L), p, s, B)) ⊕
         dnt(isblk(Ξ, sans(L), p, t, B))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)); 
-            dnt(issub(y_Δ, Θ_Δ, Θ_Ξ)) ⊗
-            dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ))); 
+            upg(purity: p, dnt(issub(y_Δ, Θ_Δ, Δ))) ⊗
+            upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
             dnt(istm(Δ, p, e, bools)) ⊗ dnt(Ξ);
         & "by splitting"
         \ & #h(5em) smite(dnt(Ξ));
         dnt(isblk(Ξ, sans(L), p, s, B)) ⊕
         dnt(isblk(Ξ, sans(L), p, t, B))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
-            dnt(istm(Θ_Δ, p, [γ]e, bools)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
+            dnt(istm(Θ_Δ, p, [γ]e, bools)) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by induction"
         \ & #h(5em) smite(dnt(Ξ));
         dnt(isblk(Ξ, sans(L), p, s, B)) ⊕
         dnt(isblk(Ξ, sans(L), p, t, B))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(istm(Θ_Δ, p, [γ]e, bools)) ⊗ dnt(Θ_Ξ);
         & "TODO"
         \ & #h(5em) smite(dnt(Θ_Ξ));
-        (dnt(issub(γ_Ξ, Θ_Ξ, Ξ));dnt(isblk(Ξ, sans(L), p, s, B))) ⊕
-        (dnt(issub(γ_Ξ, Θ_Ξ, Ξ));dnt(isblk(Ξ, sans(L), p, t, B)))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        (upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));dnt(isblk(Ξ, sans(L), p, s, B))) ⊕
+        (upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));dnt(isblk(Ξ, sans(L), p, t, B)))
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
              dnt(istm(Θ_Δ, p, [γ]e, bools)) ⊗ dnt(Θ_Ξ);
         & "by induction"
         \ & #h(5em) smite(dnt(Ξ));
-        (dnt(isblk(Θ_Ξ, [γ]sans(L), p, [γ]s, B)); labmap(sans(L), γ) ⊕ dnt(B)) 
+        (dnt(isblk(Θ_Ξ, [γ]sans(L), p, [γ]s, B)); upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)) 
         \ & #h(7em) ⊕
-        (dnt(isblk(Θ_Ξ, [γ]sans(L), p, [γ]t, B)); labmap(sans(L), γ) ⊕ dnt(B) )        
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        (dnt(isblk(Θ_Ξ, [γ]sans(L), p, [γ]t, B)); upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) )        
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
              dnt(istm(Θ_Δ, p, [γ]e, bools)) ⊗ dnt(Θ_Ξ);
         & "TODO"
         \ & #h(5em) smite(dnt(Ξ));
         dnt(isblk(Θ_Ξ, [γ]sans(L), p, [γ]s, B)) ⊕
         dnt(isblk(Θ_Ξ, [γ]sans(L), p, [γ]t, B));
-        labmap(sans(L), γ) ⊕ dnt(B)
+        upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
         \ &= dnt(isblk(Θ, [γ]sans(L), p, [γ](lite(e, s, t)), B));
-        labmap(sans(L), γ) ⊕ dnt(B)
+        upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
         & "by definition"
         $
     - #rname("let-blk"): We have
     $
-        & dnt(issub(γ, Θ, Γ));
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));
         dnt(#isblk($Γ$, $sans(L)$, $p$, $llet x = a; t$, $B$)) #h(18em) &
-        \ &= dnt(issub(γ, Θ, Γ));
-            dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));
+            upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);
             dnt(#isblk($x: A, Ξ$, $sans(L)$, $p$, $t$, $B$))
         & "by definition"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
-            dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
+            upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by splitting"
         \ #h(5em)
             dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);dnt(#isblk($x: A, Ξ$, $sans(L)$, $p$, $t$, $B$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
-            dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
+            dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
             dnt(#isblk($x: A, Ξ$, $sans(L)$, $p$, $t$, $B$))
         & "by induction"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(istm(Θ_Δ, p, [γ]a, A)) ⊗ dnt(Θ_Ξ);
         & "by induction"
         \ #h(5em)
             dnt(#isblk($x: A, Θ_Ξ$, $[γ]sans(L)$, $p$, $t[γ]$, $B$))
-            ; labmap(sans(L), γ) ⊕ dnt(B)
-        \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet x = a; t)$, $B$)); labmap(sans(L), γ) ⊕ dnt(B)
+            ; upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
+        \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet x = a; t)$, $B$)); upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
         & "by definition"
     $
     - #rname("let2-blk"): We have
     $
-        & dnt(issub(γ, Θ, Γ));
+        & upg(purity: p, dnt(issub(γ, Θ, Γ)));
         dnt(#isblk($Γ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)) #h(18em) &
-        \ &= dnt(issub(γ, Θ, Γ));
-            dnt(splitctx(Γ, Δ, Ξ));
+        \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));
+            upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;
             dnt(#isblk($x: A, y: B, Ξ$, $sans(L)$, $p$, $t$, $C$))
         & "by definition"
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
-            dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
+            upg(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by splitting"
         \ #h(5em)
             dnt(istm(Δ, p, e, A ⊗ B)) ⊗ dnt(Ξ);α;dnt(#isblk($x: A, y: B, Ξ$, $sans(L)$, $p$, $t$, $C$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
-            dnt(istm(Θ_Δ, p, [γ]e, A ⊗ B)) ⊗ dnt(issub(γ_Ξ, Θ_Ξ, Ξ));α;
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
+            dnt(istm(Θ_Δ, p, [γ]e, A ⊗ B)) ⊗ upg(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));α;
         & "by induction"
         \ #h(5em) dnt(#isblk($x: A, y: B, Ξ$, $sans(L)$, $p$, $t$, $C$))
-        \ &= dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));
+        \ &= upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(istm(Θ_Δ, p, [γ]e, A ⊗ B)) ⊗ dnt(Θ_Ξ);α;
         & "by induction"
         \ #h(5em)
             dnt(#isblk($x: A, y: B, Θ_Ξ$, $[γ]sans(L)$, $p$, $t[γ]$, $C$))
-            ; labmap(sans(L), γ) ⊕ dnt(B)
-        \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet (x, y) = e; t)$, $C$)); labmap(sans(L), γ) ⊕ dnt(B)
+            ; upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
+        \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet (x, y) = e; t)$, $C$)); upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
         & "by definition"
     $ 
     - #rname("tr"): Let
@@ -2256,33 +2198,31 @@ TODO:
     $
     We note that $dnt(sans(S)) = dnt(sans(S)_0)$, and, by induction, that
     $
-    & labmap(sans(S)_0, γ);D
+    & upg(purity: p, labmap(sans(S)_0, γ));D
     \ &= σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i [dnt(A_i) ⊗ dnt(issub(γ_(Δ_i), Θ_(Δ_i), Δ_i)); dnt(#isblk($x: A_i, Δ_i$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$))]
-    \ &= σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)); labmap(sans(S)_0, γ) ⊕ labmap(sans(L)_0, γ) ⊕ dnt(B)]
-    \ &= (σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$))]);  labmap(sans(L)_0, γ) ⊕ dnt(B) ⊕ labmap(sans(S)_0, γ)
-    \ &= D_γ;labmap(sans(L), γ) ⊕ dnt(B) ⊕ labmap(sans(S)_0, γ)
+    \ &= σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)); upg(purity: p, labmap(sans(S)_0, γ)) ⊕ upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)]
+    \ &= (σ^⊕ ∘ α^⊕ ∘ j^n ∘ plus.circle.big_i  [dnt(#isblk($x: A_i, Θ_(Δ_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$))]);  upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) ⊕ upg(purity: p, labmap(sans(S)_0, γ))
+    \ &= D_γ;upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) ⊕ upg(purity: p, labmap(sans(S)_0, γ))
     $
     It follows that
     $
-    & labmap(sans(S), γ);sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D)
-    \ &= sans("Tr")_(dnt([γ]sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ;(labmap(sans(L), γ) ⊕ dnt(B) ⊕ dnt(sans(S))))
-    \ &= sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);(labmap(sans(L), γ) ⊕ dnt(B))
+    & upg(purity: p, labmap(sans(S)_0, γ));sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D)
+    \ &= sans("Tr")_(dnt([γ]sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ;(upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) ⊕ dnt(sans(S))))
+    \ &= sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);(upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B))
     $
     Therefore, we have that
     $
-    & dnt(issub(γ, Θ, Γ));dnt(#isblk($Γ$, $sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s$, $B$))
+    & upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(#isblk($Γ$, $sans(L)$, $p$, $llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s$, $B$))
     #h(12em) & 
-    \ &= dnt(issub(γ, Θ, Γ));dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
+    \ &= upg(purity: p, dnt(issub(γ, Θ, Γ)));dnt(#isblk($Γ$, $sans(S), sans(L)$, $p$, $s$, $B$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
     & "by definition" \
-    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));#labmap($sans(S), sans(L)$, $γ$);α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));upg(purity: p, #labmap($sans(S), sans(L)$, $γ$));α^⊕;σ^⊕;sans(L) ⊕ sans(B) ⊕ sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D);j
     & "by induction"
-    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;labmap(sans(L), γ) ⊕ dnt(B) ⊕ (labmap(sans(S), γ);sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D));j
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) ⊕ (upg(purity: p, labmap(sans(S)_0, γ));sans("Tr")_(dnt(sans(S)), dnt(sans(L)) ⊕ dnt(B))^(dnt(sans(S)))(j;D));j
     \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;
-    \ #h(5em) labmap(sans(L), γ) ⊕ dnt(B) ⊕ sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);(labmap(sans(L), γ) ⊕ dnt(B)));j
-    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;dnt(sans(L)) ⊕ dnt(B) ⊕ sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);j;labmap(sans(L), γ) ⊕ dnt(B)
-    \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s)$, $B$));labmap(sans(L), γ) ⊕ dnt(B)
+    \ #h(5em) upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B) ⊕ sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);(upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)));j
+    \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;dnt(sans(L)) ⊕ dnt(B) ⊕ sans("Tr")_(dnt([γ]sans(S)), [γ]dnt(sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);j;upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
+    \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet [lbl(ℓ)_j(x_j: A_j) => {t_j}]_j; s)$, $B$));upg(purity: p, labmap(sans(L), γ)) ⊕ dnt(B)
     & "by definition"
     $
 ]
-
-//TODO: this
