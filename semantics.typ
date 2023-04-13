@@ -576,8 +576,9 @@ TODO: text for typing rules
         joinctx($sans(K)$, $lhyp(Γ, lbl(ell), p, A), sans(L)$)),
     "label-ext": prft(name: "label-ext", 
         $joinctx(sans(K), sans(L))$,
+        $dropctx(Γ, Δ)$,
         $p ≤ q$,
-        joinctx($lhyp(Γ, lbl(ell), q, A), sans(K)$, $lhyp(Γ, lbl(ell), p, A), sans(L)$)),
+        joinctx($lhyp(Γ, lbl(ell), q, A), sans(K)$, $lhyp(Δ, lbl(ell), p, A), sans(L)$)),
     "var": prft(name: "var", 
         dropctx($Γ$, $x: A$), $istm(Γ, p, x, A)$),
     "app": prft(name: "app",
@@ -1124,7 +1125,7 @@ $
 )
 $
 dnt(dprf(#typing-rules.label-ext)) 
-= (dnt(A) ⊗ dnt(Γ)) ⊕ dnt(#typing-rules.label-ext.premises.at(0))
+= dnt(#typing-rules.label-ext.premises.at(1)) ⊕ dnt(#typing-rules.label-ext.premises.at(0))
 $
 $
 #rect([$dnt(splitctx(Γ, Δ, Ξ)): cal(C)_1(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$])
@@ -1884,12 +1885,14 @@ TODO:
         We have that
         $
         & upg(purity: p, dnt(dropctx(Γ, Θ)));dnt(isblk(Θ, sans(L), p, br(lbl(ℓ), a), B)) #h(17em) &
-        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Ξ)));dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) & "by definition"
-        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(Ξ);dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L))) & "by splitting"
-        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ));α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) & "by induction"
+        \ &= upg(purity: p, dnt(dropctx(Γ, Θ)));upg(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ))); & "by definition"
+        \ #h(5em) dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Θ_Ξ, lbl(ℓ), p, A), sans(L))))
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));upg(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ))); & "by splitting"
+        \ #h(5em) dnt(istm(Θ_Δ, p, a, A)) ⊗ dnt(Θ_Ξ);α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Θ_Ξ, lbl(ℓ), p, A), sans(L)))
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⊗ upg(purity: p, dnt(dropctx(Ξ, Θ_Ξ))));α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Θ_Ξ, lbl(ℓ), p, A), sans(L)))) & "by induction"
+        \ &= upg(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(istm(Δ, p, a, A)) ⊗ dnt(Ξ);α^⊕;0_(dnt(B)) ⊕ upg(purity: p, dnt(joinctx(lhyp(Ξ, lbl(ℓ), p, A), sans(L)))) & "by composition"
         \ &= dnt(isblk(Γ, sans(L), p, br(lbl(ℓ), a), A)) & "by definition"
         $
-        Note that $splitctx(Θ, Θ_Δ, Ξ)$ since the hypothesis corresponding to $lbl(ℓ)$ must be $lhyp(Ξ, lbl(ℓ), p, A)$, as the label-context is unchanged. //TODO: allow weakening label contexts...
     - #rname("ite"):
         We have that
         $
