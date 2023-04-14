@@ -14,6 +14,34 @@
 #let table-dbg = none;
 
 /*
+Tasks:
+0. Introduction
+    a. Explain SSA
+    b. Weaknesses of SSA
+    c. RVSDGs and advantages
+    d. Weaknesses of RVSDGs
+    e. GRVSDGs
+    f. Risks:
+        i. Linear time SSA conversion, provability
+        ii. SSA + RVSDGs embed in GRVSDGs
+    g. Provably correct needs semantics; we have a modular semantics
+1. Syntax
+2. Semantics
+    a. Axiomatic
+    b. Concrete models
+        i. Pfn
+        ii. Printing
+        iii. State
+        iv. Concurrency
+3. Metatheory
+    a. Semantic
+    b. Syntactic
+4. GRVSDG-SSA translation
+    a. Algorithm
+    b. Semantic correctness
+*/
+
+/*
 = Introduction
 
 //TODO: this
@@ -198,15 +226,64 @@ TODO:
 - something something profunctors something something?
 */
 
-/*
 
 == Iterative and Elgot Monads
 
+Definitions taken from @coinductive-resumption
+
+#definition(name: "Guarded Category")[
+    A *guardedness predicate* on a cocartesian category $cal(K)$ provides, for all objects $A, B, C ∈ |cal(K)|$, a subset $cal(K)^•(A, B, C) ⊆ cal(K)(A, B + C)$. We write $f: A -> B ⟩ C$ for $f ∈ cal(K)^•(A, B, C)$, and require that:
+    #row-den(
+        prf(name: "trv", $f: A → B$, $sans("inl") ∘ f: A → B ⟩ C$),
+        prf(name: "par", $f: A → C ⟩ D$, $g: B → C ⟩ D$, $[f, g]: A + B → C ⟩ D$),
+    )
+    #row-den(
+        prf(name: "cmp",
+            $f: A →  B ⟩ C$,
+            $g: B →  D ⟩ E$,
+            $h: C →  D + E$, 
+            $f;[g, h]: A → D ⟩ E$
+        )
+    )
+    A category equipped with a guardedness predicate is called a *guarded category*. A monad $T$ on $cal(C)$ is a *guarded monad* if it's Kliesli category $cal(C)_T$ is a guarded category under the coproducts inherited from $cal(C)$. 
+]
+
+#definition(name: "Greatest and Least Guardedness Predicates")[
+    - The *greatest guardedness predicate* on $cal(K)$ sets $cal(K)^⬝(A, B, C) = cal(K)(A, B + C)$
+    - The *least guardedness predicate* on $cal(K)$ says that
+    $
+    f ∈ cal(K)^⬝(A, B, C) <==> ∃g: A → B, f = g;sans("inl")
+    $
+    We say that $cal(K)$ is *totally guarded* when equipped with the largest guardedness predicate and *vacuously guarded* when equipped with the smallest.
+]
+
+//TODO: examples
+
+//TODO: guarded natural transformation, monad transformer
+
+#definition(name: "Guarded Iterative Category")[
+    A category $cal(K)$ is *guarded iterative* if every $f: A → B ⟩ C$ has a _unique_ fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$, i.e.,
+    $
+    f^† = f;[idm, f^†]
+    $
+]
+
+#definition(name: "Conway Iteration")[
+    A guarded *_Conway_ (iteration) operator* on $cal(K)$ associates, to each $f: A → B ⟩ C$, a fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$ satisfying the following axioms:
+    - *Naturality:* for $f: A → B ⟩ C$ and $g: B → C$, $(f;[g, idm])^† = f^†g$
+    - *Dinaturality:* $(g;[sans("inl"), h])^† = g;[idm, (h;[sans("inl"), g])^†]$
+    - *Codiagonal:* $(f;[idm, sans("inr")])^† = f^(††)$ for $f: X -> Y ⟩ X ⟩ X$
+]
+
+//TODO: uniformity
+
+//TODO: guarded iterative ==> guarded Conway, uniform w.r.t. identity functor
+
+//TODO: guarded Elgot
+
+//TODO: Elgot + iterative
+
 /*
-TODO:
-- iterative monads, Elgot monads
-- pointer to guardedness (NOT USED HERE! But could be for "coproducts ain't guarded")
-*/
 
 == Traced Monoidal Categories
 
@@ -214,7 +291,7 @@ TODO:
 TODO:
 - trace, properties
 - pointer to premonoidal trace (NOT USED HERE!)
-- connection between iterative/Elgot and traced
+- connection between iterative/Elgot and traced. Totality, as well
 */
 
 */
@@ -1550,6 +1627,9 @@ TODO: strong monads; or do we pull this down to the monoidal categories section?
 */
 /*
 TODO: commutative monads?
+*/
+/*
+TODO: monad transformers
 */
 
 === Adjunctions
