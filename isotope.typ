@@ -256,13 +256,23 @@
 #let rtimes = $⋊$
 #let cen(cat) = $Z(#cat)$
 #let adj(left, right, unit: none, counit: none) = $#left ⊣ #right$
-#let lhyp(ctx, label, purity, arg) = $ctx triangle_purity label(arg)$
+#let lhyp(ctx, purity, label, arg) = $ctx triangle_purity label(arg)$
+#let thyp(var, ty, ..args) = $#var: ty^(#{
+    if args.pos().len() > 0 {
+        args.pos().at(0)
+    } else {
+        none
+    }
+})$
 #let issub(name, defctx, varctx) = $name: defctx -> varctx$
 #let ssub(tm, var) = $tm slash var$
 #let slft(subst) = $subst^↑$
 #let submap(lsub, rsub) = $lsub ≤ rsub$
 #let labmap(label, subst) = $sans("labmap")(label, subst)$
 #let smite(base) = $sans("ite")_base$
+#let lcen = $sans("cen")$
+#let lrel = $sans("rel")$
+#let laff = $sans("aff")$
 
 // Syntax macros
 #let splitctx(src, ..subctx) = {
@@ -280,12 +290,25 @@
 }
 #let subctx(small, big) = $small ≤ big$
 #let types(base) = $sans("Type")(#base)$
-#let rel(ty) = $#ty sans("rel")$
-#let aff(ty) = $#ty sans("aff")$
+#let rel(ty, ..args) = $#ty^(#{
+    if args.pos().len() > 0 {
+        args.pos().at(0)
+    } else {
+        none
+    }
+}) sans("rel")$
+#let aff(ty, ..args) = $#ty^(#{
+    if args.pos().len() > 0 {
+        args.pos().at(0)
+    } else {
+        none
+    }
+}) sans("aff")$
+#let islin(purity, ty) = $#ty aq sans("lin")_(#purity)$
 #let istm(ctx, purity, tm, ty) = $ctx ⊢_purity tm: ty$
 #let isblk(ctx, bctx, purity, blk, ty) = $
     ctx;bctx ⊢_purity blk triangle.stroked.small ty$
-#let upg(body, purity: none) = $body^(↑_purity)$
+#let dwng(body, purity: none) = $body^(↓_purity)$
 #let instof(purity, func) = $sans("inst")_purity(func)$
 
 #let row-den(..args) = {
