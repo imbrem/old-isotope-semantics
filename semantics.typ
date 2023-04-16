@@ -929,23 +929,6 @@ This has the following basic properties:
 - If $subctx(Γ, Δ)$, then $subctx([thyp(x, A, q) ∈ Γ | P], [thyp(x, A, q) ∈ Δ | P])$
 - If $subctx(Θ_Δ, Δ)$, $subctx(Θ_Ξ, Ξ)$, and $splitctx(Γ, Δ, Ξ)$, then, for $Θ = [thyp(x, A, q) ∈ Γ | x ∈ Θ_Δ or x ∈ Θ_Ξ]$, we have $splitctx(Θ, Θ_Δ, Θ_Ξ)$, with $Θ$ minimal.
 
-// We now define the notion of the *union* of two contexts, $Γ ∪ Δ$, to be the unique context, if it exists, given by the following rules:
-// #row-den(
-//     $prf(cnil ∪ Γ = Γ, name: "union-lnil")$,
-//     $prf(Γ ∪ cnil = Γ, name: "union-rnil")$,
-//     prf($Γ ∪ Δ = Ξ$, $rel(A)$, $x: A, Γ ∪ x: A, Δ = x: A, Ξ$, name: "union-rel")
-// )
-// $
-// #[
-//     #prf($Γ ∪ Δ = Ξ$, $x ∉ Δ$, $x: A, Γ ∪ Δ = x: A, Ξ$, name: "union-ext")
-// ]
-// $
-// Some basic properties of the union include
-// - $splitctx(Γ ∪ Δ, Γ, Δ)$; furthermore, if $∃Ξ, splitctx(Ξ, Γ, Δ)$, then $Γ ∪ Δ$ exists and $Ξ$ is a permutation of it.
-// - $Γ ∪ Γ = Γ$ if the former exists
-// - $Γ ∪ (Δ ∪ Ξ) = (Γ ∪ Δ) ∪ Ξ$, with one side defined if the other is
-// This allows us to define the union $union.big_x Δ_x$ of an ordered, finite collection of contexts $Δ_x$.
-
 We may now state some basic theorems and definitions:
 #let downgrade-stmt = lemma(name: "Downgrade")[
     Given purities $p' ⊆ p$,
@@ -956,19 +939,6 @@ We may now state some basic theorems and definitions:
 #proof[
     See @syntactic-properties[Appendix]
 ]
-
-//NOTE: as of writing, this is *NOT TRUE*
-// #let rel-aff-stmt = lemma(name: "Pure Terms are Pseudolinear")[
-//     If $istm(Γ, 1, a, A)$ or $isblk(Γ, sans(L), 1, t, A)$, then $∃Θ$ such that
-//     - $dropctx(Γ, Θ)$
-//     - $istm(Θ, 1, a, A)$ or $isblk(Θ, sans(L), 1, a, A)$
-//     - $rel(A) ==> rel(Θ)$
-//     - $aff(A) ==> aff(Θ)$ (and therefore $aff(A) ==> aff(Γ)$)
-// ]
-// #rel-aff-stmt
-// #proof[
-//     See @syntactic-properties[Appendix]
-// ]
 
 #let substitution-rules = (
     "subst-nil": prft(
@@ -1187,20 +1157,20 @@ $
 )
 #row-den(
     $dnt(#dprf(typing-rules.bool-aff)) = sans("aff")(bools)$,
-    $dnt(#dprf(typing-rules.pair-aff)) = dnt(#typing-rules.pair-aff.premises.at(0)) ⊗ dnt(#typing-rules.pair-aff.premises.at(1)); α$)
+    $dnt(#dprf(typing-rules.pair-aff)) = dnt(#typing-rules.pair-aff.premises.at(0)) ⊗ dnt(#typing-rules.pair-aff.premises.at(1)); α^⊗$)
 $
 #rect([$dnt(rel(A)): cal(C)_1(dnt(A), dnt(A) ⊗ dnt(A))$])
 $
 #row-den(
     $dnt(dprf(#typing-rules.fwd-rel)) = sans("rel")(X)$,
-    $dnt(dprf(#typing-rules.unit-rel)) = α$,
+    $dnt(dprf(#typing-rules.unit-rel)) = α^⊗$,
     $dnt(dprf(#typing-rules.bool-rel)) = sans("rel")(bools)$,
 )
 $
     dnt(dprf(#typing-rules.pair-rel)) =
     dnt(#typing-rules.pair-rel.premises.at(0)) ⊗ dnt(#typing-rules.pair-rel.premises.at(1));α;
     idm_(dnt(A)) ⊗ σ_(dnt(A), dnt(B)) ⊗ idm_(dnt(B));
-    α
+    α^⊗
 $
 $
 #rect([$dnt(joinctx(sans(K), sans(L))): cal(C)_1(dnt(sans(K)), dnt(sans(L)))$])
@@ -1217,20 +1187,20 @@ $
 #rect([$dnt(splitctx(Γ, Δ, Ξ)): cal(C)_1(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$])
 $
 #row-den(
-    $dnt(dprf(#typing-rules.ctx-nil)) = α$,
-    $dnt(dprf(#typing-rules.ctx-right)) = dnt(#typing-rules.ctx-right.premises.at(0)) ⊗ dnt(A);α$
+    $dnt(dprf(#typing-rules.ctx-nil)) = α^⊗$,
+    $dnt(dprf(#typing-rules.ctx-right)) = dnt(#typing-rules.ctx-right.premises.at(0)) ⊗ dnt(A);α^⊗$
 )
 $
-dnt(dprf(#typing-rules.ctx-left)) = dnt(#typing-rules.ctx-left.premises.at(0)) ⊗ dnt(A);α;dnt(Δ) ⊗ σ_(dnt(Ξ), dnt(A));α
+dnt(dprf(#typing-rules.ctx-left)) = dnt(#typing-rules.ctx-left.premises.at(0)) ⊗ dnt(A);α^⊗;dnt(Δ) ⊗ σ_(dnt(Ξ), dnt(A));α^⊗
 $
 $
 dnt(dprf(#typing-rules.ctx-rel)) =
 dnt(#typing-rules.ctx-rel.premises.at(0)) ⊗ dnt(rel(A));
-α;dnt(Δ) ⊗ σ_(dnt(Ξ), dnt(A)) ⊗ dnt(A);α
+α^⊗;dnt(Δ) ⊗ σ_(dnt(Ξ), dnt(A)) ⊗ dnt(A);α^⊗
 $
 $
 dnt(dprf(#typing-rules.ctx-aff)) =
-dnt(#typing-rules.ctx-rel.premises.at(0)) ⊗dnt(aff(A));α
+dnt(#typing-rules.ctx-rel.premises.at(0)) ⊗dnt(aff(A));α^⊗
 $
 $
 #rect([$dnt(dropctx(Γ, Δ)): cal(C)_1(dnt(Γ), dnt(Δ))$])
@@ -1239,7 +1209,7 @@ $
 //     $dnt(dprf(#typing-rules.wk-nil)) = idm$,
 //     $dnt(dprf(#typing-rules.wk-add)) = dnt(A) ⊗ dnt(dropctx(Γ, Δ))$
 // )
-#row-den($dnt(dprf(#typing-rules.wk-def)) = dnt(#typing-rules.wk-def.premises.at(0));α$)
+#row-den($dnt(dprf(#typing-rules.wk-def)) = dnt(#typing-rules.wk-def.premises.at(0));α^⊗$)
 
 //TODO: string diagrams, since all structrure is in cal(C)_1?
 
@@ -1271,7 +1241,7 @@ $
 $
 dnt(dprf(#typing-rules.let2))
 \ #h(5em) = dwng(dnt(#typing-rules.let2.premises.at(0)), purity: p);
-    dnt(Δ) ⊗ dnt(#typing-rules.let2.premises.at(1));α;
+    dnt(Δ) ⊗ dnt(#typing-rules.let2.premises.at(1));α^⊗;
     dnt(#typing-rules.let2.premises.at(2))
 $
 $
@@ -1860,27 +1830,27 @@ TODO:
         We have that
         $
         & dwng(purity: p, dnt(dropctx(Γ, Θ)));dnt(#istm($Θ$, $p$, $llet (x, y) = e; e'$, $C$)) #h(15em) &
-        \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α;
+        \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
         & "by definition"
         \ #h(4em) 
             dnt(#istm($Θ_Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
         & "by splitting"
-        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α;
+        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
             dnt(#istm($Θ_Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
-            dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α;
+            dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
         \ #h(4em) dnt(#dropctx($Ξ$, $Θ_Ξ$)) ⊗ dnt(A) ⊗ dnt(B);
             dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
-            dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α;
+            dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
         \ #h(4em) dnt(#dropctx($Δ, thyp(x, A), thyp(y, B)$, $Θ_Δ, thyp(x, A), thyp(y, B)$));
             dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
-            dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α;
+            dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α^⊗;
             dnt(#istm($Δ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         & "by induction"
         \ &= dnt(#istm($Γ$, $p$, $llet (x, y) = e; e'$, $C$))
@@ -1964,27 +1934,27 @@ TODO:
         We have that
         $
         & dwng(purity: p, dnt(dropctx(Γ, Θ)));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)) #h(15em) &
-        \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α;
+        \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
         & "by definition"
         \ #h(4em) 
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));
         & "by splitting"
-        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α;
+        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
-             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α;
+             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
         \ #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A) ⊗ dnt(B);
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
-             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α;
+             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
         \ #h(4em) dnt(#dropctx($Δ, thyp(x, A), thyp(y, B)$, $Θ_Δ, thyp(x, A), thyp(y, B)$));
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
-            dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α;
+            dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α^⊗;
             dnt(#isblk($Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         & "by induction"
         \ &= dnt(#isblk($Γ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)) 
@@ -2093,8 +2063,8 @@ TODO:
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Δ) ⊗ (dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ)));
         dnt(istm(Ξ, p, e, A ⊗ B)));α;
         & "by definition"
-        \ #h(5em) dwng(purity: p, dnt(issub(slft(slft(γ_Δ)), (Θ_Δ, thyp(x, A), thyp(y, B)), (Δ, thyp(x, A), thyp(y, B)))));α; dnt(#istm($Δ, thyp(x, A), thyp(y, A)$, $p$, $e'$, $C$))
-        \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α;dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, A)$, $p$, $[γ]e'$, $C$))
+        \ #h(5em) dwng(purity: p, dnt(issub(slft(slft(γ_Δ)), (Θ_Δ, thyp(x, A), thyp(y, B)), (Δ, thyp(x, A), thyp(y, B)))));α^⊗; dnt(#istm($Δ, thyp(x, A), thyp(y, A)$, $p$, $e'$, $C$))
+        \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α^⊗;dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, A)$, $p$, $[γ]e'$, $C$))
         & "by induction"
         \ &= dnt(#istm($Θ$, $p$, $[γ](llet (x, y) = e; e')$, $C$))
         & "by definition"
@@ -2238,9 +2208,9 @@ TODO:
             dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by splitting"
         \ #h(5em)
-            dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α;dnt(#isblk($Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
+            dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α^⊗;dnt(#isblk($Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
-            dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α;
+            dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α^⊗;
         & "by induction"
         \ #h(5em)
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $[γ]sans(L)$, $p$, $t[γ]$, $C$)); 
