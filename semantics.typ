@@ -683,7 +683,7 @@ TODO: text for typing rules
         $aff(A)$, $rel(A)$, $islin(∞, A)$
     ),
     "var": prft(name: "var", 
-        dropctx($Γ$, $x: A$), $istm(Γ, p, x, A)$),
+        dropctx($Γ$, $thyp(x, A, ∅)$), $istm(Γ, p, x, A)$),
     "app": prft(name: "app",
         $f in cal(I)_p(A, B)$, $istm(Γ, p, a, A)$, 
         $istm(Γ, p, f aq a, B)$),
@@ -1319,9 +1319,18 @@ TODO: string diagrams for control flow?
 
 //TODO: text, segue
 
-//TODO: semantic downgrade
+#let semantic-downgrade-stmt = theorem(name: "Semantic Downgrade")[
+    If $p' ⊆ p$, then
+    - $dwng(purity: p', dnt(istm(Γ, p, a, A))) = istm(Γ, p', a, A)$
+    - $dwng(purity: p', dnt(isblk(Γ, sans(L), p, t, B))) = isblk(Γ, sans(L), p', t, B)$
+    where the right-hand side is defined whenever the left-hand side is by downgrade.
+]
+#semantic-downgrade-stmt
+#proof[
+    By mutual induction on derivations of $dnt(istm(Γ, p, a, A))$, $dnt(isblk(Γ, sans(L), p, t, B))$
+]
 
-We begin by stating a few basic properties of weakenings:
+We now state a few basic properties of weakenings:
 - Since derivations $splitctx(Γ, Δ, Ξ)$, $dropctx(Γ, Δ)$, $joinctx(sans(L), sans(K))$ are unique, it follows their denotations are unique, if they exist, justifying the syntax $dnt(splitctx(Γ, Δ, Ξ))$, $dnt(dropctx(Γ, Δ))$, $dnt(joinctx(sans(L), sans(K)))$
 - In particular, we have that $dnt(dropctx(Γ, Γ)) = idm$, and, if $dropctx(Γ, Δ), dropctx(Δ, Ξ)$, then 
 $
@@ -1373,7 +1382,11 @@ labmap((sans(L), lhyp(Δ, p, lbl(ℓ), A)), γ) & = labmap(sans(L), γ) ⊗ (dnt
 $
 with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
 
-//TODO: substitution downgrade, labmap downgrade
+We state the following basic properties of substitutions:
+
+- For $p' ⊆ p$,
+    - $dwng(purity: p', issub(γ, Θ, Γ, p))) = issub(γ, Θ, Γ, p')$
+    - $dwng(purity: p', labmap(sans(L), γ)) = labmap(sans(L), dwng(purity: p', γ))$
 
 //TODO: text, segue
 
@@ -1641,7 +1654,7 @@ TODO:
 #downgrade-stmt
 #proof[
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$. We generate one case for each possible rule:
-    - #rname("var"): since by assumption #dropctx($Γ$, $x: A$), we may apply #rstyle("var") to derive $istm(Γ, p', x, A)$ as desired.
+    - #rname("var"): since by assumption #dropctx($Γ$, $thyp(x, A, ∅)$), we may apply #rstyle("var") to derive $istm(Γ, p', x, A)$ as desired.
     - #rname("app"): since by assumption $f ∈ cal(I)_p(A, B) ⊆ cal(I)_p'(A, B)$, and by induction $istm(Γ, p', a, A)$, we may apply #rstyle("app") to derive $istm(Γ, p', f aq a, A)$ as desired.
     - #rname("jmp"): by induction, we have that $istm(Ξ, p', a, A)$, by assumption we have that $joinctx(lhyp(Δ, p, lbl(ℓ), A), sans(L))$ and therefore since $p' ⊆ p$ $joinctx(lhyp(Δ, p', lbl(ℓ), A), sans(L))$, hence we may apply #rstyle("jmp") to derive $isblk(Γ, sans(L), p', br(lbl(l), a), B)$, as desired.
     - #rname("tr"): by assumption, we have that $∀i, #[#isblk($Δ_i, thyp(x_i, A_i)$, $sans(L), [lhyp(Δ_j, ∅, lbl(ℓ_j), A_j)]_j$, $p_i$, $t_i$, $B$)]$. By induction, we have that #isblk($Γ$, $sans(L), [lhyp(Δ_j, 0, lbl(ℓ_j), A_j)]_j$, $p'$, $s$, $B$). Hence, we may apply #rstyle("tr") to yield the desired conclusion.
@@ -1662,7 +1675,7 @@ TODO:
 #proof[
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a weakening $dropctx(Θ, Γ)$:
     - #rname("var"): 
-        - By transitivity of weakening, $#subctx($Γ$, $x: A$) ==> #subctx($Θ$, $x: A$)$ 
+        - By transitivity of weakening, $#subctx($Γ$, $thyp(x, A, ∅)$) ==> #subctx($Θ$, $thyp(x, A, ∅)$)$ 
         - Hence, by #rstyle("var"), $istm(Θ, p, x, A)$, as desired.
     - #rname("app"):
         - By induction, $istm(Θ, p, a, A)$
@@ -1767,8 +1780,8 @@ TODO:
     - #rname("var"): we have that
     $
         & dwng(purity: p, dnt(dropctx(Γ, Θ)));dnt(istm(Θ, p, x, A)) #h(12em) &
-        \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(#dropctx($Θ$, $x: A$))) & "by definition"
-        \ &= dwng(purity: p, dnt(#dropctx($Γ$, $x: A$))) & "weakening composes"
+        \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(#dropctx($Θ$, $thyp(x, A, ∅)$))) & "by definition"
+        \ &= dwng(purity: p, dnt(#dropctx($Γ$, $thyp(x, A, ∅)$))) & "weakening composes"
         \ &= dnt(istm(Γ, p, x, A)) & "by definition"
     $
     - #rname("app"): 
@@ -1994,9 +2007,9 @@ TODO:
     - #rname("var"): By semantic substitution weakening, we have
         $
         & dwng(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, x, A)) #h(5em) &
-        \ &= dwng(purity: p, dnt(issub(γ, Θ, Γ)));dwng(purity: p, dnt(#dropctx($Γ$, $x: A$)))
+        \ &= dwng(purity: p, dnt(issub(γ, Θ, Γ)));dwng(purity: p, dnt(#dropctx($Γ$, $thyp(x, A, ∅)$)))
         & "by definition"
-        \ &= dnt(dropctx(Θ, Θ_x));dwng(purity: p, dnt(#issub($γ_x$, $Θ_x$, $x: A$)))
+        \ &= dnt(dropctx(Θ, Θ_x));dwng(purity: p, dnt(#issub($γ_x$, $Θ_x$, $thyp(x, A, ∅)$)))
         & "by semantic substitution weakening"
         \ &= dnt(dropctx(Θ, Θ_x));dnt(istm(Θ_x, p, [γ]x, A))
         & "by definition"
