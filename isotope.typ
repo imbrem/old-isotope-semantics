@@ -264,7 +264,12 @@
         none
     }
 })$
-#let issub(name, defctx, varctx) = $name: defctx -> varctx$
+#let issub(name, defctx, varctx, ..args) = {
+    let purity = if args.pos().len() >= 1 {
+        args.pos().at(0)
+    }
+    $name: defctx ->_purity varctx$
+}
 #let ssub(tm, var) = $tm slash var$
 #let slft(subst) = $subst^↑$
 #let submap(lsub, rsub) = $lsub ≤ rsub$

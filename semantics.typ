@@ -593,7 +593,13 @@ We begin by giving a grammar for *contexts* and *label contexts* as follows:
 );
 #grammar(isotope-ctx-grammar)
 where $q ⊆ {lrel, laff}$ is a *quantity* and $p ⊆ {lcen}$ is a *purity*.
-Where clear from context, we will coerce $lrel, laff$, and $lcen$ to ${lrel}, {laff}$, and ${lcen}$ respectively. Similarly, in the context of quantities, we will define $∞ = {lrel, laff}$ to be the maximal quantity. Where a quantity is not specified (e.g. $x: A$ in a context), we will assume it to be the _maximal_ quantity $∞$. On the other hand, where a purity is not specified (e.g. the judgement $istm(Γ, #{none}, x, A)$), we will assume it to be the _minimal_ purity $∅$.
+Where clear from context, we will coerce $lrel, laff$, and $lcen$ to ${lrel}, {laff}$, and ${lcen}$ respectively.
+
+We will write 
+- $thyp(x, A)$ as shorthand for $thyp(x, A, ∞)$
+- $istm(Γ, #{none}, a, A)$ as shorthand for $istm(Γ, ∅, a, A)$
+- $isblk(Γ, sans(L), #{none}, t, B)$ as shorthand for $isblk(Γ, sans(L), #{none}, t, B)$
+- $lhyp(Γ, #{none}, lbl(ℓ), A)$ as shorthand for $lhyp(Γ, ∅, lbl(ℓ), A)$
 
 We may now introduce the following typing judgements:
 #align(center)[#table(
@@ -942,11 +948,11 @@ We may now state some basic theorems and definitions:
 
 #let substitution-rules = (
     "subst-nil": prft(
-        $dropctx(Θ_cnil, cnil)$, $cnil: Θ_cnil -> cnil$, 
+        $dropctx(Θ_cnil, cnil)$, $issub(cnil, Θ_cnil, cnil, p)$, 
         name: "subst-nil"),
     "subst-cons": prft(
-        $issub(γ, Θ_Γ, Γ)$, 
-        $istm(Θ_x, lcen, a, A)$,
+        $issub(γ, Θ_Γ, Γ, p)$, 
+        $istm(Θ_x, p, a, A)$,
         $islin(q, Θ_x)$,
         $splitctx(Θ, Θ_x, Θ_Γ)$,
         issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$),
@@ -954,13 +960,13 @@ We may now state some basic theorems and definitions:
 )
 
 #definition(name: "Substitution")[
-    We define a *raw substitution* $γ$ from $Θ$ to be an assignment of an expression $a$ to each variable in $Θ$. We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. 
-    We define a substitution to be *well-typed*, written $issub(γ, Θ, Γ)$, via the following rules
+    We define a *substitution* $issub(γ, Θ, Γ, p)$ with purity $p$ from $Θ$ to $Γ$, via the following rules
     #row-den(
     dprf(substitution-rules.subst-nil),
     dprf(substitution-rules.subst-cons)
     )
-    We will refer to a well-typed substitution $issub(γ, Θ, Γ)$ as simply a *substitution*.
+    If the purity $p$ is not specified, we assume $p = {lcen}$.
+    We define the capture-avoiding substitution $[γ]a$, $[γ]t$ of a term or block as usual. 
     We define the substitution of a _context_ $Ξ$ by a well-typed substitution to be given by the list comprehension
     $
     [γ]Ξ = [y: B ∈ Θ | ∃x ∈ Ξ, y ∈ Θ_x]
@@ -995,6 +1001,7 @@ We note the following basic properties about substitutions:
 - For all $x$, $subctx(Θ_x, Θ)$
 - For all $Ξ$, $subctx(Θ_Ξ, Θ)$, $subctx(Ξ, Ξ') ==> subctx(Θ_Ξ, Θ_(Ξ'))$, and $x: A ∈ Ξ ==> subctx(Θ_x, Θ_Ξ)$
 - For all #issub($γ$, $Θ$, $x: A, Γ$) with #subctx($Ξ$, $Γ$), we have $splitctx(Θ_(x: A, Ξ), Θ_x, Θ_Ξ)$ with $Θ_(x: A, Ξ)$ minimal (since $subctx(Θ_x, Θ_x)$, $subctx(Θ_Ξ, Θ_Γ)$, and $splitctx(Θ, Θ_x, Θ_Γ)$)
+- By downgrade, if $p' ⊆ p$ and $issub(γ, Θ, Γ, p)$, then $issub(γ, Θ, Γ, p')$
 
 //TODO: segue?
 
@@ -1002,8 +1009,8 @@ We may now state the following basic lemmas w.r.t substitution
 
 //TODO: better name
 #lemma(name: "Split Substitution")[
-    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and there exist substitutions $γ_Δ$, $γ_Ξ$ such that 
-    - $issub(γ_Δ, Θ_Δ, Δ)$, $issub(γ_Ξ, Θ_Ξ, Ξ)$. 
+    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ, p)$, then $splitctx(Θ, Θ_Δ, Θ_Ξ)$, and there exist substitutions $γ_Δ$, $γ_Ξ$ such that 
+    - $issub(γ_Δ, Θ_Δ, Δ, p)$, $issub(γ_Ξ, Θ_Ξ, Ξ, p)$. 
     - $submap(γ_Δ, γ)$, $submap(γ_Ξ, γ)$
     //TODO: these substitutions should be unique?
 ]
@@ -1012,63 +1019,63 @@ We may now state the following basic lemmas w.r.t substitution
     - #rname("ctx-nil"): take $γ_cnil = cnil$; the desired properties hold trivially.
     - #rname("ctx-left"): let $γ_(Δ, thyp(x, A, q)) = [x ↦ [γ]x]γ_Δ$, where $γ_Δ, γ_Ξ$ are given by induction. Then $γ_(Δ, thyp(x, A, q)), γ_Ξ$ have the desired properties, since:
         - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
-        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ and $issub(γ_Ξ, Θ_Ξ, Ξ)$ by induction; therefore $splitctx(Θ_(Δ, thyp(x, A, q)), Θ_x, Θ_Δ)$ is minimal; hence we have $splitctx(Θ, Θ_(Δ, thyp(x, A, q)), Θ_Ξ)$.
+        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ and $issub(γ_Ξ, Θ_Ξ, Ξ, p)$ by induction; therefore $splitctx(Θ_(Δ, thyp(x, A, q)), Θ_x, Θ_Δ)$ is minimal; hence we have $splitctx(Θ, Θ_(Δ, thyp(x, A, q)), Θ_Ξ)$.
         - Hence, we may derive
         #prf(
             name: "subst-add", 
             $issub(γ_Δ, Θ_Δ, Δ) " by ind."$,
-            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ, p)$,
             $splitctx(Θ_(Δ, thyp(x, A, q)), Θ_x, Θ_Δ)$,
-            issub($[x ↦ [γ]x]γ_Δ$, $Θ_(Δ, thyp(x, A, q))$, $(Δ, thyp(x, A, q))$)
+            issub($[x ↦ [γ]x]γ_Δ$, $Θ_(Δ, thyp(x, A, q))$, $(Δ, thyp(x, A, q))$, $p$)
         )
         as desired
     - #rname("ctx-right"): let $γ_(Ξ, thyp(x, A, q)) = [x ↦ [γ]x]γ_Ξ$, where $γ_Δ, γ_Ξ$ are given by induction. Then $γ_Δ, γ_(Ξ, thyp(x, A, q))$ have the desired properties, since:
         - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
-        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ and $issub(γ_Δ, Θ_Δ, Δ)$ by induction; therefore $splitctx(Θ_(Ξ, thyp(x, A, q)), Θ_x, Θ_Ξ)$ is minimal; hence we have $splitctx(Θ, Θ_Δ, Θ_(Ξ, thyp(x, A, q)))$
+        - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ and $issub(γ_Δ, Θ_Δ, Δ, p)$ by induction; therefore $splitctx(Θ_(Ξ, thyp(x, A, q)), Θ_x, Θ_Ξ)$ is minimal; hence we have $splitctx(Θ, Θ_Δ, Θ_(Ξ, thyp(x, A, q)))$
         - Hence, we may derive
         #prf(
             name: "subst-add", 
             $issub(γ_Ξ, Θ_Ξ, Ξ) " by ind."$,
-            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ, p)$,
             $splitctx(Θ_(Ξ, thyp(x, A, q)), Θ_x, Θ_Ξ)$,
-            issub($[x ↦ [γ]x]γ_Ξ$, $Θ_(Ξ, thyp(x, A, q))$, $(Ξ, thyp(x, A, q))$)
+            issub($[x ↦ [γ]x]γ_Ξ$, $Θ_(Ξ, thyp(x, A, q))$, $(Ξ, thyp(x, A, q))$, $p$)
         )
         as desired
     - #rname("ctx-rel"): let $γ_(Δ, thyp(x, A, q)) = [x ↦ [γ]x]γ_Δ$, $γ_(x: A, Ξ) = [x ↦ [γ]x]γ_Ξ$, where $γ_Δ, γ_Ξ$ are given by induction. Then $γ_(Δ, thyp(x, A, q)), γ_(Ξ, thyp(x, A, q))$ have the desired properties, since:
         - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
         - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
-        - Since $lrel ∈ q$ and $issub(γ, Θ, (Γ, thyp(x, A, q)))$, $rel(Θ_x)$, we have $splitctx(Θ, Θ_(Δ, thyp(x, A, q)), Θ_(Ξ, thyp(x, A, q)))$
+        - Since $lrel ∈ q$ and $issub(γ, Θ, (Γ, thyp(x, A, q)), p)$, $rel(Θ_x)$, we have $splitctx(Θ, Θ_(Δ, thyp(x, A, q)), Θ_(Ξ, thyp(x, A, q)))$
         - Therefore $splitctx(Θ_(Δ, thyp(x, A, q)), Θ_x, Θ_Δ)$ and $splitctx(Θ_(Ξ, thyp(x, A, q)), Θ_x, Θ_Ξ)$
         - Hence, we may derive
         #prf(
             name: "subst-add", 
             $issub(γ_Δ, Θ_Δ, Δ) " by ind."$,
-            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ, p)$,
             $splitctx(Θ_(Δ, thyp(x, A, q)), Θ_x, Θ_Δ)$,
-            issub($[x ↦ [γ]x]γ_Δ$, $Θ_(Δ, thyp(x, A, q))$, $(Δ, thyp(x, A, q))$)
+            issub($[x ↦ [γ]x]γ_Δ$, $Θ_(Δ, thyp(x, A, q))$, $(Δ, thyp(x, A, q))$, $p$)
         )
         #prf(
             name: "subst-add", 
             $issub(γ_Ξ, Θ_Ξ, Ξ) " by ind."$,
-            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ)$,
+            $istm(Θ_x, p, γ[x], A) " since " issub(γ, Θ, Γ, p)$,
             $splitctx(Θ_(Ξ, thyp(x, A, q)), Θ_x, Θ_Ξ)$,
-            issub($[x ↦ [γ]x]γ_Ξ$, $Θ_(Ξ, thyp(x, A, q))$, $(Ξ, thyp(x, A, q))$)
+            issub($[x ↦ [γ]x]γ_Ξ$, $Θ_(Ξ, thyp(x, A, q))$, $(Ξ, thyp(x, A, q))$, $p$)
         )
     - #rname("ctx-aff"): Let $γ_Δ, γ_Ξ$ be given by induction. Then $γ_Δ, γ_Ξ$ have the desired properties, since:
         - $splitctx(Θ, Θ_x, Θ_Γ)$ by assumption
         - $splitctx(Θ_Γ, Θ_Δ, Θ_Ξ)$ by induction
-        - Since $laff ∈  q$ and $issub(γ, Θ, (Γ, thyp(x, A, q)))$, we have $splitctx(Θ, Θ_Δ, Θ_Ξ)$
+        - Since $laff ∈  q$ and $issub(γ, Θ, (Γ, thyp(x, A, q)), p)$, we have $splitctx(Θ, Θ_Δ, Θ_Ξ)$
 ]
 We may immediately deduce the following corollaries:
 //TODO: rename to corollary?
 //TODO: better name
 #lemma(name: "Weakening Substitution")[
-    If $dropctx(Γ, Δ)$ and $issub(γ, Θ, Γ)$, then $dropctx(Γ, Θ_Δ)$ there exists a substitution $γ_Δ$ such that $issub(γ_Δ, Θ_Δ, Δ)$, and $submap(γ_Δ, γ)$.
+    If $dropctx(Γ, Δ)$ and $issub(γ, Θ, Γ, p)$, then $dropctx(Γ, Θ_Δ)$ there exists a substitution $γ_Δ$ such that $issub(γ_Δ, Θ_Δ, Δ, p)$, and $submap(γ_Δ, γ)$.
     //TODO: this substitution should be unique?
 ]
 //TODO: better name
 #lemma(name: "Join Substitution")[
-    If $joinctx(sans(K), sans(L))$ and $issub(γ, Θ, Γ)$, then $joinctx([γ]sans(K), [γ]sans(L))$
+    If $joinctx(sans(K), sans(L))$ and $issub(γ, Θ, Γ, p)$, then $joinctx([γ]sans(K), [γ]sans(L))$
 ]
 //TODO: proofs?
 
@@ -1084,14 +1091,13 @@ We may immediately deduce the following corollaries:
     See @syntactic-properties[Appendix]
 ]
 
-
 #let syntactic-join-weakening-stmt = lemma(name: "Join Weakening")[
     If $joinctx(sans(K), sans(L))$ and $isblk(Γ, sans(K), p, t, B)$, then $isblk(Γ, sans(L), p, t, B)$
 ];
 #syntactic-join-weakening-stmt
 
 #let syntactic-substitution-stmt = lemma(name: "Syntactic Substitution")[
-    Given a substitution $issub(γ, Θ, Γ)$,
+    Given a substitution $issub(γ, Θ, Γ, p)$,
     - If $istm(Γ, p, a, A)$ , then $istm(Θ, p, [γ]a, A)$
     - If $isblk(Γ, sans(L), p, t, B)$, then $isblk(Θ, [γ]sans(L), p, [γ]t, B)$
 ];
@@ -1313,6 +1319,8 @@ TODO: string diagrams for control flow?
 
 //TODO: text, segue
 
+//TODO: semantic downgrade
+
 We begin by stating a few basic properties of weakenings:
 - Since derivations $splitctx(Γ, Δ, Ξ)$, $dropctx(Γ, Δ)$, $joinctx(sans(L), sans(K))$ are unique, it follows their denotations are unique, if they exist, justifying the syntax $dnt(splitctx(Γ, Δ, Ξ))$, $dnt(dropctx(Γ, Δ))$, $dnt(joinctx(sans(L), sans(K)))$
 - In particular, we have that $dnt(dropctx(Γ, Γ)) = idm$, and, if $dropctx(Γ, Δ), dropctx(Δ, Ξ)$, then 
@@ -1342,7 +1350,7 @@ $
 
 We now give a denotational semantics for substititons:
 $
-#rect([$dnt(#[$issub(γ, Θ, Γ)$]): cal(C)_1(dnt(Θ), dnt(Γ))$])
+#rect([$dnt(#[$issub(γ, Θ, Γ, p)$]): cal(C)_p(dnt(Θ), dnt(Γ))$])
 $
 $
 dnt(dprf(#substitution-rules.subst-nil)) = idm 
@@ -1350,20 +1358,22 @@ $
 $
 dnt(dprf(#substitution-rules.subst-cons)) \
 = dnt(#substitution-rules.subst-cons.premises.at(3));
-    dnt(#substitution-rules.subst-cons.premises.at(1)) ⊗
+    dnt(#substitution-rules.subst-cons.premises.at(1)) ⋉
     dnt(#substitution-rules.subst-cons.premises.at(0))
 $
-Since the denotations of derivations $istm(Γ, 1, a, A)$ and $splitctx(Γ, Δ, Ξ)$ are unique, it follows by a trivial induction that the denotations of $issub(γ, Θ, Γ)$ are unique, justifying the syntax $dnt(issub(γ, Θ, Γ))$.
+Since the denotations of derivations $istm(Γ, 1, a, A)$ and $splitctx(Γ, Δ, Ξ)$ are unique, it follows by a trivial induction that the denotations of $issub(γ, Θ, Γ, p)$ are unique, justifying the syntax $dnt(issub(γ, Θ, Γ, p))$.
 
-A substitution $issub(γ, Θ, Γ)$ also induces a map on label contexts as follows:
+A substitution $issub(γ, Θ, Γ, p)$ also induces a map on label contexts as follows:
 $
-#rect([$labmap(sans(L), γ): cal(C)_1(dnt([γ]sans(L)), dnt(sans(L)))$])
+#rect([$labmap(sans(L), γ): cal(C)_p(dnt([γ]sans(L)), dnt(sans(L)))$])
 $
 $
 labmap(bcnil, γ) & = idm \
-labmap((sans(L), lhyp(Δ, p, lbl(ℓ), A)), γ) & = labmap(sans(L), γ) ⊗ (dnt(issub(γ_Δ, Θ_Δ, Δ)) ⊗ dnt(A))
+labmap((sans(L), lhyp(Δ, p, lbl(ℓ), A)), γ) & = labmap(sans(L), γ) ⊗ (dnt(issub(γ_Δ, Θ_Δ, Δ, p)) ⊗ dnt(A))
 $
 with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
+
+//TODO: substitution downgrade, labmap downgrade
 
 //TODO: text, segue
 
@@ -1381,20 +1391,21 @@ with $sans("labmap")$ defined iff $γ_Δ$ is for all $Δ ∈ sans(L)$.
 #wk-split-stmt
 
 #let substitution-wk-stmt = lemma(name: "Semantic Substitution Splitting")[
-    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$, then
+    If $splitctx(Γ, Δ, Ξ)$ and $issub(γ, Θ, Γ)$ is a *pure* substitution, then
     $
-    dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ)) = dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(issub(γ, Θ, Δ)) ⊗ dnt(issub(γ, Θ, Ξ))
+    dnt(issub(γ, Θ, Γ));dnt(splitctx(Γ, Δ, Ξ)) = dnt(splitctx(Θ, Θ_Δ, Θ_Ξ));dnt(issub(γ, Θ, Δ)) ⊗ dnt(issub(γ, Θ, Ξ))
     $
     In particular, $dnt(issub(γ, Θ, cnil)) = dnt(dropctx(Θ, cnil))$ and therefore
     $
     dnt(issub(γ, Θ, Γ));dnt(dropctx(Γ, Δ)) = dnt(dropctx(Θ_Γ, Θ_Δ));dnt(issub(γ_Δ, Θ, Δ))
     $
+    Note that this holds for _pure_ substitutions $issub(γ, Θ, Δ)$, *not* substitutions in general!
 ]
 #substitution-wk-stmt
 
 We may now state the semantic substitution theorem:
 #let substitution-stmt = theorem(name: "Semantic Substitution")[
-    If $issub(γ, Θ, Γ)$ and $istm(Γ, p, a, A)$ or $isblk(Γ, sans(L), p, t, B)$, then
+    If $issub(γ, Θ, Γ)$ is a *pure* substitution and $istm(Γ, p, a, A)$ or $isblk(Γ, sans(L), p, t, B)$, then
     $
         dnt(istm(Θ, p, [γ]a, A)) &= dwng(purity: p, dnt(issub(γ, Θ, Γ)));dnt(istm(Γ, p, [γ]a, A)) \
         dnt(isblk(Θ, [γ]sans(L), p, [γ]t, B));(dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ))) &= dwng(purity: p, dnt(issub(γ, Θ, Γ)));dnt(isblk(Γ, [γ]sans(L), p, [γ]t, A))
@@ -1405,11 +1416,9 @@ We may now state the semantic substitution theorem:
     See @semantic-properties[Appendix]
 ]
 
-// #let rewriting-stmt = theorem(name: "Rewriting")[
-//     If $a$ is a term or $t$ is a block and $γ, γ'$ are raw substitutions such that:
-//     - $istm(Γ, p, [γ]a, A)$ and $istm(Γ, p, [γ']a, A)$ or $isblk(Γ, sans(L), p, [γ]t, B)$ and $isblk(Γ, sans(L), p, [γ']t, B)$
-//     //TODO: equality...
-// ]
+//TODO: semantic equivalence of (potentially impure) substitutions
+
+//TODO: rewriting theorem
 
 /*
 
@@ -1699,12 +1708,10 @@ TODO:
 
 #syntactic-substitution-stmt
 #proof[
-    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a substitution $issub(γ, Θ, Γ)$:
+    We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$ given a substitution $issub(γ, Θ, Γ, p)$:
     - #rname("var"): 
-        - By assumption, we have that $istm(Θ_x, 1, [γ]x, A)$ (since $issub(γ, Θ, Γ)$ is a substitution); 
-        - Hence, by downgrade, we have that $istm(Θ_x, p, [γ]x, A)$. 
-        - $dropctx(Θ, Θ_x)$ by weakening substitution (since $dropctx(Γ, #[$x: A$])$ by assumption). 
-        - Therefore, by weakening, $istm(Θ, p, [γ]x, A)$, as desired.
+        - By assumption, we have that $istm(Θ_x, p, [γ]x, A)$ (since $issub(γ, Θ, Γ, p)$ is a substitution)
+        - Hence, since $dropctx(Θ, Θ_x)$ by weakening substitution (since $dropctx(Γ, #[$x: A$])$ by assumption), $istm(Θ, p, [γ]x, A)$ by weakening, as desired.
     - #rname("app"): 
         - $istm(Θ, p, a, A)$ by induction
         - $f ∈ cal(I)_p(A, B)$ by assumption
