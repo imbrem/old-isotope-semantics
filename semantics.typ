@@ -275,25 +275,57 @@ Definitions taken from @coinductive-resumption
     - *Codiagonal:* $(f;[idm, sans("inr")])^† = f^(††)$ for $f: X -> Y ⟩ X ⟩ X$
 ]
 
-//TODO: uniformity
+#definition(name: "Uniformity")[
+    Let $J: cal(C) -> cal(K)$ be a functor, where $cal(C), cal(K)$ are guarded and have the same objects, and $J$ is identity on objects and strictly preserves co-Cartesian structure.
 
-//TODO: guarded iterative ==> guarded Conway, uniform w.r.t. identity functor
+    A guarded Conway operator $(-)^†$ on $cal(K)$ is *uniform* (w.r.t. a functor $J: cal(C) -> cal(K)$) when for $cal(K)$ morphisms $f: X -> Y ⟩ X$ and $g: Z -> Y ⟩ Z$ and $cal(C)$ morphisms $h: Z → X$, we have that
+    $
+    g;Y + J h = J h; f ==> g^† = J h; f^†
+    $
+]
 
-//TODO: guarded Elgot
+//TODO: state properly
+If $cal(K)$ is guarded iterative, $f ↦ f^†$ is a guarded Conway operator and uniform w.r.t. the identity functor $idm_cal(K)$ @coinductive-resumption.
 
-//TODO: Elgot + iterative
-
-/*
+#definition(name: "Guarded Iterative Monad, Guarded Elgot Monad")[
+    Let $T$ be a guarded monad, i.e. a monad with a guardedness predicate on the Kliesli category $cal(C)_T$. Then
+    - We say $T$ is a *guarded iterative monad* if $cal(C)_T$ is guarded iterative
+    - We say $T$ is a *guarded Elgot monad* if $cal(C)_T$ has a guarded Conway operator $f ↦ f^†$ which is uniform w.r.t. the obvious functor $cal(C) → cal(C)_T$
+    - We say $T$ is an *Elgot* monad if $T$ is totally guarded and a guarded Elgot monad
+]
 
 == Traced Monoidal Categories
+
+#definition(name: "Traced Monoidal Category")[
+    A traced monoidal category $cal(C)$ is a symmetric monoidal category equipped with a family of functions
+    $
+    sans("Tr")^X_(A, B): cal(C)(A ⊗ X, B ⊗ X) -> cal(C)(A, B)
+    $
+    satisfying the following conditions:
+    - naturality in $X, Y$
+    - dinaturality in $U$
+    - vanishing:
+    $
+    ∀f ∈ cal(C)(A ⊗ munit, B ⊗ munit),
+        sans("Tr")^munit_(A, B)(f) = ρ^(-1);f;ρ 
+    $
+    $
+    ∀f ∈ cal(C)(A ⊗ C ⊗ D, B ⊗ C ⊗ D),
+        sans("Tr")^(C ⊗ D)_(A, B)(α;f;α) =
+        sans("Tr")^C_(A, B)(sans("Tr")^D_(A ⊗ C, B ⊗ C)(f))
+    $
+    - yanking:
+    $
+    sans("Tr")^A_(A, A)(σ_(A, A)) = idm_A
+    $
+]
 
 /*
 TODO:
 - trace, properties
 - pointer to premonoidal trace (NOT USED HERE!)
+- guarded trace
 - connection between iterative/Elgot and traced. Totality, as well
-*/
-
 */
 
 = Syntax
