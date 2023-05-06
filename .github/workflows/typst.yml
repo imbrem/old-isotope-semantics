@@ -22,7 +22,7 @@ jobs:
 
       # Compile semantics.pdf
       - name: Compile Document
-        run: ./typst-x86_64-unknown-linux-musl/typst semantics.typ
+        run: ./typst-x86_64-unknown-linux-musl/typst compile semantics.typ
 
       # Copy over semantics.pdf and README.md to public directory
       - name: Build public directory
