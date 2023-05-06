@@ -7,6 +7,89 @@
   authors: (),
   doc,
 ) = {
+    // `isotope` syntax highlighting
+    show raw.where(lang: "isotope"): it => [
+        #show regex("\b(let|br|if|else|for|in|match|while|loop|ret|where)\b") : keyword => text(weight:"bold", keyword, maroon)
+        #show regex("\b[0-9][a-zA-Z0-9_]*\b") : cnst => text(cnst, olive)
+        #it
+    ]
+
+    // Figures
+    show figure: it => {
+        show: pad.with(x: 23pt)
+        set align(center)
+
+        v(12.5pt, weak: true)
+
+        // Display the figure's body.
+        it.body
+
+        // Display the figure's caption.
+        if it.has("caption") {
+        // Gap defaults to 17pt.
+        v(if it.has("gap") { it.gap } else { 17pt }, weak: true)
+        smallcaps[Figure]
+        if it.numbering != none {
+            [ #counter(figure).display(it.numbering)]
+        }
+        [. ]
+        it.caption
+        }
+
+        v(15pt, weak: true)
+    }
+
+    // Theorems.
+    show figure.where(kind: "theorem"): it => block(above: 11.5pt, below: 11.5pt, {
+        strong({
+        text("Theorem")
+        if it.numbering != none {
+            [ ]
+            //counter(heading).display()
+            it.counter.display(it.numbering)
+        }
+        })
+        if it.supplement != none {
+            [  (#it.supplement)]
+        }
+        strong([.])
+        emph(it.body)
+    })
+
+    // Theorems.
+    show figure.where(kind: "lemma"): it => block(above: 11.5pt, below: 11.5pt, {
+        strong({
+        text("Lemma")
+        if it.numbering != none {
+            [ ]
+            //counter(heading).display()
+            it.counter.display(it.numbering)
+        }
+        })
+        if it.supplement != none {
+            [  (#it.supplement)]
+        }
+        strong([.])
+        emph(it.body)
+    })
+
+    // Definitions.
+    show figure.where(kind: "definition"): it => block(above: 11.5pt, below: 11.5pt, {
+        strong({
+        text("Definition")
+        if it.numbering != none {
+            [ ]
+            //counter(heading).display()
+            it.counter.display(it.numbering)
+        }
+        })
+        if it.supplement != none {
+            [  (#it.supplement)]
+        }
+        strong([.])
+        emph(it.body)
+    })
+
     if type(authors) == "dictionary" {
         authors = (authors,)
     }
@@ -40,12 +123,6 @@
         numbering: "1"
     )
 
-    #show raw.where(lang: "isotope"): it => [
-        #show regex("\b(let|br|if|else|for|in|match|while|loop|ret|where)\b") : keyword => text(weight:"bold", keyword, maroon)
-        #show regex("\b[0-9][a-zA-Z0-9_]*\b") : cnst => text(cnst, olive)
-        #it
-    ]
-
     #doc
     ]
 }
@@ -57,56 +134,27 @@
     doc
 }
 
-//TODO: fix counter for duplicate theorems...
-#let theorem-counter = counter("theorem")
-#let theorem(body, name: none, numbered: true) = locate(location => {
-  let lvl = counter(heading).at(location)
-  let i = theorem-counter.at(location).first()
-  if numbered { theorem-counter.step() }
-  let top = if lvl.len() > 0 { lvl.first() } else { 0 }
-  show: block.with(spacing: 11.5pt)
-  {
-    strong([Theorem])
-    if numbered [ *#top.#i*]
-    if name != none [ (#emph(name))]
-    if numbered or name != none [*.*]
-  }
-  [ ]
-  emph(body)
-})
-//Note: lemmas use the theorem counter for now
-#let lemma(body, name: none, numbered: true) = locate(location => {
-  let lvl = counter(heading).at(location)
-  let i = theorem-counter.at(location).first()
-  if numbered { theorem-counter.step() }
-  let top = if lvl.len() > 0 { lvl.first() } else { 0 }
-  show: block.with(spacing: 11.5pt)
-  {
-    strong([Lemma])
-    if numbered [ *#top.#i*]
-    if name != none [ (#emph(name))]
-    if numbered or name != none [*.*]
-  }
-  [ ]
-  emph(body)
-})
+#let theorem(body, name: none, numbered: true) = figure(
+  body,
+  kind: "theorem",
+  supplement: name,
+  numbering: if numbered { "1" },
+)
 
-#let definition-counter = counter("definition")
-#let definition(body, name: none, numbered: true) = locate(location => {
-  let lvl = counter(heading).at(location)
-  let i = definition-counter.at(location).first()
-  if numbered { definition-counter.step() }
-  let top = if lvl.len() > 0 { lvl.first() } else { 0 }
-  show: block.with(spacing: 11.5pt)
-  {
-    strong([Definition])
-    if numbered [ *#top.#i*]
-    if name != none [ (#emph(name))]
-    if numbered or name != none [*.*]
-  }
-  [ ]
-  emph(body)
-})
+//Note: lemmas use the theorem counter for now
+#let lemma(body, name: none, numbered: true) = figure(
+  body,
+  kind: "lemma",
+  supplement: name,
+  numbering: if numbered { "1" },
+)
+
+#let definition(body, name: none, numbered: true) = figure(
+  body,
+  kind: "definition",
+  supplement: name,
+  numbering: if numbered { "1" },
+)
 
 #let proof(body) = block(spacing: 11.5pt, {
   emph[Proof.]
