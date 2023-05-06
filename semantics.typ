@@ -270,7 +270,7 @@ Definitions taken from @coinductive-resumption
 
 #definition(name: "Conway Iteration")[
     A guarded *_Conway_ (iteration) operator* on $cal(K)$ associates, to each $f: A → B ⟩ C$, a fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$ satisfying the following axioms:
-    - *Naturality:* for $f: A → B ⟩ C$ and $g: B → C$, $(f;[g, idm])^† = f^†g$
+    - *Naturality:* for $f: A → B ⟩ C$ and $g: B → C$, $(f;[g, idm])^† = f^†;g$
     - *Dinaturality:* $(g;[sans("inl"), h])^† = g;[idm, (h;[sans("inl"), g])^†]$
     - *Codiagonal:* $(f;[idm, sans("inr")])^† = f^(††)$ for $f: X -> Y ⟩ X ⟩ X$
 ]
@@ -302,30 +302,96 @@ If $cal(K)$ is guarded iterative, $f ↦ f^†$ is a guarded Conway operator and
     sans("Tr")^X_(A, B): cal(C)(A ⊗ X, B ⊗ X) -> cal(C)(A, B)
     $
     satisfying the following conditions:
-    - naturality in $X, Y$
-    - dinaturality in $U$
-    - vanishing:
+    - *Naturality in $A, B$:*
+    $
+    ∀f ∈ cal(C)(A ⊗ X, B ⊗ X), ∀g ∈ cal(C)(A', A), ∀h ∈ cal(C)(B, B')
+        sans("Tr")^X_(A', B')(g ⊗ X;f;h ⊗ X) = g;sans("Tr")^X_(A, B)(f);h
+    $
+    - *Dinaturality in $X$:*
+    $
+    ∀ f ∈ cal(C)(A ⊗ X, B ⊗ X'), ∀ g ∈ cal(C)(X', X),
+        sans("Tr")^X_(A, B)(f;B ⊗ g) = sans("Tr")^(X')_(A, B)(A ⊗ g;f)
+    $
+    - *Vanishing:*
     $
     ∀f ∈ cal(C)(A ⊗ munit, B ⊗ munit),
         sans("Tr")^munit_(A, B)(f) = ρ^(-1);f;ρ 
     $
     $
-    ∀f ∈ cal(C)(A ⊗ C ⊗ D, B ⊗ C ⊗ D),
-        sans("Tr")^(C ⊗ D)_(A, B)(α;f;α) =
-        sans("Tr")^C_(A, B)(sans("Tr")^D_(A ⊗ C, B ⊗ C)(f))
+    ∀f ∈ cal(C)(A ⊗ X ⊗ Y, B ⊗ X ⊗ Y),
+        sans("Tr")^(X ⊗ Y)_(A, B)(α;f;α) =
+        sans("Tr")^X_(A, B)(sans("Tr")^Y_(A ⊗ X, B ⊗ X)(f))
     $
-    - yanking:
+    - *Yanking:*
     $
     sans("Tr")^A_(A, A)(σ_(A, A)) = idm_A
     $
 ]
 
+//TODO: graphical representation
+
+#theorem[
+    Let $cal(C)$ be equipped with a Conway iteration operator $f ↦ f^†$. Then $cal(C)$ is a traced monoidal category under the symmetric monoidal structure induced by the coproduct, with trace
+    $
+    ∀f ∈ cal(C)(A + X, B + X) 
+    sans("Tr")^X_(A, B)(f) = ι_0;(f;B + ι_1)^†
+    $
+]
+#proof[
+    We prove each required property as follows:
+    - Naturality in $A, B$:
+    Fix $f ∈ cal(C)(A + X, B + X), g ∈ cal(C)(A', A), h ∈ cal(C)(B, B')$. We have that
+    $
+    & sans("Tr")^X_(A', B')(g + X;f;h + X) #h(15em) &
+    \ & = ι_0;(g + X;f;h + ι_1)^† & "by definition"
+    \ & = ι_0;(g + X;f;B + ι_1)^†;h & "by naturality"
+    \ & = ι_0;g + X;f;B + ι_1;[idm, (g + X;f;B + ι_1)^†];h & "by fixpoint"
+    \ & = g;ι_0;f;[idm, ι_1;(g + X;f;B + ι_1)^†];h
+    \ & = g;ι_0;f;[idm, ι_1;(f;B + ι_1)^†];h & "TODO"
+    \ & = g;ι_0;f;B + ι_1[idm, (f;B + ι_1)^†];h
+    \ & = g;ι_0;(f;B + ι_1)^†;h & "by fixpoint"
+    \ & = g;sans("Tr")^X_(A, B)(f);h & "by definition"
+    $
+    - Dinaturality in $X$:
+    Fix $f ∈ cal(C)(A + X, B + X')$, $g ∈ cal(C)(X', X)$
+    $
+    sans("Tr")^X_(A, B)(f;B + g) #h(15em) &
+    \ & = ι_0;(f;B + g;B + ι_1)^† & "by definition"
+    \ & = "TODO..."
+    $
+    - Vanishing:
+        - Fix $f ∈ cal(C)(A + 0, B + 0)$. Then
+          $
+          & sans("Tr")^0_(A, B)(f) #h(15em) & 
+          \ &= ι_0;(f;B + ι_1)^† & "by definition"
+          \ &= ι_0;(f;B + 0_(A + 0))^† & "by absorbption"
+          \ &= ι_0;(f;[ι_0, 0_(B + (A + 0))])^† & "by absorbtion"
+          \ &= ι_0;f;[idm, (f;[ι_0, f];0_(B + (A + 0)))^†] & "by dinaturality"
+          \ &= ι_0;f;[idm, 0_B] & "by absorbtion"
+          \ &= (ρ^+)^(-1);f;ρ^+ & "by definition"
+          $
+        - Fix $f ∈ cal(C)(A + X + Y, B + X + Y)$. Then
+          $
+          & sans("Tr")^(X + Y)_(A, B)(α^+;f;α^+) #h(15em) & 
+          \ & = ι_0;(α^+;f;α^+;B + ι_1)^† & "by definition"
+          \ & = "TODO..."
+          $
+    - Yanking:
+    $
+    & sans("Tr")^A_(A, A)(σ_(A, A)^+) #h(15em) & 
+    \ &= ι_0;(σ_(A, A)^+;A + ι_1)^† & "by definition"
+    \ &= ι_0;σ_(A, A)^+;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] & "by fixpoint"
+    \ &= ι_1;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] = ι_1;(σ_(A, A);A + ι_1)^†
+    \ &= i_1;σ_(A, A)^+;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] & "by fixpoint"
+    \ &= ι_0;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†]
+    \ &= idm_A
+    $
+]
+
 /*
 TODO:
-- trace, properties
 - pointer to premonoidal trace (NOT USED HERE!)
-- guarded trace
-- connection between iterative/Elgot and traced. Totality, as well
+- guarded trace?
 */
 
 = Syntax
