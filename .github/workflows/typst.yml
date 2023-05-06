@@ -17,8 +17,8 @@ jobs:
       # Download and unzip Typst
       - name: Download Typst
         run: |
-          curl -L https://github.com/typst/typst/releases/download/v0.3.0/typst-x86_64-unknown-linux-musl.tar.gz -o typst.tar.gz
-          tar -xvf typst.tar.gz
+          curl -L https://github.com/typst/typst/releases/download/v0.3.0/typst-x86_64-unknown-linux-musl.tar.xz -o typst.tar.xz
+          tar -xvf typst.tar.xz
 
       # Compile semantics.pdf
       - name: Compile Document
