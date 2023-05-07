@@ -231,46 +231,53 @@ TODO:
 
 Definitions taken from @coinductive-resumption
 
-#definition(name: "Guarded Category")[
-    A *guardedness predicate* on a cocartesian category $cal(K)$ provides, for all objects $A, B, C ∈ |cal(K)|$, a subset $cal(K)^•(A, B, C) ⊆ cal(K)(A, B + C)$. We write $f: A -> B ⟩ C$ for $f ∈ cal(K)^•(A, B, C)$, and require that:
-    #row-den(
-        prf(name: "trv", $f: A → B$, $sans("inl") ∘ f: A → B ⟩ C$),
-        prf(name: "par", $f: A → C ⟩ D$, $g: B → C ⟩ D$, $[f, g]: A + B → C ⟩ D$),
-    )
-    #row-den(
-        prf(name: "cmp",
-            $f: A →  B ⟩ C$,
-            $g: B →  D ⟩ E$,
-            $h: C →  D + E$, 
-            $f;[g, h]: A → D ⟩ E$
-        )
-    )
-    A category equipped with a guardedness predicate is called a *guarded category*. A monad $T$ on $cal(C)$ is a *guarded monad* if it's Kliesli category $cal(C)_T$ is a guarded category under the coproducts inherited from $cal(C)$. 
-]
+/*
+NOTE: Removing guardedness for now
 
-#definition(name: "Greatest and Least Guardedness Predicates")[
-    - The *greatest guardedness predicate* on $cal(K)$ sets $cal(K)^⬝(A, B, C) = cal(K)(A, B + C)$
-    - The *least guardedness predicate* on $cal(K)$ says that
-    $
-    f ∈ cal(K)^⬝(A, B, C) <==> ∃g: A → B, f = g;sans("inl")
-    $
-    We say that $cal(K)$ is *totally guarded* when equipped with the largest guardedness predicate and *vacuously guarded* when equipped with the smallest.
-]
+// #definition(name: "Guarded Category")[
+//     A *guardedness predicate* on a cocartesian category $cal(K)$ provides, for all objects $A, B, C ∈ |cal(K)|$, a subset $cal(K)^•(A, B, C) ⊆ cal(K)(A, B + C)$. We write $f: A -> B ⟩ C$ for $f ∈ cal(K)^•(A, B, C)$, and require that:
+//     #row-den(
+//         prf(name: "trv", $f: A → B$, $sans("inl") ∘ f: A → B ⟩ C$),
+//         prf(name: "par", $f: A → C ⟩ D$, $g: B → C ⟩ D$, $[f, g]: A + B → C ⟩ D$),
+//     )
+//     #row-den(
+//         prf(name: "cmp",
+//             $f: A →  B ⟩ C$,
+//             $g: B →  D ⟩ E$,
+//             $h: C →  D + E$, 
+//             $f;[g, h]: A → D ⟩ E$
+//         )
+//     )
+//     A category equipped with a guardedness predicate is called a *guarded category*. A monad $T$ on $cal(C)$ is a *guarded monad* if it's Kliesli category $cal(C)_T$ is a guarded category under the coproducts inherited from $cal(C)$. 
+// ]
 
-//TODO: examples
-
-//TODO: guarded natural transformation, monad transformer
+// #definition(name: "Greatest and Least Guardedness Predicates")[
+//     - The *greatest guardedness predicate* on $cal(K)$ sets $cal(K)^⬝(A, B, C) = cal(K)(A, B + C)$
+//     - The *least guardedness predicate* on $cal(K)$ says that
+//     $
+//     f ∈ cal(K)^⬝(A, B, C) <==> ∃g: A → B, f = g;sans("inl")
+//     $
+//     We say that $cal(K)$ is *totally guarded* when equipped with the largest guardedness predicate and *vacuously guarded* when equipped with the smallest.
+// ]
 
 #definition(name: "Guarded Iterative Category")[
-    A category $cal(K)$ is *guarded iterative* if every $f: A → B ⟩ C$ has a _unique_ fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$, i.e.,
+    A category $cal(K)$ is *guarded iterative* if every $f: A → B ⟩ A$ has a _unique_ fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$, i.e.,
+    $
+    f^† = f;[idm, f^†]
+    $
+]
+*/
+
+#definition(name: " Iterative Category")[
+    A category $cal(K)$ is *iterative* if every $f: A → B + A$ has a _unique_ fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$, i.e.,
     $
     f^† = f;[idm, f^†]
     $
 ]
 
 #definition(name: "Conway Iteration")[
-    A guarded *_Conway_ (iteration) operator* on $cal(K)$ associates, to each $f: A → B ⟩ C$, a fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$ satisfying the following axioms:
-    - *Naturality:* for $f: A → B ⟩ C$ and $g: B → C$, $(f;[g, idm])^† = f^†;g$
+    A *Conway (iteration) operator* on $cal(K)$ associates, to each $f: A → B ⟩ A$, a fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$ satisfying the following axioms:
+    - *Naturality:* for $f: A → B ⟩ A$ and $g: B → C$, $(f;[g, idm])^† = f^†;g$
     - *Dinaturality:* $(g;[sans("inl"), h])^† = g;[idm, (h;[sans("inl"), g])^†]$
     - *Codiagonal:* $(f;[idm, sans("inr")])^† = f^(††)$ for $f: X -> Y ⟩ X ⟩ X$
 ]
@@ -285,13 +292,12 @@ Definitions taken from @coinductive-resumption
 ]
 
 //TODO: state properly
-If $cal(K)$ is guarded iterative, $f ↦ f^†$ is a guarded Conway operator and uniform w.r.t. the identity functor $idm_cal(K)$ @coinductive-resumption.
+If $cal(K)$ is iterative, $f ↦ f^†$ is a guarded Conway operator and uniform w.r.t. the identity functor $idm_cal(K)$ @coinductive-resumption.
 
-#definition(name: "Guarded Iterative Monad, Guarded Elgot Monad")[
-    Let $T$ be a guarded monad, i.e. a monad with a guardedness predicate on the Kliesli category $cal(C)_T$. Then
-    - We say $T$ is a *guarded iterative monad* if $cal(C)_T$ is guarded iterative
-    - We say $T$ is a *guarded Elgot monad* if $cal(C)_T$ has a guarded Conway operator $f ↦ f^†$ which is uniform w.r.t. the obvious functor $cal(C) → cal(C)_T$
-    - We say $T$ is an *Elgot* monad if $T$ is totally guarded and a guarded Elgot monad
+#definition(name: "Iterative Monad, Elgot Monad")[
+    Let $T$ be a monad. Then
+    - We say $T$ is an *iterative monad* if $cal(C)_T$ is iterative
+    - We say $T$ is an *Elgot monad* if $cal(C)_T$ has a Conway operator $f ↦ f^†$ which is uniform w.r.t. the obvious functor $cal(C) → cal(C)_T$ //TODO: specify functor?
 ]
 
 == Traced Monoidal Categories
@@ -392,6 +398,75 @@ If $cal(K)$ is guarded iterative, $f ↦ f^†$ is a guarded Conway operator and
 TODO:
 - pointer to premonoidal trace (NOT USED HERE!)
 - guarded trace?
+*/
+
+== Poset Enriched Categories
+
+#definition(name: "Poset-Enriched Category")[
+    A *poset-enriched category* $cal(C)$ is a category such that each hom-set $cal(C)(A, B)$ is equipped with a partial order $->_(cal(C))$ which is compatible with composition; that is, for $f, f' ∈ cal(C)(A, B)$ and $g, g' ∈ cal(C)(B, C)$, if $f ->_(cal(C)) f'$ and $g ->_(cal(C)) g'$, then $f;g ->_(cal(C)) f';g'$. 
+
+    If $cal(C)(A, B)$ has a bottom element, we will often write it as $⊥_(A, B)$, or simply $⊥$. More rarely, we may write the top element of $cal(C)(A, B)$ as $⊤_(A, B)$ or $⊤$.
+    
+    We will usually omit the subscript and simply write $f -> g$ (pronounced "$f$ *is refined by* $g$"); similarly, we will write $f <- g$ (pronounced "$f$ *refines* $g$") to mean $g -> f$.
+
+    A *poset-enriched functor* $F: cal(C) -> cal(D)$ is a functor between the underlying categories such that for all $f ->_(cal(C)) f'$, $F f ->_(cal(D)) F f'$.
+    
+    A *poset enriched monad* $T$ is a monad whose underlying functor is poset-enriched.
+]
+For example:
+- Every category $cal(C)$ can be taken as a poset-enriched category with the discrete order on hom-sets given by $f ->_(cal(C)) g <=> f = g$
+- If $cal(C)$ is poset-enriched and $T$ is a poset-enriched monad, then the Kliesli category $cal(C)_T$ is also poset-enriched with $(->_(cal(C)_T)) = (->_(cal(C)))$, since, for $f ->_(cal(C)) f'$ and $g ->_(cal(C)) g'$, $f;T g;μ ->_(cal(C)) f';T g';μ$. In particular, we have that $f^* = T f;μ -> T f';μ = f'^*$
+- The category $Pfn$ of partial functions is poset-enriched with the subset ordering, i.e., taking
+  $
+  f ->_(cal(C)) g <==> f ⊆ g <==> ∀x ∈ A, f(x) ⊆ g(x)
+  $
+- The categories $Rel$ of relations and $Rel^+$ of nonempty relations are poset-enriched with the superset ordering on relations, i.e., taking
+  $
+  f ->_(cal(C)) g <==> f ⊇ g <==> ∀x ∈ A, f(x) ⊇ g(x)
+  $
+Note that it is possible for the same underlying category to be poset-enriched by different families of relations; as a trivial example, if $->_(cal(C))$ endows $cal(C)$ with the structure of a poset-enriched category, then so does $<-_(cal(C))$. In particular, $Pfn$ is also enriched by the superset ordering, but this is not very intuitive, as we consider a function to be "more defined", i.e. a _refinement_, when it has _more_ values defined, not less; this allows us to define a _bottom element_ $⊥ = {}$ which is refined by everything. On the other hand, for $Rel^+$, the superset ordering is more natural than the subset ordering, since we consider a function $f$ to be a refinement of $g$ if it has _less_ allowable outputs; the bottom element $⊥$ is now the _full_ relation, corresponding to "all possible outputs." The situation for $Rel$ is more complicated, since now ${}$ is a top element, being a refinement for everything (rather than a bottom element, as in $Pfn$).
+
+// Some useful properties of bottom elements include:
+// $
+// ⊥_(A, B) -> ⊥_(A, B);⊥_(B, B) -> ⊥_(A, B);idm = ⊥_(A, B) ==> ⊥_(A, B) = ⊥_(A, B);⊥_(B, B)
+// $
+// $
+// ⊥_(A, B) -> ⊥_(A, A);⊥_(A, B) -> idm;⊥_(A, B) = ⊥_(A, B) ==> ⊥_(A, B) = ⊥_(A, A);⊥_(A, B)
+// $
+
+//TODO: Products and coproducts
+
+#definition(name: "Poset-Enriched Premonoidal Category")[
+    A *poset-enriched (symmetric) (pre)monoidal category* $cal(C)$ is a poset-enriched category such that the underlying category is equipped with a (symmetric) (pre)monoidal structure where $⊗$ is a poset-enriched functor in both arguments; that is, for $f -> f'$, we have that $A ⊗ f -> A ⊗ f'$ and $f ⊗ A -> f' ⊗ A$. 
+    
+    In particular, this implies that for $f -> f'$ and $g -> g'$, we have $f ⋉ g -> f' ⋉ g'$ and $f ⋊ g -> f' ⋊ g'$ (and hence, in the central case, $f ⊗ g -> f' ⊗ g'$).
+
+    A poset-enriched category whose underlying category is (co)cartesian where the (co)cartesian product induces a poset-enriched symmetric monoidal structure is called a *poset-enriched (co)cartesian category*.
+]
+
+/*
+NOTE: removing guardedness for now
+
+// #definition(name: "Poset-Enriched Guarded Category")[
+//     A poset-enriched category $cal(C)$ is said to be *guarded* if its guardedness relation is compatible with $->_(cal(C))$, i.e., for all $f -> f': A -> B + C$, if $f$ is guarded, then so is $f'$. A poset-enriched category $cal(C)$ is said to be *coguarded* if its guardedness relation is compatible with $<-_(cal(C))$, i.e., for all $f <- f': A -> B + C$, if $f$ is guarded, then so is $f'$.
+
+//     A poset-enriched category is *totally (co)guarded* if all morphisms $A -> B + C$ are considered guarded. A poset-enriched category is *vacuously (co)guarded* if a morphism $f: A -> B + C$ is guarded if and only if there exists a morphism $g: A -> B$ such that $g;sans("inl") -> f$ or $g;sans("inl") <- f$ resp.
+
+//     A (not necessarily (co)guarded) poset-enriched category is said to have a (guarded) *Conway (iteration) operator* if the underlying category has a Conway operator compatible with $->_(cal(C))$, i.e., for all $f -> f'$ where both $f, f'$ are guarded, $f^† -> f'^†$. If the underlying category is iterative, and it is a poset-enriched guarded category, then it is called a *poset-enriched guarded iterative category*.
+// ]
+*/
+
+#definition(name: "Poset-Enriched Iterative Category")[
+    A poset-enriched category is said to have a *Conway (iteration) operator* if the underlying category has a Conway operator compatible with $->_(cal(C))$, i.e., for all $f -> f'$, $f^† -> f'^†$. If the underlying category is iterative, then it is called a *poset-enriched iterative category*.
+]
+
+#definition(name: "Poset-Enriched Traced Category")[
+    A poset-enriched symmetric monoidal category is said to be *traced* if the underlying category is traced and the trace is compatible with $->_(cal(C))$, i.e., for all $f -> f'$,
+    $sans("Tr")(f) -> sans("Tr")(f')$
+]
+
+/*
+TODO: traced structure
 */
 
 = Syntax

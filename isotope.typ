@@ -49,14 +49,14 @@
             it.counter.display(it.numbering)
         }
         })
-        if it.supplement != none {
+        if it.supplement != none and it.supplement != [] {
             [  (#it.supplement)]
         }
         strong([.])
         emph(it.body)
     })
 
-    // Theorems.
+    // Lemmas.
     show figure.where(kind: "lemma"): it => block(above: 11.5pt, below: 11.5pt, {
         strong({
         text("Lemma")
@@ -66,7 +66,7 @@
             it.counter.display(it.numbering)
         }
         })
-        if it.supplement != none {
+        if it.supplement != none and it.supplement != [] {
             [  (#it.supplement)]
         }
         strong([.])
@@ -83,7 +83,7 @@
             it.counter.display(it.numbering)
         }
         })
-        if it.supplement != none {
+        if it.supplement != none and it.supplement != [] {
             [  (#it.supplement)]
         }
         strong([.])
