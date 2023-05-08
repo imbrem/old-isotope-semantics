@@ -276,23 +276,44 @@ NOTE: Removing guardedness for now
 ]
 
 #definition(name: "Conway Iteration")[
-    A *Conway (iteration) operator* on $cal(K)$ associates, to each $f: A → B ⟩ A$, a fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$ satisfying the following axioms:
-    - *Naturality:* for $f: A → B ⟩ A$ and $g: B → C$, $(f;[g, idm])^† = f^†;g$
-    - *Dinaturality:* $(g;[sans("inl"), h])^† = g;[idm, (h;[sans("inl"), g])^†]$
-    - *Codiagonal:* $(f;[idm, sans("inr")])^† = f^(††)$ for $f: X -> Y ⟩ X ⟩ X$
+    A *Conway (iteration) operator* on $cal(K)$ associates, to each $f: A → B + A$, a fixpoint $f^†: A → B$ of the map $f;[idm, -]: cal(K)(A, B) → cal(K)(A, B)$ satisfying the following axioms:
+    - *Naturality:* for $f: A → B + A$ and $g: B → C$, $(f;g + A)^† = f^†;g$
+
+    In particular, for $f: A -> B + D$, $g: B -> C$ and $h: D -> A$, $(f;g + h)^† = (f;B + h)^†;g$
+    - *Dinaturality:* for $g: A → B + C$, $h: C -> B + A$, $(g;[ι_0, h])^† = g;[idm, (h;[ι_0, g])^†]$.
+      
+      In particular, for $f: A -> B + C$, $g: C -> A$, we have
+      $
+      (f;B + g)^† = (f;[ι_0, g;ι_1])^† = f;[idm, (g;ι_1;[ι_0, f])^†] = f;[idm, (g;f)^†]
+      $
+    - *Codiagonal:* for $f: A -> (B + A) + A$, $(f;[idm, ι_1])^† = f^(††)$ 
 ]
+Some useful properties of Conway iteration operators include:
+- Given $f: cal(K)(A, B + A)$, 
+    - $(f;[ι_0, f])^† = f;[idm, (f; [ι_0, f])^†]$ by dinaturality. 
+    
+      Hence, if $cal(K)$ is iterative, $(f;[ι_0, f])^† = f^†$ by uniqueness.
+    - $ι_0;(f + C;[B + ι_0, ι_1;ι_1])^† = ι_0;([f;B + ι_0, ι_1;ι_1])^†$
+- Given $f: cal(K)(A + B, C + (A + B))$, by the codiagonal,
+    $
+    (f;[ι_0;ι_0, ι_1 + B];C + ι_0 + ι_1)^(††)
+    = (f;[ι_0;ι_0, ι_1 + B];C + ι_0 + ι_1;[idm, ι_1])^†
+    = f^†
+    $
 
 #definition(name: "Uniformity")[
-    Let $J: cal(C) -> cal(K)$ be a functor, where $cal(C), cal(K)$ are guarded and have the same objects, and $J$ is identity on objects and strictly preserves co-Cartesian structure.
+    Let $J: cal(C) -> cal(K)$ be a functor, where $cal(C), cal(K)$ are have the same objects, and $J$ is identity on objects and strictly preserves co-Cartesian structure.
 
-    A guarded Conway operator $(-)^†$ on $cal(K)$ is *uniform* (w.r.t. a functor $J: cal(C) -> cal(K)$) when for $cal(K)$ morphisms $f: X -> Y ⟩ X$ and $g: Z -> Y ⟩ Z$ and $cal(C)$ morphisms $h: Z → X$, we have that
+    A Conway operator $(-)^†$ on $cal(K)$ is *uniform* (w.r.t. a functor $J: cal(C) -> cal(K)$) when for $cal(K)$ morphisms $f: X -> Y + X$ and $g: Z -> Y + Z$ and $cal(C)$ morphisms $h: Z → X$, we have that
     $
     g;Y + J h = J h; f ==> g^† = J h; f^†
     $
 ]
 
-//TODO: state properly
-If $cal(K)$ is iterative, $f ↦ f^†$ is a guarded Conway operator and uniform w.r.t. the identity functor $idm_cal(K)$ @coinductive-resumption.
+//TODO: state properly, cite properly
+#theorem[
+    If $cal(K)$ is iterative, $f ↦ f^†$ is a Conway operator and uniform w.r.t. the identity functor $idm_cal(K)$ @coinductive-resumption.
+]
 
 #definition(name: "Iterative Monad, Elgot Monad")[
     Let $T$ be a monad. Then
@@ -340,59 +361,73 @@ If $cal(K)$ is iterative, $f ↦ f^†$ is a guarded Conway operator and uniform
     Let $cal(C)$ be equipped with a Conway iteration operator $f ↦ f^†$. Then $cal(C)$ is a traced monoidal category under the symmetric monoidal structure induced by the coproduct, with trace
     $
     ∀f ∈ cal(C)(A + X, B + X) 
-    sans("Tr")^X_(A, B)(f) = ι_0;(f;B + ι_1)^†
+    sans("Tr")^X_(A, B)(f) = ι_0;(f;B + ι_1)^† = ι_0;f;[idm, (ι_1;f)^†]
     $
 ]
-#proof[
-    We prove each required property as follows:
-    - Naturality in $A, B$:
-    Fix $f ∈ cal(C)(A + X, B + X), g ∈ cal(C)(A', A), h ∈ cal(C)(B, B')$. We have that
-    $
-    & sans("Tr")^X_(A', B')(g + X;f;h + X) #h(15em) &
-    \ & = ι_0;(g + X;f;h + ι_1)^† & "by definition"
-    \ & = ι_0;(g + X;f;B + ι_1)^†;h & "by naturality"
-    \ & = ι_0;g + X;f;B + ι_1;[idm, (g + X;f;B + ι_1)^†];h & "by fixpoint"
-    \ & = g;ι_0;f;[idm, ι_1;(g + X;f;B + ι_1)^†];h
-    \ & = g;ι_0;f;[idm, ι_1;(f;B + ι_1)^†];h & "TODO"
-    \ & = g;ι_0;f;B + ι_1[idm, (f;B + ι_1)^†];h
-    \ & = g;ι_0;(f;B + ι_1)^†;h & "by fixpoint"
-    \ & = g;sans("Tr")^X_(A, B)(f);h & "by definition"
-    $
-    - Dinaturality in $X$:
-    Fix $f ∈ cal(C)(A + X, B + X')$, $g ∈ cal(C)(X', X)$
-    $
-    sans("Tr")^X_(A, B)(f;B + g) #h(15em) &
-    \ & = ι_0;(f;B + g;B + ι_1)^† & "by definition"
-    \ & = "TODO..."
-    $
-    - Vanishing:
-        - Fix $f ∈ cal(C)(A + 0, B + 0)$. Then
-          $
-          & sans("Tr")^0_(A, B)(f) #h(15em) & 
-          \ &= ι_0;(f;B + ι_1)^† & "by definition"
-          \ &= ι_0;(f;B + 0_(A + 0))^† & "by absorbption"
-          \ &= ι_0;(f;[ι_0, 0_(B + (A + 0))])^† & "by absorbtion"
-          \ &= ι_0;f;[idm, (f;[ι_0, f];0_(B + (A + 0)))^†] & "by dinaturality"
-          \ &= ι_0;f;[idm, 0_B] & "by absorbtion"
-          \ &= (ρ^+)^(-1);f;ρ^+ & "by definition"
-          $
-        - Fix $f ∈ cal(C)(A + X + Y, B + X + Y)$. Then
-          $
-          & sans("Tr")^(X + Y)_(A, B)(α^+;f;α^+) #h(15em) & 
-          \ & = ι_0;(α^+;f;α^+;B + ι_1)^† & "by definition"
-          \ & = "TODO..."
-          $
-    - Yanking:
-    $
-    & sans("Tr")^A_(A, A)(σ_(A, A)^+) #h(15em) & 
-    \ &= ι_0;(σ_(A, A)^+;A + ι_1)^† & "by definition"
-    \ &= ι_0;σ_(A, A)^+;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] & "by fixpoint"
-    \ &= ι_1;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] = ι_1;(σ_(A, A);A + ι_1)^†
-    \ &= i_1;σ_(A, A)^+;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] & "by fixpoint"
-    \ &= ι_0;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†]
-    \ &= idm_A
-    $
-]
+//TODO: cite Models of Sharing Graphs (Hasegawa)
+//TODO: reverse implication: do traces => fixpoints for +, as they do for ×?
+//TODO: state more general theorem? state fixpoint over general monoidal product?
+
+// #proof[
+//     We prove each required property as follows:
+//     - Naturality in $A, B$:
+//     Fix $f ∈ cal(C)(A + X, B + X), g ∈ cal(C)(A', A), h ∈ cal(C)(B, B')$. We have that
+//     $
+//     & sans("Tr")^X_(A', B')(g + X;f;h + X) #h(15em) &
+//     \ &= ι_0;(g + X;f;h + ι_1)^† & "by definition"
+//     \ &= ι_0;(g + X;f;B + ι_1)^†;h & "by naturality"
+//     \ &= ι_0;g + X;f;B + ι_1;[idm, (g + X;f;B + ι_1)^†];h & "by fixpoint"
+//     \ &= g;ι_0;f;[idm, ι_1;(g + X;f;B + ι_1)^†];h & "by definition"
+//     \ &= g;ι_0;f;[idm, ι_1;(f;B + ι_1)^†];h & "by definition"
+//     \ &= g;ι_0;f;B + ι_1[idm, (f;B + ι_1)^†];h & "by definition"
+//     \ &= g;ι_0;(f;B + ι_1)^†;h & "by fixpoint"
+//     \ &= g;sans("Tr")^X_(A, B)(f);h & "by definition"
+//     $
+//     - Dinaturality in $X$:
+//     Fix $f ∈ cal(C)(A + X, B + X')$, $g ∈ cal(C)(X', X)$
+//     $
+//     & sans("Tr")^X_(A, B)(f;B + g) #h(20em) &
+//     \ &= ι_0;(f;B + g;B + ι_1)^† & "by definition"
+//     \ &= ι_0;(f;B + ι_1;B + (A + g)))^† & "by absorption" 
+//     \ &= ι_0;f;B + ι_1;[idm, (A + g;f;B + ι_1)^†] & "by dinaturality"
+//     \ &= ι_0;A + g;B + ι_1;[idm, (A + g;f;B + ι_1)^†] & "by absorption"
+//     \ &= ι_0;(A + g;f;B + ι_1)^† & "by fixpoint"
+//     \ &= sans("Tr")^x_(A, B)(A + g; f) & "by definition"
+//     $
+//     - Vanishing:
+//         - Fix $f ∈ cal(C)(A + 0, B + 0)$. Then
+//           $
+//           & sans("Tr")^0_(A, B)(f) #h(20em) & 
+//           \ &= ι_0;(f;B + ι_1)^† & "by definition"
+//           \ &= ι_0;(f;B + 0_(A + 0))^† & "by initiality"
+//           \ &= ι_0;f;[idm, (0_(A + 0);f)^†] & "by dinaturality"
+//           \ &= ι_0;f;[idm, 0_B] & "by initiality" 
+//           \ &= (ρ^+)^(-1);f;ρ^+ & "by definition"
+//           $
+//         - Fix $f ∈ cal(C)(A + X + Y, B + X + Y)$. Then
+//           $
+//           & sans("Tr")^(X + Y)_(A, B)(α^+;f;α^+) #h(25em) & 
+//           \ &= sans("Tr")^(X + Y)_(A, B)([ι_0;ι_0, ι_1 + Y];f;[B + ι_0, ι_1;ι_1]) & "by definition"
+//           \ &= ι_0;([ι_0;ι_0, ι_1 + Y];f;[B + ι_0, ι_1;ι_1];B + ι_1)^† & "by definition"
+//           \ &= ι_0;([ι_0;ι_0, ι_1 + Y];f;[B + (ι_0;ι_1), ι_1;ι_1;ι_1])^† & "simp."
+//           \ &= ι_0;([ι_0;ι_0, ι_1 + Y];f;[B + (ι_0;ι_1), ι_1;ι_1;ι_1];[ι_0;ι_0, ι_1 + Y];B + ι_0 + ι_1) & "by codiagonal"
+//           \ &= ι_0;([ι_0;ι_0, ι_1 + Y];f;A + ι_0 + ι_1) &
+//           \ &= "TODO..."
+//           \ &= ι_0;(ι_0;f;[idm, (ι_1;f)^†];B + ι_1)^† & "by definition"
+//           \ &= ι_0;sans("Tr")^Y_(A + X, B + X)(f);[idm, (ι_1;sans("Tr")^Y_(A + X, B + X)(f))^†] & "by definition" 
+//           \ &= sans("Tr")^X_(A, B)(sans("Tr")^Y_(A + X, B + X)(f)) 
+//           $
+//     - Yanking:
+//     $
+//     & sans("Tr")^A_(A, A)(σ_(A, A)^+) #h(15em) & 
+//     \ &= ι_0;(σ_(A, A)^+;A + ι_1)^† & "by definition"
+//     \ &= ι_0;σ_(A, A)^+;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] & "by fixpoint"
+//     \ &= ι_1;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] = ι_1;(σ_(A, A);A + ι_1)^†
+//     \ &= i_1;σ_(A, A)^+;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†] & "by fixpoint"
+//     \ &= ι_0;A + ι_1;[idm, (σ_(A, A);A + ι_1)^†]
+//     \ &= idm_A
+//     $
+// ]
 
 /*
 TODO:
@@ -442,6 +477,11 @@ Note that it is possible for the same underlying category to be poset-enriched b
     In particular, this implies that for $f -> f'$ and $g -> g'$, we have $f ⋉ g -> f' ⋉ g'$ and $f ⋊ g -> f' ⋊ g'$ (and hence, in the central case, $f ⊗ g -> f' ⊗ g'$).
 
     A poset-enriched category whose underlying category is (co)cartesian where the (co)cartesian product induces a poset-enriched symmetric monoidal structure is called a *poset-enriched (co)cartesian category*.
+]
+
+
+#definition(name: "Poset-Enriched Effectful Category")[
+    A *poset-enriched (symmetric) effectful category* $F: cal(V) -> cal(C)$ is a poset-enriched premonoidal functor, where $cal(V)$ is a poset-enriched (symmetric) monoidal category and $cal(C)$ is a poset-enriched (symmetric) premonoidal category.
 ]
 
 /*
