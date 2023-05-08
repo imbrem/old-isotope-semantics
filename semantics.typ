@@ -506,7 +506,8 @@ NOTE: removing guardedness for now
 ]
 
 /*
-TODO: traced structure
+TODO: check this
+Note that if a poset-enriched cocartesian category is traced if and only if it has a Conway (iteration) operator.
 */
 
 = Syntax
@@ -1321,7 +1322,27 @@ We may immediately deduce the following corollaries:
 
 = Semantics
 
-In this section, we give a denotational semantics to well-typed `isotope` programs in an effectful category $(cal(C)_1, cal(C)_0)$ equipped with some auxiliary structure. We then prove some basic properties of our semantics.
+In this section, we give a denotational semantics to well-typed `isotope` programs in an effectful category equipped with some auxiliary structure. We then prove some basic properties of our semantics.
+
+== Isotope Models
+
+#definition(name: "Isotope Model")[
+    An *isotope model* is an effectful category $F: cal(C)_∅ -> cal(C)_{cen}$ (the latter simply written $cal(C)_cen$) such that
+    - $cal(C)_∅$ and $cal(C)_cen$ have an additional symmetric monoidal product $⊕$, for which $F$ is a symmetric monoidal functor. We denote the identity object of $⊕$ to be $0$, which we take to be the initial object; we denote morphisms from the initial object as $0_A: 0 -> A$.
+    - $cal(C)_cen$ has a trace over $⊕$
+    - There exists an object $bools$
+    - For each object $A$, there exists a morphism $smite(A): bools ⊗ A -> A ⊕ A$ such that, for all morphisms $f: A → B$,
+    $
+    bools ⊗ f;smite(B) = smite(A);f ⊕ f
+    $
+    - For each object $A$, there exists a morphism $j: A ⊕ A -> A$ such that $(A, j, 0)$ forms a commutative monoid
+
+    We say an isotope model is *standard* if $⊕$ is the coproduct, $j = [idm, idm]$, and $bools = tobj + tobj$, and it has a uniform Conway iteration operator.
+
+    We say an isotope model is *iterative* if $cal(C)_cen$ is iterative.
+
+    We say an isotope model is *poset-enriched* if $F$, $⊗$, $⊕$, and $sans("Tr")$ are poset-enriched. 
+]
 
 == Denotational Semantics
 
