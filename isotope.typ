@@ -237,9 +237,9 @@
         let inset = if first { (:) } else { (left: spacing) } 
         first = false;
         premises.push(
-            align(bottom, box(inset: inset, 
+            align(bottom,
                 rect(stroke: debug_stroke, $premise$)
-            ))
+            )
         )
     }
     p.premises = premises
