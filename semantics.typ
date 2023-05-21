@@ -41,11 +41,20 @@ Tasks:
     b. Semantic correctness
 */
 
-/*
 = Introduction
 
-//TODO: this
-*/
+The `isotope` project aims to design a practical intermediate representation for optimizing compilers with a rigorous, compositional semantics. These overarching design goals have motivated our somewhat unconvential choice of architecture and techniques:
+- The `isotope` intermediate representation is a _generalized RVSDG_, a hybrid between an RVSDG @rvsdg and standard SSA form, allowing smooth interconversion between the two
+- Our semantics is _categorical_, allowing us to easily swap out the underlying model for experimentation, while maintaining compositionality and ease of syntactic reasoning.
+- While we base our (G)RVSDG semantics on symmetric monoidal categories, our textual notation has a semantics based on symmetric _premonoidal_ categories; this makes the construction of models with side-effects much more tractable.
+
+//TODO: explain SSA
+//TODO: weaknesses of SSA
+//TODO: RVSDGs and advantages
+//TODO: weaknesses of RVSDGs
+//TODO: GRVSDGs
+//TODO: Risks
+//TODO: provably correct semantics
 
 = Background
 
@@ -2062,17 +2071,17 @@ TODO:
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dwng(purity: p, dnt(#dropctx($Ξ$, $Θ_Ξ$)));
         & "by splitting"
-        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));
+        \ & #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));
             dnt(#istm($Θ_Δ, thyp(x, A)$, $p$, $e$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, a, A)));
         & "by centrality"
-        \ #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A);
+        \ & #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A);
             dnt(#istm($Θ_Ξ, thyp(x, A)$, $p$, $e$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Δ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, a, A)));
         & "by definition"
-        \ #h(4em) dnt(#dropctx($Δ, thyp(x, A)$, $Θ_Δ, thyp(x, A)$));
+        \ & #h(4em) dnt(#dropctx($Δ, thyp(x, A)$, $Θ_Δ, thyp(x, A)$));
             dnt(#istm($Θ_Δ, thyp(x, A)$, $p$, $e$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
@@ -2086,22 +2095,22 @@ TODO:
         & dwng(purity: p, dnt(dropctx(Γ, Θ)));dnt(#istm($Θ$, $p$, $llet (x, y) = e; e'$, $C$)) #h(15em) &
         \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
         & "by definition"
-        \ #h(4em) 
+        \ & #h(4em) 
             dnt(#istm($Θ_Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(#dropctx($Ξ$, $Θ_Ξ$));
         & "by splitting"
-        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
+        \ & #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
             dnt(#istm($Θ_Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
-        \ #h(4em) dnt(#dropctx($Ξ$, $Θ_Ξ$)) ⊗ dnt(A) ⊗ dnt(B);
+        \ & #h(4em) dnt(#dropctx($Ξ$, $Θ_Ξ$)) ⊗ dnt(A) ⊗ dnt(B);
             dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
-        \ #h(4em) dnt(#dropctx($Δ, thyp(x, A), thyp(y, B)$, $Θ_Δ, thyp(x, A), thyp(y, B)$));
+        \ & #h(4em) dnt(#dropctx($Δ, thyp(x, A), thyp(y, B)$, $Θ_Δ, thyp(x, A), thyp(y, B)$));
             dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α^⊗;
@@ -2131,9 +2140,9 @@ TODO:
         $
         & dwng(purity: p, dnt(dropctx(Γ, Θ)));dnt(isblk(Θ, sans(L), p, br(lbl(ℓ), a), B)) #h(17em) &
         \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ))); & "by definition"
-        \ #h(5em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));α^⊕;0_(dnt(B)) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Θ_Δ, lbl(ℓ), p, A), sans(L))))
+        \ & #h(5em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));α^⊕;0_(dnt(B)) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Θ_Δ, lbl(ℓ), p, A), sans(L))))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ))); & "by splitting"
-        \ #h(5em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Θ_Δ, lbl(ℓ), p, A), sans(L)))
+        \ & #h(5em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));α^⊕;0_(dnt(B)) ⊕ dnt(joinctx(lhyp(Θ_Δ, lbl(ℓ), p, A), sans(L)))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dnt(istm(Ξ, p, a, A));α^⊕;0_(dnt(B)) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Θ_Δ, lbl(ℓ), p, A), sans(L)))) & "by induction"
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));α^⊕;0_(dnt(B)) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Δ, lbl(ℓ), p, A), sans(L)))) & "by composition"
         \ &= dnt(isblk(Γ, sans(L), p, br(lbl(ℓ), a), A)) & "by definition"
@@ -2162,21 +2171,21 @@ TODO:
         \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));
             dnt(#isblk($Θ_Δ, thyp(x, A)$, $sans(L)$, $p$, $t$, $B$))
         & "by definition"
-        \ #h(4em) 
+        \ & #h(4em) 
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dwng(purity: p, dnt(#dropctx($Ξ$, $Θ_Ξ$)));
         & "by splitting"
-        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));
+        \ & #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, a, A));
             dnt(#isblk($Θ_Δ, thyp(x, A)$, $sans(L)$, $p$, $t$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, a, A)));
         & "by centrality"
-        \ #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A);
+        \ & #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A);
             dnt(#isblk($Θ_Ξ, thyp(x, A)$, $sans(L)$, $p$, $t$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
             dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, a, A)));
         & "by definition"
-        \ #h(4em) dnt(#dropctx($Δ, thyp(x, A)$, $Θ_Δ, thyp(x, A)$));
+        \ & #h(4em) dnt(#dropctx($Δ, thyp(x, A)$, $Θ_Δ, thyp(x, A)$));
             dnt(#isblk($Θ_Δ, thyp(x, A)$, $sans(L)$, $p$, $t$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
@@ -2190,22 +2199,22 @@ TODO:
         & dwng(purity: p, dnt(dropctx(Γ, Θ)));dnt(#isblk($Θ$, $sans(L)$, $p$, $llet (x, y) = e; t$, $C$)) #h(15em) &
         \ &= dwng(purity: p, dnt(dropctx(Γ, Θ)));dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
         & "by definition"
-        \ #h(4em) 
+        \ & #h(4em) 
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dwng(purity: p, dnt(dropctx(Δ, Θ_Δ))) ⊗ dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));
         & "by splitting"
-        \ #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
+        \ & #h(4em) dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, e, A ⊗ B));α^⊗;
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
              dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
-        \ #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A) ⊗ dnt(B);
+        \ & #h(4em) dnt(#dropctx($Δ$, $Θ_Δ$)) ⊗ dnt(A) ⊗ dnt(B);
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ))); 
              dnt(Δ) ⊗ (dwng(purity: p, dnt(dropctx(Ξ, Θ_Ξ)));dnt(istm(Θ_Ξ, p, e, A ⊗ B)));α^⊗;
         & "by centrality"
-        \ #h(4em) dnt(#dropctx($Δ, thyp(x, A), thyp(y, B)$, $Θ_Δ, thyp(x, A), thyp(y, B)$));
+        \ & #h(4em) dnt(#dropctx($Δ, thyp(x, A), thyp(y, B)$, $Θ_Δ, thyp(x, A), thyp(y, B)$));
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
             dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α^⊗;
@@ -2287,15 +2296,15 @@ TODO:
         & "by definition"
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)))
         & "by splitting" 
-        \ #h(5em) dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(#istm($Ξ, thyp(x, A)$, $p$, $e$, $B$))
+        \ & #h(5em) dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(#istm($Ξ, thyp(x, A)$, $p$, $e$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ))); dnt(Δ) ⊗ (dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         dnt(istm(Ξ, p, a, A)));
         & "by centrality"
-        \ #h(5em) dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dnt(A); dnt(#istm($Δ, thyp(x, A)$, $p$, $e$, $B$))
+        \ & #h(5em) dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dnt(A); dnt(#istm($Δ, thyp(x, A)$, $p$, $e$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ))); dnt(Δ) ⊗ (dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         dnt(istm(Ξ, p, a, A)));
         & "by definition"
-        \ #h(5em) dwng(purity: p, dnt(issub(slft(γ_Δ), (Θ_Δ, thyp(x, A)), (Δ, thyp(x, A))))); dnt(#istm($Δ, thyp(x, A)$, $p$, $e$, $B$))
+        \ & #h(5em) dwng(purity: p, dnt(issub(slft(γ_Δ), (Θ_Δ, thyp(x, A)), (Δ, thyp(x, A))))); dnt(#istm($Δ, thyp(x, A)$, $p$, $e$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]a, A));dnt(#istm($Θ_Δ, thyp(x, A)$, $p$, $[γ]e$, $B$))
         & "by induction"
         \ &= dnt(#istm($Θ$, $p$, $[γ](llet x = a; e)$, $B$))
@@ -2309,17 +2318,19 @@ TODO:
         \ & #h(4em) dnt(#istm($Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by splitting" 
-        \ #h(5em) dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α;dnt(#istm($Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
+        \ & #h(5em) dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α;dnt(#istm($Ξ, thyp(x, A), thyp(y, B)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Δ) ⊗ (dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ)));
         dnt(istm(Ξ, p, e, A ⊗ B)));α;
         & "by centrality"
-        \ #h(5em) dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dnt(A) ⊗ dnt(B);α; dnt(#istm($Δ, thyp(x, A), thyp(y, A)$, $p$, $e'$, $C$))
+        \ & #h(5em) dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dnt(A) ⊗ dnt(B);α;dnt(#istm($Δ, thyp(x, A), thyp(y, A)$, $p$, $e'$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Δ) ⊗ (dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ)));
         dnt(istm(Ξ, p, e, A ⊗ B)));α;
         & "by definition"
-        \ #h(5em) dwng(purity: p, dnt(issub(slft(slft(γ_Δ)), (Θ_Δ, thyp(x, A), thyp(y, B)), (Δ, thyp(x, A), thyp(y, B)))));α^⊗; dnt(#istm($Δ, thyp(x, A), thyp(y, A)$, $p$, $e'$, $C$))
-        \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α^⊗;dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, A)$, $p$, $[γ]e'$, $C$))
+        \ & #h(5em) dwng(purity: p, dnt(issub(slft(slft(γ_Δ)), (Θ_Δ, thyp(x, A), thyp(y, B)), (Δ, thyp(x, A), thyp(y, B)))));α^⊗;
+        \ & #h(5em) dnt(#istm($Δ, thyp(x, A), thyp(y, A)$, $p$, $e'$, $C$))
+        \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α^⊗;
         & "by induction"
+        \ & #h(5em) dnt(#istm($Θ_Δ, thyp(x, A), thyp(y, A)$, $p$, $[γ]e'$, $C$))
         \ &= dnt(#istm($Θ$, $p$, $[γ](llet (x, y) = e; e')$, $C$))
         & "by definition"
         $
@@ -2437,13 +2448,13 @@ TODO:
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by splitting"
-        \ #h(5em)
+        \ & #h(5em)
             dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
             dnt(#isblk($Δ, thyp(x, A)$, $sans(L)$, $p$, $t$, $B$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]a, A));
         & "by induction"
-        \ #h(5em)
+        \ & #h(5em)
             dnt(#isblk($Θ_Δ, thyp(x, A)$, $[γ]sans(L)$, $p$, $t[γ]$, $B$)); 
             dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ))
         \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet x = a; t)$, $B$)); dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ))
@@ -2461,12 +2472,12 @@ TODO:
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dwng(purity: p, dnt(issub(γ_Δ, Θ_Δ, Δ))) ⊗ dwng(purity: p, dnt(issub(γ_Ξ, Θ_Ξ, Ξ)));
         & "by splitting"
-        \ #h(5em)
+        \ & #h(5em)
             dnt(Δ) ⊗ dnt(istm(Ξ, p, e, A ⊗ B));α^⊗;dnt(#isblk($Δ, thyp(x, A), thyp(y, B)$, $sans(L)$, $p$, $t$, $C$))
         \ &= dwng(purity: p, dnt(splitctx(Θ, Θ_Δ, Θ_Ξ)));
             dnt(Θ_Δ) ⊗ dnt(istm(Θ_Ξ, p, [γ]e, A ⊗ B));α^⊗;
         & "by induction"
-        \ #h(5em)
+        \ & #h(5em)
             dnt(#isblk($Θ_Δ, thyp(x, A), thyp(y, B)$, $[γ]sans(L)$, $p$, $t[γ]$, $C$)); 
             dnt(B) ⊗ dwng(purity: p, labmap(sans(L), γ))
         \ &= dnt(#isblk($Θ$, $[γ]sans(L)$, $p$, $[γ](llet (x, y) = e; t)$, $C$)); 
@@ -2478,7 +2489,7 @@ TODO:
     sans(S)_0 &= [lhyp(Δ_j, ∅, lbl(ℓ)_j, A_j)]_j \
     sans(S) &= [lhyp(Δ_j, p_j, lbl(ℓ)_j, A_j)]_j \
     D &= α^⊕ ∘ j^i ∘ plus.circle.big_i dnt(#isblk($Δ_i, thyp(x_i, A_i)$, $sans(S)_0, sans(L)$, $p$, $t_i$, $B$))
-        &: cal(C)_p(dnt(sans(S)_0), dnt(B) ⊕ dnt(sans(L)) ⊕ dnt(sans(S)_0)) \
+        : cal(C)_p(dnt(sans(S)_0), dnt(B) ⊕ dnt(sans(L)) ⊕ dnt(sans(S)_0)) \
     D_γ &= α^⊕ ∘ j^n ∘ plus.circle.big_i dnt(#isblk($Θ_(Δ_i), thyp(x_i, A_i)$, $[γ]sans(S)_0, [γ]sans(L)$, $p$, $[γ]t_i$, $B$)): cal(C)_p(dnt([γ]B) ⊕ dnt([γ]sans(L)) ⊕ dnt([γ]sans(S)_0))
     $
     We note that $dnt(sans(S)) = dnt(sans(S)_0)$, and that
@@ -2519,7 +2530,7 @@ TODO:
     \ & #h(4em) 
         dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ)); ⊕ (dwng(purity: p, labmap(sans(S)_0, γ));sans("Tr")_(dnt(sans(S)), dnt(sans(B)) ⊕ dnt(L))^(dnt(sans(S)))(j;D);j)
     \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;σ^⊕;
-    \ #h(5em) dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ)) ⊕ (sans("Tr")_(dnt([γ]sans(S)), dnt([γ]sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ)));j
+    \ & #h(5em) dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ)) ⊕ (sans("Tr")_(dnt([γ]sans(S)), dnt([γ]sans(L)) ⊕ dnt(B))^(dnt([γ]sans(S)))(j;D_γ);dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ)));j
     \ &= dnt(#isblk($Θ$, $[γ]sans(S), [γ]sans(L)$, $p$, $[γ]s$, $B$));α^⊕;dnt(B) ⊕ dnt(sans(L)) ⊕ sans("Tr")_(dnt([γ]sans(S)), dnt(B) ⊕ dnt([γ]sans(L)))^(dnt([γ]sans(S)))(j;D_γ);j;
     & "by distribution"
     \ & #h(4em) dnt(B) ⊕ dwng(purity: p, labmap(sans(L), γ))
