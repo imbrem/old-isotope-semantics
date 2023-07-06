@@ -1676,6 +1676,24 @@ We may now state the semantic substitution theorem:
 
 //TODO: rewriting theorem
 
+= SSA Form
+
+#definition(name: "Basic block, SSA form")[
+    An `isotope` expression is a *basic block* if it does not contain any nested blocks. An `isotope` block is in *SSA form* if all its nested expressions are basic blocks.
+]
+
+We now present an algorithm to convert any `isotope` expression into an `isotope` block in SSA form with equivalent semantics
+
+//TODO: this
+// - Step 1: Nested block merge
+// - Step 2: Cases:
+//   - Block: do blocks, apply nested block merge
+//   - Basic: done
+//   - Let, basic: do let SSA, let merge
+//   - Apply/pair, basic: do apply/pair let, let SSA, let merge
+
+//TODO: correctness argument...
+
 /*
 
 = Graphical Syntax
