@@ -1672,9 +1672,46 @@ We may now state the semantic substitution theorem:
     See @semantic-properties[Appendix]
 ]
 
-//TODO: semantic equivalence of (potentially impure) substitutions
+#let substitution-equiv-rules = (
+    "equiv-nil": prft(
+        $cnil ≃ cnil$, 
+        name: "equiv-nil"),
+    "equiv-cons": prft(
+        $#issub($γ ≃ γ'$, $Θ_Γ$, $Γ$, $p$)$, 
+        $dnt(istm(Θ_x, p, a, A)) = dnt(istm(Θ_x, p, a', A))$,
+        $islin(q, Θ_x)$,
+        $splitctx(Θ, Θ_x, Θ_Γ)$,
+        issub($[x ↦ a]γ ≃ [x ↦ a']γ'$, $Θ$, $Γ, thyp(x, A, q)$),
+        name: "equiv-cons")
+)
 
-//TODO: rewriting theorem
+#definition(name: "Substitution Equivalence")[
+    We define the *equivalence* $γ ≃ γ'$ of substitutions $issub(γ, Θ, Γ, p)$ and $issub(γ', Θ, Γ, p)$ inductively as follows:
+    $
+    #dprf(substitution-equiv-rules.equiv-nil)
+    $
+    $
+    #dprf(substitution-equiv-rules.equiv-cons)
+    $
+]
+
+#lemma[
+    We have that  $issub(γ ≃ γ', Θ, Γ, p) ==> dnt(issub(γ, Θ, Γ)) = dnt(issub(γ', Θ, Γ))$
+]
+#proof[
+    TODO
+]
+
+#theorem(name: "Rewriting")[
+    If $issub(γ ≃ γ', Θ, Γ, p)$ then, for all terms $istm(Γ, p, a, A)$ and blocks $isblk(Γ, sans("L"), p, t, B)$,
+    $
+    dnt(istm(Θ, p, [γ]a, A)) = dnt(istm(Θ, p, [γ']a, A)),
+    dnt(isblk(Θ, sans("L"), p, [γ]t, B)) = dnt(isblk(Θ, sans("L"), p, [γ']t, B)),
+    $
+]
+#proof[
+    TODO
+]
 
 = SSA Form
 
@@ -1779,6 +1816,8 @@ $
 sans("SSA")(llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s)
 = llet [lbl(ℓ_i)(x_i: A_i) => {sans("SSA")(t_i)}]_i; sans("SSA")(s)
 $
+Note that this is recursive on the single argument of $sans("SSA")$ and the _second_ argument of $sans("Value")$.
+
 We now wish to prove the soundness of the above algorithm, i.e., that
 $
     dnt(isblk(Γ, sans("L"), p, t, B)) 
@@ -1786,9 +1825,68 @@ $
     dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = e; t$, $B$)) 
     &= dnt(isblk(Γ, sans("L"), p, sans("Value")(x, e, t), B))
 $
-We proceed by induction:
-//TODO: this; and do BR stuff
+We proceed by induction on the shape of blocks $t$ and terms $e$, following the termination order:
 
+- $e$ value: given a value $e$, we have that
+    $
+    sans("Value")(x, e, t) = (llet x = e; t) ==> 
+        dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = e; t$, $B$)) 
+        = dnt(isblk(Γ, sans("L"), p, sans("Value")(x, e, t), B))
+    $
+    as desired
+- $f aq e$: we have that
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, f aq e, t), B)) #h(20em) & \
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(y, e, (llet x = f aq y; t)), B))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = e; llet x = f aq y; t$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = f aq e; t$, $B$))
+    & "by isotopy"
+    $
+- $(a, b)$: we have that
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (a, b), t), B)) #h(20em) & \
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(y, a, sans("Value")(z, b, (llet x = (y, z); t))), B))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; sans("Value")(z, b, (llet x = (y, z); t))$, $B$))
+    & "by induction" \
+    & = 
+    dnt(splitctx(Γ, Δ, Ξ));
+    dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
+    \ & #h(4em) 
+    dnt(#isblk($Δ, a: A$, $sans("L")$, $p$, $sans("Value")(z, b, (llet x = (y, z); t))$, $B$))
+    & "by definition" \
+    & = 
+    dnt(splitctx(Γ, Δ, Ξ));
+    dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
+    \ & #h(4em) 
+    dnt(#isblk($Δ, a: A$, $sans("L")$, $p$, $llet z = b; llet x = (y, z); t$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet z = b; llet x = (y, z); t$, $B$)) & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (a, b); t$, $B$))
+    & "by isotopy"
+    $
+- $llet y = a; e$: we have that
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (llet y = a; e), t), B)) #h(15em) & \
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(y, a, sans("Value")(x, e, t)), B))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; sans("Value")(x, e, t)$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
+    & "by isotopy"
+    $
+// - $llet (y, z) = a; e$: we have that
+//     $
+//     & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (llet (y, z) = a; e), t), B)) #h(15em) & \
+//     & = dnt(isblk(Γ, sans("L"), p, sans("Value")(p, a, (llet (y, z) = p; sans("Value")(x, e, t))), B))
+//     & "by definition" \
+//     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = e; t$, $B$))
+//     & "by induction" \
+//     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
+//     & \
+//     $
 /*
 
 = Graphical Syntax
