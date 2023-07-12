@@ -1849,21 +1849,7 @@ We proceed by induction on the shape of blocks $t$ and terms $e$, following the 
     & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (a, b), t), B)) #h(20em) & \
     & = dnt(isblk(Γ, sans("L"), p, sans("Value")(y, a, sans("Value")(z, b, (llet x = (y, z); t))), B))
     & "by definition" \
-    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; sans("Value")(z, b, (llet x = (y, z); t))$, $B$))
-    & "by induction" \
-    & = 
-    dnt(splitctx(Γ, Δ, Ξ));
-    dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
-    \ & #h(4em) 
-    dnt(#isblk($Δ, a: A$, $sans("L")$, $p$, $sans("Value")(z, b, (llet x = (y, z); t))$, $B$))
-    & "by definition" \
-    & = 
-    dnt(splitctx(Γ, Δ, Ξ));
-    dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));
-    \ & #h(4em) 
-    dnt(#isblk($Δ, a: A$, $sans("L")$, $p$, $llet z = b; llet x = (y, z); t$, $B$))
-    & "by induction" \
-    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet z = b; llet x = (y, z); t$, $B$)) & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet z = b; llet x = (y, z); t$, $B$)) & "by induction" \
     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (a, b); t$, $B$))
     & "by isotopy"
     $
@@ -1877,16 +1863,16 @@ We proceed by induction on the shape of blocks $t$ and terms $e$, following the 
     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
     & "by isotopy"
     $
-// - $llet (y, z) = a; e$: we have that
-//     $
-//     & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (llet (y, z) = a; e), t), B)) #h(15em) & \
-//     & = dnt(isblk(Γ, sans("L"), p, sans("Value")(p, a, (llet (y, z) = p; sans("Value")(x, e, t))), B))
-//     & "by definition" \
-//     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = e; t$, $B$))
-//     & "by induction" \
-//     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
-//     & \
-//     $
+- $llet (y, z) = a; e$: we have that
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (llet (y, z) = a; e), t), B)) #h(15em) & \
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(p, a, (llet (y, z) = p; sans("Value")(x, e, t))), B))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = e; t$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
+    & "by isotopy"
+    $
 /*
 
 = Graphical Syntax
