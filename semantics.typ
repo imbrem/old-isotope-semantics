@@ -1679,20 +1679,115 @@ We may now state the semantic substitution theorem:
 = SSA Form
 
 #definition(name: "Basic block, SSA form")[
-    An `isotope` expression is a *basic block* if it does not contain any nested blocks. An `isotope` block is in *SSA form* if all its nested expressions are basic blocks.
+    An `isotope` expression is a *value* if it is a variable, a constant, a tuple of values, or a function call applied to a value. An `isotope` block is in *SSA form* if all its nested expressions are values.
 ]
+In particular, we can give the following grammar for terms and blocks in SSA form:
+#let ssa-grammar = (
+    (
+        name: "Value",
+        symbol: ($a$, $b$, $c$, $e$),
+        productions: ((
+            $x$, $f aq e$, $()$, $ltt$, $lff$, $(a, b)$
+        ),),
+    ),
+    (
+        name: "SSA Block",
+        symbol: ("s", "t"),
+        productions: (
+            (
+                $br(a)$, $br(lbl(ℓ), a)$, $lite(e, s, t)$,
+                $llet x = a; t$, $llet (x, y) = a; t$
+            ),
+            (
+                $llet [lbl(ℓ_i)(x_i: A_i) => { t_i }]_i; s$
+            )
+        ),
+    )
+);
+#grammar(ssa-grammar)
 
-We now present an algorithm to convert any `isotope` expression into an `isotope` block in SSA form with equivalent semantics
+We now present an algorithm to convert any `isotope` block into SSA form while preserving its semantics.
+We will begin by recursively define the "return relabeling" $br(lbl(ℓ), t)$ of a block $t$ as follows:
+#row-den(
+    $br(lbl(ℓ), (br(a))) = br(lbl(ℓ), a)$,
+    $br(lbl(ℓ), (br(lbl(τ), a)) = br(lbl(τ), a))$
+)
+#row-den(
+    $br(lbl(ℓ), (lite(e, s, t))) = lite(e, br(lbl(ℓ), s), br(lbl(ℓ), t))$
+)
+#row-den(
+    $br(lbl(ℓ), (llet x = a; t)) = llet x = a; br(lbl(ℓ), t)$,
+    $br(lbl(ℓ), (llet (x, y) = a; t)) = llet (x, y) = a; br(lbl(ℓ), t)$
+)
+#row-den(
+    $br(lbl(ℓ), (llet [lbl(ℓ_i)(x_i: A_i) => { t_i }]_i; s))
+    = llet [lbl(ℓ_i)(x_i: A_i) => { br(lbl(ℓ), t_i) }]_i; br(lbl(ℓ), s)
+    $
+)
+We note that, as a basic sanity-check of the above definition,
+$
+dnt(t) = #dnt($llet lbl(ℓ)(x: A) => { br(x) }; br(lbl(ℓ), t)$)
+$
+since ... //TODO
 
-//TODO: this
-// - Step 1: Nested block merge
-// - Step 2: Cases:
-//   - Block: do blocks, apply nested block merge
-//   - Basic: done
-//   - Let, basic: do let SSA, let merge
-//   - Apply/pair, basic: do apply/pair let, let SSA, let merge
+We further note that it trivially holds that $t$ is in SSA form if and only if $br(lbl(ℓ), t)$ is.
 
-//TODO: correctness argument...
+We may now prove that
+$
+#dnt($llet x = {s}; t$) = #dnt($llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), s)$)
+$
+since ... //TODO
+
+We may now define our SSA rewriting algorithm by giving two mutually recursive functions
+$
+sans("SSA")&: sans("Block") -> sans("Block") \
+sans("Value")&: sans("Var") -> sans("Term") -> sans("Block") -> sans("Block")
+$
+defined as follows (we assume that all introduced variable names are fresh):
+$
+sans("Value")(x, e, t) = (llet x = e; t) "if" e "is a value"
+$
+$
+sans("Value")(x, f aq e, t) = sans("Value")(y, e, (llet x = f aq y; t))
+$
+$
+sans("Value")(x, (a, b), t) = sans("Value")(y, a, sans("Value")(z, b, (llet x = (y, z); t)))
+$
+$
+sans("Value")(x, (llet y = a; e), t) = sans("Value")(y, a, sans("Value"(x, e, t)))
+$
+$
+sans("Value")(x, (llet (y, z) = a; e), t) = sans("Value")(p, a, (llet (y, z) = p; sans("Value")(x, e, t)))
+$
+$
+sans("Value")(x, {s}, t) = (llet lbl(ℓ)(x: A) => { t }; br(lbl(ℓ), sans("SSA")(s)))
+$
+#row-den(
+    $sans("SSA")(br(a)) = sans("Value")(x, a, br(x))$,
+    $sans("SSA")(br(lbl(ℓ), a)) = sans("Value")(x, a, br(lbl(ℓ), x))$
+)
+$
+sans("SSA")(lite(e, s, t)) = sans("Value")(x, e, lite(x, sans("SSA")(s), sans("SSA")(t)))
+$
+$
+sans("SSA")(llet x = a; t) = sans("Value")(x, a, sans("SSA")(t))
+$
+$
+sans("SSA")(llet (x, y) = a; t) = sans("Value")(p, a, (llet (x, y) = p; sans("SSA")(t)))
+$
+$
+sans("SSA")(llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s)
+= llet [lbl(ℓ_i)(x_i: A_i) => {sans("SSA")(t_i)}]_i; sans("SSA")(s)
+$
+We now wish to prove the soundness of the above algorithm, i.e., that
+$
+    dnt(isblk(Γ, sans("L"), p, t, B)) 
+    &= dnt(isblk(Γ, sans("L"), p, sans("SSA")(t), B)) \
+    dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = e; t$, $B$)) 
+    &= dnt(isblk(Γ, sans("L"), p, sans("Value")(x, e, t), B))
+$
+We proceed by induction:
+//TODO: this; and do BR stuff
 
 /*
 
