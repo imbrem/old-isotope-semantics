@@ -1794,7 +1794,7 @@ $
 sans("Value")(x, (llet y = a; e), t) = sans("Value")(y, a, sans("Value"(x, e, t)))
 $
 $
-sans("Value")(x, (llet (y, z) = a; e), t) = sans("Value")(p, a, (llet (y, z) = p; sans("Value")(x, e, t)))
+sans("Value")(x, (llet (y, z) = a; e), t) = sans("Value")(w, a, (llet (y, z) = w; sans("Value")(x, e, t)))
 $
 $
 sans("Value")(x, {s}, t) = (llet lbl(ℓ)(x: A) => { t }; br(lbl(ℓ), sans("SSA")(s)))
@@ -1810,7 +1810,7 @@ $
 sans("SSA")(llet x = a; t) = sans("Value")(x, a, sans("SSA")(t))
 $
 $
-sans("SSA")(llet (x, y) = a; t) = sans("Value")(p, a, (llet (x, y) = p; sans("SSA")(t)))
+sans("SSA")(llet (x, y) = a; t) = sans("Value")(w, a, (llet (x, y) = w; sans("SSA")(t)))
 $
 $
 sans("SSA")(llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s)
@@ -1858,7 +1858,9 @@ We proceed by induction on the shape of blocks $t$ and terms $e$, following the 
     & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (llet y = a; e), t), B)) #h(15em) & \
     & = dnt(isblk(Γ, sans("L"), p, sans("Value")(y, a, sans("Value")(x, e, t)), B))
     & "by definition" \
-    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; sans("Value")(x, e, t)$, $B$))
+    // & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; sans("Value")(x, e, t)$, $B$))
+    // & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = e; t$, $B$))
     & "by induction" \
     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
     & "by isotopy"
@@ -1866,11 +1868,13 @@ We proceed by induction on the shape of blocks $t$ and terms $e$, following the 
 - $llet (y, z) = a; e$: we have that
     $
     & dnt(isblk(Γ, sans("L"), p, sans("Value")(x, (llet (y, z) = a; e), t), B)) #h(15em) & \
-    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(p, a, (llet (y, z) = p; sans("Value")(x, e, t))), B))
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(w, a, (llet (y, z) = w; sans("Value")(x, e, t))), B))
     & "by definition" \
-    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = e; t$, $B$))
+    // & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet w = a; llet (y, z) = w;sans("Value")(x, e, t)$, $B$))
+    // & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet w = a; llet (y, z) = w; llet x = e; t$, $B$))
     & "by induction" \
-    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet y = a; e); t$, $B$))
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = (llet (y, z) = a; e); t$, $B$))
     & "by isotopy"
     $
 //NOTE: this is the case that will have to be generalized in the full poset-enriched setting, since the above lemma will then be a _refinement_ due to fixing order...
@@ -1881,12 +1885,64 @@ We proceed by induction on the shape of blocks $t$ and terms $e$, following the 
     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {sans("SSA")(s)}; t$, $B$)) & "by lemma" \
     & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {s}; t$, $B$)) & "by induction"
     $
-- $br(a)$: ...
-- $br(lbl(ℓ), a)$: ...
-- $lite(e, s, t)$: ...
-- $llet x = a; t$: ...
-- $llet (x, y) = a; t$: ...
-- $llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s$: ...
+- $br(a)$: 
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("SSA")(br(a)), A)) #h(15em) & \
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(x, a, br(x)), A))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = a; br(x)$, $A$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $br(a)$, $A$))
+    & "by isotopy"
+    $
+- $br(lbl(ℓ), a)$: 
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("SSA")(br(lbl(ℓ), a)), B)) #h(15em) & \
+    & = dnt(isblk(Γ, sans("L"), p, sans("Value")(x, a, br(lbl(ℓ), x)), B))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = a; br(lbl(ℓ), x)$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $br(lbl(ℓ), a)$, $B$))
+    & "by isotopy"
+    $
+- $lite(e, s, t)$: 
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("SSA")(lite(e, s, t)), B)) #h(15em) & \ 
+    & = dnt(isblk(Γ, sans("L"), p, lite(e, sans("SSA")(s), sans("SSA")(t)), B)) 
+    & "by definition" \ 
+    & = dnt(isblk(Γ, sans("L"), p, lite(e, s, t), B)) 
+    & "by induction" \ 
+    $
+- $llet x = a; t$: 
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("SSA")(llet x = a; t), B)) #h(15em) & \ 
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $sans("Value")(x, a, sans("SSA")(t))$, $B$))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = a; sans("SSA")(t)$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = a; t$, $B$))
+    & "by induction"
+    $
+- $llet (x, y) = a; t$: 
+    $
+    & dnt(isblk(Γ, sans("L"), p, sans("SSA")(llet (x, y) = a; t), B)) #h(15em) & \ 
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $sans("Value")(w, a, (llet (x, y) = w; sans("SSA")(t)))$, $B$))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $w$, $llet w = a; llet (x, y) = w; sans("SSA")(t)$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet w = a; llet (x, y) = w; t$, $B$))
+    & "by induction" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet (x, y) = a; t$, $B$))
+    & "by isotopy"
+    $
+- $llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s$: 
+    $
+    & dnt(#isblk($Γ$, $sans("L")$, $p$, $sans("SSA")(llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s)$, $B$)) #h(10em) & \ 
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet [lbl(ℓ_i)(x_i: A_i) => {sans("SSA")(t_i)}]_i; sans("SSA")(s)$, $B$))
+    & "by definition" \
+    & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s$, $B$))
+    & "by induction" \
+    $
 /*
 
 = Graphical Syntax
