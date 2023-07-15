@@ -318,6 +318,13 @@
     }
     $name: defctx ->_purity varctx$
 }
+// #let lbsub(name, defctx, varctx, ..args) = {
+//     let purity = if args.pos().len() >= 1 {
+//         args.pos().at(0)
+//     }
+//     $name: defctx ⇝_purity varctx$
+// }
+#let lbrn(name, defctx, varctx) = $name: defctx ⇝ varctx$
 #let ssub(tm, var) = $tm slash var$
 #let slft(subst) = $subst^↑$
 #let submap(lsub, rsub) = $lsub ≤ rsub$
@@ -339,7 +346,7 @@
     let subctx = args.pos();
     let dest = subctx.pop()
     let subctx = subctx.join($;$)
-    $subctx arrow.r.squiggly dest$
+    $subctx ⇝ dest$
 }
 #let subctx(small, big) = $small ≤ big$
 #let types(base) = $sans("Type")(#base)$

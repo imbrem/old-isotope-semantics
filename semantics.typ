@@ -1329,6 +1329,40 @@ We may immediately deduce the following corollaries:
     See @syntactic-properties[Appendix]
 ]
 
+//TODO: go define binary joinctx
+
+#let label-renaming-rules = (
+    "lbrn-rn-nil": prft(
+        $joinctx(lhyp(Γ, p, lbl(τ), A), sans("K"))$,
+        $lbrn([ssub(lbl(τ), ✓)], bcnil, sans("K"))$, 
+        name: "lbrn-rn-nil"),
+    "lbrn-rn": prft(
+        $lbrn(cal("K"), sans("L"), sans("K"))$,
+        $joinctx(lhyp(Γ, p, lbl(τ), A), sans("K"))$,
+        $#lbrn($[ssub(lbl(τ), lbl(ℓ))]cal("K")$, $lhyp(Γ, p, lbl(ℓ), A), sans("L")$, $sans("K")$)$, 
+        name: "lbrn-rn"),
+    "lbrn-ret-nil": prft(
+        $lbrn(bcnil, bcnil, sans("K"))$, 
+        name: "lbrn-ret-nil"),
+    "lbrn-ret": prft(
+        $lbrn(cal("K"), sans("L"), sans("K"))$,
+        $#lbrn($[ssub(✓, lbl(ℓ))]cal("K")$, $lhyp(Γ, p, lbl(ℓ), A), sans("L")$, $sans("K")$)$, 
+        name: "lbrn-ret"),
+)
+
+#definition(name: "Label Renaming")[
+    We define a *label renaming* $lbrn(cal("K"), sans("L"), sans("K"))$ with from $sans("L")$ to $sans("K")$, via the following rules
+    #row-den(
+        dprf(label-renaming-rules.lbrn-rn-nil),
+        dprf(label-renaming-rules.lbrn-rn)
+    )
+    #row-den(
+        dprf(label-renaming-rules.lbrn-ret-nil),
+        dprf(label-renaming-rules.lbrn-ret)
+    )
+    This corresponds to a mapping from the labels in $sans("L")$ to the labels in $sans("K")$ which respects contexts and parameter types; we write $[cal("K")]lbl(ℓ)$ to denote applying this mapping to the label $lbl(ℓ)$.
+]
+
 = Semantics
 
 In this section, we give a denotational semantics to well-typed `isotope` programs in an effectful category equipped with some auxiliary structure. We then prove some basic properties of our semantics.
