@@ -1761,19 +1761,65 @@ We will begin by recursively define the "return relabeling" $br(lbl(ℓ), t)$ of
     = llet [lbl(ℓ_i)(x_i: A_i) => { br(lbl(ℓ), t_i) }]_i; br(lbl(ℓ), s)
     $
 )
-We note that, as a basic sanity-check of the above definition,
-$
-dnt(t) = #dnt($llet lbl(ℓ)(x: A) => { br(x) }; br(lbl(ℓ), t)$)
-$
-since ... //TODO
+// We note that, as a basic sanity-check of the above definition,
+// $
+// dnt(t) = #dnt($llet lbl(ℓ)(x: A) => { br(x) }; br(lbl(ℓ), t)$)
+// $
+// since ... //TODO
 
-We further note that it trivially holds that $t$ is in SSA form if and only if $br(lbl(ℓ), t)$ is.
+We note that it trivially holds that $t$ is in SSA form if and only if $br(lbl(ℓ), t)$ is.
 
-We may now prove that
+We now proceed to prove that
 $
-#dnt($llet x = {s}; t$) = #dnt($llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), s)$)
+dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {s}; t$, $B$)) 
+= dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), s)$, $B$))
 $
-since ... //TODO
+by induction:
+- $sans("br")(a)$: by isotopy
+- $sans("br")(lbl(τ), a)$: by isotopy
+- $lite(e, l, r)$: 
+$
+& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (lite(e, l, r)))$, $B$)) #h(5em) &
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; lite(e, br(lbl(ℓ), l), br(lbl(ℓ), r))$, $B$)) & "by definition"
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, lite($e$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), l)$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), r)$), $B$))
+& "TODO: ite"
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, lite($e$, $llet x = {l}; t$, $llet x = {r}; t$), $B$))
+& "by induction" 
+\ &= dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = { lite(e, br({l}), br({r})) }; t$, $B$))
+& "TODO: ite"
+\ &= dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = { lite(e, l, r) }; t$, $B$))
+& "by isotopy"
+$
+- $llet y = a; s$: 
+$
+& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (llet y = a; s))$, $B$)) #h(10em) & 
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; llet y = a; br(lbl(ℓ), s)$, $B$)) 
+& "by definition" 
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet lbl(ℓ)(x: A) => {t};br(lbl(ℓ), s)$, $B$)) 
+& "by isotopy"
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = {s}; t$, $B$)) 
+& "by induction"
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {llet y = a; s}; t$, $B$)) 
+& "by isotopy"
+$
+- $llet (y, z) = a; s$: 
+$
+& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (llet (y, z) = a; s))$, $B$)) #h(10em) & 
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; llet (y, z) = a; br(lbl(ℓ), s)$, $B$)) 
+& "by definition" 
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet (y, z) = a; llet lbl(ℓ)(x: A) => {t};br(lbl(ℓ), s)$, $B$)) 
+& "by isotopy"
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet (y, z) = a; llet x = {s}; t$, $B$)) 
+& "by induction"
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {llet (y, z) = a; s}; t$, $B$)) 
+& "by isotopy"
+$
+- $llet ['ℓ_i(x_i: A_i) => {t_i}]_i; s$: 
+$
+& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s))$, $B$)) #h(5em) & 
+\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; (llet [lbl(ℓ_i)(x_i: A_i) => {br(lbl(ℓ), t_i)}]_i; br(lbl(ℓ), s))$, $B$)) & "by definition"
+\ & = "...TODO: do as label rewrite..."
+$
 
 We may now define our SSA rewriting algorithm by giving two mutually recursive functions
 $
