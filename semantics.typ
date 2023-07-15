@@ -1749,6 +1749,8 @@ We may now state the semantic substitution theorem:
 
 = SSA Form
 
+In this section, we will only consider *standard* `isotope` models.
+
 #definition(name: "Basic block, SSA form")[
     An `isotope` expression is a *value* if it is a variable, a constant, a tuple of values, or a function call applied to a value. An `isotope` block is in *SSA form* if all its nested expressions are values.
 ]
@@ -1803,56 +1805,34 @@ We will begin by recursively define the "return relabeling" $br(lbl(ℓ), t)$ of
 
 We note that it trivially holds that $t$ is in SSA form if and only if $br(lbl(ℓ), t)$ is.
 
-We now proceed to prove that
+// We now prove that, where both sides are well-typed,
+// $
+// dnt(isblk(Γ, sans("L"), p, br(lbl(τ), t), B))
+// = dnt(splitctx(Γ, Δ, Ξ));dnt(Δ) ⊗ dnt(isblk(Ξ, sans("L"), p, t, B));dnt(sans("L")) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Γ, p, lbl(τ), A), sans("L"))));j;α^⊕;0_dnt(B) ⊕ dnt(sans("L"))
+// $
+// We proceed by induction:
+// - $br(a)$: 
+//     $
+//     & dnt(isblk(Γ, sans("L"), p, br(lbl(τ), a), B)) #h(20em) & \
+//     & = dwng(purity: p, dnt(splitctx(Γ, Δ, Ξ)));
+//         dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));α^⊕;
+//         0_(dnt(B)) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Γ, p, lbl(τ), A), sans("L"))))
+//     & "by definition" \
+//     & = ... \
+//     & = dnt(isblk(Γ, sans("L"), p, br(a), B));dnt(sans("L")) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Γ, p, lbl(τ), A), sans("L"))));j;α^⊕;0_dnt(B) ⊕ dnt(sans("L")) \
+//     & = dnt(isblk(Γ, sans("L"), p, br(a), B));dnt(sans("L")) ⊕ dwng(purity: p, dnt(joinctx(lhyp(Γ, p, lbl(τ), A), sans("L"))));j;α^⊕;0_dnt(B) ⊕ dnt(sans("L"))
+//     & "by definition"
+//     $
+// - $br(lbl(ℓ), a)$: ...
+// - $lite(e, s, t)$: ...
+// - $llet x = a; t$: ...
+// - $llet (x, y) = a; t$: ...
+// - $llet [lbl(ℓ)_i(x_i: A_i) => {t_i}]_i; s$: ...
+It follows that
 $
 dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {s}; t$, $B$)) 
+= ...
 = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), s)$, $B$))
-$
-by induction:
-- $sans("br")(a)$: by isotopy
-- $sans("br")(lbl(τ), a)$: by isotopy
-- $lite(e, l, r)$: 
-$
-& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (lite(e, l, r)))$, $B$)) #h(5em) &
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; lite(e, br(lbl(ℓ), l), br(lbl(ℓ), r))$, $B$)) & "by definition"
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, lite($e$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), l)$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), r)$), $B$))
-& "TODO: ite"
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, lite($e$, $llet x = {l}; t$, $llet x = {r}; t$), $B$))
-& "by induction" 
-\ &= dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = { lite(e, br({l}), br({r})) }; t$, $B$))
-& "TODO: ite"
-\ &= dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = { lite(e, l, r) }; t$, $B$))
-& "by isotopy"
-$
-- $llet y = a; s$: 
-$
-& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (llet y = a; s))$, $B$)) #h(10em) & 
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; llet y = a; br(lbl(ℓ), s)$, $B$)) 
-& "by definition" 
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet lbl(ℓ)(x: A) => {t};br(lbl(ℓ), s)$, $B$)) 
-& "by isotopy"
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet y = a; llet x = {s}; t$, $B$)) 
-& "by induction"
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {llet y = a; s}; t$, $B$)) 
-& "by isotopy"
-$
-- $llet (y, z) = a; s$: 
-$
-& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (llet (y, z) = a; s))$, $B$)) #h(10em) & 
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; llet (y, z) = a; br(lbl(ℓ), s)$, $B$)) 
-& "by definition" 
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet (y, z) = a; llet lbl(ℓ)(x: A) => {t};br(lbl(ℓ), s)$, $B$)) 
-& "by isotopy"
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet (y, z) = a; llet x = {s}; t$, $B$)) 
-& "by induction"
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet x = {llet (y, z) = a; s}; t$, $B$)) 
-& "by isotopy"
-$
-- $llet ['ℓ_i(x_i: A_i) => {t_i}]_i; s$: 
-$
-& dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; br(lbl(ℓ), (llet [lbl(ℓ_i)(x_i: A_i) => {t_i}]_i; s))$, $B$)) #h(5em) & 
-\ & = dnt(#isblk($Γ$, $sans("L")$, $p$, $llet lbl(ℓ)(x: A) => {t}; (llet [lbl(ℓ_i)(x_i: A_i) => {br(lbl(ℓ), t_i)}]_i; br(lbl(ℓ), s))$, $B$)) & "by definition"
-\ & = "...TODO: do as label rewrite..."
 $
 
 We may now define our SSA rewriting algorithm by giving two mutually recursive functions
@@ -2246,7 +2226,7 @@ TODO:
     We proceed by mutual induction on derivations $istm(Γ, p, a, A)$, $isblk(Γ, sans(L), p, t, B)$. We generate one case for each possible rule:
     - #rname("var"): since by assumption #dropctx($Γ$, $thyp(x, A, ∅)$), we may apply #rstyle("var") to derive $istm(Γ, p', x, A)$ as desired.
     - #rname("app"): since by assumption $f ∈ cal(I)_p(A, B) ⊆ cal(I)_p'(A, B)$, and by induction $istm(Γ, p', a, A)$, we may apply #rstyle("app") to derive $istm(Γ, p', f aq a, A)$ as desired.
-    - #rname("jmp"): by induction, we have that $istm(Ξ, p', a, A)$, by assumption we have that $joinctx(lhyp(Δ, p, lbl(ℓ), A), sans(L))$ and therefore since $p' ⊆ p$ $joinctx(lhyp(Δ, p', lbl(ℓ), A), sans(L))$, hence we may apply #rstyle("jmp") to derive $isblk(Γ, sans(L), p', br(lbl(l), a), B)$, as desired.
+    - #rname("jmp"): by induction, we have that $istm(Ξ, p', a, A)$, by assumption we have that $joinctx(lhyp(Δ, p, lbl(ℓ), A), sans(L))$ and therefore since $p' ⊆ p$ $joinctx(lhyp(Δ, p', lbl(ℓ), A), sans(L))$, hence we may apply #rstyle("jmp") to derive $isblk(Γ, sans(L), p', br(lbl(ℓ), a), B)$, as desired.
     - #rname("tr"): by assumption, we have that $∀i, #[#isblk($Δ_i, thyp(x_i, A_i)$, $sans(L), [lhyp(Δ_j, ∅, lbl(ℓ_j), A_j)]_j$, $p_i$, $t_i$, $B$)]$. By induction, we have that #isblk($Γ$, $sans(L), [lhyp(Δ_j, 0, lbl(ℓ_j), A_j)]_j$, $p'$, $s$, $B$). Hence, we may apply #rstyle("tr") to yield the desired conclusion.
     The other cases are direct application of the respective typing rule to the inductive hypotheses.
     //NOTE: these case are *no longer valid*, as the statement of the theorem has changed
