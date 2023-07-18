@@ -13,6 +13,7 @@
         #show regex("\b[0-9][a-zA-Z0-9_]*\b") : cnst => text(cnst, olive)
         #show regex("\"([^\"]|(\\\\[\s\S]))*\"") : strlit => text(strlit, olive)
         #show regex("\'\pL*"): lbl => text(lbl, navy)
+        #show regex("(//.*)"): comment => text(comment, olive)
         #it
     ]
 
@@ -74,11 +75,11 @@
 #let lbl(x) = $mono("'")#x$
 #let lbr(loc, ..args) = {
     let args = args.pos();
-    $kbr loc #args.join($med$)$
+    $kbr med loc med #args.join($med$)$
 };
 #let ljmp(loc, ..args) = {
     let args = args.pos();
-    $kjmp loc #args.join($med$)$
+    $kjmp med loc med #args.join($med$)$
 };
 #let lite(b, t, f) = $kif #b med { #t } kelse { #f }$
 #let lop(..args) = {
