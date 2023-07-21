@@ -227,6 +227,7 @@ if is_some x {
 } where 'default => { big_calculation }
 ```
 Similarly to `if`-statements, `match` statements may be interpreted as expressions as well as blocks. Other Rust-like matching constructs, like `let`-`else` statements or pattern destructures, are also supported.
+
 Similarly, we support Rust-style control-flow constructs such as `for`, `while`, and `loop`; for example,
 ```isotope
 while predicate {
@@ -248,3 +249,84 @@ br 'head where
     }
     'rest => rest
 ```
+
+== Typing
+
+In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
+- A map from base types $A ∈ cal(T)$ to *quantities* $q ⊆ {rel, aff}$
+- For each $A, B in types(cal(T))$, for each *purity* $p ⊆ {cen, rel, aff}$, a subset $cal(I)_p (A, B) ⊆ cal(I)$ of *instructions*, such that
+    $ p ⊆ p' ==> cal(I)_p (A, B) ⊇ cal(I)_(p') (A, B) $
+    We define $cal(I)_pure = cal(I)_{cen, rel, aff}$, and we call $f ∈ cal(I)_pure (A, B)$ *pure instructions*.
+- A *loop purity* $pure_ℓ ⊆ {cen, rel, aff}$
+Throughout this section, we assume variable names are _unique_, performing $α$-conversion as necessary to maintain this invariant
+
+=== Judgements
+
+We begin by giving a grammar for *contexts* and *label contexts* as follows:
+#let isotope-ctx-grammar = (
+    (
+        name: "Context",
+        symbol: ($Γ$, $Δ$, $Ξ$, $Θ$, $Φ$),
+        productions: (
+            ($cnil$, tctx($Γ$, ($x$, $A$, $q$))),
+        )
+    ),
+    (
+        name: "Label Context",
+        symbol: ($sans(J)$, $sans(K)$, $sans(L)$),
+        productions: ((
+            $bcnil$,
+            lctx($sans(L)$, ($lbl(ℓ)$, $p$, $Γ$, $A$))
+        ),),
+    ),
+);
+#grammar(isotope-ctx-grammar)
+where $q$ is a quantity and $p$ is a purity.
+Where clear from context, we will coerce $rel, aff$, and $cen$ to ${rel}, {aff}$, and ${cen}$ respectively.
+
+We may now introduce the following typing judgements:
+#align(center)[#table(
+    columns: 2,
+    stroke: none,
+    column-gutter: 2em,
+    align: left,
+    [*Syntax*],
+    [*Meaning*],
+    $istm(Γ, p, a, A)$,
+    [$a$ is a term of type $A$ and purity $p$ in context $Γ$],
+    $isblk(Γ, p, t, sans(L))$,
+    [$t$ is a block with targets $sans(L)$ and purity $p$ in context $Γ$],
+    $splitctx(Γ, Δ, Ξ)$,
+    [$Γ$ splits into contexts $Δ$, $Ξ$],
+    $joinctx(sans(K), sans(L))$,
+    [$sans(K)$ is a subset of label-set $sans(L)$],
+    $islin(q, A)$, [$A$ has linearity $q$]
+)]
+We also introduce the following abbreviations:
+#align(center)[#table(
+    columns: 3,
+    stroke: none,
+    column-gutter: 2em,
+    align: left,
+    [*Syntax*],
+    [*Definition*],
+    [*Meaning*],
+    $thyp(x, A)$,
+    $thyp(x, A, {rel, aff})$,
+    [],
+    $istm(Γ, #{none}, a, A)$,
+    $istm(Γ, ∅, a, A)$,
+    [$a$ is a term of type $A$ in context $Γ$],
+    $lhyp(lbl(ℓ), #{none}, Γ, A)$,
+    $lhyp(lbl(ℓ), ∅, Γ, A)$,
+    [],
+    $isblk(Γ, #{none}, t, sans(L))$,
+    $isblk(Γ, ∅, t, sans(L))$,
+    [$t$ is a block with targets $sans(L)$ in context $Γ$],
+    $rel(A)$,
+    $islin(rel, A)$,
+    [$A$ is relevant (can be split)],
+    $aff(A)$,
+    $islin(aff, A)$,
+    [$A$ is affine (can be dropped)]
+)]

@@ -85,3 +85,57 @@
 #let lop(..args) = {
     $args.pos().join(med)$
 }
+
+// `isotope` judgement syntax
+#let cen = $sans("cen")$
+#let rel = $sans("rel")$
+#let aff = $sans("aff")$
+#let pure = $sans("pure")$
+#let cnil = $dot.op$
+#let bcnil = $⋄$
+#let thyp(var, ty, ..args) = $#var: ty^(#args.pos().at(0, default: none))$
+#let tctx(..args) = {
+    let targs = ()
+    for arg in args.pos() {
+        if type(arg) == "array" {
+            arg = thyp(arg.at(0), arg.at(1), arg.at(2, default: none))
+        }
+        targs.push(arg)
+    }
+    if targs.len() > 0 {
+        $#targs.join($,$)$
+    } else {
+        $cnil$
+    }
+}
+#let lhyp(label, purity, ctx, arg) = $label_purity [ctx](arg)$
+#let lctx(..args) = {
+    let targs = ()
+    for arg in args.pos() {
+        if type(arg) == "array" {
+            arg = lhyp(arg.at(0), arg.at(1), arg.at(2), arg.at(3))
+        }
+        targs.push(arg)
+    }
+    if targs.len() > 0 {
+        $#targs.join($,$)$
+    } else {
+        $bcnil$
+    }
+}
+#let istm(ctx, purity, tm, ty) = $ctx ⊢_purity tm: ty$
+#let isblk(ctx, purity, blk, bctx) = $ctx ⊢_purity blk triangle.stroked.small bctx$
+#let splitctx(src, ..subctx) = {
+    let subctx = subctx.pos().join(";");
+    $src arrow.r.bar subctx$
+}
+#let dropctx(src, subctx) = {
+    $src arrow.r.bar subctx$
+}
+#let joinctx(..args) = {
+    let subctx = args.pos();
+    let dest = subctx.pop()
+    let subctx = subctx.join($;$)
+    $subctx ⇝ dest$
+}
+#let islin(purity, ty) = $sans("lin")_(#purity)(#ty)$
