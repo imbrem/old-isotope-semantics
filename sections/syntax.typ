@@ -447,8 +447,8 @@ We also introduce the following abbreviations:
         isblk($Γ$, $p$, $klet (x, y) = a; t$, $sans(L)$)
     ),
     "where": prft(name: "where",
-        $∀ i, isblk(Δ_i, p_i, t_i, lctx(sans(L), [lhyp(lbl(ℓ_j), p_j ∪ pure_ℓ, Δ_j, A_j)]_j))$,
-        $isblk(Γ, p, s, lctx(sans(L), [lhyp(lbl(ℓ_i), p_i, Δ_i, A_i)]_i))$,
+        $∀ i, isblk(Δ_i, p, t_i, lctx(sans(L), [lhyp(lbl(ℓ_j), p ∩ pure_ℓ, Δ_j, A_j)]_j))$,
+        $isblk(Γ, p, s, lctx(sans(L), [lhyp(lbl(ℓ_i), p, Δ_i, A_i)]_i))$,
         isblk($Γ$, $p$, $s kwhere [lbl(ℓ)_i(x_i: A_i) => {t_i}]_i$, $sans(L)$)
     )
 )

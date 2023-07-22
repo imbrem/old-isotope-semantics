@@ -82,11 +82,11 @@
             $dnt(dprf(#typing-rules.false)) = dnt(dropctx(Γ, cnil));sans("ff")$,
         ),
         $dnt(dprf(#typing-rules.pair)) = dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, B))$,
-        $dnt(dprf(#typing-rules.let)) = dnt(splitctx(Γ, Δ, Ξ)); \
-            #h(4em)dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$)), p, e, B))
+        $dnt(dprf(#typing-rules.let))
+        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$)), p, e, B))
         $,
-        $dnt(dprf(#typing-rules.let2)) = dnt(splitctx(Γ, Δ, Ξ)); \
-            #h(4em)dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, C))$,
+        $dnt(dprf(#typing-rules.let2)) 
+        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, C))$,
         $dnt(dprf(#typing-rules.blk)) = dnt(#typing-rules.blk.premises.at(0));α^⊕;α$,)
 ])
 
@@ -96,9 +96,20 @@
     #rect($dnt(isblk(Γ, p, t, sans(L))): cal(C)_p (dnt(Γ), sans(L))$)
     #table(
         align: left + horizon, stroke: table-dbg, gutter: 1em,
-        $dnt(dprf(#typing-rules.br)) = ...$,
-        $dnt(dprf(#typing-rules.ite)) = ...$,
-        $dnt(dprf(#typing-rules.let-blk)) = ...$,
-        $dnt(dprf(#typing-rules.let2-blk)) = ...$,
-        $dnt(dprf(#typing-rules.where)) = ...$,)
+        $dnt(dprf(#typing-rules.br)) 
+        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(joinctx(lhyp(lbl(ℓ), p, Δ, A), sans(L)))$,
+        $dnt(dprf(#typing-rules.ite)) = 
+        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(istm(Δ, p, e, bools)) ⊗ dnt(Ξ);sans("ite");dnt(isblk(Ξ, p, s, sans(L))) ⊕ dnt(isblk(Ξ, p, t, sans(L)));sans(J)$,
+        $dnt(dprf(#typing-rules.let-blk)) 
+        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$)), p, t, sans(L)))$,
+        $dnt(dprf(#typing-rules.let2-blk)) 
+        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ));dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, sans(L)))$,
+        $dnt(dprf(#typing-rules.where))
+        \ #h(4em) = sans("Tr")_(dnt(Γ), sans(L))^sans(K)(
+            (
+                (⊕_i dnt(istm(Δ_i, p_i, t_i, lctx(sans(L), sans(K)'))))
+                ⊕ dnt(isblk(Γ, p, s, lctx(sans(L), sans(K))))
+            );sans(J))
+        \ "where" sans(K) = [lhyp(lbl(ℓ)_i, p_i, Δ_i, A_i)]_i, sans(K') = [lhyp(lbl(ℓ)_i, p_i ∩ pure_ℓ, Δ_i, A_i)]_i
+        $,)
 ])
