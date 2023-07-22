@@ -29,7 +29,7 @@ The `isotope` grammar is divided into following syntactic categories:
         symbol: ("s", "t"),
         productions: (
             (
-                $lbr(lbl(ℓ), a)$, $ljmp(lbl(ℓ), a)$, $lite(e, s, t)$,
+                $lbr(lbl(ℓ), a)$, /*$ljmp(lbl(ℓ), a)$,*/ $lite(e, s, t)$,
                 $klet x = a; t$, $klet (x, y) = a; t$
             ),
             (
@@ -55,9 +55,7 @@ Consider the following simple program for calculating the factorial of `n`:
             // term will evaluate to a, which is now equal to n!
             br 'exit a
         } else {
-            // We jump back to 'fact with the updated values of i and a
-            // We jump rather than branch since 'fact can potentially recurse
-            jmp 'fact (i + 1, i * a)
+            br 'fact (i + 1, i * a)
         }
     }
 }
@@ -70,7 +68,7 @@ Note that the program as a whole lies in the syntactic category of _terms_. If w
         if i >= n {
             ret a
         } else {
-            jmp 'fact (i + 1, i * a)
+            br 'fact (i + 1, i * a)
         }
     }
 }
@@ -120,23 +118,23 @@ print "0b";
 br 'next x where
     'zero(x: i64) => {
         print "0";
-        jmp 'next x
+        br 'next x
     }
     'one(x: i64) => { 
         print "1";
-        jmp 'next x
+        br 'next x
     }
     'next(x: i64) => { 
         if x == 0 {
             ret
         } else if x % 2 == 0 {
-            jmp 'zero (x >> 1)
+            br 'zero (x >> 1)
         } else {
-            jmp 'one (x >> 1)
+            br 'one (x >> 1)
         }
     };
 ```
-Here, bare function calls `print s` are syntax sugar for unused bindings `let \_ = print s` to allow us to writing side-effectful expressions more easily; similarly, a bare `ret` is syntax sugar for `ret ()` (we will also shorten `br`s and `jmp`s likewise). One gotcha is that label bindings cannot be used in a block nested in an expression in another block; for example,
+Here, bare function calls `print s` are syntax sugar for unused bindings `let \_ = print s` to allow us to writing side-effectful expressions more easily; similarly, a bare `ret` is syntax sugar for `ret ()` (we will also shorten `br`s likewise). One gotcha is that label bindings cannot be used in a block nested in an expression in another block; for example,
 ```isotope
 ret {
     if b { br 'label 9 } else { br 7 }
@@ -239,13 +237,13 @@ desugars to
 ```isotope
 br 'head where
     'head => if predicate {
-        jmp 'body
+        br 'body
     } else {
         br 'rest
     }
     'body => {
         side_effect;
-        jmp 'head
+        br 'head
     }
     'rest => rest
 ```
@@ -311,6 +309,9 @@ We also introduce the following abbreviations:
     [*Syntax*],
     [*Definition*],
     [*Meaning*],
+    $dropctx(Γ, Δ)$,
+    $splitctx(Γ, cnil, Δ)$,
+    [$Γ$ is a weakening of $Δ$],
     $thyp(x, A)$,
     $thyp(x, A, {rel, aff})$,
     [],
@@ -419,6 +420,36 @@ We also introduce the following abbreviations:
         $isblk(Γ, p, t, lhyp(lbl(ℓ), p, cnil, A))$,
         $istm(Γ, p, lbl(ℓ)(A) med {t}, A)$
     ),
+    "br": prft(name: "br", 
+        $splitctx(Γ, Δ, Ξ)$,
+        $joinctx(lhyp(lbl(ℓ), p, Δ, A), sans(L))$,
+        $istm(Ξ, p, a, A)$,
+        $isblk(Γ, p, lbr(lbl(ℓ), A), sans(L))$
+    ),
+    "ite": prft(name: "ite",
+        $splitctx(Γ, Δ, Ξ)$,
+        $isblk(Δ, p, e, bools)$,
+        $isblk(Ξ, p, s, sans(L))$,
+        $isblk(Ξ, p, t, sans(L))$,
+        $isblk(Γ, p, lite(e, s, t), sans(L))$
+    ),
+    "let-blk": prft(name: "let-blk",
+        $splitctx(Γ, Δ, Ξ)$,
+        isblk(tctx($Δ$, ($x$, $A$, $q$)), $p$, $t$, $sans(L)$),
+        $istm(Ξ, p, a, A)$,
+        isblk($Γ$, $p$, $klet x = a; t$, $sans(L)$)
+    ),
+    "let2-blk": prft(name: "let2-blk",
+        $splitctx(Γ, Δ, Ξ)$,
+        isblk(tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), $p$, $t$, $sans(L)$),
+        $istm(Ξ, p, a, A ⊗ B)$,
+        isblk($Γ$, $p$, $klet (x, y) = a; t$, $sans(L)$)
+    ),
+    "where": prft(name: "where",
+        $∀ i, isblk(Δ_i, p_i, t_i, lctx(sans(L), [lhyp(lbl(ℓ_j), p_j ∪ pure_ℓ, Δ_j, A_j)]_j))$,
+        $isblk(Γ, p, s, lctx(sans(L), [lhyp(lbl(ℓ_i), p_i, Δ_i, A_i)]_i))$,
+        isblk($Γ$, $p$, $s kwhere [lbl(ℓ)_i(x_i: A_i) => {t_i}]_i$, $sans(L)$)
+    )
 )
 
 #let table-dbg = none
@@ -511,3 +542,15 @@ We also introduce the following abbreviations:
 ))
 
 === Blocks
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.br),
+        dprf(typing-rules.ite),
+    ),
+    dprf(typing-rules.let-blk),
+    dprf(typing-rules.let2-blk),
+    dprf(typing-rules.where),
+))

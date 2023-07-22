@@ -77,10 +77,10 @@
     let args = args.pos();
     $kbr med loc med #args.join($med$)$
 };
-#let ljmp(loc, ..args) = {
-    let args = args.pos();
-    $kjmp med loc med #args.join($med$)$
-};
+// #let ljmp(loc, ..args) = {
+//     let args = args.pos();
+//     $kjmp med loc med #args.join($med$)$
+// };
 #let lite(b, t, f) = $kif #b med { #t } kelse { #f }$
 #let lop(..args) = {
     $args.pos().join(med)$
@@ -108,7 +108,7 @@
         $cnil$
     }
 }
-#let lhyp(label, purity, ctx, arg) = $label_purity [ctx](arg)$
+#let lhyp(label, purity, ctx, arg) = $label^purity [ctx](arg)$
 #let lctx(..args) = {
     let targs = ()
     for arg in args.pos() {
