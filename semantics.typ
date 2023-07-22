@@ -14,6 +14,7 @@
 #let table-dbg = none;
 
 #include "sections/syntax.typ"
+#include "sections/semantics.typ"
 
 #pagebreak()
 #bibliography("references.bib")

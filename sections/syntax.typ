@@ -252,10 +252,10 @@ br 'head where
 
 In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
 - A map $sans("lin")$ from base types $A ∈ cal(T)$ to *quantities* $q ⊆ {rel, aff}$
-- For each $A, B in types(cal(T))$, for each *purity* $p ⊆ {cen, rel, aff}$, a subset $cal(I)_p (A, B) ⊆ cal(I)$ of *instructions*, such that
+- For each $A, B in types(cal(T))$, for each *purity* $p ⊆ {cen}$, a subset $cal(I)_p (A, B) ⊆ cal(I)$ of *instructions*, such that
     $ p ⊆ p' ==> cal(I)_p (A, B) ⊇ cal(I)_(p') (A, B) $
-    We define $cal(I)_pure = cal(I)_{cen, rel, aff}$, and we call $f ∈ cal(I)_pure (A, B)$ *pure instructions*.
-- A *loop purity* $pure_ℓ ⊆ {cen, rel, aff}$
+    We define $cal(I)_pure = cal(I)_{cen}$, and we call $f ∈ cal(I)_pure (A, B)$ *pure instructions*.
+- A *loop purity* $pure_ℓ ⊆ {cen}$
 Throughout this section, we assume variable names are _unique_, performing $α$-conversion as necessary to maintain this invariant
 
 === Judgements

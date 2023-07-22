@@ -55,6 +55,9 @@
 #let tobj = $bold(1)$
 #let bools = $bold(2)$
 
+// Denotational semantics macros
+#let dnt(inner) = $[|inner|]$
+
 // `isotope` macros:
 
 // `isotope` objects:
