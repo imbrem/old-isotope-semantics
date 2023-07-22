@@ -1,5 +1,5 @@
 #import "../isotope.typ": *
-#import "syntax.typ": rel-rules, aff-rules
+#import "syntax.typ": rel-rules, aff-rules, typing-rules
 
 = Semantics
 
@@ -25,7 +25,7 @@
         $dnt(cnil) = munit$,
         $#dnt(tctx($Γ$, ($x$, $A$, $q$))) = dnt(Γ) ⊗ dnt(A)$,
     ),
-    rect($dnt(sans(L)): |cal(C)|$),
+    rect($dnt(sans(L)): |cal(V)|$),
     table(
         columns: 2, align: horizon, column-gutter: 2em, stroke: table-dbg,
         $dnt(bcnil) = iobj$,
@@ -36,7 +36,7 @@
 === Structural Rules
 
 #align(center, table(
-    align: center + horizon, stroke: table-dbg,
+    align: center + horizon, stroke: table-dbg, gutter: 1em,
     rect($dnt(rel(A)): cal(V)(A, A ⊗ A)$),
     $dnt(dprf(#rel-rules.base)) = sans("split")(dnt(X))$,
     $dnt(dprf(#rel-rules.pair)) = dnt(rel(A)) ⊗ dnt(rel(B));α;dnt(A) ⊗ σ ⊗ dnt(B);α$,
@@ -53,4 +53,16 @@
         $dnt(dprf(#aff-rules.unit)) = idm$,
         $dnt(dprf(#aff-rules.bool)) = sans("drop")(bools)$,
     ),
+    rect($dnt(splitctx(Γ, Δ, Ξ)): cal(V)(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$),
+    $dnt(dprf(#typing-rules.split-nil)) = λ_munit^(-1)$,
+    $dnt(dprf(#typing-rules.split-left)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(A);α;dnt(Γ) ⊗ σ;α$,
+    $dnt(dprf(#typing-rules.split-right)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(A);α$,
+    $dnt(dprf(#typing-rules.split-dup)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(rel(A));α;dnt(Γ) ⊗ σ ⊗ dnt(A);α$,
+    $dnt(dprf(#typing-rules.split-drop)) = dnt(Γ) ⊗ dnt(aff(A));ρ;dnt(splitctx(Γ, Δ, Ξ))$,
+    rect($dnt(dropctx(Γ, Δ)): cal(V)(dnt(Γ), dnt(Δ))$),
+    $dnt(dropctx(Γ, Δ)) = dnt(splitctx(Γ, cnil, Δ));λ$,
+    rect($dnt(joinctx(sans(L), sans(K))): cal(V)(dnt(sans(L)), dnt(sans(K)))$),
+    $dnt(dprf(#typing-rules.join-nil)) = idm$,
+    $dnt(dprf(#typing-rules.join-id)) = dnt(joinctx(sans(L), sans(K)) ⊕ (dnt(Γ) ⊗ dnt(A)))$,
+    $dnt(dprf(#typing-rules.join-ext)) = dnt(joinctx(sans(L), sans(K)));α^⊕$,
 ))
