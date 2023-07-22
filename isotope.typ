@@ -51,8 +51,10 @@
 }
 
 // Category theory macros:
+#let idm = $sans("id")$
 #let iobj = $bold(0)$
 #let tobj = $bold(1)$
+#let munit = $sans(I)$
 #let bools = $bold(2)$
 
 // Denotational semantics macros
