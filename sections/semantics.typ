@@ -66,3 +66,39 @@
     $dnt(dprf(#typing-rules.join-id)) = dnt(joinctx(sans(L), sans(K)) ⊕ (dnt(Γ) ⊗ dnt(A)))$,
     $dnt(dprf(#typing-rules.join-ext)) = dnt(joinctx(sans(L), sans(K)));α^⊕$,
 ))
+
+=== Terms
+
+#align(center, [
+    #rect($dnt(istm(Γ, p, a, A)): cal(C)_p (dnt(Γ), A)$)
+    #table(
+        align: left + horizon, stroke: table-dbg, gutter: 1em,
+        $dnt(dprf(#typing-rules.var)) = dnt(dropctx(Γ, thyp(x, A, q)))$,
+        $dnt(dprf(#typing-rules.app)) = dnt(istm(Γ, p, a, A));dnt(f)$,
+        $dnt(dprf(#typing-rules.unit)) = dnt(dropctx(Γ, cnil))$,
+        table(
+            columns: 2, align: horizon, column-gutter: 2em, stroke: table-dbg,
+            $dnt(dprf(#typing-rules.true)) = dnt(dropctx(Γ, cnil));sans("tt")$,
+            $dnt(dprf(#typing-rules.false)) = dnt(dropctx(Γ, cnil));sans("ff")$,
+        ),
+        $dnt(dprf(#typing-rules.pair)) = dnt(splitctx(Γ, Δ, Ξ));dnt(istm(Δ, p, a, A)) ⋉ dnt(istm(Ξ, p, b, B))$,
+        $dnt(dprf(#typing-rules.let)) = dnt(splitctx(Γ, Δ, Ξ)); \
+            #h(4em)dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$)), p, e, B))
+        $,
+        $dnt(dprf(#typing-rules.let2)) = dnt(splitctx(Γ, Δ, Ξ)); \
+            #h(4em)dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, C))$,
+        $dnt(dprf(#typing-rules.blk)) = dnt(#typing-rules.blk.premises.at(0));α^⊕;α$,)
+])
+
+=== Blocks
+
+#align(center, [
+    #rect($dnt(isblk(Γ, p, t, sans(L))): cal(C)_p (dnt(Γ), sans(L))$)
+    #table(
+        align: left + horizon, stroke: table-dbg, gutter: 1em,
+        $dnt(dprf(#typing-rules.br)) = ...$,
+        $dnt(dprf(#typing-rules.ite)) = ...$,
+        $dnt(dprf(#typing-rules.let-blk)) = ...$,
+        $dnt(dprf(#typing-rules.let2-blk)) = ...$,
+        $dnt(dprf(#typing-rules.where)) = ...$,)
+])
