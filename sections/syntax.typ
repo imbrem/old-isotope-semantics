@@ -376,14 +376,14 @@ We also introduce the following abbreviations:
     "join-id": prft(name: "join-id",
         $joinctx(sans(L), sans(K))$,
         joinctx(
-            lctx($sans(L)$, ($ℓ$, $p$, $Γ$, $A$)), 
-            lctx($sans(K)$, ($ℓ$, $p$, $Γ$, $A$))),
+            lctx($sans(L)$, ($lbl(ℓ)$, $p$, $Γ$, $A$)), 
+            lctx($sans(K)$, ($lbl(ℓ)$, $p$, $Γ$, $A$))),
     ),
     "join-ext": prft(name: "join-ext",
         $joinctx(sans(L), sans(K))$,
         joinctx(
             $sans(L)$, 
-            lctx($sans(K)$, ($ℓ$, $p$, $Γ$, $A$))),
+            lctx($sans(K)$, ($lbl(ℓ)$, $p$, $Γ$, $A$))),
     ),
     "var": prft(name: "var",
         $dropctx(Γ, thyp(x, A, q))$,
