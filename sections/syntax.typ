@@ -342,25 +342,28 @@ We also introduce the following abbreviations:
     "split-nil": prft(name: "split-nil", $splitctx(cnil, cnil, cnil)$),
     "split-left": prft(name: "split-left", 
         $splitctx(Γ, Δ, Ξ)$,
+        $q' ⊆ q$,
         splitctx(
             tctx($Γ$, ($x$, $A$, $q$)), 
-            tctx($Δ$, ($x$, $A$, $q$)), 
+            tctx($Δ$, ($x$, $A$, $q'$)), 
             $Ξ$)
     ),
     "split-right": prft(name: "split-right", 
         $splitctx(Γ, Δ, Ξ)$,
+        $q' ⊆ q$,
         splitctx(
             tctx($Γ$, ($x$, $A$, $q$)), 
             $Δ$, 
-            tctx($Ξ$, ($x$, $A$, $q$)))
+            tctx($Ξ$, ($x$, $A$, $q'$)))
     ),
     "split-dup": prft(name: "split-dup", 
         $splitctx(Γ, Δ, Ξ)$,
         $rel(A^q)$,
+        $l, r ⊆ q$,
         splitctx(
             tctx($Γ$, ($x$, $A$, $q$)), 
-            tctx($Δ$, ($x$, $A$, $q$)), 
-            tctx($Ξ$, ($x$, $A$, $q$)))
+            tctx($Δ$, ($x$, $A$, $l$)), 
+            tctx($Ξ$, ($x$, $A$, $r$)))
     ),
     "split-drop": prft(name: "split-drop",
         $splitctx(Γ, Δ, Ξ)$,
@@ -381,7 +384,41 @@ We also introduce the following abbreviations:
         joinctx(
             $sans(L)$, 
             lctx($sans(K)$, ($ℓ$, $p$, $Γ$, $A$))),
-    )
+    ),
+    "var": prft(name: "var",
+        $dropctx(Γ, thyp(x, A, q))$,
+        $istm(Γ, p, x, A)$
+    ),
+    "app": prft(name: "app",
+        $istm(Γ, p, a, A)$,
+        $f ∈ cal(I)_p(A, B)$,
+        $istm(Γ, p, f med a, B)$
+    ),
+    "unit": prft(name: "unit", $dropctx(Γ, cnil)$, $istm(Γ, p, (), tobj)$),
+    "true": prft(name: "true", $dropctx(Γ, cnil)$, $istm(Γ, p, tt, bools)$),
+    "false": prft(name: "false", $dropctx(Γ, cnil)$, $istm(Γ, p, ff, bools)$),
+    "pair": prft(name: "pair",
+        $splitctx(Γ, Δ, Ξ)$,
+        $istm(Δ, p, a, A)$,
+        $istm(Ξ, p, b, B)$,
+        $istm(Γ, p, (a, b), A)$
+    ),
+    "let": prft(name: "let", 
+        $splitctx(Γ, Δ, Ξ)$,
+        istm(tctx($Δ$, ($x$, $A$, $q$)), $p$, $e$, $B$),
+        $istm(Ξ, p, a, A)$,
+        istm($Γ$, $p$, $klet x = a; e$, $B$)
+    ),
+    "let2": prft(name: "let2", 
+        $splitctx(Γ, Δ, Ξ)$,
+        istm(tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), $p$, $e$, $C$),
+        $istm(Ξ, p, a, A ⊗ B)$,
+        istm($Γ$, $p$, $klet (x, y) = a; e$, $C$)
+    ),
+    "blk": prft(name: "blk", 
+        $isblk(Γ, p, t, lhyp(lbl(ℓ), p, cnil, A))$,
+        $istm(Γ, p, lbl(ℓ)(A) med {t}, A)$
+    ),
 )
 
 #let table-dbg = none
@@ -448,3 +485,29 @@ We also introduce the following abbreviations:
         dprf(aff-rules.pair),
     ),
 ))
+
+=== Terms
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.var),
+        dprf(typing-rules.app),
+        dprf(typing-rules.pair),
+    ),
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.unit),
+        dprf(typing-rules.true),
+        dprf(typing-rules.false),
+    ),
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.let),
+        dprf(typing-rules.blk),
+    ),
+    dprf(typing-rules.let2),
+))
+
+=== Blocks
