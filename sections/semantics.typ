@@ -9,10 +9,11 @@ An *`isotope` model* is given by:
 - A symmetric monoidal *base category* $cal(V)$ equipped with a coproduct distributing over the tensor product
 - An symmetric effectful category $cal(V) -> cal(C)$, the *control category* equipped with a coproduct distributing over the tensor product and an Elgot structure
 - An symmetric effectful category $cal(V) -> cal(R)$, the *expression category*, equipped with
-    - A subcategory $cal(R)_cal(C)$
-    - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$
+    - A subcategory $cal(R)_cal(C) ⊇ cal(V)$
+    - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ which is the identity on $|cal(R)_cal(C)|$
     - For all $A ∈ |cal(R)|$, morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that $k u k = k, u k u = u$
-    - An equivalence of categories $cal(R)_cal(C) ≃ cal(C)$ 
+    - An isomorphism $E: cal(R)_cal(C) ≃ cal(C)$ which preserves $cal(V)$
+    //TODO: generalize to equivalence
 An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity.
 
 Given a control category $cal(V) -> cal(C)$, we can construct a simple isotope model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity.
@@ -90,7 +91,7 @@ then we may construct a *$Σ$-graphical `isotope model`* for each such $Σ$.
 === Terms
 
 #align(center, [
-    #rect($dnt(istm(Γ, p, a, A)): cal(C)_p (dnt(Γ), A)$)
+    #rect($dnt(istm(Γ, p, a, A)): cal(R)_p (dnt(Γ), A)$)
     #table(
         align: left + horizon, stroke: table-dbg, gutter: 1em,
         $dnt(dprf(#typing-rules.var)) = dnt(dropctx(Γ, thyp(x, A, q)))$,
@@ -107,23 +108,23 @@ then we may construct a *$Σ$-graphical `isotope model`* for each such $Σ$.
         $,
         $dnt(dprf(#typing-rules.let2)) 
         \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));dnt(istm(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, C))$,
-        $dnt(dprf(#typing-rules.blk)) = dnt(#typing-rules.blk.premises.at(0));α^⊕;α$,)
+        $dnt(dprf(#typing-rules.blk)) = k;E^(-1)(dnt(#typing-rules.blk.premises.at(0));α^⊕);u;α$,)
 ])
 
 === Blocks
 
 #align(center, [
-    #rect($dnt(isblk(Γ, p, t, sans(L))): cal(C)_p (dnt(Γ), sans(L))$)
+    #rect($dnt(isblk(Γ, p, t, sans(L))): cal(C)_p (E(K(dnt(Γ))), E(K(sans(L))))$)
     #table(
         align: left + horizon, stroke: table-dbg, gutter: 1em,
         $dnt(dprf(#typing-rules.br)) 
-        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(joinctx(lhyp(lbl(ℓ), p, Δ, A), sans(L)))$,
+        \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));k);dnt(joinctx(lhyp(lbl(ℓ), p, Δ, A), sans(L)))$,
         $dnt(dprf(#typing-rules.ite)) = 
-        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(istm(Δ, p, e, bools)) ⊗ dnt(Ξ);sans("ite");dnt(isblk(Ξ, p, s, sans(L))) ⊕ dnt(isblk(Ξ, p, t, sans(L)));sans(J)$,
+        \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ)); dnt(istm(Δ, p, e, bools)) ⊗ dnt(Ξ);k);sans("ite");dnt(isblk(Ξ, p, s, sans(L))) ⊕ dnt(isblk(Ξ, p, t, sans(L)));sans(J)$,
         $dnt(dprf(#typing-rules.let-blk)) 
-        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$)), p, t, sans(L)))$,
+        \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));k);dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$)), p, t, sans(L)))$,
         $dnt(dprf(#typing-rules.let2-blk)) 
-        \ #h(4em) = dnt(splitctx(Γ, Δ, Ξ));dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, sans(L)))$,
+        \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ));dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));k);dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, sans(L)))$,
         $dnt(dprf(#typing-rules.where))
         \ #h(4em) = sans("Tr")_(dnt(Γ), sans(L))^sans(K)(
             (
