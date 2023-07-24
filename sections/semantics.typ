@@ -3,6 +3,26 @@
 
 = Semantics
 
+== Isotope Models
+
+An *`isotope` model* is given by:
+- A symmetric monoidal *base category* $cal(V)$ equipped with a coproduct distributing over the tensor product
+- An symmetric effectful category $cal(V) -> cal(C)$, the *control category* equipped with a coproduct distributing over the tensor product and an Elgot structure
+- An symmetric effectful category $cal(V) -> cal(R)$, the *expression category*, equipped with
+    - A subcategory $cal(R)_cal(C)$
+    - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$
+    - For all $A ∈ |cal(R)|$, morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that $k u k = k, u k u = u$
+    - An equivalence of categories $cal(R)_cal(C) ≃ cal(C)$ 
+An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity.
+
+Given a control category $cal(V) -> cal(C)$, we can construct a simple isotope model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity.
+
+If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
+$
+∀h ∈ P, Σ P ≥ h 
+$
+then we may construct a *$Σ$-graphical `isotope model`* for each such $Σ$.
+
 == Denotational Semantics
 
 #let table-dbg = none
