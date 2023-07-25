@@ -1,6 +1,14 @@
 #import "utils/grammar.typ": *
 #import "utils/proof.typ": *
 
+#import "@preview/lemmify:0.1.2": default-theorems, thm-numbering-linear
+
+#let (
+  theorem, lemma, corollary,
+  remark, proposition, example,
+  proof, rules: thm-rules
+) = default-theorems("thm-group", lang: "en", thm-numbering: thm-numbering-linear)
+
 // Report template
 #let isotope-report(
   title: none,
@@ -16,6 +24,8 @@
         #show regex("(//.*)"): comment => text(comment, olive)
         #it
     ]
+
+    show: thm-rules
 
     if type(authors) == "dictionary" {
         authors = (authors,)
