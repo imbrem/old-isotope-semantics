@@ -27,6 +27,12 @@ If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ
 $∀h ∈ P, Σ P ≥ h $
 then we may construct, for each $Σ$, the *$Σ$-graphical `isotope` model*.
 
+We define, for purities $p ⊆ {cen}$,
+$
+cal(C)_∅ = cal(R)_∅ = cal(V), quad cal(C)_cen = cal(C), quad cal(R)_cen = cal(R)   
+$
+We will implicitly coerce morphisms in $cal(V)$ to $cal(C)$ or $cal(R)$ as necessary.
+
 == Denotational Semantics
 
 #let table-dbg = none
