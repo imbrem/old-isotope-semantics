@@ -555,3 +555,23 @@ We also introduce the following abbreviations:
     dprf(typing-rules.let2-blk),
     dprf(typing-rules.where),
 ))
+
+== Metatheory
+
+=== Weakening
+
+We begin by stating some basic facts about context splitting and weakening:
+- Weakening is transitive: $dropctx(Γ, Δ) ==> dropctx(Δ, Ξ) ==> dropctx(Γ, Ξ)$
+- Weakening composes with splitting: $splitctx(Γ, Δ, Ξ) ∧ dropctx(Δ, Δ') ∧ dropctx(Ξ, Ξ') ==> splitctx(Γ, Δ', Ξ')$
+- Splitting is commutative: $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$.
+
+We may now state the _weakening lemma_:
+#lemma(name: "Weakening")[
+    Given $dropctx(Γ, Δ), joinctx(sans(L), sans(K))$, and $r ⊆ p$, then
+    - If $istm(Δ, r, a, A)$, then $istm(Γ, p, a, A)$
+    - If $isblk(Δ, r, t, sans(L))$, then $isblk(Γ, p, t, sans(K))$
+]<syntax-wk>
+
+=== Substitution
+
+Given a map $γ$ from variables in $Θ$ to expressions, we define the notion of $γ$ being a substitution from $Θ$ to $Γ$, written $issub(γ, Θ, Γ)$, via the following rules:

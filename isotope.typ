@@ -154,3 +154,4 @@
     $subctx ⇝ dest$
 }
 #let islin(purity, ty) = $sans("lin")_(#purity)(#ty)$
+#let issub(sub, src, trg) = $sub: src -> trg$
