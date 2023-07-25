@@ -23,9 +23,9 @@ An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is
 
 Given a control category $cal(V) -> cal(C)$, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
 
-If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
-$∀h ∈ P, Σ P ≥ h $
-then we may construct, for each $Σ$, the *$Σ$-graphical `isotope` model*.
+// If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
+// $∀h ∈ P, Σ P ≥ h $
+// then we may construct, for each $Σ$, the *$Σ$-graphical `isotope` model*.
 
 We define, for purities $p ⊆ {cen}$,
 $
