@@ -13,13 +13,15 @@ An *`isotope` model* is given by:
     - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ which is the identity on $|cal(R)_cal(C)|$
     - For all $A ∈ |cal(R)|$, morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that:
         - $k;u;k = k, u;k;u = u$
-        - For all central morphisms $f ∈ cal(V)$, $f;k;u = k;u;f$
+        - For all pure morphisms $f ∈ cal(V)(A, B)$, $underline(f);k;u = k;u;underline(f)$
         - For all morphisms $f, g$, $f;g ≥ f;k;u;g$ // "SSA condition"
-    - An isomorphism $E: cal(R)_cal(C) ≃ cal(C)$ which preserves $cal(V)$
-    //TODO: generalize to equivalence
+    - An isomorphism of categories $E: cal(R)_cal(C) ≃ cal(C)$ such that $E$ is the identity on $|cal(V)|$ and on pure morphisms $f ∈ cal(V)(A, B)$
+    // - An equivalence of categories $(C, R, η, ε): cal(R)_cal(C) ≃ cal(C)$ such that:
+    //     - For all objects in $A ∈ |cal(V)|$, $C, R, η_A, ε_A$ are the identity
+    //     - For pure morphisms $f ∈ cal(V)(A, B)$, $C(underline(f)) = underline(f)$, $R(underline(f)) = underline(f)$
 An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity (note all simple `isotope` models are flat).
 
-Given a control category $cal(V) -> cal(C)$, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity.
+Given a control category $cal(V) -> cal(C)$, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
 
 If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
 $∀h ∈ P, Σ P ≥ h $
