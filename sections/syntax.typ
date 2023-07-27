@@ -558,9 +558,25 @@ We also introduce the following abbreviations:
 
 == Metatheory
 
+We begin this section by defining some basic metatheoretic judgements:
+#align(center)[#table(
+    columns: 2,
+    stroke: none,
+    column-gutter: 2em,
+    align: left,
+    [*Syntax*],
+    [*Meaning*],
+    $islin(q, Γ)$,
+    [The context $Γ$ is of linearity $q$],
+    $issub(γ, Θ, Γ, p)$,
+    [The map $γ$ is a substitution from $Θ$ to $Γ$ with purity $p$],
+    $lbrn(cal(L), sans(L), sans(K))$,
+    [The map $cal(L)$ is a label-renaming from $sans(L)$ to $sans(K)$]
+)]
+
 === Weakening
 
-We begin by stating some basic facts about context splitting and weakening:
+We now state some basic facts about context splitting and weakening:
 - Weakening is transitive: $dropctx(Γ, Δ) ==> dropctx(Δ, Ξ) ==> dropctx(Γ, Ξ)$
 - Weakening composes with splitting: $splitctx(Γ, Δ, Ξ) ∧ dropctx(Δ, Δ') ∧ dropctx(Ξ, Ξ') ==> splitctx(Γ, Δ', Ξ')$
 - Splitting is commutative: $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$.
@@ -574,4 +590,43 @@ We may now state the _weakening lemma_:
 
 === Substitution
 
-Given a map $γ$ from variables in $Θ$ to expressions, we define the notion of $γ$ being a substitution from $Θ$ to $Γ$, written $issub(γ, Θ, Γ)$, via the following rules:
+We begin by giving the typing rules for substitution
+#let subst-rules = (
+    "subst-nil": prft(
+        $dropctx(Θ, cnil)$, $issub(cnil, Θ, cnil, p)$, 
+        name: "subst-nil"),
+    "subst-cons": prft(
+        $issub(γ, Θ_Γ, Γ, p)$, 
+        $istm(Θ_x, p, a, A)$,
+        $islin(q, Θ_x)$,
+        $splitctx(Θ, Θ_x, Θ_Γ)$,
+        issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$, $p$),
+        name: "subst-cons")
+)
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    dprf(subst-rules.subst-nil),
+    dprf(subst-rules.subst-cons),
+))
+
+// Given a well-typed substitution $issub(γ, Θ, Γ, p)$, we define the capture-avoiding substitution of terms and targets as usual. We describe the substitution of a _context_ recursively as follows:
+// $
+// [γ]cnil &= cnil
+// $
+// We can then define the substitution of a _label context_ recursively as follows:
+// $
+
+// $
+
+We may now state the substitution lemma as follows:
+#lemma(name: "Substitution")[
+    Given  $issub(γ, Θ, Γ, p)$, then
+    - $istm(Θ, p, a, A) ==> istm(Γ, p, [γ]a, A)$
+    - $isblk(Θ, p, t, [γ]sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
+]<syntax-subst>
+
+We further have that
+#lemma(name: "Substitution Composes")[
+    Given  $issub(γ, Θ, Γ, p)$ and $issub(δ, Γ, Δ, p)$, then $issub(δ ∘ γ, Θ, Δ, p)$
+]<syntax-subst-composes>

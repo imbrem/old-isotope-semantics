@@ -154,4 +154,5 @@
     $subctx ⇝ dest$
 }
 #let islin(purity, ty) = $sans("lin")_(#purity)(#ty)$
-#let issub(sub, src, trg) = $sub: src -> trg$
+#let issub(sub, src, trg, purity) = $sub: src ->_purity trg$
+#let lbrn(sub, src, trg) = $sub: src arrow.r.wave trg$
