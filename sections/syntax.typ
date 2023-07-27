@@ -425,7 +425,7 @@ We also introduce the following abbreviations:
         $splitctx(Γ, Δ, Ξ)$,
         $joinctx(lhyp(lbl(ℓ), p, Δ, A), sans(L))$,
         $istm(Ξ, p, a, A)$,
-        $isblk(Γ, p, lbr(lbl(ℓ), A), sans(L))$
+        $isblk(Γ, p, lbr(lbl(ℓ), a), sans(L))$
     ),
     "ite": prft(name: "ite",
         $splitctx(Γ, Δ, Ξ)$,
