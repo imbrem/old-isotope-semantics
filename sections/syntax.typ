@@ -570,8 +570,8 @@ We begin this section by defining some basic metatheoretic judgements:
     [The context $Γ$ is of linearity $q$],
     $issub(γ, Θ, Γ, p)$,
     [The map $γ$ is a substitution from $Θ$ to $Γ$ with purity $p$],
-    $lbrn(cal(L), sans(L), sans(K))$,
-    [The map $cal(L)$ is a label-renaming from $sans(L)$ to $sans(K)$]
+    $lbrn(cal(L), sans(L), sans(K), p)$,
+    [The map $cal(L)$ is a label-substitution from $sans(L)$ to $sans(K)$ with purity $p$]
 )]
 
 === Weakening
@@ -590,24 +590,43 @@ We may now state the _weakening lemma_:
 
 === Substitution
 
-We begin by giving the typing rules for substitution
+We begin by giving the typing rules for substitution:
 #let subst-rules = (
     "subst-nil": prft(
         $dropctx(Θ, cnil)$, $issub(cnil, Θ, cnil, p)$, 
         name: "subst-nil"),
+    "rn-nil": prft(
+        $lbrn(bcnil, bcnil, cal(K), p)$,
+        name: "rn-nil"),
     "subst-cons": prft(
         $issub(γ, Θ_Γ, Γ, p)$, 
         $istm(Θ_x, p, a, A)$,
         $islin(q, Θ_x)$,
         $splitctx(Θ, Θ_x, Θ_Γ)$,
         issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$, $p$),
-        name: "subst-cons")
+        name: "subst-cons"),
+    "rn-cons": prft(
+        $lbrn(cal(L), sans(L), sans(K), p)$,
+        $issub(γ, Θ, Γ, p)$, 
+        $joinctx(lhyp(lbl(τ), r, Γ, A), sans(K))$,
+        lbrn(
+            $[lbl(ℓ) ↦ [γ]lbl(τ)]cal(L)$, 
+            $lctx(lhyp(lbl(ℓ), r, Θ, A), sans(L))$, 
+            $sans(K)$, 
+            $p$
+            ),
+        name: "rn-cons"),
 )
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
-    dprf(subst-rules.subst-nil),
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(subst-rules.subst-nil),
+        dprf(subst-rules.rn-nil),
+    ),
     dprf(subst-rules.subst-cons),
+    dprf(subst-rules.rn-cons),
 ))
 
 // Given a well-typed substitution $issub(γ, Θ, Γ, p)$, we define the capture-avoiding substitution of terms and targets as usual. We describe the substitution of a _context_ recursively as follows:
