@@ -580,8 +580,8 @@ We begin this section by defining some basic metatheoretic judgements:
     [The context $Γ$ is of linearity $q$],
     $issub(γ, Θ, Γ, p)$,
     [The map $γ$ is a substitution from $Θ$ to $Γ$ with purity $p$],
-    $lbrn(cal(L), sans(L), sans(K))$,
-    [The map $cal(L)$ is a label-substitution from $sans(L)$ to $sans(K)$]
+    $lbrn(cal(K), sans(L), sans(K), p)$,
+    [The map $cal(K)$ is a label-substitution from $sans(L)$ to $sans(K)$ with purity $p$]
 )]
 We define the *union* of two contexts as follows:
 $
@@ -612,7 +612,7 @@ We begin by giving the typing rules for substitution and renaming:
         $dropctx(Θ, cnil)$, $issub(cnil, Θ, cnil, p)$, 
         name: "subst-nil"),
     "rn-nil": prft(
-        $lbrn(bcnil, bcnil, cal(K))$,
+        $lbrn(bcnil, bcnil, sans(K), p)$,
         name: "rn-nil"),
     "subst-cons": prft(
         $issub(γ, Θ_Γ, Γ, p)$, 
@@ -622,12 +622,12 @@ We begin by giving the typing rules for substitution and renaming:
         issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$, $p$),
         name: "subst-cons"),
     "rn-cons": prft(
-        $lbrn(cal(L), sans(L), sans(K))$,
-        $joinctx(lhyp(lbl(τ), r, Γ, A), sans(K))$,
+        $lbrn(cal(K), sans(L), sans(K), p)$,
+        $isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K))$,
         lbrn(
-            $[lbl(ℓ) ↦ lbl(τ)]cal(L)$, 
-            $lctx(lhyp(lbl(ℓ), r, Γ, A), sans(L))$, 
-            $sans(K)$
+            $[lbl(ℓ) ↦ t(x)]cal(K)$, 
+            $lctx(lhyp(lbl(ℓ), r, Δ, A), sans(L), p)$, 
+            $sans(K)$, $p$
             ),
         name: "rn-cons"),
 )
@@ -677,3 +677,10 @@ We further have that
 #lemma(name: "Substitution Composes")[
     Given  $issub(γ, Θ, Γ, p)$ and $issub(δ, Γ, Δ, p)$, then $issub(δ ∘ γ, Θ, Δ, p)$
 ]<syntax-subst-composes>
+
+We define the substitution of a block $t$ by a renaming $cal(K)$ recursively, where, if $lbl(ℓ) ↦ t(x) ∈ cal(K)$, $[cal(K)](lbr(lbl(ℓ), a)) = (klet x = a; t(x))$.
+
+We may then also state the following lemma for labels
+#lemma(name: "Renaming")[
+    Given $lbrn(cal(K), sans(L), sans(K), p)$, if $isblk(Γ, p, t, sans(L))$, then $isblk(Γ, p, [cal(K)]t, sans(K))$
+]
