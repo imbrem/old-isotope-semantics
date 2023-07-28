@@ -566,13 +566,29 @@ We begin this section by defining some basic metatheoretic judgements:
     align: left,
     [*Syntax*],
     [*Meaning*],
+    $x ∈ Γ$,
+    [The variable $x$ is contained in the context $Γ$],
+    $x: A^q ∈ Γ$,
+    [The variable $x$ is contained in the context $Γ$ with type $A$ and quantity $q$],
+    $x: A ∈ Γ$,
+    [The variable $x$ is contained in the context $Γ$ with type $A$ and quantity ${rel, aff}$],
+    $Γ ≤ Δ$,
+    [$Γ$ is a subcontext of $Δ$],
+    $γ ≤ δ$,
+    [The substitution $γ$ is a submap of $δ$],
     $islin(q, Γ)$,
     [The context $Γ$ is of linearity $q$],
     $issub(γ, Θ, Γ, p)$,
     [The map $γ$ is a substitution from $Θ$ to $Γ$ with purity $p$],
-    $lbrn(cal(L), sans(L), sans(K), p)$,
-    [The map $cal(L)$ is a label-substitution from $sans(L)$ to $sans(K)$ with purity $p$]
+    $lbrn(cal(L), sans(L), sans(K))$,
+    [The map $cal(L)$ is a label-substitution from $sans(L)$ to $sans(K)$]
 )]
+We define the *union* of two contexts as follows:
+$
+Γ ∪ cnil &= Γ #h(10em) & \
+Γ ∪ (Δ, x: A) &= (Γ ∪ Δ), x: A & "if" x ∉ Γ ∪ Δ \
+Γ ∪ (Δ, x: A) &= Γ ∪ Δ & "otherwise" 
+$
 
 === Weakening
 
@@ -590,13 +606,13 @@ We may now state the _weakening lemma_:
 
 === Substitution
 
-We begin by giving the typing rules for substitution:
+We begin by giving the typing rules for substitution and renaming:
 #let subst-rules = (
     "subst-nil": prft(
         $dropctx(Θ, cnil)$, $issub(cnil, Θ, cnil, p)$, 
         name: "subst-nil"),
     "rn-nil": prft(
-        $lbrn(bcnil, bcnil, cal(K), p)$,
+        $lbrn(bcnil, bcnil, cal(K))$,
         name: "rn-nil"),
     "subst-cons": prft(
         $issub(γ, Θ_Γ, Γ, p)$, 
@@ -606,14 +622,12 @@ We begin by giving the typing rules for substitution:
         issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$, $p$),
         name: "subst-cons"),
     "rn-cons": prft(
-        $lbrn(cal(L), sans(L), sans(K), p)$,
-        $issub(γ, Θ, Γ, p)$, 
+        $lbrn(cal(L), sans(L), sans(K))$,
         $joinctx(lhyp(lbl(τ), r, Γ, A), sans(K))$,
         lbrn(
-            $[lbl(ℓ) ↦ [γ]lbl(τ)]cal(L)$, 
-            $lctx(lhyp(lbl(ℓ), r, Θ, A), sans(L))$, 
-            $sans(K)$, 
-            $p$
+            $[lbl(ℓ) ↦ lbl(τ)]cal(L)$, 
+            $lctx(lhyp(lbl(ℓ), r, Γ, A), sans(L))$, 
+            $sans(K)$
             ),
         name: "rn-cons"),
 )
@@ -629,20 +643,23 @@ We begin by giving the typing rules for substitution:
     dprf(subst-rules.rn-cons),
 ))
 
-// Given a well-typed substitution $issub(γ, Θ, Γ, p)$, we define the capture-avoiding substitution of terms and targets as usual. We describe the substitution of a _context_ recursively as follows:
-// $
-// [γ]cnil &= cnil
-// $
-// We can then define the substitution of a _label context_ recursively as follows:
-// $
+Given a well-typed substitution $issub(γ, Θ, Γ, p)$, we define the capture-avoiding substitution of terms and targets as usual.
 
-// $
+$
+[γ]cnil &= cnil #h(10em) & \
+[γ](tctx(Ξ, thyp(x, A, q))) &= tctx(([γ]Ξ), thyp(x, A, q)) & "if" x ∉ Γ \
+[γ](tctx(Ξ, thyp(x, A, q))) &= ([γ]Ξ) ∪ Θ_x & "if" x ∈ Γ 
+$
+We can then define the substitution of a _label context_ recursively as follows:
+$
+[γ]bcnil &= bcnil, quad [γ](lctx(sans(L), lhyp(lbl(ℓ), p, Ξ, A))) = lctx(([γ]sans(L)), lhyp(lbl(ℓ), p, [γ]Ξ, A))
+$
 
 We may now state the substitution lemma as follows:
 #lemma(name: "Substitution")[
     Given  $issub(γ, Θ, Γ, p)$, then
-    - $istm(Θ, p, a, A) ==> istm(Γ, p, [γ]a, A)$
-    - $isblk(Θ, p, t, [γ]sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
+    - $istm(Γ, p, a, A) ==> istm(Θ, p, [γ]a, A)$
+    - $isblk(Γ, p, t, sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
 ]<syntax-subst>
 
 We further have that
