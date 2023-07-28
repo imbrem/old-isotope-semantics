@@ -654,6 +654,12 @@ We can then define the substitution of a _label context_ recursively as follows:
 $
 [γ]bcnil &= bcnil, quad [γ](lctx(sans(L), lhyp(lbl(ℓ), p, Ξ, A))) = lctx(([γ]sans(L)), lhyp(lbl(ℓ), p, [γ]Ξ, A))
 $
+Given a context $Ξ$, we may now define the _restriction_ of $γ$, $issub(γ_Ξ, [γ]Ξ, Ξ, p)$, as follows:
+$
+γ_cnil &= cnil #h(10em) & \
+γ_(tctx(thyp(x, A, q), Ξ)) &= [x ↦ x]γ_Ξ & "if" x ∉ Γ \
+γ_(tctx(thyp(x, A, q), Ξ)) &= [x ↦ [γ]x]γ_Ξ & "if" x ∈ Γ
+$
 
 We may now state the substitution lemma as follows:
 #lemma(name: "Substitution")[
@@ -661,6 +667,11 @@ We may now state the substitution lemma as follows:
     - $istm(Γ, p, a, A) ==> istm(Θ, p, [γ]a, A)$
     - $isblk(Γ, p, t, sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
 ]<syntax-subst>
+
+To prove this, we will need the following lemmas:
+#lemma(name: "Substitution splits")[
+    If $splitctx(Γ, Δ, Ξ)$, and $issub(γ, Θ, Γ, p)$, then $splitctx(Θ, [γ]Δ, [γ]Ξ)$ and $γ_Δ, γ_Ξ ≤ γ$
+]<syntax-subst-splits>
 
 We further have that
 #lemma(name: "Substitution Composes")[
