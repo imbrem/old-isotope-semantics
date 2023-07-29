@@ -7,18 +7,27 @@
 
 An *`isotope` model* is given by:
 - A symmetric monoidal *base category* $cal(V)$ equipped with a coproduct distributing over the tensor product
-- An symmetric effectful category $cal(V) -> cal(C)$, the *control category* equipped with a coproduct distributing over the tensor product and an Elgot structure
+- A category $cal(C)$ with coproducts (with tensor product $+ = ⊕$), the *control category*, equipped with: 
+    - A trace
+    - A wide subcategory $cal(C)_∅$ containing all coproduct structure and at least a vacuously guarded trace
 - An symmetric effectful category $cal(V) -> cal(R)$ enriched over posets, the *expression category*, equipped with
-    - A subcategory $cal(R)_cal(C) ⊇ cal(V)$
+    - For every droppable base type $A$, a pure morphism $sans("drop")(A): cal(V)(sans("base")(A), I)$
+    - For every splittable base type $A$, a pure morphism $sans("split")(A): cal(V)(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
+        - Commutativity: $sans("split")(A);σ = sans("split")(A)$
+        - Associativity: 
+        $
+        sans("split")(A);dnt(A) ⊗ sans("split")(A)
+        = sans("split")(A);sans("split")(A) ⊗ dnt(A);α
+        $
+        - If $A$ is droppable, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
+    - A full subcategory $cal(R)_cal(C)$
     - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ which is the identity on $|cal(R)_cal(C)|$
-    - For all $A ∈ |cal(R)|$, morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that:
+    - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that:
         - $k;u;k = k, u;k;u = u$
         - For all pure morphisms $f ∈ cal(V)(A, B)$, $underline(f);k;u = k;u;underline(f)$
         - For all morphisms $f, g$, $f;g ≥ f;k;u;g$ // "SSA condition"
-    - An isomorphism of categories $E: cal(R)_cal(C) ≃ cal(C)$ such that $E$ is the identity on $|cal(V)|$ and on pure morphisms $f ∈ cal(V)(A, B)$
-    // - An equivalence of categories $(C, R, η, ε): cal(R)_cal(C) ≃ cal(C)$ such that:
-    //     - For all objects in $A ∈ |cal(V)|$, $C, R, η_A, ε_A$ are the identity
-    //     - For pure morphisms $f ∈ cal(V)(A, B)$, $C(underline(f)) = underline(f)$, $R(underline(f)) = underline(f)$
+    - An isomorphism of categories $E: cal(R)_cal(C) ≃ cal(C)$
+    - An isomorphism of categories $E_∅: (cal(V) ∩ cal(R)_cal(C)) ≃ cal(C)_∅$
 An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity (note all simple `isotope` models are flat).
 
 Given a control category $cal(V) -> cal(C)$, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
@@ -55,11 +64,11 @@ We will implicitly coerce morphisms in $cal(V)$ to $cal(C)$ or $cal(R)$ as neces
         $dnt(cnil) = munit$,
         $#dnt(tctx($Γ$, ($x$, $A$, $q$))) = dnt(Γ) ⊗ dnt(A)$,
     ),
-    rect($dnt(sans(L)): |cal(V)|$),
+    rect($dnt(sans(L)): |cal(C)|$),
     table(
         columns: 2, align: horizon, column-gutter: 2em, stroke: table-dbg,
         $dnt(bcnil) = iobj$,
-        $#dnt(lctx($sans(L)$, ($lbl(ℓ)$, $p$, $Γ$, $A$))) = dnt(sans(L)) ⊕ (dnt(Γ) ⊗ dnt(A))$,
+        $#dnt(lctx($sans(L)$, ($lbl(ℓ)$, $p$, $Γ$, $A$))) = dnt(sans(L)) ⊕ E(K(dnt(Γ) ⊗ dnt(A)))$,
     ),
 ))
 
@@ -123,7 +132,7 @@ We will implicitly coerce morphisms in $cal(V)$ to $cal(C)$ or $cal(R)$ as neces
 === Blocks
 
 #align(center, [
-    #rect($dnt(isblk(Γ, p, t, sans(L))): cal(C)_p (E(K(dnt(Γ))), E(K(sans(L))))$)
+    #rect($dnt(isblk(Γ, p, t, sans(L))): cal(C)_p (E(K(dnt(Γ))), dnt(sans(L)))$)
     #table(
         align: left + horizon, stroke: table-dbg, gutter: 1em,
         $dnt(dprf(#typing-rules.br)) 
