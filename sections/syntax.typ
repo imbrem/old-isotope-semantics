@@ -425,7 +425,7 @@ We also introduce the following abbreviations:
         $splitctx(Γ, Δ, Ξ)$,
         $joinctx(lhyp(lbl(ℓ), p, Δ, A), sans(L))$,
         $istm(Ξ, p, a, A)$,
-        $isblk(Γ, p, lbr(lbl(ℓ), A), sans(L))$
+        $isblk(Γ, p, lbr(lbl(ℓ), a), sans(L))$
     ),
     "ite": prft(name: "ite",
         $splitctx(Γ, Δ, Ξ)$,
@@ -555,3 +555,132 @@ We also introduce the following abbreviations:
     dprf(typing-rules.let2-blk),
     dprf(typing-rules.where),
 ))
+
+== Metatheory
+
+We begin this section by defining some basic metatheoretic judgements:
+#align(center)[#table(
+    columns: 2,
+    stroke: none,
+    column-gutter: 2em,
+    align: left,
+    [*Syntax*],
+    [*Meaning*],
+    $x ∈ Γ$,
+    [The variable $x$ is contained in the context $Γ$],
+    $x: A^q ∈ Γ$,
+    [The variable $x$ is contained in the context $Γ$ with type $A$ and quantity $q$],
+    $x: A ∈ Γ$,
+    [The variable $x$ is contained in the context $Γ$ with type $A$ and quantity ${rel, aff}$],
+    $Γ ≤ Δ$,
+    [$Γ$ is a subcontext of $Δ$],
+    $γ ≤ δ$,
+    [The substitution $γ$ is a submap of $δ$],
+    $islin(q, Γ)$,
+    [The context $Γ$ is of linearity $q$],
+    $issub(γ, Θ, Γ, p)$,
+    [The map $γ$ is a substitution from $Θ$ to $Γ$ with purity $p$],
+    $lbrn(cal(K), sans(L), sans(K), p)$,
+    [The map $cal(K)$ is a label-substitution from $sans(L)$ to $sans(K)$ with purity $p$]
+)]
+We define the *union* of two contexts as follows:
+$
+Γ ∪ cnil &= Γ #h(10em) & \
+Γ ∪ (Δ, x: A) &= (Γ ∪ Δ), x: A & "if" x ∉ Γ ∪ Δ \
+Γ ∪ (Δ, x: A) &= Γ ∪ Δ & "otherwise" 
+$
+
+=== Weakening
+
+We now state some basic facts about context splitting and weakening:
+- Weakening is transitive: $dropctx(Γ, Δ) ==> dropctx(Δ, Ξ) ==> dropctx(Γ, Ξ)$
+- Weakening composes with splitting: $splitctx(Γ, Δ, Ξ) ∧ dropctx(Δ, Δ') ∧ dropctx(Ξ, Ξ') ==> splitctx(Γ, Δ', Ξ')$
+- Splitting is commutative: $splitctx(Γ, Δ, Ξ) <==> splitctx(Γ, Ξ, Δ)$.
+
+We may now state the _weakening lemma_:
+#lemma(name: "Weakening")[
+    Given $dropctx(Γ, Δ), joinctx(sans(L), sans(K))$, and $r ⊆ p$, then
+    - If $istm(Δ, r, a, A)$, then $istm(Γ, p, a, A)$
+    - If $isblk(Δ, r, t, sans(L))$, then $isblk(Γ, p, t, sans(K))$
+]<syntax-wk>
+
+=== Substitution
+
+We begin by giving the typing rules for substitution and renaming:
+#let subst-rules = (
+    "subst-nil": prft(
+        $dropctx(Θ, cnil)$, $issub(cnil, Θ, cnil, p)$, 
+        name: "subst-nil"),
+    "rn-nil": prft(
+        $lbrn(bcnil, bcnil, sans(K), p)$,
+        name: "rn-nil"),
+    "subst-cons": prft(
+        $issub(γ, Θ_Γ, Γ, p)$, 
+        $istm(Θ_x, p, a, A)$,
+        $islin(q, Θ_x)$,
+        $splitctx(Θ, Θ_x, Θ_Γ)$,
+        issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$, $p$),
+        name: "subst-cons"),
+    "rn-cons": prft(
+        $lbrn(cal(K), sans(L), sans(K), p)$,
+        $isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K))$,
+        lbrn(
+            $[lbl(ℓ) ↦ t(x)]cal(K)$, 
+            $lctx(lhyp(lbl(ℓ), r, Δ, A), sans(L), p)$, 
+            $sans(K)$, $p$
+            ),
+        name: "rn-cons"),
+)
+
+#align(center, table(
+    align: center + horizon, stroke: table-dbg,
+    table(
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(subst-rules.subst-nil),
+        dprf(subst-rules.rn-nil),
+    ),
+    dprf(subst-rules.subst-cons),
+    dprf(subst-rules.rn-cons),
+))
+
+Given a well-typed substitution $issub(γ, Θ, Γ, p)$, we define the capture-avoiding substitution of terms and targets as usual.
+
+$
+[γ]cnil &= cnil #h(10em) & \
+[γ](tctx(Ξ, thyp(x, A, q))) &= tctx(([γ]Ξ), thyp(x, A, q)) & "if" x ∉ Γ \
+[γ](tctx(Ξ, thyp(x, A, q))) &= ([γ]Ξ) ∪ Θ_x & "if" x ∈ Γ 
+$
+We can then define the substitution of a _label context_ recursively as follows:
+$
+[γ]bcnil &= bcnil, quad [γ](lctx(sans(L), lhyp(lbl(ℓ), p, Ξ, A))) = lctx(([γ]sans(L)), lhyp(lbl(ℓ), p, [γ]Ξ, A))
+$
+Given a context $Ξ$, we may now define the _restriction_ of $γ$, $issub(γ_Ξ, [γ]Ξ, Ξ, p)$, as follows:
+$
+γ_cnil &= cnil #h(10em) & \
+γ_(tctx(thyp(x, A, q), Ξ)) &= [x ↦ x]γ_Ξ & "if" x ∉ Γ \
+γ_(tctx(thyp(x, A, q), Ξ)) &= [x ↦ [γ]x]γ_Ξ & "if" x ∈ Γ
+$
+
+We may now state the substitution lemma as follows:
+#lemma(name: "Substitution")[
+    Given  $issub(γ, Θ, Γ, p)$, then
+    - $istm(Γ, p, a, A) ==> istm(Θ, p, [γ]a, A)$
+    - $isblk(Γ, p, t, sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
+]<syntax-subst>
+
+To prove this, we will need the following lemmas:
+#lemma(name: "Substitution splits")[
+    If $splitctx(Γ, Δ, Ξ)$, and $issub(γ, Θ, Γ, p)$, then $splitctx(Θ, [γ]Δ, [γ]Ξ)$ and $γ_Δ, γ_Ξ ≤ γ$
+]<syntax-subst-splits>
+
+We further have that
+#lemma(name: "Substitution Composes")[
+    Given  $issub(γ, Θ, Γ, p)$ and $issub(δ, Γ, Δ, p)$, then $issub(δ ∘ γ, Θ, Δ, p)$
+]<syntax-subst-composes>
+
+We define the substitution of a block $t$ by a renaming $cal(K)$ recursively, where, if $lbl(ℓ) ↦ t(x) ∈ cal(K)$, $[cal(K)](lbr(lbl(ℓ), a)) = (klet x = a; t(x))$.
+
+We may then also state the following lemma for labels
+#lemma(name: "Renaming")[
+    Given $lbrn(cal(K), sans(L), sans(K), p)$, if $isblk(Γ, p, t, sans(L))$, then $isblk(Γ, p, [cal(K)]t, sans(K))$
+]

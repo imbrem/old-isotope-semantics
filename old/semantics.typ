@@ -2028,7 +2028,7 @@ We proceed by induction on the shape of blocks $t$ and terms $e$, following the 
 */
 
 #pagebreak()
-#bibliography("../references.bib")
+#bibliography("references.bib")
 #pagebreak()
 
 #show: isotope-appendix
