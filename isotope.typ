@@ -1,13 +1,22 @@
 #import "utils/grammar.typ": *
 #import "utils/proof.typ": *
 
-#import "@preview/lemmify:0.1.2": default-theorems, thm-numbering-linear
+#import "@preview/lemmify:0.1.2": default-theorems, display-heading-counter-at
 
 #let (
   theorem, lemma, corollary,
   remark, proposition, example,
   proof, rules: thm-rules
-) = default-theorems("thm-group", lang: "en", thm-numbering: thm-numbering-linear)
+) = default-theorems(
+    "thm-group", 
+    lang: "en", 
+    thm-numbering: fig => {
+        if fig.numbering != none {
+            display-heading-counter-at(fig.location())
+            numbering(fig.numbering, ..fig.counter.at(fig.location()))
+        }
+    },
+)
 
 // Report template
 #let isotope-report(
@@ -156,3 +165,6 @@
 #let islin(purity, ty) = $sans("lin")_(#purity)(#ty)$
 #let issub(sub, src, trg, purity) = $sub: src ->_purity trg$
 #let lbrn(sub, src, trg, purity) = $sub: src arrow.r.wave_purity trg$
+
+// `isotope` semantics syntax
+#let upg(arr, purity) = $arr^(↑_purity)$

@@ -143,3 +143,36 @@ We will implicitly coerce morphisms in $cal(V)$ to $cal(C)$ or $cal(R)$ as neces
         \ "where" sans(K) = [lhyp(lbl(ℓ)_i, p_i, Δ_i, A_i)]_i, sans(K') = [lhyp(lbl(ℓ)_i, p_i ∩ pure_ℓ, Δ_i, A_i)]_i
         $,)
 ])
+
+== Metatheory
+
+=== Weakening
+
+#lemma(name: "Semantic Weakening")[
+    Given $dropctx(Θ, Γ)$, $joinctx(sans(L), sans(K))$, and $p ⊆ r$, we have
+    - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(istm(Γ, p, a, A)), r) = dnt(istm(Γ, r, a, A))$
+    - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(isblk(Γ, p, t, sans(L))), r);upg(dnt(joinctx(sans(L), sans(K))), r) = dnt(isblk(Γ, r, t, sans(K)))$
+]
+
+=== Substitution
+
+#lemma(name: "Substitution Splitting")[
+    Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$, we have
+    $
+    dnt(issub(γ, Θ, Γ, ∅));dnt(splitctx(Γ, Δ, Ξ))
+    = dnt(splitctx(Θ, [γ]Δ, [γ]Ξ));dnt(issub(γ_Δ, [γ]Δ, Δ, ∅)) ⊗ dnt(issub(γ_Ξ, [γ]Ξ, Ξ, ∅))
+    $
+]
+
+#theorem(name: "Semantic Substitution")[
+    Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$ and an arbitrary renaming $lbrn(cal(K), sans(L), sans(K), p)$, we have
+    - $upg(dnt(issub(γ, Θ, Γ, ∅)), p);dnt(istm(Γ, p, a, A)) = dnt(istm(Θ, p, [γ]a, A))$
+    - $upg(dnt(issub(γ, Θ, Γ, ∅)), p);dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn([γ]cal(K), sans(L), [γ]sans(K), p)) = dnt(isblk(Θ, p, [γ][cal(K)]t, [γ]sans(K)))$
+]
+
+#theorem(name: "Congruence")[
+    Given substitutions $issub(γ ≃ γ', Θ, Γ, p)$ and renamings $lbrn(cal(K) ≃ cal(K)', sans(L), sans(K), p)$, we have
+    - $dnt(istm(Θ, p, [γ]a, A)) = dnt(istm(Θ, p, [γ']a, A))$
+    - $dnt(isblk(Θ, p, [γ][cal(K)]t, [γ]sans(K))) = dnt(isblk(Θ, p, [γ'][cal(K)']t, [γ']sans(K)))$
+    - $[γ]cal(K) ≃ [γ]cal(K)' ≃ [γ']cal(K) ≃ [γ']cal(K)'$
+]
