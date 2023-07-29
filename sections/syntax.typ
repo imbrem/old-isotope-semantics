@@ -618,7 +618,7 @@ We begin by giving the typing rules for substitution and renaming:
         $issub(γ, Θ_Γ, Γ, p)$, 
         $istm(Θ_x, p, a, A)$,
         $islin(q, Θ_x)$,
-        $splitctx(Θ, Θ_x, Θ_Γ)$,
+        $splitctx(Θ, Θ_Γ, Θ_x)$,
         issub($[x ↦ a]γ$, $Θ$, $Γ, thyp(x, A, q)$, $p$),
         name: "subst-cons"),
     "rn-cons": prft(
@@ -626,7 +626,7 @@ We begin by giving the typing rules for substitution and renaming:
         $isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K))$,
         lbrn(
             $[lbl(ℓ) ↦ t(x)]cal(K)$, 
-            $lctx(lhyp(lbl(ℓ), r, Δ, A), sans(L), p)$, 
+            $lctx(sans(L), lhyp(lbl(ℓ), r, Δ, A))$, 
             $sans(K)$, $p$
             ),
         name: "rn-cons"),

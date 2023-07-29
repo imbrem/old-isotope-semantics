@@ -1,5 +1,5 @@
 #import "../isotope.typ": *
-#import "syntax.typ": rel-rules, aff-rules, typing-rules
+#import "syntax.typ": rel-rules, aff-rules, typing-rules, subst-rules
 
 = Semantics
 
@@ -155,6 +155,29 @@ We will implicitly coerce morphisms in $cal(V)$ to $cal(C)$ or $cal(R)$ as neces
 ]
 
 === Substitution
+
+We begin by giving a semantics for substitutions and rewriting as follows:
+#align(center, [
+    #rect($dnt(issub(γ, Θ, Γ, p)): cal(R)_p (dnt(Θ), dnt(Γ))$)
+    #table(
+        align: left + horizon, stroke: table-dbg, gutter: 1em,
+        $dnt(dprf(#subst-rules.subst-nil)) = dnt(dropctx(Θ, cnil))$,
+        $dnt(dprf(#subst-rules.subst-cons))
+        \ #h(4em) = upg(dnt(splitctx(Θ, Θ_Γ, Θ_x)), p);dnt(issub(γ, Θ_Γ, Γ, p)) ⋊ dnt(istm(Θ_x, p, a, A))
+        $
+    )
+    // #rect($dnt(lbrn(cal(K), sans(L), sans(K), p)): cal(C)_p (dnt(E(K(sans(L)))), dnt(E(K(sans(K)))))$),
+    // #table(
+    //     align: left + horizon, stroke: table-dbg, gutter: 1em,
+    //     $dnt(dprf(#subst-rules.rn-nil)) = 0_sans(K)$,
+    //     $dnt(dprf(#subst-rules.rn-cons)) 
+    //     \ #h(4em) = 
+    //     dnt(lbrn(cal(K), sans(L), sans(K), p)) 
+    //     ⊕ dnt(isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K)));
+    //     j
+    //     $
+    // )
+])
 
 #lemma(name: "Substitution Splitting")[
     Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$, we have
