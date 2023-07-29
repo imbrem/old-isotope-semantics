@@ -7,9 +7,13 @@
 
 An *`isotope` model* is given by:
 - A symmetric monoidal *base category* $cal(V)$ equipped with a coproduct distributing over the tensor product
-- A category $cal(C)$ with coproducts (with tensor product $+ = ⊕$), the *control category*, equipped with: 
-    - A trace
-    - A wide subcategory $cal(C)_∅$ containing all coproduct structure and at least a vacuously guarded trace
+- Categories $cal(C)_{cen}, cal(C)_∅$ with coproducts enriched over posets, the *control category*, such that: 
+    - $cal(C)_{cen}$ has a trace
+    - $cal(C)_∅$ is a wide subcategory of $cal(C)_{cen}$
+    - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that:
+        - $sans("ite");(f ⊕ f) = f;sans("ite")$
+        - $E(α;tt ⊗ dnt(A));sans("ite");(f ⊕ g);j = f$
+        - $E(α;ff ⊗ dnt(A));sans("ite");(f ⊕ g);j = g$
 - An symmetric effectful category $cal(V) -> cal(R)$ enriched over posets, the *expression category*, equipped with
     - For every droppable base type $A$, a pure morphism $sans("drop")(A): cal(V)(sans("base")(A), I)$
     - For every splittable base type $A$, a pure morphism $sans("split")(A): cal(V)(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
@@ -19,16 +23,16 @@ An *`isotope` model* is given by:
         sans("split")(A);dnt(A) ⊗ sans("split")(A)
         = sans("split")(A);sans("split")(A) ⊗ dnt(A);α
         $
-        - If $A$ is droppable, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
+        - Unit: if $A$ is droppable, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
     - A full subcategory $cal(R)_cal(C)$
     - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ which is the identity on $|cal(R)_cal(C)|$
     - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that:
         - $k;u;k = k, u;k;u = u$
         - For all pure morphisms $f ∈ cal(V)(A, B)$, $underline(f);k;u = k;u;underline(f)$
         - For all morphisms $f, g$, $f;g ≥ f;k;u;g$ // "SSA condition"
-    - An isomorphism of categories $E: cal(R)_cal(C) ≃ cal(C)$
-    - An isomorphism of categories $E_∅: (cal(V) ∩ cal(R)_cal(C)) ≃ cal(C)_∅$
-An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity (note all simple `isotope` models are flat).
+    - An enriched isomorphism of categories $E: cal(R)_cal(C) ≃ cal(C)$
+    - An enriched isomorphism of categories $E_∅: cal(V)_cal(C) ≃ cal(C)_∅$, where $cal(V)_cal(C)$ is the preimage of $cal(R)_cal(C)$ under $underline(⬝)$
+An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity. An `isotope` model is *straight* if $K$ is the identity.
 
 Given a control category $cal(V) -> cal(C)$, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
 
