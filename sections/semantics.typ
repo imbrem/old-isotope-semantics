@@ -11,7 +11,7 @@ An *`isotope` model* is given by:
     - $cal(C)_∅$ has a guarded trace (this can be vacuous)
     - $cal(C)_{cen}$ has a trace
     //TODO: list out all ite properties; or generalize over control structures?
-    - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(bools ⊗ f);sans("ite")$
+    - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(u;f;k);sans("ite")$
     //TODO: structure on clamp so this stops being a problem?
     - Full subcategories $cal(C)_p'$ of $cal(C)_p$ such that $r ⊆ p ==> cal(C)_r' ⊆ cal(C)_r$
 - An symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets, the *expression category*, equipped with
@@ -27,15 +27,17 @@ An *`isotope` model* is given by:
     - A set of distinguised "clamped" objects $K(|cal(R)|)$, inducing full subcategories $cal(R)_p'$
     - A mapping $K: |cal(R)| -> K(|cal(R)|)$ satisfying: 
         - $K_|cal(R)_cal(C)| = idm$
-        - $K(A ⊗ B) = K(A) ⊗ K(B)$ //TODO: generalize to just requiring a natural isomorphism?
     - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_A: cal(R)_∅(A, K(A))$ and *unclamp* $u_A: cal(R)_∅(K(A), A)$ such that:
-        - $k;u;k = k, quad u;k;u = u$
+        - $k;u;k = k;k = k, quad u;k;u = u_(K(A));u = u$
+        // - $k;u;A ⊗ f;k = A ⊗ (k;u;f);k, quad k;u;f ⊗ B;k = (k;u;f) ⊗ B;k$
         - For all pure morphisms $f ∈ cal(R)_∅(A, B)$, $f;k;u = k;u;f$
         - For all morphisms $f, g ∈ cal(R)_p(A, B)$, $f;g ≥ f;upg((k;u), p);g$ // "SSA condition"
     - Enriched isomorphisms $E_p: cal(R)_p' ≃ cal(C)_p'$ such that $∀r, E_p;(upg(dot, r)) = (upg(dot, r));E_r$ and $E_p^(-1);(upg(dot, r)) = (upg(dot, r));E_r^(-1)$ //TODO: generalize to just requiring an equivalence?
 Note $upg(dot, p)$ denotes the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
 
-An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. An `isotope` model is *simple* if $cal(R)_p = cal(C)_p$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity.
+We write $|cal(R)|, |cal(C)|$ to denote the shared set of objects of $|cal(R)_p|, |cal(C)_p|$ respectively.
+
+An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. An `isotope` model is *simple* if $cal(R)_p = cal(C)_p$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A)), u_(K(A))$ are the identity.
 
 Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
 
@@ -51,7 +53,7 @@ Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets wit
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
-    rect($dnt(A): |cal(V)|$),
+    rect($dnt(A): |cal(R)|$),
     table(
         columns: 4, align: horizon, column-gutter: 2em, stroke: table-dbg,
         $dnt(X) = sans("base")(X)$,
@@ -59,7 +61,7 @@ Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets wit
         $dnt(bools) = bools$,
         $dnt(A ⊗ B) = dnt(A) ⊗ dnt(B)$,
     ),
-    rect($dnt(Γ): |cal(V)|$),
+    rect($dnt(Γ): |cal(R)|$),
     table(
         columns: 2, align: horizon, column-gutter: 2em, stroke: table-dbg,
         $dnt(cnil) = munit$,
@@ -77,7 +79,7 @@ Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets wit
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg, gutter: 1em,
-    rect($dnt(rel(A)): cal(V)(A, A ⊗ A)$),
+    rect($dnt(rel(A)): cal(R)_∅(A, A ⊗ A)$),
     $dnt(dprf(#rel-rules.base)) = sans("split")(dnt(X))$,
     $dnt(dprf(#rel-rules.pair)) = dnt(rel(A)) ⊗ dnt(rel(B));α;dnt(A) ⊗ σ ⊗ dnt(B);α$,
     table(
@@ -85,7 +87,7 @@ Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets wit
         $dnt(dprf(#rel-rules.unit)) = λ_munit^(-1)$,
         $dnt(dprf(#rel-rules.bool)) = sans("split")(bools)$,
     ),
-    rect($dnt(aff(A)): cal(V)(A, munit)$),
+    rect($dnt(aff(A)): cal(R)_∅(A, munit)$),
     $dnt(dprf(#aff-rules.base)) = sans("drop")(dnt(X))$,
     $dnt(dprf(#aff-rules.pair)) = dnt(aff(A)) ⊗ dnt(aff(B));λ_munit$,
     table(
@@ -93,18 +95,18 @@ Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets wit
         $dnt(dprf(#aff-rules.unit)) = idm$,
         $dnt(dprf(#aff-rules.bool)) = sans("drop")(bools)$,
     ),
-    rect($dnt(splitctx(Γ, Δ, Ξ)): cal(V)(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$),
+    rect($dnt(splitctx(Γ, Δ, Ξ)): cal(R)_∅(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$),
     $dnt(dprf(#typing-rules.split-nil)) = λ_munit^(-1)$,
     $dnt(dprf(#typing-rules.split-left)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(A);α;dnt(Γ) ⊗ σ;α$,
     $dnt(dprf(#typing-rules.split-right)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(A);α$,
     $dnt(dprf(#typing-rules.split-dup)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(rel(A));α;dnt(Γ) ⊗ σ ⊗ dnt(A);α$,
     $dnt(dprf(#typing-rules.split-drop)) = dnt(Γ) ⊗ dnt(aff(A));ρ;dnt(splitctx(Γ, Δ, Ξ))$,
-    rect($dnt(dropctx(Γ, Δ)): cal(V)(dnt(Γ), dnt(Δ))$),
+    rect($dnt(dropctx(Γ, Δ)): cal(R)_∅(dnt(Γ), dnt(Δ))$),
     $dnt(dropctx(Γ, Δ)) = dnt(splitctx(Γ, cnil, Δ));λ$,
-    rect($dnt(joinctx(sans(L), sans(K))): cal(V)(dnt(sans(L)), dnt(sans(K)))$),
+    rect($dnt(joinctx(sans(L), sans(K))): cal(C)_∅(dnt(sans(L)), dnt(sans(K)))$),
     $dnt(dprf(#typing-rules.join-nil)) = idm$,
-    $dnt(dprf(#typing-rules.join-id)) = dnt(joinctx(sans(L), sans(K)) ⊕ (dnt(Γ) ⊗ dnt(A)))$,
-    $dnt(dprf(#typing-rules.join-ext)) = dnt(joinctx(sans(L), sans(K)));α^⊕$,
+    $dnt(dprf(#typing-rules.join-id)) = dnt(joinctx(sans(L), sans(K))) ⊕ E(K(dnt(Γ) ⊗ dnt(A)))$,
+    $dnt(dprf(#typing-rules.join-ext)) = dnt(joinctx(sans(L), sans(K)));α^⊕;dnt(sans(K)) ⊕ 0_(E(K(dnt(Γ) ⊗ dnt(A))))$,
 ))
 
 === Terms
@@ -143,13 +145,13 @@ Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets wit
         $dnt(dprf(#typing-rules.let-blk)) 
         \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ)); dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A));k);dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$)), p, t, sans(L)))$,
         $dnt(dprf(#typing-rules.let2-blk)) 
-        \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ));dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));k);dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, sans(L)))$,
+        \ #h(4em) = E(u;dnt(splitctx(Γ, Δ, Ξ));dnt(Δ) ⊗ dnt(istm(Ξ, p, a, A ⊗ B));α;k);dnt(isblk(#tctx($Δ$, ($x$, $A$, $q$), ($y$, $B$, $q$)), p, e, sans(L)))$,
         $dnt(dprf(#typing-rules.where))
-        \ #h(4em) = sans("Tr")_(dnt(Γ), sans(L))^sans(K)(
+        \ #h(4em) = sans("Tr")_(E(K(dnt(Γ))), dnt(sans(L)))^dnt(sans(K))(
             (
                 (⊕_i dnt(istm(Δ_i, p_i, t_i, lctx(sans(L), sans(K)'))))
                 ⊕ dnt(isblk(Γ, p, s, lctx(sans(L), sans(K))))
-            );sans(J))
+            );sans(J)^(n + 1);α^⊕)
         \ "where" sans(K) = [lhyp(lbl(ℓ)_i, p_i, Δ_i, A_i)]_i, sans(K') = [lhyp(lbl(ℓ)_i, p_i ∩ pure_ℓ, Δ_i, A_i)]_i
         $,)
 ])
