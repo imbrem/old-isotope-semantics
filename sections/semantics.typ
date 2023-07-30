@@ -39,7 +39,7 @@ We write $|cal(R)|, |cal(C)|$ to denote the shared set of objects of $|cal(R)_p|
 
 An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. An `isotope` model is *simple* if $cal(R)_p = cal(C)_p$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A)), u_(K(A))$ are the identity.
 
-Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
+Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R)_p = cal(C)_p$ and $E, K, k, u$ the identity (with the discrete order on each hom-set).
 
 // If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
 // $∀h ∈ P, Σ P ≥ h $
