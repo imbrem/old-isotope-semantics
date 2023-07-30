@@ -163,7 +163,7 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 #lemma(name: "Semantic Weakening")[
     Given $dropctx(Θ, Γ)$, $joinctx(sans(L), sans(K))$, and $p ⊆ r$, we have
     - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(istm(Γ, p, a, A)), r) = dnt(istm(Γ, r, a, A))$
-    - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(isblk(Γ, p, t, sans(L))), r);upg(dnt(joinctx(sans(L), sans(K))), r) = dnt(isblk(Γ, r, t, sans(K)))$
+    - $upg(E(u;dnt(dropctx(Θ, Γ));k), r);upg(dnt(isblk(Γ, p, t, sans(L))), r);upg(dnt(joinctx(sans(L), sans(K))), r) = dnt(isblk(Γ, r, t, sans(K)))$
 ]
 
 === Substitution
@@ -202,12 +202,14 @@ We begin by giving a semantics for substitutions and rewriting as follows:
 #theorem(name: "Semantic Substitution")[
     Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$ and an arbitrary renaming $lbrn(cal(K), sans(L), sans(K), p)$, we have
     - $upg(dnt(issub(γ, Θ, Γ, ∅)), p);dnt(istm(Γ, p, a, A)) = dnt(istm(Θ, p, [γ]a, A))$
-    - $upg(dnt(issub(γ, Θ, Γ, ∅)), p);dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn([γ]cal(K), sans(L), [γ]sans(K), p)) = dnt(isblk(Θ, p, [γ][cal(K)]t, [γ]sans(K)))$
+    - $upg(E(u;dnt(issub(γ, Θ, Γ, ∅));k), p);dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(γ^sans(L), sans(L), [γ]sans(L), p)) = dnt(isblk(Θ, p, [γ]t, [γ]sans(L)))$
+    - $dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(cal(K), sans(L), sans(K), p)) = dnt(isblk(Γ, p, [cal(K)]t, sans(K)))$
 ]
 
 #theorem(name: "Congruence")[
     Given substitutions $issub(γ ≃ γ', Θ, Γ, p)$ and renamings $lbrn(cal(K) ≃ cal(K)', sans(L), sans(K), p)$, we have
     - $dnt(istm(Θ, p, [γ]a, A)) = dnt(istm(Θ, p, [γ']a, A))$
-    - $dnt(isblk(Θ, p, [γ][cal(K)]t, [γ]sans(K))) = dnt(isblk(Θ, p, [γ'][cal(K)']t, [γ']sans(K)))$
+    - $dnt(isblk(Θ, p, [γ]t, [γ]sans(L))) = dnt(isblk(Θ, p, [γ']t, [γ']sans(L)))$
+    - $dnt(isblk(Γ, p, [cal(K)]t, sans(K))) = dnt(isblk(Γ, p, [cal(K)']t, sans(K)))$
     - $[γ]cal(K) ≃ [γ]cal(K)' ≃ [γ']cal(K) ≃ [γ']cal(K)'$
 ]
