@@ -6,17 +6,17 @@
 == Isotope Models
 
 An *`isotope` model* is given by:
-- Categories $cal(C)_{cen}, cal(C)_∅$ with coproducts enriched over posets, the *control category*, such that: 
-    - $cal(C)_{cen}$ has a trace
+- Categories $cal(C)_∅, cal(C)_{cen}$ with coproducts enriched over posets, the *control category*, such that: 
+    - $underline(dot): cal(C)_∅ -> cal(C)_{cen}$ is an identity-on-objects monoidal functor
     - $cal(C)_∅$ has a guarded trace (this can be vacuous)
-    - $cal(C)_∅$ is a wide subcategory of $cal(C)_{cen}$
+    - $cal(C)_{cen}$ has a trace
     //TODO: list out all ite properties; or generalize over control structures?
     - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(bools ⊗ f);sans("ite")$
     //TODO: structure on clamp so this stops being a problem?
     - Full subcategories $cal(C)_p'$ of $cal(C)_p$ such that $r ⊆ p ==> cal(C)_r' ⊆ cal(C)_r$
-- An symmetric effectful category $cal(V) -> cal(R)$ enriched over posets, the *expression category*, equipped with
-    - For every droppable base type $A$, a pure morphism $sans("drop")(A): cal(V)(sans("base")(A), I)$
-    - For every splittable base type $A$, a pure morphism $sans("split")(A): cal(V)(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
+- An symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets, the *expression category*, equipped with
+    - For every droppable base type $A$, a pure morphism $sans("drop")(A): cal(R)_∅(sans("base")(A), I)$
+    - For every splittable base type $A$, a pure morphism $sans("split")(A): cal(R)_∅(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
         - Commutativity: $sans("split")(A);σ = sans("split")(A)$
         - Associativity: 
         $
@@ -24,25 +24,20 @@ An *`isotope` model* is given by:
         = sans("split")(A);sans("split")(A) ⊗ dnt(A);α
         $
         - Unit: if $A$ is droppable, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
-    - Full subcategories $cal(V)_cal(C), cal(R)_cal(C)$ such that $cal(V)_cal(C)$ and $cal(R)_cal(C)$ share objects, with $iobj, bools ∈ |cal(R)_cal(C)|$ //TODO: need this be full? only allow clamped and nil?
-    - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ satisfying: 
+    - A set of distinguised "clamped" objects $K(|cal(R)|)$, inducing full subcategories $cal(R)_p'$
+    - A mapping $K: |cal(R)| -> K(|cal(R)|)$ satisfying: 
         - $K_|cal(R)_cal(C)| = idm$
         - $K(A ⊗ B) = K(A) ⊗ K(B)$ //TODO: generalize to just requiring a natural isomorphism?
-    - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that:
-        - $k;u;k = k, u;k;u = u$
-        - For all pure morphisms $f ∈ cal(V)(A, B)$, $underline(f);k;u = k;u;underline(f)$
-        - For all morphisms $f, g$, $f;g ≥ f;k;u;g$ // "SSA condition"
-    - An enriched isomorphism of categories $E_{cen}: cal(R)_cal(C) ≃ cal(C)_{cen}'$
-    - An enriched isomorphism of categories $E_∅: cal(V)_cal(C) ≃ cal(C)_∅'$
-We define, for purities $p ⊆ {cen}$,
-$
-cal(C)_∅ = cal(R)_∅ = cal(V)
-$
-We let $upg(dot, p)$ be the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
+    - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_A: cal(R)_∅(A, K(A))$ and *unclamp* $u_A: cal(R)_∅(K(A), A)$ such that:
+        - $k;u;k = k, quad u;k;u = u$
+        - For all pure morphisms $f ∈ cal(R)_∅(A, B)$, $f;k;u = k;u;f$
+        - For all morphisms $f, g ∈ cal(R)_p(A, B)$, $f;g ≥ f;upg((k;u), p);g$ // "SSA condition"
+    - Enriched isomorphisms $E_p: cal(R)_p' ≃ cal(C)_p'$ such that $∀r, E_p;(upg(dot, r)) = (upg(dot, r));E_r$ and $E_p^(-1);(upg(dot, r)) = (upg(dot, r));E_r^(-1)$ //TODO: generalize to just requiring an equivalence?
+Note $upg(dot, p)$ denotes the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
 
-An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity. An `isotope` model is *straight* if $K$ is the identity.
+An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. An `isotope` model is *simple* if $cal(R)_p = cal(C)_p$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity.
 
-Given a symmetric effectful category $cal(V) -> cal(C)$ with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
+Given a symmetric effectful category $cal(V) -> cal(C)$ enriched over posets with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
 
 // If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
 // $∀h ∈ P, Σ P ≥ h $
