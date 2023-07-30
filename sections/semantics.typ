@@ -154,6 +154,12 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 
 === Weakening
 
+
+#lemma(name: "Weakening Composes")[
+    - $dnt(dropctx(Γ, Δ)) ; dnt(dropctx(Δ, Ξ)) = dnt(dropctx(Γ, Ξ))$
+    - $dnt(joinctx(sans(L), sans(K))) ; dnt(dropctx(sans(K), sans(M))) = dnt(dropctx(sans(L), sans(M)))$
+]
+
 #lemma(name: "Semantic Weakening")[
     Given $dropctx(Θ, Γ)$, $joinctx(sans(L), sans(K))$, and $p ⊆ r$, we have
     - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(istm(Γ, p, a, A)), r) = dnt(istm(Θ, r, a, A))$
