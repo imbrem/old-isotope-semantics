@@ -6,14 +6,14 @@
 == Isotope Models
 
 An *`isotope` model* is given by:
-- A symmetric monoidal *base category* $cal(V)$ equipped with a coproduct distributing over the tensor product
 - Categories $cal(C)_{cen}, cal(C)_∅$ with coproducts enriched over posets, the *control category*, such that: 
     - $cal(C)_{cen}$ has a trace
+    - $cal(C)_∅$ has a guarded trace (this can be vacuous)
     - $cal(C)_∅$ is a wide subcategory of $cal(C)_{cen}$
-    - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that:
-        - $sans("ite");(f ⊕ f) = f;sans("ite")$
-        - $E(α;tt ⊗ dnt(A));sans("ite");(f ⊕ g);j = f$
-        - $E(α;ff ⊗ dnt(A));sans("ite");(f ⊕ g);j = g$
+    //TODO: list out all ite properties; or generalize over control structures?
+    - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(bools ⊗ f);sans("ite")$
+    //TODO: structure on clamp so this stops being a problem?
+    - Full subcategories $cal(C)_p'$ of $cal(C)_p$ such that $r ⊆ p ==> cal(C)_r' ⊆ cal(C)_r$
 - An symmetric effectful category $cal(V) -> cal(R)$ enriched over posets, the *expression category*, equipped with
     - For every droppable base type $A$, a pure morphism $sans("drop")(A): cal(V)(sans("base")(A), I)$
     - For every splittable base type $A$, a pure morphism $sans("split")(A): cal(V)(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
@@ -24,27 +24,29 @@ An *`isotope` model* is given by:
         = sans("split")(A);sans("split")(A) ⊗ dnt(A);α
         $
         - Unit: if $A$ is droppable, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
-    - A full subcategory $cal(R)_cal(C)$
-    - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ which is the identity on $|cal(R)_cal(C)|$
+    - Full subcategories $cal(V)_cal(C), cal(R)_cal(C)$ such that $cal(V)_cal(C)$ and $cal(R)_cal(C)$ share objects, with $iobj, bools ∈ |cal(R)_cal(C)|$ //TODO: need this be full? only allow clamped and nil?
+    - A mapping $K: |cal(R)| -> |cal(R)_cal(C)|$ satisfying: 
+        - $K_|cal(R)_cal(C)| = idm$
+        - $K(A ⊗ B) = K(A) ⊗ K(B)$ //TODO: generalize to just requiring a natural isomorphism?
     - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_(A, K(A))$ and *unclamp* $u_(K(A), A)$ such that:
         - $k;u;k = k, u;k;u = u$
         - For all pure morphisms $f ∈ cal(V)(A, B)$, $underline(f);k;u = k;u;underline(f)$
         - For all morphisms $f, g$, $f;g ≥ f;k;u;g$ // "SSA condition"
-    - An enriched isomorphism of categories $E: cal(R)_cal(C) ≃ cal(C)$
-    - An enriched isomorphism of categories $E_∅: cal(V)_cal(C) ≃ cal(C)_∅$, where $cal(V)_cal(C)$ is the preimage of $cal(R)_cal(C)$ under $underline(⬝)$
+    - An enriched isomorphism of categories $E_{cen}: cal(R)_cal(C) ≃ cal(C)_{cen}'$
+    - An enriched isomorphism of categories $E_∅: cal(V)_cal(C) ≃ cal(C)_∅'$
+We define, for purities $p ⊆ {cen}$,
+$
+cal(C)_∅ = cal(R)_∅ = cal(V)
+$
+We let $upg(dot, p)$ be the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
+
 An `isotope` model is *graphical* if $cal(R)$ is monoidal. An `isotope` model is *simple* if $cal(R) = cal(C)$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A), K(K(A))), u_(K(K(A)), K(A))$ are the identity. An `isotope` model is *straight* if $K$ is the identity.
 
-Given a control category $cal(V) -> cal(C)$, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
+Given a symmetric effectful category $cal(V) -> cal(C)$ with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R) = cal(C)$ and $K, k, u$ the identity (with the discrete order on each hom-set).
 
 // If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
 // $∀h ∈ P, Σ P ≥ h $
 // then we may construct, for each $Σ$, the *$Σ$-graphical `isotope` model*.
-
-We define, for purities $p ⊆ {cen}$,
-$
-cal(C)_∅ = cal(R)_∅ = cal(V), quad cal(C)_cen = cal(C), quad cal(R)_cen = cal(R)   
-$
-We will implicitly coerce morphisms in $cal(V)$ to $cal(C)$ or $cal(R)$ as necessary.
 
 == Denotational Semantics
 
