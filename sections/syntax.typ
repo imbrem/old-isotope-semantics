@@ -614,7 +614,7 @@ We begin by giving the typing rules for substitution and renaming:
         $lbrn(cal(K), sans(L), sans(K), p)$,
         $isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K))$,
         lbrn(
-            $[lbl(ℓ) ↦ t(x)]cal(K)$, 
+            $[lbl(ℓ)(x) ↦ t]cal(K)$, 
             $lctx(sans(L), lhyp(lbl(ℓ), r, Δ, A))$, 
             $sans(K)$, $p$
             ),
@@ -675,23 +675,35 @@ We may then also state the following lemma for labels
     Given $lbrn(cal(K), sans(L), sans(K), p)$, if $isblk(Γ, p, t, sans(L))$, then $isblk(Γ, p, [cal(K)]t, sans(K))$
 ]
 
-We may also define the _reification_ $subrf(γ, a)$ of a substitution $γ$ for a term $a$ or block $t$ recursively as follows:
+We may also define the _reification_ $subrf(γ)$ of a context and substitution recursively as follows:
 $
-subrf(cnil, a) &= a \
-subrf([x ↦ a]γ, a) &= (klet x = a;subrf(γ, a)) \
-subrf(cnil, t) &= t \
-subrf([x ↦ a]γ, t) &= (klet x = a;subrf(γ, t)) \
+subrf(cnil) &= tobj \
+subrf(tctx(Γ, thyp(x, A, q))) &= subrf(Γ) ⊗ A \
+subrf(issub(cnil, Θ, cnil, p)) &= () \
+subrf(issub([x ↦ a]γ, Θ, tctx(Γ, thyp(x, A, q)), p)) &= (subrf(issub(γ, Θ_Γ, Γ, p)), a)
+$
+We may then define the _application_ of a reification to a term $a$ or block $t$ recursively as follows:
+$
+subrft(issub(γ, Θ, Γ, p), a) &= sans("unpack")(Γ, subrf(issub(γ, Θ, Γ, p)), a) \
+sans("unpack")(cnil, cnil, a) &= a \
+sans("unpack")(tctx(Γ, thyp(x, A, q)), p, a) &= (klet (p, x) = p; sans("reify")(Γ, p, a)) \
+subrft(issub(γ, Θ, Γ, p), t) &= sans("unpack")(Γ, subrf(issub(γ, Θ, Γ, p)), t) \
+sans("unpack")(cnil, cnil, t) &= t \
+sans("unpack")(tctx(Γ, thyp(x, A, q)), p, t) &= (klet (p, x) = p; sans("reify")(Γ, p, t)) \
+subrfb(issub(cnil, Θ, cnil, p), t) &= t \
+subrfb(issub([x ↦ a]γ, Θ, tctx(Γ, thyp(x, A, q)), p), t) &= (klet x = a; subrfb(issub(γ, Θ_Γ, Γ, p), t))
+$
+This allows us to define the _lifting_ of a substitution $issub(γ, Θ, Γ, p)$ to a label-context $sans(L)$, $lbrn(γ^sans(L), sans(L), [γ]sans(L), p)$, as follows:
+$
+γ^bcnil &= bcnil \
+γ^(sans(L), lhyp(lbl(ℓ), r, Γ, A)) &= [lbl(ℓ)(x) ↦ subrft(issub(γ_(tctx(Δ, thyp(x, A, q))), [γ](tctx(Δ, thyp(x, A, q))), tctx(Δ, thyp(x, A, q)), p), lbr(lbl(ℓ), x))]γ^sans(L)
 $
 This allows us to state the following lemma:
 #lemma(name: "Reification")[
     Given  $issub(γ, Θ, Γ, p)$, then
-    - $istm(Γ, p, a, A) ==> istm(Θ, p, [γ]a, A)$
-    - $isblk(Γ, p, t, sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
+    - $istm(Θ, p, subrf(issub(γ, Θ, Γ, p)), subrf(Γ))$
+    - $istm(Γ, p, a, A) ==> istm(Θ, p, subrft(issub(γ, Θ, Γ, p), a), A)$
+    - $isblk(Γ, p, t, sans(L)) ==> istm(Θ, p, subrft(issub(γ, Θ, Γ, p), t), sans(L))$
+    - $isblk(Γ, p, t, sans(L)) ==> istm(Θ, p, subrfb(issub(γ, Θ, Γ, p), t), sans(L))$
+    - $lbrn(γ^sans(L), [γ]sans(L), sans(L), p)$
 ]<syntax-reification>
-
-
-This allows us to define the _lifting_ of a substitution $issub(γ, Θ, Γ, p)$ to a label-context $sans(L)$, $lbrn(γ^sans(L), sans(L), [γ]sans(L), p)$, as follows:
-$
-γ^bcnil &= bcnil \
-γ^(sans(L), lhyp(lbl(ℓ), r, Γ, A)) = [lbl(ℓ) ↦ ]
-$

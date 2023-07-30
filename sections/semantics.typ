@@ -184,6 +184,22 @@ We begin by giving a semantics for substitutions and rewriting as follows:
     )
 ])
 
+#lemma(name: "Reification")[
+    Given a substitution $issub(γ, Θ, Γ, p)$, we have
+    $
+    dnt(istm(Θ, p, subrf(issub(γ, Θ, Γ, p)), subrf(Γ))) &= dnt(issub(γ, Θ, Γ, p)) \
+    ∀a, dnt(istm(Θ, p, subrft(issub(γ, Θ, Γ, p), a), A)) &= dnt(issub(γ, Θ, Γ, p));dnt(istm(Γ, p, a, A)) \
+    ∀t, dnt(isblk(Θ, p, subrft(issub(γ, Θ, Γ, p), t), sans(L))) &= E(u;dnt(issub(γ, Θ, Γ, p));k);dnt(isblk(Γ, p, a, sans(L))) \
+    ∀t, dnt(isblk(Θ, p, subrfb(issub(γ, Θ, Γ, p), t), sans(L))) &refines E(u;dnt(issub(γ, Θ, Γ, p));k);dnt(isblk(Γ, p, a, sans(L))) \
+    dnt(lbrn(γ^bcnil, bcnil, bcnil, p)) &= idm \
+    dnt(lbrn(
+        γ^lctx(sans(L), lhyp(lbl(ℓ), r, Δ, A)), 
+        lctx([γ]sans(L), lhyp(lbl(ℓ), r, [γ]Δ, A)), 
+        lctx(sans(L), lhyp(lbl(ℓ), r, Δ, A)), p)) 
+        &= dnt(lbrn(γ^sans(L), [γ]sans(L), sans(L), p)) ⊕ E(u;dnt(issub(γ_Δ, [γ]Δ, Δ, p));k)
+    $
+]
+
 #lemma(name: "Substitution Splitting")[
     Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$, we have
     $
@@ -195,7 +211,7 @@ We begin by giving a semantics for substitutions and rewriting as follows:
 #theorem(name: "Semantic Substitution")[
     Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$, we have
     - $upg(dnt(issub(γ, Θ, Γ, ∅)), p);dnt(istm(Γ, p, a, A)) = dnt(istm(Θ, p, [γ]a, A))$
-    - $upg(E(u;dnt(issub(γ, Θ, Γ, ∅));k), p);dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(γ^sans(L), sans(L), [γ]sans(L), p)) = dnt(isblk(Θ, p, [γ]t, [γ]sans(L)))$
+    - $upg(E(u;dnt(issub(γ, Θ, Γ, ∅));k), p);dnt(isblk(Γ, p, t, sans(L))) = dnt(isblk(Θ, p, [γ]t, [γ]sans(L)));dnt(lbrn(γ^sans(L), [γ]sans(L), sans(L), p))$
     Similarly, for _arbitrary_ renamings $lbrn(cal(K), sans(L), sans(K), p)$, we have that $dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(cal(K), sans(L), sans(K), p)) = dnt(isblk(Γ, p, [cal(K)]t, sans(K)))$
 ]
 
