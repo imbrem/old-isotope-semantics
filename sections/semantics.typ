@@ -5,7 +5,7 @@
 
 == Isotope Models
 
-An *`isotope` model* is given by:
+Given base types $cal(T)$, instructions $cal(I)$, and a loop purity $pure_ℓ$, an *`isotope` model* is given by:
 - Categories $cal(C)_∅, cal(C)_{cen}$ with coproducts enriched over posets, the *control category*, such that: 
     - $underline(dot): cal(C)_∅ -> cal(C)_{cen}$ is an identity-on-objects monoidal functor
     - $cal(C)_∅$ has a guarded trace (this can be vacuous)
@@ -15,15 +15,19 @@ An *`isotope` model* is given by:
     //TODO: structure on clamp so this stops being a problem?
     - Full subcategories $cal(C)_p'$ of $cal(C)_p$ such that $r ⊆ p ==> cal(C)_r' ⊆ cal(C)_r$
 - An symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets, the *expression category*, equipped with
-    - For every droppable base type $A$, a pure morphism $sans("drop")(A): cal(R)_∅(sans("base")(A), I)$
-    - For every splittable base type $A$, a pure morphism $sans("split")(A): cal(R)_∅(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
+    - A map $sans("base"): cal(T) -> |cal(R)|$
+    - A map $sans("inst"): cal(I)_p(A, B) -> cal(R)_p(dnt(A), dnt(B))$, where the denotation of a type $dnt(A): |cal(R)|$ is defined recursively as below.
+    - For every base type $A$ such that $aff ∈ sans("lin")(A)$, a pure morphism $sans("drop")(A): cal(R)_∅(sans("base")(A), I)$ such that:
+        - $sans("drop")(tobj) = α$
+    - For every base type $A$ such that $rel ∈ sans("lin")(A)$, a pure morphism $sans("split")(A): cal(R)_∅(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
+        - $sans("split")(tobj) = α$
         - Commutativity: $sans("split")(A);σ = sans("split")(A)$
         - Associativity: 
         $
         sans("split")(A);dnt(A) ⊗ sans("split")(A)
         = sans("split")(A);sans("split")(A) ⊗ dnt(A);α
         $
-        - Unit: if $A$ is droppable, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
+        - Unit: if $aff ∈ sans("lin")(A)$, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
     - A set of distinguised "clamped" objects $K(|cal(R)|)$, inducing full subcategories $cal(R)_p'$
     - A mapping $K: |cal(R)| -> K(|cal(R)|)$ satisfying: 
         - $K_|cal(R)_cal(C)| = idm$
@@ -80,21 +84,11 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 #align(center, table(
     align: center + horizon, stroke: table-dbg, gutter: 1em,
     rect($dnt(rel(A)): cal(R)_∅(A, A ⊗ A)$),
-    $dnt(dprf(#rel-rules.base)) = sans("split")(dnt(X))$,
+    $dnt(dprf(#rel-rules.base)) = sans("split")(X)$,
     $dnt(dprf(#rel-rules.pair)) = dnt(rel(A)) ⊗ dnt(rel(B));α;dnt(A) ⊗ σ ⊗ dnt(B);α$,
-    table(
-        columns: 2, align: horizon, column-gutter: 2em, stroke: table-dbg,
-        $dnt(dprf(#rel-rules.unit)) = λ_munit^(-1)$,
-        $dnt(dprf(#rel-rules.bool)) = sans("split")(bools)$,
-    ),
     rect($dnt(aff(A)): cal(R)_∅(A, munit)$),
-    $dnt(dprf(#aff-rules.base)) = sans("drop")(dnt(X))$,
+    $dnt(dprf(#aff-rules.base)) = sans("drop")(X)$,
     $dnt(dprf(#aff-rules.pair)) = dnt(aff(A)) ⊗ dnt(aff(B));λ_munit$,
-    table(
-        columns: 2, align: horizon, column-gutter: 2em, stroke: table-dbg,
-        $dnt(dprf(#aff-rules.unit)) = idm$,
-        $dnt(dprf(#aff-rules.bool)) = sans("drop")(bools)$,
-    ),
     rect($dnt(splitctx(Γ, Δ, Ξ)): cal(R)_∅(dnt(Γ), dnt(Δ) ⊗ dnt(Ξ))$),
     $dnt(dprf(#typing-rules.split-nil)) = λ_munit^(-1)$,
     $dnt(dprf(#typing-rules.split-left)) = dnt(splitctx(Γ, Δ, Ξ)) ⊗ dnt(A);α;dnt(Γ) ⊗ σ;α$,

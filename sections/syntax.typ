@@ -12,7 +12,7 @@ The `isotope` grammar is divided into following syntactic categories:
         name: "Type",
         symbol: ($A$, $B$, $C$),
         productions: (
-            ($X$, $tobj$, $bools$, $A ⊗ B$),
+            ($X$, $A ⊗ B$),
         )
     ),
     (
@@ -252,6 +252,7 @@ br 'head where
 
 In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
 - A map $sans("lin")$ from base types $A ∈ cal(T)$ to *quantities* $q ⊆ {rel, aff}$
+- Distinguished $tobj, bools ∈ cal(T)$ with $sans("lin")(tobj) = sans("lin")(bools) = {rel, aff}$
 - For each $A, B in types(cal(T))$, for each *purity* $p ⊆ {cen}$, a subset $cal(I)_p (A, B) ⊆ cal(I)$ of *instructions*, such that
     $ p ⊆ p' ==> cal(I)_p (A, B) ⊇ cal(I)_(p') (A, B) $
     We define $cal(I)_pure = cal(I)_{cen}$, and we call $f ∈ cal(I)_pure (A, B)$ *pure instructions*.
@@ -337,8 +338,6 @@ We also introduce the following abbreviations:
 
 #let typing-rules = (
     "base-lin": prft(name: "base-lin", $q ⊆ sans("lin")(X)$, $islin(q, X)$),
-    "unit-lin": prft(name: "unit-lin", $islin(q, tobj)$),
-    "bool-lin": prft(name: "bool-lin", $islin(q, bools)$),
     "pair-lin": prft(name: "pair-lin", $islin(q, A)$, $islin(q, B)$, $islin(q, A ⊗ B)$),
     "split-nil": prft(name: "split-nil", $splitctx(cnil, cnil, cnil)$),
     "split-left": prft(name: "split-left", 
@@ -460,10 +459,8 @@ We also introduce the following abbreviations:
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
     table(
-        columns: 4, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
         dprf(typing-rules.base-lin),
-        dprf(typing-rules.unit-lin),
-        dprf(typing-rules.bool-lin),
         dprf(typing-rules.pair-lin),
     ),
     table(
@@ -487,33 +484,25 @@ We also introduce the following abbreviations:
 
 #let rel-rules = (
     "base": prft(name: "base-rel", $rel ∈ sans("lin")(X)$, $rel(X)$),
-    "unit": prft(name: "unit-rel", $rel(tobj)$),
-    "bool": prft(name: "bool-rel", $rel(bools)$),
     "pair": prft(name: "pair-rel", $rel(A)$, $rel(B)$, $rel(A ⊗ B)$),
 )
 
 
 #let aff-rules = (
     "base": prft(name: "base-aff", $aff ∈ sans("lin")(X)$, $aff(X)$),
-    "unit": prft(name: "unit-aff", $aff(tobj)$),
-    "bool": prft(name: "bool-aff", $aff(bools)$),
     "pair": prft(name: "pair-aff", $aff(A)$, $aff(B)$, $aff(A ⊗ B)$),
 )
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
     table(
-        columns: 4, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
         dprf(rel-rules.base),
-        dprf(rel-rules.unit),
-        dprf(rel-rules.bool),
         dprf(rel-rules.pair),
     ),
     table(
-        columns: 4, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
         dprf(aff-rules.base),
-        dprf(aff-rules.unit),
-        dprf(aff-rules.bool),
         dprf(aff-rules.pair),
     ),
 ))
