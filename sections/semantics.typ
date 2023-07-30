@@ -31,7 +31,7 @@ An *`isotope` model* is given by:
         - $k;u;k = k;k = k, quad u;k;u = u_(K(A));u = u$
         // - $k;u;A ⊗ f;k = A ⊗ (k;u;f);k, quad k;u;f ⊗ B;k = (k;u;f) ⊗ B;k$
         - For all pure morphisms $f ∈ cal(R)_∅(A, B)$, $f;k;u = k;u;f$
-        - For all morphisms $f, g ∈ cal(R)_p(A, B)$, $f;g ≥ f;upg((k;u), p);g$ // "SSA condition"
+        - For all morphisms $f, g ∈ cal(R)_p(A, B)$, $f;upg((k;u), p);g refines f;g$ // "SSA condition"
     - Enriched isomorphisms $E_p: cal(R)_p' ≃ cal(C)_p'$ such that $∀r, E_p;(upg(dot, r)) = (upg(dot, r));E_r$ and $E_p^(-1);(upg(dot, r)) = (upg(dot, r));E_r^(-1)$ //TODO: generalize to just requiring an equivalence?
 Note $upg(dot, p)$ denotes the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
 
@@ -42,7 +42,7 @@ An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. An `isotope` mode
 Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R)_p = cal(C)_p$ and $E, K, k, u$ the identity.
 
 // If $cal(V) -> cal(C)$ is enriched over posets and equipped with an operation $Σ$ which takes sets of permutations $f ⋉ g, f ⋊ g$ to morphisms such that
-// $∀h ∈ P, Σ P ≥ h $
+// $∀h ∈ P, h refines Σ P $
 // then we may construct, for each $Σ$, the *$Σ$-graphical `isotope` model*.
 
 == Denotational Semantics
@@ -162,7 +162,7 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 
 #lemma(name: "Semantic Weakening")[
     Given $dropctx(Θ, Γ)$, $joinctx(sans(L), sans(K))$, and $p ⊆ r$, we have
-    - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(istm(Γ, p, a, A)), r) = dnt(istm(Γ, r, a, A))$
+    - $upg(dnt(dropctx(Θ, Γ)), r);upg(dnt(istm(Γ, p, a, A)), r) = dnt(istm(Θ, r, a, A))$
     - $upg(E(u;dnt(dropctx(Θ, Γ));k), r);upg(dnt(isblk(Γ, p, t, sans(L))), r);upg(dnt(joinctx(sans(L), sans(K))), r) = dnt(isblk(Γ, r, t, sans(K)))$
 ]
 
@@ -175,20 +175,19 @@ We begin by giving a semantics for substitutions and rewriting as follows:
         align: left + horizon, stroke: table-dbg, gutter: 1em,
         $dnt(dprf(#subst-rules.subst-nil)) = dnt(dropctx(Θ, cnil))$,
         $dnt(dprf(#subst-rules.subst-cons))
-        \ #h(4em) = upg(dnt(splitctx(Θ, Θ_Γ, Θ_x)), p);dnt(issub(γ, Θ_Γ, Γ, p)) ⋊ dnt(istm(Θ_x, p, a, A))
+        \ #h(12em) = upg(dnt(splitctx(Θ, Θ_Γ, Θ_x)), p);dnt(issub(γ, Θ_Γ, Γ, p)) ⋊ dnt(istm(Θ_x, p, a, A))
         $
     )
-    // #rect($dnt(lbrn(cal(K), sans(L), sans(K), p)): cal(C)_p (dnt(E(K(sans(L)))), dnt(E(K(sans(K)))))$),
-    // #table(
-    //     align: left + horizon, stroke: table-dbg, gutter: 1em,
-    //     $dnt(dprf(#subst-rules.rn-nil)) = 0_sans(K)$,
-    //     $dnt(dprf(#subst-rules.rn-cons)) 
-    //     \ #h(4em) = 
-    //     dnt(lbrn(cal(K), sans(L), sans(K), p)) 
-    //     ⊕ dnt(isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K)));
-    //     j
-    //     $
-    // )
+    #rect($dnt(lbrn(cal(K), sans(L), sans(K), p)): cal(C)_p (dnt(sans(L)), dnt(sans(K)))$)
+    #table(
+        align: left + horizon, stroke: table-dbg, gutter: 1em,
+        $dnt(dprf(#subst-rules.rn-nil)) = 0_sans(K)$,
+        $dnt(dprf(#subst-rules.rn-cons))  = 
+        dnt(lbrn(cal(K), sans(L), sans(K), p)) 
+        ⊕ dnt(isblk(tctx(Δ, thyp(x, A, q)), p, t, sans(K)));
+        sans(J)
+        $
+    )
 ])
 
 #lemma(name: "Substitution Splitting")[
@@ -200,16 +199,16 @@ We begin by giving a semantics for substitutions and rewriting as follows:
 ]
 
 #theorem(name: "Semantic Substitution")[
-    Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$ and an arbitrary renaming $lbrn(cal(K), sans(L), sans(K), p)$, we have
+    Given a _pure_ substitution $issub(γ, Θ, Γ, ∅)$, we have
     - $upg(dnt(issub(γ, Θ, Γ, ∅)), p);dnt(istm(Γ, p, a, A)) = dnt(istm(Θ, p, [γ]a, A))$
     - $upg(E(u;dnt(issub(γ, Θ, Γ, ∅));k), p);dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(γ^sans(L), sans(L), [γ]sans(L), p)) = dnt(isblk(Θ, p, [γ]t, [γ]sans(L)))$
-    - $dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(cal(K), sans(L), sans(K), p)) = dnt(isblk(Γ, p, [cal(K)]t, sans(K)))$
+    Similarly, for _arbitrary_ renamings $lbrn(cal(K), sans(L), sans(K), p)$, we have that $dnt(isblk(Γ, p, t, sans(L)));dnt(lbrn(cal(K), sans(L), sans(K), p)) = dnt(isblk(Γ, p, [cal(K)]t, sans(K)))$
 ]
 
 #theorem(name: "Congruence")[
-    Given substitutions $issub(γ ≃ γ', Θ, Γ, p)$ and renamings $lbrn(cal(K) ≃ cal(K)', sans(L), sans(K), p)$, we have
-    - $dnt(istm(Θ, p, [γ]a, A)) = dnt(istm(Θ, p, [γ']a, A))$
-    - $dnt(isblk(Θ, p, [γ]t, [γ]sans(L))) = dnt(isblk(Θ, p, [γ']t, [γ']sans(L)))$
-    - $dnt(isblk(Γ, p, [cal(K)]t, sans(K))) = dnt(isblk(Γ, p, [cal(K)']t, sans(K)))$
-    - $[γ]cal(K) ≃ [γ]cal(K)' ≃ [γ']cal(K) ≃ [γ']cal(K)'$
+    Given substitutions $issub(γ refines γ', Θ, Γ, p)$, we have
+    - $dnt(istm(Θ, p, [γ]a, A)) refines dnt(istm(Θ, p, [γ']a, A))$
+    - $dnt(isblk(Θ, p, [γ]t, [γ]sans(L))) refines dnt(isblk(Θ, p, [γ']t, [γ']sans(L)))$
+    Similarly, for renamings $lbrn(cal(K) → cal(K)', sans(L), sans(K), p)$, we have that
+    $dnt(isblk(Γ, p, [cal(K)]t, sans(K))) refines dnt(isblk(Γ, p, [cal(K)']t, sans(K)))$
 ]

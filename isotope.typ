@@ -165,6 +165,8 @@
 #let islin(purity, ty) = $sans("lin")_(#purity)(#ty)$
 #let issub(sub, src, trg, purity) = $sub: src ->_purity trg$
 #let lbrn(sub, src, trg, purity) = $sub: src arrow.r.wave_purity trg$
+#let subrf(sub, trm) = $[[sub]](trm)$
 
 // `isotope` semantics syntax
 #let upg(arr, purity) = $arr^(↑_purity)$
+#let refines = $≤$

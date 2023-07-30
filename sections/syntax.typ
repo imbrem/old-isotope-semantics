@@ -645,20 +645,21 @@ We begin by giving the typing rules for substitution and renaming:
 
 Given a well-typed substitution $issub(γ, Θ, Γ, p)$, we define the capture-avoiding substitution of terms and targets as usual.
 
+We define the substitution of a _context_ as follows:
 $
 [γ]cnil &= cnil #h(10em) & \
 [γ](tctx(Ξ, thyp(x, A, q))) &= tctx(([γ]Ξ), thyp(x, A, q)) & "if" x ∉ Γ \
 [γ](tctx(Ξ, thyp(x, A, q))) &= ([γ]Ξ) ∪ Θ_x & "if" x ∈ Γ 
 $
-We can then define the substitution of a _label context_ recursively as follows:
-$
-[γ]bcnil &= bcnil, quad [γ](lctx(sans(L), lhyp(lbl(ℓ), p, Ξ, A))) = lctx(([γ]sans(L)), lhyp(lbl(ℓ), p, [γ]Ξ, A))
-$
-Given a context $Ξ$, we may now define the _restriction_ of $γ$, $issub(γ_Ξ, [γ]Ξ, Ξ, p)$, as follows:
+Given a context $Ξ$, we may then define the _restriction_ of $γ$, $issub(γ_Ξ, [γ]Ξ, Ξ, p)$, as follows:
 $
 γ_cnil &= cnil #h(10em) & \
 γ_(tctx(thyp(x, A, q), Ξ)) &= [x ↦ x]γ_Ξ & "if" x ∉ Γ \
 γ_(tctx(thyp(x, A, q), Ξ)) &= [x ↦ [γ]x]γ_Ξ & "if" x ∈ Γ
+$
+We may also define the substitution of a _label context_ recursively as follows:
+$
+[γ]bcnil &= bcnil, quad [γ](lctx(sans(L), lhyp(lbl(ℓ), p, Ξ, A))) = lctx(([γ]sans(L)), lhyp(lbl(ℓ), p, [γ]Ξ, A))
 $
 
 We may now state the substitution lemma as follows:
@@ -684,3 +685,24 @@ We may then also state the following lemma for labels
 #lemma(name: "Renaming")[
     Given $lbrn(cal(K), sans(L), sans(K), p)$, if $isblk(Γ, p, t, sans(L))$, then $isblk(Γ, p, [cal(K)]t, sans(K))$
 ]
+
+We may also define the _reification_ $subrf(γ, a)$ of a substitution $γ$ for a term $a$ or block $t$ recursively as follows:
+$
+subrf(cnil, a) &= a \
+subrf([x ↦ a]γ, a) &= (klet x = a;subrf(γ, a)) \
+subrf(cnil, t) &= t \
+subrf([x ↦ a]γ, t) &= (klet x = a;subrf(γ, t)) \
+$
+This allows us to state the following lemma:
+#lemma(name: "Reification")[
+    Given  $issub(γ, Θ, Γ, p)$, then
+    - $istm(Γ, p, a, A) ==> istm(Θ, p, [γ]a, A)$
+    - $isblk(Γ, p, t, sans(L)) ==> isblk(Θ, p, [γ]t, [γ]sans(L))$
+]<syntax-reification>
+
+
+This allows us to define the _lifting_ of a substitution $issub(γ, Θ, Γ, p)$ to a label-context $sans(L)$, $lbrn(γ^sans(L), sans(L), [γ]sans(L), p)$, as follows:
+$
+γ^bcnil &= bcnil \
+γ^(sans(L), lhyp(lbl(ℓ), r, Γ, A)) = [lbl(ℓ) ↦ ]
+$
