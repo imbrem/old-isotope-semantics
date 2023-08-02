@@ -9,7 +9,7 @@ Given base types $cal(T)$, instructions $cal(I)$, and a loop purity $pure_ℓ$, 
 - Categories $cal(C)_∅, cal(C)_{cen}$ with coproducts enriched over posets, the *control category*, such that: 
     - $underline(dot): cal(C)_∅ -> cal(C)_{cen}$ is an identity-on-objects monoidal functor
     - $cal(C)_∅$ has a guarded trace (this can be vacuous)
-    - $cal(C)_{cen}$ has a trace
+    - $cal(C)_{cen}$ has a trace which is uniform w.r.t $underline(dot)$ (i.e., all morphisms of the form $underline(f)$ are strict)
     //TODO: list out all ite properties; or generalize over control structures?
     - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(u;f;k);sans("ite")$
     //TODO: structure on clamp so this stops being a problem?
