@@ -26,16 +26,14 @@ Given base types $cal(T)$, instructions $cal(I)$, and a loop purity $pure_ℓ$, 
         - Split: for all pure morphisms $f ∈ cal(R)_{cen}(dnt(A), dnt(B))$ where $rel(A), rel(B)$,
             $f;dnt(rel(B)) = dnt(rel(A));f ⊗ f$,
             where the denotation $dnt(rel(dot))$ is given in @struct-densem
-    - A set of distinguised "clamped" objects $K(|cal(R)|)$, inducing full subcategories $cal(R)_p'$
-    - An endofunctor $S: cal(R)_{cen} -> cal(R)_{cen}$ such that $∀f, g ∈ cal(R)_{cen}(A, B), S(f) = S(g)$; this morphism, where it exists, is denoted $S_(A, B)$.
-    - Mappings $K: |cal(R)| -> K(|cal(R)|)$, $G: |cal(R)| -> G(|cal(R)|)$, $P: |cal(R)| -> P(|cal(R)|)$ satisfying: 
-        - $K ∘ K  = K, G ∘ G = G$
-        - $K(A) = P(A) ⊗ S(A)$
-        - $G ∘ K = K ∘ G = G$
-        - There exists a set of objects $cal(R)_E$ such that:
-            - If $cal(R)_∅(A, B)$ is nonempty and $B ∈ cal(R)_E$, then $A ∈ cal(R)_E$
-            - ${dnt(A) | iseff(A)} ⊆ cal(R)_E$
-            - $∀A ∈ cal(R)_E, G(A) = K(A)$
+    - Mappings $P_p: |cal(R)| -> P_p (|cal(R)|)$, inducing full subcategories $P_p (cal(R)_p)$
+    - Endofunctors $S_p: cal(R)_p -> cal(R)_p$ where: 
+        - $∀f, g ∈ cal(R)_p (A, B), S(f) = S(g)$; this morphism, where it exists, is denoted $S^(A, B)_p$
+    - A set of *clamped* objects $K(|cal(R)|)$, inducing full subcategories $K(cal(R)_p)$, where $K = K_cen$ and $K_p(A) = P_p(A) ⊗ S_p(A)$, such that $K_p ∘ K_p = K_p$ and $K_p ∘ K_q ≃ K_(p ∩ q)$
+    - A set of *effectful* objects $cal(R)_E$ such that:
+        - If $cal(R)_∅(A, B)$ is nonempty and $B ∈ cal(R)_E$, then $A ∈ cal(R)_E$
+        - ${dnt(A) | iseff(A)} ⊆ cal(R)_E$
+        - $∀A ∈ cal(R)_E, K_{cen}(A) = K_∅(A)$
     - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_A: cal(R)_∅(A, K(A))$ and *unclamp* $u_A: cal(R)_∅(K(A), A)$ such that:
         - $k;u;k = k;k = k, quad u;k;u = u_(K(A));u = u$
         // - $k;u;A ⊗ f;k = A ⊗ (k;u;f);k, quad k;u;f ⊗ B;k = (k;u;f) ⊗ B;k$
@@ -47,11 +45,7 @@ Given base types $cal(T)$, instructions $cal(I)$, and a loop purity $pure_ℓ$, 
     - $cal(C)_∅$ has a trace which is uniform w.r.t to the inclusion functor from $cal(C)_{cen}$
     //TODO: list out all ite properties; or generalize over control structures?
     - Functors $C_p: K(cal(R)_p) -> cal(C)_p$, where $K(cal(R)_p)$ is the full subcategory with objects $K(|cal(R)|)$
-    - An isomorphism $R_{cen}: cal(C)_{cen} -> P(cal(R)_{cen})$ where $P(cal(R)_p)$ is the full subcategory with objects $P(|cal(R)|)$ such that
-        - $∀f ∈ cal(R)_{cen}(K(A), K(B)), f = R_{cen} (C_{cen}(f)) ⊗ S_(A, B)$
-        - $∀f ∈ cal(C)_{cen}(R_{cen}^(-1)(P(A)), R_{cen}^(-1)(P(B))), C_{cen}(R^P (f) ⊗ S_(A, B)) = f$
-    - An isomorphism $R_∅: cal(C)_∅ -> G(cal(R)_∅)$ where $G(cal(R)_∅)$ is the full subcategory with objects $P(|cal(R)|)$ such that
-        - $∀A, B ∈ cal(R)_E, ∀f ∈ cal(R)_∅(G(A), G(B)), R_∅^(-1)(f) = C_∅(f)$  
+    - Isomorphisms $R_p: cal(C)_p -> P_p(cal(R)_p)$
     - For each $A$, there exist morphisms $sans("ite"): cal(C)_{cen}(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(u;f;k);sans("ite")$
 
 Note $upg(dot, p)$ denotes the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
