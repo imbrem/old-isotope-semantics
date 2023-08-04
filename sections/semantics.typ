@@ -6,20 +6,15 @@
 == Isotope Models
 
 Given base types $cal(T)$, instructions $cal(I)$, and a loop purity $pure_ℓ$, an *`isotope` model* is given by:
-- Categories $cal(C)_∅, cal(C)_{cen}$ with coproducts enriched over posets, the *control category*, such that: 
-    - $underline(dot): cal(C)_∅ -> cal(C)_{cen}$ is an identity-on-objects monoidal functor
-    - $cal(C)_∅$ has a guarded trace (this can be vacuous)
-    - $cal(C)_{cen}$ has a trace which is uniform w.r.t $underline(dot)$ (i.e., all morphisms of the form $underline(f)$ are strict)
-    //TODO: list out all ite properties; or generalize over control structures?
-    - For each $A$, there exist morphisms $sans("ite"): cal(C)_∅(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(u;f;k);sans("ite")$
-    //TODO: structure on clamp so this stops being a problem?
-    - Full subcategories $cal(C)_p'$ of $cal(C)_p$ such that $r ⊆ p ==> cal(C)_r' ⊆ cal(C)_r$
-- An symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets, the *expression category*, equipped with
-    - A map $sans("base"): cal(T) -> |cal(R)|$
-    - A map $sans("inst"): cal(I)_p(A, B) -> cal(R)_p(dnt(A), dnt(B))$, where the denotation of a type $dnt(A): |cal(R)|$ is defined recursively as below.
-    - For every base type $A$ such that $aff ∈ sans("lin")(A)$, a pure morphism $sans("drop")(A): cal(R)_∅(sans("base")(A), I)$ such that:
+- An symmetric effectful category $cal(R)_{cen} -> cal(R)_∅$ enriched over posets, the *expression category*, equipped with
+    - A map $sans("base")(dot): cal(T) -> |cal(R)|$ giving denotations for base types.
+    - A map $sans("base")(dot): cal(I)_p(A, B) -> cal(R)_p(dnt(A), dnt(B))$ giving denotations for instructions, where the denotation of a type $dnt(A): |cal(R)|$ is defined recursively as in @type-densem.
+    - For every base type $A$ such that $aff ∈ sans("lin")(A)$, a pure morphism $sans("drop")(A): cal(R)_{cen}(dnt(A), I)$ such that:
         - $sans("drop")(tobj) = α$
-    - For every base type $A$ such that $rel ∈ sans("lin")(A)$, a pure morphism $sans("split")(A): cal(R)_∅(sans("base")(A), sans("base")(A) ⊗ sans("base")(A))$, such that:
+        - For all pure morphisms $f ∈ cal(R)_{cen}(dnt(A), dnt(B))$ where $aff(A), aff(B)$,
+            $f;dnt(aff(B)) = dnt(aff(A))$,
+            where the denotation $dnt(aff(dot))$ is given in @struct-densem
+    - For every base type $A$ such that $rel ∈ sans("lin")(A)$, a pure morphism $sans("split")(A): cal(R)_{cen}(dnt(A), dnt(A) ⊗ dnt(A))$, such that:
         - $sans("split")(tobj) = α$
         - Commutativity: $sans("split")(A);σ = sans("split")(A)$
         - Associativity: 
@@ -28,20 +23,45 @@ Given base types $cal(T)$, instructions $cal(I)$, and a loop purity $pure_ℓ$, 
         = sans("split")(A);sans("split")(A) ⊗ dnt(A);α
         $
         - Unit: if $aff ∈ sans("lin")(A)$, $sans("split")(A);(sans("drop")(A) ⊗ dnt(A)) = idm$
+        - Split: for all pure morphisms $f ∈ cal(R)_{cen}(dnt(A), dnt(B))$ where $rel(A), rel(B)$,
+            $f;dnt(rel(B)) = dnt(rel(A));f ⊗ f$,
+            where the denotation $dnt(rel(dot))$ is given in @struct-densem
     - A set of distinguised "clamped" objects $K(|cal(R)|)$, inducing full subcategories $cal(R)_p'$
-    - A mapping $K: |cal(R)| -> K(|cal(R)|)$ satisfying: 
-        - $K_|cal(R)_cal(C)| = idm$
+    - An endofunctor $S: cal(R)_{cen} -> cal(R)_{cen}$ such that $∀f, g ∈ cal(R)_{cen}(A, B), S(f) = S(g)$; this morphism, where it exists, is denoted $S_(A, B)$.
+    - Mappings $K: |cal(R)| -> K(|cal(R)|)$, $G: |cal(R)| -> G(|cal(R)|)$, $P: |cal(R)| -> P(|cal(R)|)$ satisfying: 
+        - $K ∘ K  = K, G ∘ G = G$
+        - $K(A) = P(A) ⊗ S(A)$
+        - $G ∘ K = K ∘ G = G$
+        - There exists a set of objects $cal(R)_E$ such that:
+            - If $cal(R)_∅(A, B)$ is nonempty and $B ∈ cal(R)_E$, then $A ∈ cal(R)_E$
+            - ${dnt(A) | iseff(A)} ⊆ cal(R)_E$
+            - $∀A ∈ cal(R)_E, G(A) = K(A)$
     - For all $A ∈ |cal(R)|$, central morphisms *clamp* $k_A: cal(R)_∅(A, K(A))$ and *unclamp* $u_A: cal(R)_∅(K(A), A)$ such that:
         - $k;u;k = k;k = k, quad u;k;u = u_(K(A));u = u$
         // - $k;u;A ⊗ f;k = A ⊗ (k;u;f);k, quad k;u;f ⊗ B;k = (k;u;f) ⊗ B;k$
-        - For all pure morphisms $f ∈ cal(R)_∅(A, B)$, $f;k;u = k;u;f$
+        - For all pure morphisms $f ∈ cal(R)_{cen}(A, B)$, $f;k;u = k;u;f$
         - For all morphisms $f, g ∈ cal(R)_p(A, B)$, $f;upg((k;u), p);g refines f;g$ // "SSA condition"
-    - Enriched isomorphisms $E_p: cal(R)_p' ≃ cal(C)_p'$ such that $∀r, E_p;(upg(dot, r)) = (upg(dot, r));E_r$ and $E_p^(-1);(upg(dot, r)) = (upg(dot, r));E_r^(-1)$ //TODO: generalize to just requiring an equivalence?
+- Categories $cal(C)_∅, cal(C)_{cen}$ with coproducts enriched over posets, the *control category*, such that: 
+    - $cal(C)_{cen}$ is a wide subcategory of $cal(C)_∅$
+    - $cal(C)_{cen}$ has a guarded trace (this can be vacuous)
+    - $cal(C)_∅$ has a trace which is uniform w.r.t to the inclusion functor from $cal(C)_{cen}$
+    //TODO: list out all ite properties; or generalize over control structures?
+    - Functors $C_p: K(cal(R)_p) -> cal(C)_p$, where $K(cal(R)_p)$ is the full subcategory with objects $K(|cal(R)|)$
+    - An isomorphism $R_{cen}: cal(C)_{cen} -> P(cal(R)_{cen})$ where $P(cal(R)_p)$ is the full subcategory with objects $P(|cal(R)|)$ such that
+        - $∀f ∈ cal(R)_{cen}(K(A), K(B)), f = R_{cen} (C_{cen}(f)) ⊗ S_(A, B)$
+        - $∀f ∈ cal(C)_{cen}(R_{cen}^(-1)(P(A)), R_{cen}^(-1)(P(B))), C_{cen}(R^P (f) ⊗ S_(A, B)) = f$
+    - An isomorphism $R_∅: cal(C)_∅ -> G(cal(R)_∅)$ where $G(cal(R)_∅)$ is the full subcategory with objects $P(|cal(R)|)$ such that
+        - $∀A, B ∈ cal(R)_E, ∀f ∈ cal(R)_∅(G(A), G(B)), R_∅^(-1)(f) = C_∅(f)$  
+    - For each $A$, there exist morphisms $sans("ite"): cal(C)_{cen}(E(K(bools ⊗ A)), E(K(A)) ⊕ E(K(A)))$ such that $sans("ite");E(f) ⊕ E(f) = E(u;f;k);sans("ite")$
+
 Note $upg(dot, p)$ denotes the functor sending $cal(R)_r$ to $cal(R)_p$ or $cal(C)_r$ to $cal(C)_p$.
 
 We write $|cal(R)|, |cal(C)|$ to denote the shared set of objects of $|cal(R)_p|, |cal(C)_p|$ respectively.
 
-An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. An `isotope` model is *simple* if $cal(R)_p = cal(C)_p$ and $K, k, u$ are the identity. An `isotope` model is *flat* if $k_(K(A)), u_(K(A))$ are the identity.
+- An `isotope` model is *graphical* if $cal(R)_cen$ is monoidal. 
+- An `isotope` model is *uniform* if $cal(C)_∅$'s trace is uniform w.r.t the identity functor
+- An `isotope` model is *simple* if $cal(R)_p = cal(C)_p$ and $K, k, u$ are the identity. 
+- An `isotope` model is *flat* if $k_(K(A)), u_(K(A))$ are the identity.
 
 Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over posets with coproducts and an Elgot operator, we can construct a simple `isotope` model by taking $cal(R)_p = cal(C)_p$ and $E, K, k, u$ the identity.
 
@@ -54,6 +74,8 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 #let table-dbg = none
 
 === Types and Contexts
+
+<type-densem>
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg,
@@ -80,6 +102,8 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 ))
 
 === Structural Rules
+
+<struct-densem>
 
 #align(center, table(
     align: center + horizon, stroke: table-dbg, gutter: 1em,
