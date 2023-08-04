@@ -252,6 +252,7 @@ br 'head where
 
 In this section, we go over the rules defining well-typed `isotope` syntax. Our typing rules are parametrized by: 
 - A map $sans("lin")$ from base types $A ∈ cal(T)$ to *quantities* $q ⊆ {rel, aff}$
+- A set $sans("Eff") ⊆ cal(T)$ of *effectful types*
 - Distinguished $tobj, bools ∈ cal(T)$ with $sans("lin")(tobj) = sans("lin")(bools) = {rel, aff}$
 - For each $A, B in types(cal(T))$, for each *purity* $p ⊆ {cen}$, a subset $cal(I)_p (A, B) ⊆ cal(I)$ of *instructions*, such that
     $ p ⊆ p' ==> cal(I)_p (A, B) ⊇ cal(I)_(p') (A, B) $
@@ -299,7 +300,8 @@ We may now introduce the following typing judgements:
     [$Γ$ splits into contexts $Δ$, $Ξ$],
     $joinctx(sans(K), sans(L))$,
     [$sans(K)$ is a subset of label-set $sans(L)$],
-    $islin(q, A)$, [$A$ has linearity $q$]
+    $islin(q, A)$, [$A$ has linearity $q$],
+    $iseff(A)$, [$A$ is effectful]
 )]
 We also introduce the following abbreviations:
 #align(center)[#table(
@@ -339,6 +341,9 @@ We also introduce the following abbreviations:
 #let typing-rules = (
     "base-lin": prft(name: "base-lin", $q ⊆ sans("lin")(X)$, $islin(q, X)$),
     "pair-lin": prft(name: "pair-lin", $islin(q, A)$, $islin(q, B)$, $islin(q, A ⊗ B)$),
+    "base-eff": prft(name: "base-eff", $X ∈ sans("Eff")$, $iseff(X)$),
+    "left-eff": prft(name: "left-eff", $iseff(A)$, $iseff(A ⊗ B)$),
+    "right-eff": prft(name: "right-eff", $iseff(B)$, $iseff(A ⊗ B)$),
     "split-nil": prft(name: "split-nil", $splitctx(cnil, cnil, cnil)$),
     "split-left": prft(name: "split-left", 
         $splitctx(Γ, Δ, Ξ)$,
@@ -417,7 +422,9 @@ We also introduce the following abbreviations:
         istm($Γ$, $p$, $klet (x, y) = a; e$, $C$)
     ),
     "blk": prft(name: "blk", 
-        $isblk(Γ, p, t, lhyp(lbl(ℓ), p, cnil, A))$,
+        $isblk(Γ, q, t, lhyp(lbl(ℓ), q, cnil, A))$,
+        $(cen ∈ q) ∨ iseff(A)$,
+        $p ⊆ q$,
         $istm(Γ, p, lbl(ℓ)(A) med {t}, A)$
     ),
     "br": prft(name: "br", 
@@ -462,6 +469,12 @@ We also introduce the following abbreviations:
         columns: 2, align: bottom, column-gutter: 2em, stroke: table-dbg,
         dprf(typing-rules.base-lin),
         dprf(typing-rules.pair-lin),
+    ),
+    table(
+        columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
+        dprf(typing-rules.base-eff),
+        dprf(typing-rules.left-eff),
+        dprf(typing-rules.right-eff),
     ),
     table(
         columns: 3, align: bottom, column-gutter: 2em, stroke: table-dbg,
@@ -567,6 +580,8 @@ We begin this section by defining some basic metatheoretic judgements:
     [The substitution $γ$ is a submap of $δ$],
     $islin(q, Γ)$,
     [The context $Γ$ is of linearity $q$],
+    $iseff(Γ)$,
+    [The context $Γ$ is effectful],
     $issub(γ, Θ, Γ, p)$,
     [The map $γ$ is a substitution from $Θ$ to $Γ$ with purity $p$],
     $lbrn(cal(K), sans(L), sans(K), p)$,

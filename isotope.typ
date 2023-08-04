@@ -163,6 +163,7 @@
     $subctx ⇝ dest$
 }
 #let islin(purity, ty) = $sans("lin")_(#purity)(#ty)$
+#let iseff(ty) = $sans("eff")(#ty)$
 #let issub(sub, src, trg, purity) = $sub: src ->_purity trg$
 #let lbrn(sub, src, trg, purity) = $sub: src arrow.r.wave_purity trg$
 #let subrf(sub) = $|sub|$
