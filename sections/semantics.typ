@@ -65,8 +65,6 @@ Given a symmetric effectful category $cal(R)_∅ -> cal(R)_{cen}$ enriched over 
 
 == Denotational Semantics
 
-#let table-dbg = none
-
 === Types and Contexts
 
 <type-densem>

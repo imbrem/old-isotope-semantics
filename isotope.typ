@@ -1,6 +1,10 @@
 #import "utils/grammar.typ": *
 #import "utils/proof.typ": *
 
+// Abbreviations
+#let ul(x) = $underline(#x)$
+
+// Theorems
 #import "@preview/lemmify:0.1.2": default-theorems, display-heading-counter-at
 
 #let (
@@ -173,3 +177,6 @@
 // `isotope` semantics syntax
 #let upg(arr, purity) = $arr^(↑_purity)$
 #let refines = $≤$
+
+// Utility flags
+#let table-dbg = none

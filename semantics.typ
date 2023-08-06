@@ -16,6 +16,7 @@
 #include "sections/syntax.typ"
 #include "sections/semantics.typ"
 #include "sections/ssa.typ"
+#include "sections/state.typ"
 
 #pagebreak()
 #bibliography("references.bib")
