@@ -178,5 +178,8 @@
 #let upg(arr, purity) = $arr^(↑_purity)$
 #let refines = $≤$
 
+// isotopy classes
+#let isoc(cat) = $cat^sans("iso")$
+
 // Utility flags
 #let table-dbg = none

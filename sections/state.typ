@@ -35,7 +35,7 @@ Let $ι: cal(C)_0 -> cal(C)_1$ be a symmetric effectful category enriched over p
 );
 #grammar(state-passing-grammar)
 This is quotiented as follows:
-- Category: $idm;f = f;idm = f$, $f;(g;h) = (f;g);h$
+- Category: $idm;f = f;idm = f, quad f;(g;h) = (f;g);h$
 - Symmetric monoidal category: 
     - Functoriality of $⊗$: 
         - $idm ⊗ A = idm, quad A ⊗idm = idm$
@@ -109,10 +109,26 @@ Given a premonoidal category $cal(C)$, we define _formal string diagrams_ on $ca
     "λ-inv": prft(name: $λ^(-1)$, $Γ ⊢ λ^(-1): A -> I ⊗ A$),
     "σ": prft(name: $σ$, $Γ ⊢ σ: A ⊗ B -> B ⊗ A$),
 )
+quotiented as follows:
+- Category: $idm;f = f;idm = f, quad f;(g;h) = (f;g);h$
+- Symmetric premonoidal category: 
+    - Functoriality of $⊗$: 
+        - $idm ⊗ A = idm, quad A ⊗idm = idm$
+        - $(f;g) ⊗ A = f ⊗ A;g ⊗ A, quad A ⊗ (f;g) = A ⊗ f;A ⊗ g$
+    - Natural isomorphisms:
+        - $α;α^(-1) = idm$, $α^(-1);α = idm$, $ρ;ρ^(-1) = idm$, $ρ^(-1);ρ = idm$, $λ;λ^(-1) = idm$, $λ^(-1);λ = idm$, $σ;σ = idm$
+        - $(f ⊗ B) ⊗ C;α = α;f ⊗ (B ⊗ C)$
+        - $(A ⊗ f) ⊗ C;α = α;A ⊗ (f ⊗ C)$
+        - $(A ⊗ B) ⊗ f;α = α;A ⊗ (B ⊗ f)$
+        - $λ;f = I ⊗ f;λ$, $ρ;f = f ⊗ I;ρ$
+        - $A ⊗ f;σ = σ;f ⊗ A$, $f ⊗ B;σ = σ;B ⊗ f$
+    - Centrality: $∀c ∈ {α, α^(-1), ρ, ρ^(-1), λ, λ^(-1), σ}$, $c ⊗ B;A' ⊗ f = A ⊗ f;c ⊗ B$
+    - Triangle: $α_(A, I, B);A ⊗ λ = ρ ⊗ B$
+    - Pentagon: $α_(A ⊗ B, C, D);α_(A, B, C ⊗ D) = α_(A, B, C) ⊗ D;α_(A, B ⊗ C, D);A ⊗α_(B, C, D)$
+    - Hexagon: $α_(A, B, C);σ_(A, B ⊗ C);α_(B, C, A) = σ_(A, B) ⊗ C;α_(B, A, C);B ⊗ σ_(A, C)$
 
 Given a context $Γ$, we define the set of valid interpretations of $Γ$, $dnt(Γ)$, to be the set of functions mapping each $x: A -> B ∈ Γ$ to a morphism $cal(C)(A, B)$.
 We now give typing rules and semantics for formal string diagrams as follows:
-
 #align(center, table(
     align: center + horizon, stroke: table-dbg, gutter: 1em,
     rect($dnt(Γ ⊢ f: A -> B): dnt(Γ) -> cal(C)(A, B)$),
@@ -138,18 +154,42 @@ We now give typing rules and semantics for formal string diagrams as follows:
     ),
     $dnt(dprf(#fin-diagram-rules.σ)) = λ.σ$,
 ))
+Let $sans("String")_cal(C)[Γ](A, B)$ denote the set of formal string diagrams $f$ such that $Γ ⊢ f: A -> B$.
 
-// We say two finite ordered diagrams are _isotopic_ if:
+We define the _isotopy relation_ between two formal string diagrams $f, g ∈ sans("String")_cal(C)[Γ](A, B)$, written $f ≃ g$ and pronounced "$f$ is _isotopic_ to $g$", to be the smallest equivalence relation containing the following:
+- Congruence: $f ≃ g ∧ f' ≃ g' ==> f;g ≃ f';g', quad f ⊗ C ≃ f' ⊗ C, quad C ⊗ f ≃ C ⊗ f'$
+- Sliding: $f ⊗ B;A' ⊗ g ≃ A ⊗ g;f ⊗ B'$
 
-// //TODO: isotopy
+//TODO: check premonoidal stuff 
 
-// We say a set $F ⊆ cal(C)(A, B)$ is an _isotopy class_ if:
-
-// //TODO: isotopy class
-
-// We may define the category of isotopy classes over $cal(C)$, $cal(C)^sans("iso")$, as follows:
-
-// //TODO: category of isotopy classes
+We say two elements $f, g ∈ cal(C)(A, B)$ are _isotopic_, written $f ≃_sans("iso") g$, if 
+$
+∃Γ, ∃s_f, s_g ∈ sans("String")_cal(C)[Γ](A, B), ∃G, s_f ≃ s_g ∧ s_f (G) = f ∧ s_g (G) = g
+$
+We say a set $F ⊆ cal(C)(A, B)$ is _isotopic_ if
+$∀f, g ∈ F, f ≃_sans("iso") g$.
+// We say a set $F ⊆ cal(C)(A, B)$ is _strongly isotopic_ if there exists a context $Γ$ and a nonempty set $S_F ⊆ sans("String")_cal(C)[Γ](A, B)$ such that:
+// - $∀f, g ∈ S_F, f ≃ g$
+// - $∃G ∈ dnt(Γ), F = {f(G) | f ∈ S_F}$
+We note in particular that 
+- $∀f ∈ cal(C)(A, B)$, ${f}$ is isotopic (take $S_F = {x}$, $Γ = x: A -> B$, and $G = {x ↦ f}$).
+- If $F ⊆ cal(C)(A, B)$, $G ⊆ cal(C)(B, C)$ are isotopic, then their pointwise composition is isotopic since
+    $
+    & ∀ (f;g), (f';g') ∈ F;G, f ≃_sans("iso") f' ∧ g ≃_sans("iso") g' \
+    & ==> ∃Δ,Ξ,
+        Δ ∩ Ξ = ∅ ∧ 
+        ∃s_f, s_f' ∈ sans("String")_cal(C)[Δ](A, B), 
+        ∃s_g, s_g' ∈ sans("String")_cal(C)[Ξ](A, B),
+        ∃D, E, \
+    & #h(4em) s_f ≃ s_f' ∧ s_g ≃ s_g' ∧ s_f (D) = f ∧ s_f' (D) = f' ∧ s_g (E) = g ∧ s_g' (E) = g' \
+    & ==> s_f;s_g ≃ s_f';s_g' ∧ (s_f;s_g)(D, E) = f;g ∧ (s_f';s_g')(D, E) = f';g' \
+    & ==> f;g ≃_sans("iso") f';g'
+    $
+- If $cal(C)$ is symmetric monoidal, then $F$ is isotopic if and only if it is empty or a singleton, since
+    $
+    ∀f, g ∈ sans("String")[Γ](A, B), f ≃ g ==> ∀G ∈ dnt(Γ), f(G) = g(G)   
+    $
+We may hence define the _category of isotopic sets over $cal(C)$_, $isoc(cal(C))$, to be the category with objects $|isoc(cal(C))| = |cal(C)|$ and morphisms $isoc(cal(C))(A, B) = {F ⊆ cal(C)(A, B) | F ≠ ∅ "is isotopic"}$, with composition defined pointwise and identity ${idm}$.
 
 // This category is a:
 // - Symmetric premonoidal category: //TODO: this 
