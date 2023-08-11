@@ -2,7 +2,7 @@
 
 = State-Passing
 
-== State-Passing Category
+== Syntactic State-Passing Category
 
 Let $ι: cal(C)_0 -> cal(C)_1$ be a symmetric effectful category enriched over posets. We define a category $cal(R)$ as follows:
 #let state-passing-grammar = (
@@ -58,7 +58,7 @@ This is quotiented as follows:
     - $ul(dot)$ is a strict monoidal functor: 
         - $ul(I) = I, quad ul(A ⊗ B) = ul(A) ⊗ ul(B)$
         - $ul(f ⊗ g) = ul(f) ⊗ ul(g), quad ul(α) = α, quad ul(λ) = λ, quad ul(ρ) = ρ, quad ul(σ) = σ$
-- Compatibility with $cal(C_1)$: $[idm] = idm, quad [f];[g] = [f; g], quad f refines g ==> [f] refines [g]$
+- Compatibility with $cal(C_1)$: $[idm] = idm, quad [f; g] refines [f];[g], quad f refines g ==> [f] refines [g]$
 - Compatibility with $ι: cal(C_0) -> cal(C_1)$: $[ι f] = ul(f) ⊗ S$
 - Join/split:
     - $s;σ = s, quad σ;j = j, quad s;j = idm, quad idm refines j;s$
