@@ -181,5 +181,8 @@
 // isotopy classes
 #let isoc(cat) = $cat^sans("iso")$
 
+// Partially ordered sets
+#let lowerset(elem) = $elem^↓$
+
 // Utility flags
 #let table-dbg = none

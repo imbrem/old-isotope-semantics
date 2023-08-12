@@ -2,6 +2,24 @@
 
 = State-Passing
 
+== Power Category
+
+Given a partially ordered set $(X, ≤)$, we say a set $L ⊆ X$ is a *lower set* if for all $l ∈ L$, if $x ≤ l$, then $x ∈ L$. Given an element $x ∈ X$, we define its *lower set* to be $lowerset(x) = {y ∈ X | y ≤ x}$. Likewise, we define the lower set of a subset $A ⊆ X$ to be given by $lowerset(A) = ⋃_(a ∈ A)lowerset(a)$.
+
+Given a category $cal(C)$ enriched over posets, we define its  _power category_ $cal(P)(cal(C))$ to have the same objects as $cal(C)$, and morphisms 
+$
+cal(P)(cal(C))(A, B) = {S ∈ cal(P)(cal(C)(A, B)) | S "is a lower set"}
+$
+Composition is defined via
+$
+F;G = lowerset({f;g | f ∈ F, g ∈ G})
+$
+and the identity element is given by $lowerset(idm)$.
+
+We have that $cal(P)(cal(C))$ is enriched over posets via the subset ordering $⊆$ on hom-sets.
+
+$lowerset(dot): cal(C) -> cal(P)(cal(C))$ is an enriched faithful functor; this induces an isomorphism of enriched categories on its image. We say a wide subcategory of $cal(P)(C)$ _contains all singletons_ if it contains the image of $lowerset(dot)$.
+
 == Syntactic State-Passing Category
 
 Let $cal(C)_0 -> cal(C)_1$ be a symmetric effectful category enriched over posets. We define an _ordered string diagram_ from $A$ to $B$ over $cal(C)$ to be given by the following grammar
@@ -87,5 +105,5 @@ dnt(ρ_A)^(-1) = ρ_dnt(A)^(-1), quad
 dnt(σ_(A, B)) = σ_(dnt(A), dnt(B))
 $
 $
-$
 dnt(j) = λ_I, quad dnt(s) = λ_I^(-1), quad dnt(ul(f)) = f, quad dnt([f]) = f ⊗ I
+$
