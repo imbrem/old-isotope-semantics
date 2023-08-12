@@ -18,7 +18,7 @@ and the identity element is given by $lowerset(idm)$.
 
 We have that $cal(P)(cal(C))$ is enriched over posets via the subset ordering $⊆$ on hom-sets.
 
-$lowerset(dot): cal(C) -> cal(P)(cal(C))$ is an enriched faithful functor; this induces an isomorphism of enriched categories on its image. We say a wide subcategory of $cal(P)(C)$ _contains all singletons_ if it contains the image of $lowerset(dot)$.
+$lowerset((dot)): cal(C) -> cal(P)(cal(C))$ is an enriched faithful functor; this induces an isomorphism of enriched categories on its image. We say a wide subcategory of $cal(P)(C)$ _contains all singletons_ if it contains the image of $lowerset((dot))$.
 
 == Syntactic State-Passing Category
 
@@ -81,29 +81,45 @@ We may now define a preorder on ordered string diagrams to be the smallest preor
 - Join/split:
     - $s;σ ≃ s, quad σ;j ≃ j, quad s;j ≃ idm, quad idm refines j;s$
     - $s;S ⊗ s ≃ s;s ⊗ S;α, quad j ⊗ S;j ≃ α;S ⊗ j;j$
-We note that _equivalence classes_ of morphisms $cal(D)(A, B)$, which we will write $cal(R)(A, B)$, trivially form a symmetric monoidal category with composition $;$ and tensor product $⊗$.
+We note that _equivalence classes_ of morphisms $cal(D)(A, B)$, which we will write $cal(R)(A, B)$, trivially form a poset-enriched symmetric monoidal category with composition $;$ and tensor product $⊗$.
 
-We define the _interpretation_ $dnt(A): |cal(C)|$ of objects $A ∈ |cal(D)|$ and morphisms $dnt(f): cal(C)(dnt(A), dnt(B))$ of morphisms $f: cal(D)(A, B)$ as follows:
+We define the _interpretation_ $dnt(A): |cal(C)|$ of objects $A ∈ |cal(D)|$ and morphisms $I(f): cal(C)(dnt(A), dnt(B))$ of morphisms $f: cal(D)(A, B)$ as follows:
 $
 dnt(ul(A)) = A, quad dnt(A ⊗ B) = dnt(A) ⊗ dnt(B), quad dnt(S) = dnt(I) = I
 $
 $
-dnt(idm_A) = idm_dnt(A), quad
-dnt(#$f;g$) = dnt(f);dnt(g), quad
-dnt(f ⊗ C) = dnt(f) ⊗ dnt(C), quad
-dnt(C ⊗ f) = dnt(C) ⊗ dnt(f)
+I(idm_A) = idm_dnt(A), quad
+I(#$f;g$) = I(f);I(g), quad
+I(f ⊗ C) = I(f) ⊗ dnt(C), quad
+I(C ⊗ f) = dnt(C) ⊗ I(f)
 $
 $
-dnt(α_(A, B, C)) = α_(dnt(A), dnt(B), dnt(C)), quad
-dnt(α_(A, B, C))^(-1) = α_(dnt(A), dnt(B), dnt(C))^(-1)
+I(α_(A, B, C)) = α_(dnt(A), dnt(B), dnt(C)), quad
+I(α_(A, B, C))^(-1) = α_(dnt(A), dnt(B), dnt(C))^(-1)
 $
 $
-dnt(λ_A) = λ_dnt(A), quad
-dnt(λ_A)^(-1) = λ_dnt(A)^(-1), quad
-dnt(ρ_A) = ρ_dnt(A), quad
-dnt(ρ_A)^(-1) = ρ_dnt(A)^(-1), quad
-dnt(σ_(A, B)) = σ_(dnt(A), dnt(B))
+I(λ_A) = λ_dnt(A), quad
+I(λ_A)^(-1) = λ_dnt(A)^(-1), quad
+I(ρ_A) = ρ_dnt(A), quad
+I(ρ_A)^(-1) = ρ_dnt(A)^(-1), quad
+I(σ_(A, B)) = σ_(dnt(A), dnt(B))
 $
 $
-dnt(j) = λ_I, quad dnt(s) = λ_I^(-1), quad dnt(ul(f)) = f, quad dnt([f]) = f ⊗ I
+I(j) = λ_I, quad I(s) = λ_I^(-1), quad I(ul(f)) = f, quad I([f]) = f ⊗ I
 $
+
+We may now define the semantics of a morphism $f: cal(D)(A, B)$ as follows:
+$
+dnt(f) = {I(g) | g ≤ f}
+$
+This is obviously well-defined on $cal(R)(A, B)$, yielding a graph morphism $dnt(dot): cal(R) -> cal(P)(cal(C))$ (as $dnt(f)$ is always a lower set). We will call the target $dnt(dot)$ $cal(C)_sans("iso")$.
+
+We list some of the basic properties of $cal(R)$:
+- $dnt([f]) = lowerset(f)$, $dnt(ul(f)) = lowerset(f)$
+- $dnt(dot)$ is an enriched functor on the subcategory of $cal(R)$ with objects of the form $ul(A)$
+- The subcategory of $cal(R)$ with objects of the form $ul(A)$ is isomorphic to $cal(C)_0$ via $dnt(dot);lowerset((dot))^(-1)$, with inverse function $ul((dot))$
+- $dnt(dot)$ is an enriched functor on the subcategory of $cal(R)$ with objects of the form $ul(A) ⊗ S$
+
+//TODO: characterize isotopy category better?
+
+//TODO: cal(R) is an isotope model!
