@@ -56,10 +56,12 @@ quotiented such that $ul(A ⊗ B) = ul(A) ⊗ ul(B)$ and $ul(I) = I$.
 
 We may now define a preorder on ordered string diagrams to be the smallest preorder containing the following, where $≃$ denotes equivalence:
 - Category: $idm;f ≃ f;idm ≃ f, quad f;(g;h) ≃ (f;g);h$
+- Poset-enriched category: $f refines g ==> f;r refines g;r quad l;f refines l;g$
 - Symmetric monoidal category: 
     - Functoriality of $⊗$: 
         - $idm ⊗ A ≃ idm, quad A ⊗idm ≃ idm$
         - $(f;g) ⊗ A ≃ f ⊗ A;g ⊗ A, quad A ⊗ (f;g) ≃ A ⊗ f;A ⊗ g$
+    - Enrichment of $⊗$: $f refines g ==> f ⊗ C refines g ⊗ C, quad C ⊗ f refines C ⊗ g$
     - Sliding: $f ⊗ B;A' ⊗ g ≃ A ⊗ g;f ⊗ B'$; we write this morphism as $f ⊗ g$
     - Natural isomorphisms:
         - $α;α^(-1) ≃ idm$, $α^(-1);α ≃ idm$, $ρ;ρ^(-1) ≃ idm$, $ρ^(-1);ρ ≃ idm$, $λ;λ^(-1) ≃ idm$, $λ^(-1);λ ≃ idm$, $σ;σ ≃ idm$
@@ -76,8 +78,11 @@ We may now define a preorder on ordered string diagrams to be the smallest preor
     - $ul(dot)$ is a functor: $ul(idm) ≃ idm, quad ul(f);ul(g) ≃ ul(#$f;g$)$
     - $ul(dot)$ is an enriched functor: $f refines g ==> ul(f) refines ul(g)$
     - $ul(dot)$ is a strict monoidal functor: $ul(f ⊗ g) ≃ ul(f) ⊗ ul(g), quad ul(α) = α, quad ul(λ) = λ, quad ul(ρ) = ρ, quad ul(σ) = σ$
-- Compatibility with $cal(C_1)$: $[idm] = idm, quad [f; g] refines [f];[g], quad f refines g ==> [f] refines [g]$
-- Compatibility with $ι: cal(C_0) -> cal(C_1)$: $[ι f] = ul(f) ⊗ S$
+- Compatibility with $cal(C_1)$: $[idm] ≃ idm, quad [f; g] refines [f];[g], quad f refines g ==> [f] refines [g]$
+- Compatibility with $ι: cal(C_0) -> cal(C_1)$: 
+    - $[ι f] ≃ ul(f) ⊗ S$
+    - $[ι f;g] ≃ [ι f];[g]$ (implied by $[ι f];[g] refines [ι f;g]$)
+    - $[g;ι f] ≃ [g];[ι f]$ (implied by $[g];[ι f] refines [g;ι f]$)
 - Join/split:
     - $s;σ ≃ s, quad σ;j ≃ j, quad s;j ≃ idm, quad idm refines j;s$
     - $s;S ⊗ s ≃ s;s ⊗ S;α, quad j ⊗ S;j ≃ α;S ⊗ j;j$
