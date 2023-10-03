@@ -22,14 +22,19 @@
   \stepcounter{todos}
   \begin{center}\large{\textcolor{red}{\textbf{TODO \arabic{todos}:} #1}}\end{center}
 }}
+
+% Math fonts
 \newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
 \newcommand{\mb}[1]{\ensuremath{\mathbf{#1}}}
 \newcommand{\ms}[1]{\ensuremath{\mathsf{#1}}}
-\newcommand{\lbl}[1]{'#1}
-\newcommand{\lto}{\Rightarrow}
 
+% Syntax atoms
+\newcommand{\lbl}[1]{{`#1}}
+\newcommand{\lto}{\Rightarrow}
 \newcommand{\ctt}{\ms{tt}}
 \newcommand{\cff}{\ms{ff}}
+
+% Syntax
 \newcommand{\letexpr}[3]{\ensuremath{\ms{let}\;#1 = #2\;\ms{in}\;#3}}
 \newcommand{\letstmt}[3]{\ensuremath{\ms{let}\;#1 = #2; #3}}
 \newcommand{\jmpb}[2]{\ms{jmp}\;#1\;#2}
@@ -39,6 +44,11 @@
 \newcommand{\where}[2]{#1\;\ms{where}\;#2}
 \newcommand{\wbranch}[3]{#1(#2) \lto #3}
 \newcommand{\lwbranch}[3]{\wbranch{\lbl{#1}}{#2}{#3}}
+\newcommand{\bsplice}[3]{#1(#2)\;\{#3\}}
+\newcommand{\lbsplice}[3]{\bsplice{\lbl{#1}}{#2}{#3}}
+
+% Branding
+\newcommand{\isotopessa}{\ms{isotope_{SSA}}}
 
 %% Rights management information.  This information is sent to you
 %% when you complete the rights form.  These commands have SAMPLE
@@ -155,8 +165,9 @@ TODO THIS
       \;|\; \(()\) 
       \;|\; \(\ctt\) 
       \;|\; \(\cff\)
-      \;|\; \(\letexpr{x}{a}{t}\)
-      \;|\; \(\letexpr{(x, y)}{a}{t}\)
+      \;|\; \(\letexpr{x}{a}{e}\)
+      \;|\; \(\letexpr{(x, y)}{a}{e}\)
+      \;|\; \(\lbsplice{\ell}{x: A}{t}\)
       
       <\(s, t\)> ::= \(\ljmpb{\ell}{a}\) 
       \;|\; \(\ite{e}{s}{t}\)
@@ -165,10 +176,14 @@ TODO THIS
       \;|\; \(\ewhere{t}{L}\)
 
       <\(L\)> ::= \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{t}, L\)
+
+      <\(\Gamma\)> ::= \(\cdot\) \;|\; \(\Gamma, x: A\)
+
+      <\(\ms{L}\)> ::= \(\cdot\) \;|\; \(\ms{L}, \lbl{\ell}[\Gamma](x: A)\)
     \end{grammar}
   \end{center}
-  \caption{Grammar for SSA}
-  \Description{Grammar for SSA}
+  \caption{Grammar for \isotopessa}
+  \Description{Grammar for isotope-SSA}
   \label{fig:ssa-grammar}
 \end{figure}
 
@@ -181,11 +196,32 @@ TODO THIS
 \TODO{contexts, label-contexts}
 
 \begin{figure}
-  \begin{center}
+  \begin{center}        
+    \begingroup
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{2em}
+    \begin{tabular}{rl}
+        \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
+        \(\Gamma \vdash_p a: A\) &
+        \(a\) is a term of type \(A\) in context \(\Gamma\) with purity \(p \in \{0, 1\}\) \\
+        \(\Gamma \vdash t \rhd \ms{L}\) &
+        \(t\) is a block targeting label-set \(\ms{L}\) in context \(\Gamma\) \\
+        \(\ms{L} \vdash L \rhd \ms{K}\) &
+        The labels \(L\) send label-set \(\ms{L}\) to label-set \(\ms{K}\)
+    \end{tabular}
+    \endgroup
+  \end{center}
+  \caption{Typing judgements for \isotopessa}
+  \Description{Typing judgements for isotope-SSA}
+  \label{fig:ssa-judgements}
+\end{figure}
+
+\begin{figure}
+  \begin{center}    
     \TODO{this}
   \end{center}
-  \caption{Typing rules for SSA}
-  \Description{Typing rules for SSA}
+  \caption{Typing rules for \isotopessa}
+  \Description{Typing rules for isotope-SSA}
   \label{fig:ssa-typing}
 \end{figure}
 
@@ -199,8 +235,8 @@ TODO THIS
   \begin{center}
     \TODO{this}
   \end{center}
-  \caption{Semantics for SSA}
-  \Description{Semantics for SSA}
+  \caption{Semantics for \isotopessa}
+  \Description{Semantics for isotope-SSA}
   \label{fig:ssa-semantics}
 \end{figure}
 
