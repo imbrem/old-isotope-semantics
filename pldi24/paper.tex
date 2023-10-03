@@ -11,6 +11,35 @@
 
 \documentclass[acmsmall,screen,review]{acmart}
 
+\usepackage{syntax}
+\renewcommand{\syntleft}{\normalfont\itshape}
+\renewcommand{\syntright}{\normalfont\itshape}
+
+\usepackage{prftree}
+
+\newcounter{todos}
+\newcommand{\TODO}[1]{{
+  \stepcounter{todos}
+  \begin{center}\large{\textcolor{red}{\textbf{TODO \arabic{todos}:} #1}}\end{center}
+}}
+\newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\mb}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\ms}[1]{\ensuremath{\mathsf{#1}}}
+\newcommand{\lbl}[1]{'#1}
+\newcommand{\lto}{\Rightarrow}
+
+\newcommand{\ctt}{\ms{tt}}
+\newcommand{\cff}{\ms{ff}}
+\newcommand{\letexpr}[3]{\ensuremath{\ms{let}\;#1 = #2\;\ms{in}\;#3}}
+\newcommand{\letstmt}[3]{\ensuremath{\ms{let}\;#1 = #2; #3}}
+\newcommand{\jmpb}[2]{\ms{jmp}\;#1\;#2}
+\newcommand{\ljmpb}[2]{\jmpb{\lbl{#1}}{#2}}
+\newcommand{\ite}[3]{\ms{if}\;#1\;\{#2\}\;\ms{else}\;\{#3\}}
+\newcommand{\ewhere}[2]{\ms{then}\;#1\;\ms{where}\;#2}
+\newcommand{\where}[2]{#1\;\ms{where}\;#2}
+\newcommand{\wbranch}[3]{#1(#2) \lto #3}
+\newcommand{\lwbranch}[3]{\wbranch{\lbl{#1}}{#2}{#3}}
+
 %% Rights management information.  This information is sent to you
 %% when you complete the rights form.  These commands have SAMPLE
 %% values in them; it is your responsibility as an author to replace
@@ -115,23 +144,100 @@ TODO THIS
 
 \section{SSA Syntax}
 
-TODO THIS
+\TODO{text}
+
+\begin{figure}
+  \begin{center}
+    \begin{grammar}
+      <\(a, b, c, e\)> ::= \(x\) 
+      \;|\; \(f\;a\)
+      \;|\; \((a, b)\) 
+      \;|\; \(()\) 
+      \;|\; \(\ctt\) 
+      \;|\; \(\cff\)
+      \;|\; \(\letexpr{x}{a}{t}\)
+      \;|\; \(\letexpr{(x, y)}{a}{t}\)
+      
+      <\(s, t\)> ::= \(\ljmpb{\ell}{a}\) 
+      \;|\; \(\ite{e}{s}{t}\)
+      \;|\; \(\letstmt{x}{a}{t}\)
+      \;|\; \(\letstmt{(x, y)}{a}{t}\)
+      \;|\; \(\ewhere{t}{L}\)
+
+      <\(L\)> ::= \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{t}, L\)
+    \end{grammar}
+  \end{center}
+  \caption{Grammar for SSA}
+  \Description{Grammar for SSA}
+  \label{fig:ssa-grammar}
+\end{figure}
+
+\TODO{late \ms{where}-binding, and other sugar (?)}
+
+\TODO{top-level functions}
+
+\TODO{table of typing judgements}
+
+\TODO{contexts, label-contexts}
+
+\begin{figure}
+  \begin{center}
+    \TODO{this}
+  \end{center}
+  \caption{Typing rules for SSA}
+  \Description{Typing rules for SSA}
+  \label{fig:ssa-typing}
+\end{figure}
 
 \section{SSA Semantics}
 
-TODO THIS
+\TODO{premonoidal categories}
 
-\section{Models}
+\TODO{Elgot structure}
 
-TODO THIS
+\begin{figure}
+  \begin{center}
+    \TODO{this}
+  \end{center}
+  \caption{Semantics for SSA}
+  \Description{Semantics for SSA}
+  \label{fig:ssa-semantics}
+\end{figure}
+
+\TODO{metatheory: substitution, rewriting, etc}
+\TODO{\(\implies\) E-graph optimization}
+
+\section{Basic Models}
+
+\TODO{Ye Olde Trace Monad}
+
+\TODO{Ye Olde State Transformer}
+
+\TODO{Ye Olde Nondeterministic Trace Monad}
+
+\section{Weak Memory}
+
+\TODO{Pomsets}
+
+\TODO{SC Monad}
+
+\TODO{Building The Weak Memory Monad}
+
+\TODO{Karoubi envelope as premonoidal demonstration?}
 
 \section{Implementation}
 
-TODO THIS
+\TODO{this}
 
 \section{Related Work}
 
-TODO THIS \cite{promonad} \cite{linear-state-usage} \cite{ssa-is-fun} \cite{sparky}
+\TODO{\cite{promonad}}
+
+\TODO{\cite{linear-state-usage}}
+
+\TODO{\cite{ssa-is-fun}}
+
+\TODO{\cite{sparky}}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
