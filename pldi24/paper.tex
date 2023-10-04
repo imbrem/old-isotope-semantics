@@ -37,8 +37,8 @@
 % Syntax
 \newcommand{\letexpr}[3]{\ensuremath{\ms{let}\;#1 = #2\;\ms{in}\;#3}}
 \newcommand{\letstmt}[3]{\ensuremath{\ms{let}\;#1 = #2; #3}}
-\newcommand{\jmpb}[2]{\ms{jmp}\;#1\;#2}
-\newcommand{\ljmpb}[2]{\jmpb{\lbl{#1}}{#2}}
+\newcommand{\brb}[2]{\ms{br}\;#1\;#2}
+\newcommand{\lbrb}[2]{\brb{\lbl{#1}}{#2}}
 \newcommand{\ite}[3]{\ms{if}\;#1\;\{#2\}\;\ms{else}\;\{#3\}}
 \newcommand{\ewhere}[2]{\ms{then}\;#1\;\ms{where}\;#2}
 \newcommand{\where}[2]{#1\;\ms{where}\;#2}
@@ -187,7 +187,7 @@ TODO THIS
       \;|\; \(\letexpr{(x, y)}{a}{e}\)
       \;|\; \(\lbsplice{\ell}{x: A}{t}\)
       
-      <\(s, t\)> ::= \(\ljmpb{\ell}{a}\) 
+      <\(s, t\)> ::= \(\lbrb{\ell}{a}\) 
       \;|\; \(\ite{e}{s}{t}\)
       \;|\; \(\letstmt{x}{a}{t}\)
       \;|\; \(\letstmt{(x, y)}{a}{t}\)
@@ -276,11 +276,11 @@ TODO THIS
     \prftree[r]{\rle{join-nil}}{\lwk{\cdot}{\cdot}} \qquad
     \prftree[r]{\rle{join-cons}}
       {\lwk{\ms{L}}{\ms{K}}}
-      {\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{x: A}}{\ms{K}, \llhyp{\ell}{\Gamma}{x: A}}} 
+      {\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}} 
       \qquad
     \prftree[r]{\rle{join-zero}}
       {\lwk{\ms{L}}{\ms{K}}}
-      {\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{x: A}}} 
+      {\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}} 
   \end{gather*}
   \caption{Structural rules for \isotopessa}
   \Description{Structural rules for isotope-SSA}
@@ -288,12 +288,87 @@ TODO THIS
 \end{figure}
 
 \begin{figure}
-  \begin{equation*}    
-    \prftree{\cwk{\Gamma}{\thyp{x}{A}{q}}}{\hasty{\Gamma}{p}{x}{A}}
-  \end{equation*}
-  \caption{Typing rules for \isotopessa}
-  \Description{Typing rules for isotope-SSA}
-  \label{fig:ssa-typing}
+  \begin{gather*}    
+    \prftree[r]{\rle{var}}
+      {\cwk{\Gamma}{\thyp{x}{A}{q}}}
+      {\hasty{\Gamma}{p}{x}{A}} \qquad
+    \prftree[r]{\rle{app}}
+      {f \in \mc{I}_p(A, B)}
+      {\hasty{\Gamma}{1}{a}{A}}
+      {\hasty{\Gamma}{p}{f\;a}{B}} \qquad
+    \prftree[r]{\rle{pair}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta}{1}{a}{A}}
+      {\hasty{\Xi}{1}{b}{B}}
+      {\hasty{\Gamma}{1}{(a, b)}{A \otimes B}} \\
+    \prftree[r]{\rle{unit}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{1}{()}{\mb{1}}} \qquad
+    \prftree[r]{\rle{true}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{1}{\ctt}{\mb{2}}} \qquad
+    \prftree[r]{\rle{false}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{1}{\cff}{\mb{2}}} \\
+    \prftree[r]{\rle{let}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta, \thyp{x}{A}{}}{p}{e}{B}}
+      {\hasty{\Xi}{1}{a}{A}}
+      {\hasty{\Gamma}{p}{\letexpr{x}{a}{e}}{B}} \qquad
+    \prftree[r]{\rle{blk}}
+      {\haslb{\Gamma}{t}{\llhyp{\ell}{\cdot}{A}}}
+      {\hasty{\Gamma}{0}{\lbsplice{\ell}{A}{t}}{A}} \\
+    \prftree[r]{\rle{let2}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{e}{C}}
+      {\hasty{\Xi}{1}{a}{A \otimes B}}
+      {\hasty{\Gamma}{p}{\letexpr{(x, y)}{a}{e}}{C}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa terms}
+  \Description{Typing rules for isotope-SSA terms}
+  \label{fig:ssa-term-typing}
+\end{figure}
+
+
+\begin{figure}
+  \begin{gather*}    
+    \prftree[r]{\rle{br}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
+      %TODO: consider allowing binding here, or should it be purely for lets?
+      {\hasty{\Xi}{1}{a}{A}}
+      {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} \qquad
+    \prftree[r]{\rle{ite}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta}{1}{e}{\mb{2}}}
+      {\haslb{\Xi}{s}{\ms{L}}}
+      {\haslb{\Xi}{t}{\ms{L}}}
+      {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} \\
+    \prftree[r]{\rle{let-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
+      {\hasty{\Xi}{p}{a}{A}}
+      {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} \\
+    \prftree[r]{\rle{let2-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
+      {\hasty{\Xi}{p}{a}{A \otimes B}}
+      {\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}} \\
+    \prftree[r]{\rle{where}}
+      {\haslb{\Gamma}{t}{\ms{L}}}
+      {\lhaslb{\ms{L}}{L}{\ms{K}}}
+      {\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}} \qquad
+    \prftree[r]{\rle{nil-br}}
+      {\lwk{\ms{L}}{\ms{K}}}
+      {\lhaslb{\ms{L}}{\cdot}{\ms{K}}} \qquad
+    \prftree[r]{\rle{cons-br}}
+      {\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}
+      {\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa blocks}
+  \Description{Typing rules for isotope-SSA blocks}
+  \label{fig:ssa-block-typing}
 \end{figure}
 
 \section{SSA Semantics}
