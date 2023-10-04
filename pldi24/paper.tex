@@ -46,6 +46,21 @@
 \newcommand{\lwbranch}[3]{\wbranch{\lbl{#1}}{#2}{#3}}
 \newcommand{\bsplice}[3]{#1(#2)\;\{#3\}}
 \newcommand{\lbsplice}[3]{\bsplice{\lbl{#1}}{#2}{#3}}
+\newcommand{\csplits}[3]{#1 \mapsto #2;#3}
+\newcommand{\cwk}[2]{#1 \mapsto #2}
+\newcommand{\lwk}[2]{#1 \rightsquigarrow #2}
+\newcommand{\tlin}[2]{\ms{lin}_{#2}(#1)}
+\newcommand{\ltlin}[3]{\ms{lin}_{#3}(#1^{#2})}
+\newcommand{\thyp}[3]{#1: {#2}^{#3}}
+\newcommand{\lhyp}[3]{#1[#2](#3)}
+\newcommand{\llhyp}[3]{\lhyp{\lbl{#1}}{#2}{#3}}
+\newcommand{\rle}[1]{{\scriptsize\textsf{#1}}}
+\newcommand{\taff}{\ms{a}}
+\newcommand{\trel}{\ms{r}}
+\newcommand{\tint}{\infty}
+\newcommand{\hasty}[4]{#1 \vdash_{#2} #3: #4}
+\newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
+\newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
 
 % Branding
 \newcommand{\isotopessa}{\ms{isotope_{SSA}}}
@@ -159,6 +174,9 @@ TODO THIS
 \begin{figure}
   \begin{center}
     \begin{grammar}
+      <\(A, B, C\)> ::= \(X\)
+      \;|\; \(A \otimes B\)
+
       <\(a, b, c, e\)> ::= \(x\) 
       \;|\; \(f\;a\)
       \;|\; \((a, b)\) 
@@ -177,7 +195,7 @@ TODO THIS
 
       <\(L\)> ::= \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{t}, L\)
 
-      <\(\Gamma\)> ::= \(\cdot\) \;|\; \(\Gamma, x: A\)
+      <\(\Gamma\)> ::= \(\cdot\) \;|\; \(\Gamma, \thyp{x}{A}{q}\)
 
       <\(\ms{L}\)> ::= \(\cdot\) \;|\; \(\ms{L}, \lbl{\ell}[\Gamma](x: A)\)
     \end{grammar}
@@ -202,12 +220,24 @@ TODO THIS
     \setlength{\tabcolsep}{2em}
     \begin{tabular}{rl}
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
-        \(\Gamma \vdash_p a: A\) &
+        \(\hasty{\Gamma}{p}{x}{A}\) &
         \(a\) is a term of type \(A\) in context \(\Gamma\) with purity \(p \in \{0, 1\}\) \\
-        \(\Gamma \vdash t \rhd \ms{L}\) &
+        \(\haslb{\Gamma}{t}{\ms{L}}\) &
         \(t\) is a block targeting label-set \(\ms{L}\) in context \(\Gamma\) \\
-        \(\ms{L} \vdash L \rhd \ms{K}\) &
-        The labels \(L\) send label-set \(\ms{L}\) to label-set \(\ms{K}\)
+        \(\lhaslb{\ms{L}}{L}{\ms{K}}\) &
+        The labels \(L\) send label-set \(\ms{L}\) to label-set \(\ms{K}\) \\
+        \(\csplits{\Gamma}{\Delta}{\Xi}\) &
+        The context \(\Gamma\) splits into \(\Delta\) and \(\Xi\) \\
+        \(\tlin{A}{q}\) &
+        The type \(A\) has linearity \(q\) \\
+        \(\ltlin{A}{r}{q}\) &
+        \(\tlin{A}{q} \land q \subseteq r\) \\
+        \(\tlin{\Gamma}{q}\) &
+        The context \(\Gamma\) has linearity \(q\) \\
+        \(\cwk{\Gamma}{\Delta}\) &
+        \(\Gamma\) is a weakening of \(\Delta\) (i.e. \(\csplits{\Gamma}{\Delta}{\cdot}\)) \\
+        \(\lwk{\ms{L}}{\ms{K}}\) &
+        The label-set \(\ms{L}\) weakens to the label-set \(\ms{K}\)
     \end{tabular}
     \endgroup
   \end{center}
@@ -217,9 +247,50 @@ TODO THIS
 \end{figure}
 
 \begin{figure}
-  \begin{center}    
-    \TODO{this}
-  \end{center}
+  \begin{gather*}    
+    \prftree[r]{\rle{base-lin}}{q \subseteq \ms{lin}(X)}{\tlin{X}{q}} \qquad
+    \prftree[r]{\rle{pair-lin}}{\tlin{A}{q}}{\tlin{B}{q}}{\tlin{A \otimes B}{q}} \qquad
+    \prftree[r]{\rle{nil-lin}}{\tlin{\cdot}{q}} \qquad
+    \prftree[r]{\rle{cons-lin}}{\ltlin{A}{r}{q}}{\tlin{\Gamma}{q}}
+      {\tlin{\Gamma, \thyp{x}{A}{r}}{q}} \\
+    \prftree[r]{\rle{split-nil}}{\csplits{\cdot}{\cdot}{\cdot}} \qquad
+    \prftree[r]{\rle{split-left}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {r \subseteq q}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta, \thyp{x}{A}{r}}{\Xi}} \qquad
+    \prftree[r]{\rle{split-right}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {r \subseteq q}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta}{\Xi, \thyp{x}{A}{r}}} \\
+    \prftree[r]{\rle{split-dup}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\ltlin{A}{q}{\trel}}
+      {r, s \subseteq q}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta, \thyp{x}{A}{r}}{\Xi, \thyp{x}{A}{s}}}
+      \qquad
+    \prftree[r]{\rle{split-drop}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\ltlin{A}{q}{\taff}}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta}{\Xi}}
+      \\
+    \prftree[r]{\rle{join-nil}}{\lwk{\cdot}{\cdot}} \qquad
+    \prftree[r]{\rle{join-cons}}
+      {\lwk{\ms{L}}{\ms{K}}}
+      {\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{x: A}}{\ms{K}, \llhyp{\ell}{\Gamma}{x: A}}} 
+      \qquad
+    \prftree[r]{\rle{join-zero}}
+      {\lwk{\ms{L}}{\ms{K}}}
+      {\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{x: A}}} 
+  \end{gather*}
+  \caption{Structural rules for \isotopessa}
+  \Description{Structural rules for isotope-SSA}
+  \label{fig:ssa-structural}
+\end{figure}
+
+\begin{figure}
+  \begin{equation*}    
+    \prftree{\cwk{\Gamma}{\thyp{x}{A}{q}}}{\hasty{\Gamma}{p}{x}{A}}
+  \end{equation*}
   \caption{Typing rules for \isotopessa}
   \Description{Typing rules for isotope-SSA}
   \label{fig:ssa-typing}
