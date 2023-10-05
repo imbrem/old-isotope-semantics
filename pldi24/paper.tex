@@ -165,7 +165,19 @@
 
 \section{Introduction}
 
-TODO THIS
+\TODO{THIS}
+
+\paragraph{Contributions}
+
+\begin{itemize}
+\item We have a syntax and type system for SSA-style programs. We include support for substructural types, and our type-theoretic syntax makes formulating inlining and rewriting easier than in the traditional CFG-based formulations. 
+\item We show that our language has a compositional intepretation in any effectful category with an Elgot structure. We use this structure to give generic proofs of the expected substitution properties as well as prove the soundness of an equational theory for the language.
+\item Our generic equational theory justifies a variety of powerful optimisation techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and strength reduction. 
+\item We show how Elgot monads give rise to models of our language. We use this to derive semantics from a general trace monad, and show that various monad transformers such as state transformers preserve the needed Elgot structure. 
+\item We use these tools to demonstrate the existence of a variety of concrete models satisfying these categorical axioms. Starting first from simple languges such as state plus printing, we also show how more challenging semantics such as the TSO semantics for weak memory also fit into our framework. This thus gives rise to an SSA-based IR with support for weak memory operations, which is fully semantically-justified.
+\item \TODO{We also have a small implementation, which \ldots}
+\item Our weak memory semantics and our results about Elgot monads are formalised in the Lean theorem prover. \TODO{Other stuff}
+\end{itemize}
 
 \section{SSA Syntax}
 
