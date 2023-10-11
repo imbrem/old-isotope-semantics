@@ -61,6 +61,8 @@
 \newcommand{\hasty}[4]{#1 \vdash_{#2} #3: #4}
 \newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
+\newcommand{\issubst}[3]{#1: #2 \mapsto #3}
+\newcommand{\substcons}[3]{[{#2 \mapsto #3}]{#1}}
 
 % Denotational semantics
 \newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
@@ -389,14 +391,28 @@
 \end{figure}
 
 \begin{figure}
-  \TODO{this}
+  \begin{gather*}
+    \prftree[r]{\rle{subst-nil}}
+      {\issubst{\cdot}{\cdot}{\cdot}}
+      \qquad
+    \prftree[r]{\rle{subst-cons}}
+      {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
+      {\hasty{\Theta_x}{0}{a}{A}}
+      {\tlin{\Theta_x}{q}}
+      {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
+      {\issubst{\substcons{\gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+  \end{gather*}
   \caption{Typing rules for \isotopessa substitutions}
   \Description{Typing rules for isotope-SSA substitutions}
   \label{fig:ssa-subst-typing}
 \end{figure}
 
-\begin{theorem}[Substitution] \
-  \TODO{this}
+\begin{theorem}[Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item If \(\hasty{\Gamma}{p}{a}{A}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Theta}{[\gamma]t}{\ms{L}}\)
+  \end{itemize}
 \end{theorem}
 
 \section{SSA Semantics}
@@ -580,6 +596,27 @@
   \label{fig:ssa-structural-blocks}
 \end{figure}
 
+\begin{theorem}[Coherence]
+  \begin{itemize}
+    \item Given any two derivations \(D_1, D_2: \hasty{\Gamma}{p}{a}{A}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{theorem}
+
+\begin{theorem}[Semantic Upgrade]
+  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{0}{a}{A}\), then
+  \[\dnt{\hasty{\Gamma}{1}{a}{A}} = \upg{\hasty{\Gamma}{0}{a}{A}}{}\]
+\end{theorem}
+
+\begin{figure}
+  \begin{center}
+    \TODO{this}
+  \end{center}
+  \caption{Semantics for \isotopessa substitutions}
+  \Description{Semantics for isotope-SSA substitutions}
+  \label{fig:ssa-subst-semantics}
+\end{figure}
+
 \begin{theorem}[Semantic Substitution] \
   \TODO{this}
 \end{theorem}
@@ -592,7 +629,7 @@
   \end{center}
   \caption{Grammar for \isotopessa blocks with holes}
   \Description{Grammar for isotope-SSA blocks with holes}
-  \label{fig:ssa-semantics}
+  \label{fig:blocks-with-holes}
 \end{figure}
 
 \begin{theorem}[Rewriting] \
