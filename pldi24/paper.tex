@@ -354,11 +354,11 @@
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
       %TODO: consider allowing binding here, or should it be purely for lets?
-      {\hasty{\Xi}{1}{a}{A}}
+      {\hasty{\Xi}{0}{a}{A}}
       {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} \qquad
     \prftree[r]{\rle{ite}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\hasty{\Delta}{1}{e}{\mb{2}}}
+      {\hasty{\Delta}{0}{e}{\mb{2}}}
       {\haslb{\Xi}{s}{\ms{L}}}
       {\haslb{\Xi}{t}{\ms{L}}}
       {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} \\
@@ -377,8 +377,7 @@
       {\lhaslb{\ms{L}}{L}{\ms{K}}}
       {\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}} \qquad
     \prftree[r]{\rle{nil-br}}
-      {\lwk{\ms{L}}{\ms{K}}}
-      {\lhaslb{\ms{L}}{\cdot}{\ms{K}}} \qquad
+      {\lhaslb{\ms{L}}{\cdot}{\ms{L}}} \qquad
     \prftree[r]{\rle{cons-br}}
       {\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
       {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}
@@ -534,7 +533,48 @@
 \end{figure}
 
 \begin{figure}
-  \TODO{this}
+  \begin{gather*}
+    \boxed{\dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      : \mc{C}_1(\dnt{\Gamma}, \dnt{\ms{L}})} \\
+    \dnt{\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}}
+      = \upg{(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{0}{a}{A}})}
+      ; \dnt{\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}} \\
+    \dnt{\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}}
+      = \upg{(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+      ; \dnt{\hasty{\Delta}{0}{e}{\mb{2}}} \otimes \dnt{\Xi})}
+      ; \ms{ite}_{\dnt{\Xi}} ;
+      \\ \qquad \qquad \qquad \qquad
+      [
+        \dnt{\haslb{\Xi}{s}{\ms{L}}}, 
+        \dnt{\haslb{\Xi}{t}{\ms{L}}} 
+      ]
+      \\
+    \dnt{\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}}
+      = \upg{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Gamma}{1}{a}{A}}
+      ; \dnt{\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
+      \\
+    \dnt{\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}}
+      = \upg{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}}
+        ; \dnt{\Delta} \otimes \dnt{\hasty{\Gamma}{1}{a}{A \otimes B}}
+        ; \alpha
+        ; \dnt{\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
+      \\
+    \dnt{\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      ; \dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}^\dagger
+      \\
+    \boxed{\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}
+      : \mc{C}_1(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
+      \\
+    \dnt{\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
+      = \dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{A}{t}}}
+      ; [[\iota_0, \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{t}{L}}], \iota_1]
+      \\
+    \dnt{\lhaslb{\ms{L}}{\cdot}{\ms{L}}}
+      = \iota_0
+  \end{gather*}
   \caption{Semantics for \isotopessa blocks}
   \Description{Semantics for isotope-SSA blocks}
   \label{fig:ssa-structural-blocks}
@@ -550,8 +590,8 @@
   \begin{center}
     \TODO{this}
   \end{center}
-  \caption{Grammar for \isotopessa terms and blocks with holes}
-  \Description{Grammar for isotope-SSA terms and blocks with holes}
+  \caption{Grammar for \isotopessa blocks with holes}
+  \Description{Grammar for isotope-SSA blocks with holes}
   \label{fig:ssa-semantics}
 \end{figure}
 
