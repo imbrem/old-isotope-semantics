@@ -62,6 +62,11 @@
 \newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
 
+% Denotational semantics
+\newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
+\newcommand{\ednt}[1]{\left\llbracket{#1}\right\rrbracket}
+\newcommand{\upg}[1]{{#1}^\uparrow}
+
 % Branding
 \newcommand{\isotopessa}{\ms{isotope_{SSA}}}
 
@@ -388,7 +393,7 @@
   \TODO{this}
   \caption{Typing rules for \isotopessa substitutions}
   \Description{Typing rules for isotope-SSA substitutions}
-  \label{fig:ssa-block-typing}
+  \label{fig:ssa-subst-typing}
 \end{figure}
 
 \begin{theorem}[Substitution] \
@@ -402,12 +407,98 @@
 \TODO{Elgot structure}
 
 \begin{figure}
-  \begin{center}
-    \TODO{this}
-  \end{center}
-  \caption{Semantics for \isotopessa}
-  \Description{Semantics for isotope-SSA}
-  \label{fig:ssa-semantics}
+  \begin{gather*}
+    \boxed{\dnt{A}}: |\mc{C}_1| \\
+    \dnt{X} = \ms{base}(X) 
+      \text{ where } 
+      \dnt{\mb{1}} = \mb{1}, 
+      \dnt{\mb{2}} = \mb{2}
+    \qquad \dnt{A \otimes B} = \dnt{A} \otimes \dnt{B} \\
+    \boxed{\dnt{\Gamma}}: |\mc{C}_1| \\
+    \dnt{\cdot} = \mb{1} \qquad 
+    \dnt{\Gamma, \thyp{x}{A}{q}} = \dnt{\Gamma} \otimes \dnt{A} \\
+    \boxed{\dnt{\ms{L}}}: |\mc{C}_0| \\
+    \dnt{\cdot} = \mb{0} \qquad
+    \dnt{\ms{L}, \llhyp{\ell}{\Gamma}{A}} = 
+      \dnt{\ms{L}} + \dnt{\Gamma} \otimes \dnt{A}
+  \end{gather*}
+  \caption{Semantics for \isotopessa types and contexts}
+  \Description{Semantics for isotope-SSA types and contexts}
+  \label{fig:ssa-type-semantics}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}
+    \boxed{\dnt{\tlin{A}{\taff}}: \mc{C}_1(\dnt{A}, \mb{1})} \\
+    \dnt{\tlin{X}{\taff}} = \ms{drop}(X) \qquad
+    \dnt{\tlin{A \otimes B}{\taff}} 
+      = \dnt{\tlin{A}{\taff}} \otimes \dnt{\tlin{B}{\taff}}
+      ; \lambda \\
+    \boxed{\dnt{\tlin{A}{\trel}}}
+      : \mc{C}_1(\dnt{A}, \dnt{A} \otimes \dnt{A}) \\
+    \dnt{\tlin{X}{\trel}} = \ms{split}(X) \qquad
+    \dnt{\tlin{A \otimes B}{\trel}} = 
+      \dnt{\tlin{A}{\trel}} \otimes \dnt{\tlin{B}{\trel}}
+      ;\alpha;\dnt{A} \otimes \sigma \otimes \dnt{B};\alpha \\
+    \boxed{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}}
+      : \mc{C}_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi}) \\
+    \dnt{\csplits{\cdot}{\cdot}{\cdot}} = \lambda^{-1} \qquad
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta, \thyp{x}{A}{q}}
+      {\Xi}} 
+      = \dnt{\csplits{\Gamma}{\Delta}{\Xi}} \otimes \dnt{A};\alpha;\dnt{\Delta} \otimes \sigma;\alpha \\
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta}
+      {\Xi, \thyp{x}{A}{q}}} 
+      = \dnt{\csplits{\Gamma}{\Delta}{\Xi}} \otimes \dnt{A};\alpha \\
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta}
+      {\Xi, \thyp{x}{A}{q}}} \
+      = \dnt{\Gamma} \otimes \dnt{\tlin{A}{\trel}};
+        \alpha;
+        \dnt{\Delta} \otimes \sigma \otimes \dnt{A};
+        \alpha \\
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta}
+      {\Xi}}
+      = \dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+        \otimes \dnt{\tlin{A}{\taff}}
+      ; \rho \\
+    \boxed{\dnt{\cwk{\Gamma}{\Delta}}
+      : \mc{C}_1(\dnt{\Gamma}, \dnt{\Delta})} \\
+      = \dnt{\csplits{\Gamma}{\Delta}{\cdot}};\rho \\
+    \boxed{\dnt{\lwk{\ms{L}}{\ms{K}}}
+      : \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}})} \\
+      \dnt{\lwk{\cdot}{\cdot}} = \ms{id} \qquad
+      \dnt{\lwk
+        {\ms{L}, \llhyp{\ell}{\Gamma}{A}}
+        {\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+        = \dnt{\lwk{\ms{L}}{\ms{K}}} + \dnt{\Gamma} \otimes \dnt{A} \\
+      \dnt{\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+        = \dnt{\lwk{\ms{L}}{\ms{K}}};\rho_+^{-1}
+        ; \dnt{\ms{K}} \oplus 0_{\dnt{\Gamma} \otimes \dnt{A}}
+  \end{gather*}
+  \caption{Semantics for \isotopessa structural judgements}
+  \Description{Semantics for isotope-SSA structural judgements}
+  \label{fig:ssa-structural-semantics}
+\end{figure}
+
+\begin{figure}
+  \TODO{this}
+  \caption{Semantics for \isotopessa terms}
+  \Description{Semantics for isotope-SSA terms}
+  \label{fig:ssa-structural-terms}
+\end{figure}
+
+\begin{figure}
+  \TODO{this}
+  \caption{Semantics for \isotopessa blocks}
+  \Description{Semantics for isotope-SSA blocks}
+  \label{fig:ssa-structural-blocks}
 \end{figure}
 
 \begin{theorem}[Semantic Substitution] \
@@ -420,8 +511,8 @@
   \begin{center}
     \TODO{this}
   \end{center}
-  \caption{Grammar for \isotopessa expressions with holes}
-  \Description{Grammar for isotope-SSA expressions with holes}
+  \caption{Grammar for \isotopessa terms and blocks with holes}
+  \Description{Grammar for isotope-SSA terms and blocks with holes}
   \label{fig:ssa-semantics}
 \end{figure}
 
