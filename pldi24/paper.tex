@@ -65,7 +65,7 @@
 % Denotational semantics
 \newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
 \newcommand{\ednt}[1]{\left\llbracket{#1}\right\rrbracket}
-\newcommand{\upg}[1]{{#1}^\uparrow}
+\newcommand{\upg}[2]{{#1}^{\uparrow #2}}
 
 % Branding
 \newcommand{\isotopessa}{\ms{isotope_{SSA}}}
@@ -319,16 +319,16 @@
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\hasty{\Delta}{1}{a}{A}}
       {\hasty{\Xi}{1}{b}{B}}
-      {\hasty{\Gamma}{1}{(a, b)}{A \otimes B}} \\
+      {\hasty{\Gamma}{p}{(a, b)}{A \otimes B}} \\
     \prftree[r]{\rle{unit}}
       {\cwk{\Gamma}{\cdot}}
-      {\hasty{\Gamma}{1}{()}{\mb{1}}} \qquad
+      {\hasty{\Gamma}{p}{()}{\mb{1}}} \qquad
     \prftree[r]{\rle{true}}
       {\cwk{\Gamma}{\cdot}}
-      {\hasty{\Gamma}{1}{\ctt}{\mb{2}}} \qquad
+      {\hasty{\Gamma}{p}{\ctt}{\mb{2}}} \qquad
     \prftree[r]{\rle{false}}
       {\cwk{\Gamma}{\cdot}}
-      {\hasty{\Gamma}{1}{\cff}{\mb{2}}} \\
+      {\hasty{\Gamma}{p}{\cff}{\mb{2}}} \\
     \prftree[r]{\rle{let}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\hasty{\Delta, \thyp{x}{A}{}}{p}{e}{B}}
@@ -365,12 +365,12 @@
     \prftree[r]{\rle{let-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
-      {\hasty{\Xi}{p}{a}{A}}
+      {\hasty{\Xi}{1}{a}{A}}
       {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} \\
     \prftree[r]{\rle{let2-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
-      {\hasty{\Xi}{p}{a}{A \otimes B}}
+      {\hasty{\Xi}{1}{a}{A \otimes B}}
       {\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}} \\
     \prftree[r]{\rle{where}}
       {\haslb{\Gamma}{t}{\ms{L}}}
@@ -488,7 +488,46 @@
 \end{figure}
 
 \begin{figure}
-  \TODO{this}
+  \begin{gather*}
+    \boxed{\dnt{\hasty{\Gamma}{p}{a}{A}}
+      : \mc{C}_p(\dnt{\Gamma}, \dnt{A})} \\
+    \dnt{\hasty{\Gamma}{p}{x}{A}} 
+      = \dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}
+      \qquad
+    \dnt{\hasty{\Gamma}{p}{f\;a}{B}}
+      = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}}}{p}
+      ; \ms{inst}_p(f) \\
+    \dnt{\hasty{\Gamma}{p}{(a, b)}{A \otimes B}}
+      = \upg{(
+        \dnt{\csplits{\Gamma}{\Delta}{\Xi}};
+        \dnt{\hasty{\Delta}{1}{a}{A}} \otimes
+        \dnt{\hasty{\Xi}{1}{b}{B}}
+      )}{\uparrow p} \\
+    \dnt{\hasty{\Gamma}{p}{()}{\mb{1}}}
+      = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p} 
+      \qquad
+    \dnt{\hasty{\Gamma}{p}{\ctt}{\mb{2}}}
+      = \upg{(\dnt{\cwk{\Gamma}{\cdot}};\ctt)}{p}
+      \qquad
+    \dnt{\hasty{\Gamma}{p}{\cff}{\mb{2}}}
+      = \upg{(\dnt{\cwk{\Gamma}{\cdot}};\cff)}{p} \\
+    \dnt{\hasty{\Gamma}{p}{\letexpr{x}{a}{e}}{B}}
+      = \upg{(
+        \dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+        ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{a}{A}}
+      )}{p};\dnt{\hasty{\Delta, \thyp{x}{A}{}}{p}{e}{B}} \\
+    \dnt{\hasty{\Gamma}{p}{\letexpr{(x, y)}{a}{e}}{C}}
+      = \upg{(
+        \dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+        ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{a}{A \otimes B}}
+      )}{p}
+      ; 
+      \\ \qquad \qquad \qquad \qquad \qquad \alpha
+      ; \dnt{\hasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{e}{C}}
+      \\
+    \dnt{\hasty{\Gamma}{0}{\lbsplice{\ell}{A}{t}}{A}}
+      = \dnt{\haslb{\Gamma}{t}{\llhyp{\ell}{\cdot}{A}}};\alpha_+
+  \end{gather*}
   \caption{Semantics for \isotopessa terms}
   \Description{Semantics for isotope-SSA terms}
   \label{fig:ssa-structural-terms}
