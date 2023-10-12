@@ -298,7 +298,8 @@
     \prftree[r]{\rle{join-nil}}{\lwk{\cdot}{\cdot}} \qquad
     \prftree[r]{\rle{join-cons}}
       {\lwk{\ms{L}}{\ms{K}}}
-      {\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}} 
+      {\cwk{\Gamma}{\Delta}}
+      {\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}} 
       \qquad
     \prftree[r]{\rle{join-zero}}
       {\lwk{\ms{L}}{\ms{K}}}
@@ -393,12 +394,73 @@
 
 \begin{figure}
   \begin{gather*}
+    \prftree[r]{\rle{subset-nil}}
+      {\cdot \subseteq \cdot}
+      \qquad
+    \prftree[r]{\rle{subset-cons}}
+      {\Gamma \subseteq \Delta}
+      {\Gamma, \thyp{x}{A}{q} \subseteq \Delta, \thyp{x}{A}{q}}
+      \qquad
+    \prftree[r]{\rle{subset-drop}}
+      {\Gamma \subseteq \Delta}
+      {\Gamma \subseteq \Delta, \thyp{x}{A}{q}} 
+    \\
+    \prftree[r]{\rle{in-head}}
+      {\thyp{x}{A}{q} \in \Gamma, \thyp{x}{A}{q}}
+      \qquad
+    \prftree[r]{\rle{in-cons}}
+      {\thyp{x}{A}{q} \in \Gamma}
+      {\thyp{x}{A}{q} \in \Gamma, \thyp{y}{B}{r}}
+    \\
+    \prftree[r]{\rle{var-head}}
+      {x \in \Gamma, \thyp{x}{A}{q}}
+      \qquad
+    \prftree[r]{\rle{var-cons}}
+      {x \in \Gamma}
+      {x \in \Gamma, \thyp{y}{B}{r}} 
+    \\
+    \Gamma \cup \cdot = \Gamma \qquad
+    \Gamma \cup (\Delta, \thyp{x}{A}{q}) = (\Gamma \cup \Delta), \thyp{x}{A}{q} \text{ if } x \notin \Gamma \qquad
+    \Gamma \cup (\Delta, \thyp{x}{A}{q}) = \Gamma \cup \Delta \text{ otherwise} 
+    % \\
+    %   \cdot^\Gamma_\Delta = \cdot 
+    %   \qquad
+    %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta
+    %     = \Theta^\Gamma_\Delta, 
+    %       \thyp{x}{A}{q} \text{ if } x \in \Delta \lor x \notin \Gamma
+    %   \qquad
+    %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta = \Theta^\Gamma_\Delta \text{ otherwise}
+    % \\
+    %   \cdot^\Gamma_\Delta = \cdot 
+    %   \qquad
+    %   (\ms{L}, \llhyp{\ell}{\Theta}{A})^\Gamma_\Delta
+    %   = \ms{L}^\Gamma_\Delta, \llhyp{\ell}{\Theta^\Gamma_\Delta}{A}
+  \end{gather*}
+  \caption{Manipulation of \isotopessa contexts}
+  \Description{Manipulation of isotope-SSA contexts}
+  \label{fig:context-manipulation}
+\end{figure}
+
+\begin{theorem}[Weakening] \
+  \begin{itemize}
+    \item If \(\cwk{\Gamma}{\Delta}\), \(\hasty{\Delta}{p}{a}{A}\), then \(\hasty{\Gamma}{p}{a}{A}\)
+    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
+  \end{itemize}
+\end{theorem}
+
+\begin{theorem}[Minimal Context] \
+  For all \(a, A\), there exists \(\Delta\) such that \(\forall \Gamma, \hasty{\Gamma}{p}{a}{A} \implies \cwk{\Gamma}{\Delta} \land \hasty{\Delta}{p}{a}{A}\). If such a \(\Gamma\) exists, then \(\Delta\) is unique; in this case we call \(\Delta\) \textbf{minimal}.
+\end{theorem}
+
+\begin{figure}
+  \begin{gather*}
     \prftree[r]{\rle{subst-nil}}
       {\issubst{\cdot}{\cdot}{\cdot}}
       \qquad
     \prftree[r]{\rle{subst-cons}}
       {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
-      {\hasty{\Theta_x}{0}{a}{A}}
+      {\hasty{\Theta_x}{0}{a}{A} \text{ minimal}}
       {\tlin{\Theta_x}{q}}
       {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
       {\issubst{\substcons{\gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
@@ -409,6 +471,10 @@
 \end{figure}
 
 \TODO{label substitution}
+
+\begin{theorem}[Substitution Weakening] \
+  \TODO{this}
+\end{theorem}
 
 \begin{theorem}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
@@ -494,8 +560,8 @@
       \dnt{\lwk{\cdot}{\cdot}} = \ms{id} \qquad
       \dnt{\lwk
         {\ms{L}, \llhyp{\ell}{\Gamma}{A}}
-        {\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
-        = \dnt{\lwk{\ms{L}}{\ms{K}}} + \dnt{\Gamma} \otimes \dnt{A} \\
+        {\ms{K}, \llhyp{\ell}{\Delta}{A}}}
+        = \dnt{\lwk{\ms{L}}{\ms{K}}} + \upg{(\cwk{\Gamma}{\Delta} \otimes \dnt{A})}{} \\
       \dnt{\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
         = \dnt{\lwk{\ms{L}}{\ms{K}}};\rho_+^{-1}
         ; \dnt{\ms{K}} \oplus 0_{\dnt{\Gamma} \otimes \dnt{A}}
