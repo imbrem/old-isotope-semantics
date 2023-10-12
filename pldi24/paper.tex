@@ -22,6 +22,7 @@
   \stepcounter{todos}
   \begin{center}\large{\textcolor{red}{\textbf{TODO \arabic{todos}:} #1}}\end{center}
 }}
+\newcommand{\sorry}{\textcolor{red}{\textbf{sorry}}}
 
 % Math fonts
 \newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
@@ -407,11 +408,13 @@
   \label{fig:ssa-subst-typing}
 \end{figure}
 
+\TODO{label substitution}
+
 \begin{theorem}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
     \item If \(\hasty{\Gamma}{p}{a}{A}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}\)
-    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Theta}{[\gamma]t}{\ms{L}}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Theta}{[\gamma]t}{[\gamma]\ms{L}}\)
   \end{itemize}
 \end{theorem}
 
@@ -609,16 +612,28 @@
 \end{theorem}
 
 \begin{figure}
-  \begin{center}
-    \TODO{this}
-  \end{center}
+  \begin{gather*}
+    \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_0(\dnt{\Theta}, \dnt{\Gamma})} \\
+    \dnt{\issubst{\cdot}{\cdot}{\cdot}} = \ms{id} \qquad
+    \dnt{\issubst{\substcons{\Gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+      = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{0}{a}{A}}
+  \end{gather*}
   \caption{Semantics for \isotopessa substitutions}
   \Description{Semantics for isotope-SSA substitutions}
   \label{fig:ssa-subst-semantics}
 \end{figure}
 
-\begin{theorem}[Semantic Substitution] \
-  \TODO{this}
+\begin{theorem}[Semantic Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
+      ;\dnt{\hasty{\Gamma}{p}{a}{A}} 
+      = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}}\)
+    \item \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
+      ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      = \dnt{\haslb{\Gamma}{[\gamma]t}{[\gamma]\ms{L}}}
+      ; \sorry \)
+  \end{itemize}
 \end{theorem}
 
 \TODO{\(\implies\) E-graph optimization}
