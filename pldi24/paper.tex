@@ -908,9 +908,51 @@
 \TODO{\(\implies\) E-graph optimization}
 
 \begin{figure}
-  \begin{center}
-    \TODO{this}
-  \end{center}
+  \begin{align*}
+    \dnt{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}
+      &= \dnt{H} \times \mc{C}_p^q(\dnt{\Gamma}, \dnt{A}) 
+      \\
+    \dnt{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}
+      &= \dnt{H} \times \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}}) 
+      \\
+    \dnt{H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}}
+      &= \dnt{H} \times \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}}) 
+      \\
+    \dnt{\cdot} 
+      &= {()}
+  \end{align*}
+  \caption{Semantics for \isotopessa holes}
+  \Description{Semantics for isotope-SSA holes}
+  \label{fig:holes-semantics}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}
+    \boxed{
+      \dnt{\mhasty{\Gamma}{H}{p}{\mhole{a}}{A}{q}}
+      : \dnt{H} \to \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})}
+      \\
+    \sorry
+  \end{gather*}
+  \caption{Semantics for \isotopessa terms with holes}
+  \Description{Semantics for isotope-SSA blocks with holes}
+  \label{fig:terms-with-holes-semantics}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}
+    \boxed{
+      \dnt{\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}}
+      : \dnt{H} \to \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}})}
+      \\
+    \sorry
+      \\  
+    \boxed{
+      \dnt{\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}}}
+      : \dnt{H} \to \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
+      \\
+    \sorry
+  \end{gather*}
   \caption{Semantics for \isotopessa blocks with holes}
   \Description{Semantics for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-semantics}
