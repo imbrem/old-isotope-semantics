@@ -64,6 +64,14 @@
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\issubst}[3]{#1: #2 \mapsto #3}
 \newcommand{\substcons}[3]{[{#2 \mapsto #3}]{#1}}
+\newcommand{\mhole}[1]{{#1}^?}
+\newcommand{\lhole}[1]{?#1}
+\newcommand{\mhasty}[6]{#1;#2 \vdash_{#3} #4: {#5}^{#6}}
+\newcommand{\mhaslb}[4]{#1;#2 \vdash #3 \rhd #4}
+\newcommand{\mlhaslb}[4]{#1;#2 \vdash #3 \rhd #4}
+\newcommand{\tyhole}[5]{#1: #2 \mapsto_{#3} {#4}^{#5}}
+\newcommand{\blkhole}[3]{#1: #2 \mapsto #3}
+\newcommand{\cfghole}[3]{#1: #2 \mapsto #3}
 
 % Denotational semantics
 \newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
@@ -364,7 +372,6 @@
     \prftree[r]{\rle{br}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
-      %TODO: consider allowing binding here, or should it be purely for lets?
       {\hasty{\Xi}{0}{a}{A}{\tint}}
       {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} \qquad
     \prftree[r]{\rle{ite}}
@@ -397,6 +404,38 @@
   \caption{Typing rules for \isotopessa blocks}
   \Description{Typing rules for isotope-SSA blocks}
   \label{fig:ssa-block-typing}
+\end{figure}
+
+\TODO{substitution/label substitution grammar?}
+
+\TODO{do we need to define capture avoiding substitution vs. rewriting?}
+
+\TODO{substitution composition/label substitution composition?}
+
+\TODO{substitution weakening}
+
+\begin{figure}
+  \begin{center}        
+    \begingroup
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{2em}
+    \begin{tabular}{rl}
+        \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
+        \(\issubst{\gamma}{\Theta}{\Gamma}\) &
+        ... \\
+        \(\mhasty{\Gamma}{H}{p}{\mhole{a}}{A}{q}\) &
+        ... \\
+        \(\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}\) &
+        ... \\
+        \(\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}}\) &
+        ...
+    \end{tabular}
+    \endgroup
+    \TODO{add label substitution judgement}
+  \end{center}
+  \caption{Metatheoretic typing judgements for \isotopessa}
+  \Description{Metatheoretic typing judgements for isotope-SSA}
+  \label{fig:ssa-meta-judgements}
 \end{figure}
 
 \begin{theorem}[Minimal Context] \
@@ -500,18 +539,129 @@
 \end{theorem}
 
 \begin{figure}
-  \begin{center}
-    \TODO{this}
-  \end{center}
-  \caption{Grammar for \isotopessa blocks with holes}
+  \begin{grammar}
+    <\(\mhole{a}, \mhole{b}, \mhole{c}, \mhole{e}\)> ::= \(\lhole{X}\)
+    \;|\; \(x\) 
+    \;|\; \(f\;\mhole{a}\)
+    \;|\; \((\mhole{a}, \mhole{b})\) 
+    \;|\; \(()\) 
+    \;|\; \(\ctt\) 
+    \;|\; \(\cff\)
+    \;|\; \(\letexpr{x}{\mhole{a}}{\mhole{e}}\)
+    \;|\; \(\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}\)
+    \alt \(\lbsplice{\ell}{x: A}{\mhole{t}}\)
+
+    <\(\mhole{s}, \mhole{t}\)> ::= \(\lhole{T}\) 
+    \;|\; \(\lbrb{\ell}{\mhole{a}}\) 
+    \;|\; \(\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}\)
+    \;|\; \(\letstmt{x}{\mhole{a}}{\mhole{t}}\)
+    \;|\; \(\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}\)
+    \;|\; \(\ewhere{\mhole{t}}{\mhole{L}}\)
+
+    <\(\mhole{L}\)> ::= \(\lhole{W}\) \;|\; \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{\mhole{t}}, \mhole{L}\)
+
+    <\(H\)> ::= \(\cdot\) 
+    \;|\; \(H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}\)
+    \;|\; \(H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}\)
+    \;|\; \(H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\)
+  \end{grammar}
+  \caption{Grammar for \isotopessa terms and blocks with holes}
   \Description{Grammar for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-grammar}
 \end{figure}
 
 \begin{figure}
-  \begin{center}
-    \TODO{this}
-  \end{center}
+  \begin{gather*}    
+    \prftree[r]{\rle{hole-tm}}
+      {\tyhole{\lhole{X}}{\Delta}{p}{A}{q}}
+      {\cwk{\Gamma}{\Delta}}
+      {\mhasty{\Gamma}{H}{p}{\lhole{X}}{A}{q}} \qquad
+    \prftree[r]{\rle{var}}
+      {\cwk{\Gamma}{\thyp{x}{A}{q}}}
+      {\mhasty{\Gamma}{H}{p}{x}{A}{q}} \qquad
+    \prftree[r]{\rle{app}}
+      {f \in \mc{I}_p^q(A, B)}
+      {\mhasty{\Gamma}{H}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{\Gamma}{H}{p}{f\;\mhole{a}}{B}{q}} \\
+    \prftree[r]{\rle{pair}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{\Delta}{H}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{\Xi}{H}{1}{\mhole{b}}{B}{q}}
+      {\mhasty{\Gamma}{H}{p}{(\mhole{a}, \mhole{b})}{A \otimes B}{q}} \\
+    \prftree[r]{\rle{unit}}
+      {\cwk{\Gamma}{\cdot}}
+      {\mhasty{\Gamma}{H}{p}{()}{\mb{1}}{q}} \qquad
+    \prftree[r]{\rle{true}}
+      {\cwk{\Gamma}{\cdot}}
+      {\mhasty{\Gamma}{H}{p}{\ctt}{\mb{2}}{q}} \qquad
+    \prftree[r]{\rle{false}}
+      {\cwk{\Gamma}{\cdot}}
+      {\mhasty{\Gamma}{H}{p}{\cff}{\mb{2}}{q}} \\
+    \prftree[r]{\rle{let}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{\Delta, \thyp{x}{A}{}}{H}{p}{\mhole{e}}{B}{q}}
+      {\mhasty{\Xi}{H}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{\Gamma}{H}{p}{\letexpr{x}{\mhole{a}}{\mhole{e}}}{B}{q}} \qquad
+    \prftree[r]{\rle{blk}}
+      {\mhaslb{\Gamma}{H}{\mhole{t}}{\llhyp{\ell}{\cdot}{A}}}
+      {\mhasty{\Gamma}{H}{0}{\lbsplice{\ell}{A}{\mhole{t}}}{A}{\varnothing}} \\
+    \prftree[r]{\rle{let2}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{H}{p}{\mhole{e}}{C}{q}}
+      {\mhasty{\Xi}{1}{H}{\mhole{a}}{A \otimes B}{q}}
+      {\mhasty{\Gamma}{H}{p}{\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}}{C}{q}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa terms with holes}
+  \Description{Typing rules for isotope-SSA terms with holes}
+  \label{fig:terms-with-holes-typing}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}    
+    \prftree[r]{\rle{hole-blk}}
+      {\blkhole{\lhole{T}}{\Delta}{\ms{L}} \in H}
+      {\cwk{\Gamma}{\Delta}}
+      {\mhaslb{\Gamma}{H}{\lhole{T}}{\ms{L}}} 
+      \qquad
+    \prftree[r]{\rle{br}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
+      {\mhasty{\Xi}{H}{0}{\mhole{a}}{A}{\tint}}
+      {\mhaslb{\Gamma}{H}{\lbrb{\ell}{\mhole{a}}}{\ms{L}}} 
+      \\
+    \prftree[r]{\rle{ite}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{\Delta}{H}{0}{\mhole{e}}{\mb{2}}{\tint}}
+      {\mhaslb{\Xi}{H}{\mhole{s}}{\ms{L}}}
+      {\mhaslb{\Xi}{H}{\mhole{t}}{\ms{L}}}
+      {\mhaslb{\Gamma}{H}{\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}}{\ms{L}}} \\
+    \prftree[r]{\rle{let-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhaslb{\Delta, \thyp{x}{A}{}}{H}{\mhole{t}}{\ms{L}}}
+      {\mhasty{\Xi}{H}{1}{\mhole{a}}{A}{q}}
+      {\mhaslb{\Gamma}{H}{\letstmt{x}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
+    \prftree[r]{\rle{let2-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhaslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{H}{\mhole{t}}{\ms{L}}}
+      {\mhasty{\Xi}{H}{1}{\mhole{a}}{A \otimes B}{q}}
+      {\mhaslb{\Gamma}{H}{\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
+    \prftree[r]{\rle{where}}
+      {\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}}
+      {\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}}}
+      {\mhaslb{\Gamma}{H}{\ewhere{\mhole{t}}{\mhole{L}}}{\ms{K}}} 
+      \qquad
+    \prftree[r]{\rle{hole-cfg}}
+      {\cfghole{\lhole{W}}{\ms{L}}{\ms{K}} \in H}
+      {\lwk{\ms{M}}{\ms{K}}}
+      {\mlhaslb{\ms{L}}{H}{\lhole{W}}{\ms{K}}}
+      \\
+    \prftree[r]{\rle{nil-br}}
+      {\mlhaslb{\ms{L}}{H}{\cdot}{\ms{L}}} \qquad
+    \prftree[r]{\rle{cons-br}}
+      {\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      {\mhaslb{\Gamma, \thyp{x}{A}{}}{H}{\mhole{t}}{\ms{L}}}
+      {\mlhaslb{\ms{L}}{H}{\mhole{L}, \lwbranch{\ell}{x: A}{\mhole{t}}}{\ms{K}}}
+  \end{gather*}
   \caption{Typing rules for \isotopessa blocks with holes}
   \Description{Typing rules for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-typing}
@@ -695,9 +845,9 @@
       \\
     \dnt{\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}}
       = \upg{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}}
-        ; \dnt{\Delta} \otimes \dnt{\hasty{\Gamma}{1}{a}{A \otimes B}{q}}
-        ; \alpha
-        ; \dnt{\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Gamma}{1}{a}{A \otimes B}{q}}
+      ; \alpha
+      ; \dnt{\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
       \\
     \dnt{\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}}
       = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
