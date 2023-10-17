@@ -63,7 +63,12 @@
 \newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\issubst}[3]{#1: #2 \mapsto #3}
+\newcommand{\lbsubst}[3]{#1: #2 \rightsquigarrow #3}
 \newcommand{\substcons}[3]{[{#2 \mapsto #3}]{#1}}
+\newcommand{\lbsubstcons}[4]{[{#2(#3) \mapsto #4}]{#1}}
+\newcommand{\llbsubstcons}[4]{\lbsubstcons{#1}{\lbl{#2}}{#3}{#4}}
+\newcommand{\exprletsubst}[2]{{#1};{#2}}
+\newcommand{\stmtletsubst}[2]{{#1};{#2}}
 \newcommand{\mhole}[1]{{#1}^?}
 \newcommand{\lhole}[1]{?#1}
 \newcommand{\mhasty}[6]{#1;#2 \vdash_{#3} #4: {#5}^{#6}}
@@ -406,14 +411,6 @@
   \label{fig:ssa-block-typing}
 \end{figure}
 
-\TODO{substitution/label substitution grammar?}
-
-\TODO{do we need to define capture avoiding substitution vs. rewriting?}
-
-\TODO{substitution composition/label substitution composition?}
-
-\TODO{substitution weakening}
-
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -423,6 +420,8 @@
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
         \(\issubst{\gamma}{\Theta}{\Gamma}\) &
         ... \\
+        \(\lbsubst{L}{\ms{L}}{\ms{K}}\) &
+        ... \\
         \(\mhasty{\Gamma}{H}{p}{\mhole{a}}{A}{q}\) &
         ... \\
         \(\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}\) &
@@ -431,84 +430,64 @@
         ...
     \end{tabular}
     \endgroup
-    \TODO{add label substitution judgement}
   \end{center}
   \caption{Metatheoretic typing judgements for \isotopessa}
   \Description{Metatheoretic typing judgements for isotope-SSA}
   \label{fig:ssa-meta-judgements}
 \end{figure}
 
-\begin{theorem}[Minimal Context] \
-  For all \(a, A\), there exists \(\Delta\) such that \(\forall \Gamma, \hasty{\Gamma}{p}{a}{A}{q} \implies \cwk{\Gamma}{\Delta} \land \hasty{\Delta}{p}{a}{A}{q}\). If such a \(\Gamma\) exists, then \(\Delta\) is unique; in this case we call \(\Delta\) \textbf{minimal}.
-\end{theorem}
+% \begin{theorem}[Minimal Context] \
+%   For all \(a, A\), there exists \(\Delta\) such that \(\forall \Gamma, \hasty{\Gamma}{p}{a}{A}{q} \implies \cwk{\Gamma}{\Delta} \land \hasty{\Delta}{p}{a}{A}{q}\). If such a \(\Gamma\) exists, then \(\Delta\) is unique; in this case we call \(\Delta\) \textbf{minimal}.
+% \end{theorem}
 
-\begin{figure}
-  \begin{gather*}
-    \prftree[r]{\rle{subst-nil}}
-      {\issubst{\cdot}{\cdot}{\cdot}}
-      \qquad
-    \prftree[r]{\rle{subst-cons}}
-      {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
-      {\hasty{\Theta_x}{0}{a}{A}{q} \text{ minimal}}
-      {\tlin{\Theta_x}{q}}
-      {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
-      {\issubst{\substcons{\gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
-  \end{gather*}
-  \caption{Typing rules for \isotopessa substitutions}
-  \Description{Typing rules for isotope-SSA substitutions}
-  \label{fig:ssa-subst-typing}
-\end{figure}
-
-\begin{figure}
-  \begin{gather*}
-    \prftree[r]{\rle{subset-nil}}
-      {\cdot \subseteq \cdot}
-      \qquad
-    \prftree[r]{\rle{subset-cons}}
-      {\Gamma \subseteq \Delta}
-      {\Gamma, \thyp{x}{A}{q} \subseteq \Delta, \thyp{x}{A}{q}}
-      \qquad
-    \prftree[r]{\rle{subset-drop}}
-      {\Gamma \subseteq \Delta}
-      {\Gamma \subseteq \Delta, \thyp{x}{A}{q}} 
-    \\
-    \prftree[r]{\rle{in-head}}
-      {\thyp{x}{A}{q} \in \Gamma, \thyp{x}{A}{q}}
-      \qquad
-    \prftree[r]{\rle{in-cons}}
-      {\thyp{x}{A}{q} \in \Gamma}
-      {\thyp{x}{A}{q} \in \Gamma, \thyp{y}{B}{r}}
-    \\
-    \prftree[r]{\rle{var-head}}
-      {x \in \Gamma, \thyp{x}{A}{q}}
-      \qquad
-    \prftree[r]{\rle{var-cons}}
-      {x \in \Gamma}
-      {x \in \Gamma, \thyp{y}{B}{r}} 
-    \\
-    \Gamma \cup \cdot = \Gamma \qquad
-    \Gamma \cup (\Delta, \thyp{x}{A}{q}) = (\Gamma \cup \Delta), \thyp{x}{A}{q} \text{ if } x \notin \Gamma \qquad
-    \Gamma \cup (\Delta, \thyp{x}{A}{q}) = \Gamma \cup \Delta \text{ otherwise} 
-    % \\
-    %   \cdot^\Gamma_\Delta = \cdot 
-    %   \qquad
-    %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta
-    %     = \Theta^\Gamma_\Delta, 
-    %       \thyp{x}{A}{q} \text{ if } x \in \Delta \lor x \notin \Gamma
-    %   \qquad
-    %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta = \Theta^\Gamma_\Delta \text{ otherwise}
-    % \\
-    %   \cdot^\Gamma_\Delta = \cdot 
-    %   \qquad
-    %   (\ms{L}, \llhyp{\ell}{\Theta}{A})^\Gamma_\Delta
-    %   = \ms{L}^\Gamma_\Delta, \llhyp{\ell}{\Theta^\Gamma_\Delta}{A}
-  \end{gather*}
-  \caption{Manipulation of \isotopessa contexts}
-  \Description{Manipulation of isotope-SSA contexts}
-  \label{fig:context-manipulation}
-\end{figure}
-
-\TODO{rewrite union in rule-style?}
+% \begin{figure}
+%   \begin{gather*}
+%     \prftree[r]{\rle{subset-nil}}
+%       {\cdot \subseteq \cdot}
+%       \qquad
+%     \prftree[r]{\rle{subset-cons}}
+%       {\Gamma \subseteq \Delta}
+%       {\Gamma, \thyp{x}{A}{q} \subseteq \Delta, \thyp{x}{A}{q}}
+%       \qquad
+%     \prftree[r]{\rle{subset-drop}}
+%       {\Gamma \subseteq \Delta}
+%       {\Gamma \subseteq \Delta, \thyp{x}{A}{q}} 
+%     \\
+%     \prftree[r]{\rle{in-head}}
+%       {\thyp{x}{A}{q} \in \Gamma, \thyp{x}{A}{q}}
+%       \qquad
+%     \prftree[r]{\rle{in-cons}}
+%       {\thyp{x}{A}{q} \in \Gamma}
+%       {\thyp{x}{A}{q} \in \Gamma, \thyp{y}{B}{r}}
+%     \\
+%     \prftree[r]{\rle{var-head}}
+%       {x \in \Gamma, \thyp{x}{A}{q}}
+%       \qquad
+%     \prftree[r]{\rle{var-cons}}
+%       {x \in \Gamma}
+%       {x \in \Gamma, \thyp{y}{B}{r}} 
+%     \\
+%     \Gamma \cup \cdot = \Gamma \qquad
+%     \Gamma \cup (\Delta, \thyp{x}{A}{q}) = (\Gamma \cup \Delta), \thyp{x}{A}{q} \text{ if } x \notin \Gamma \qquad
+%     \Gamma \cup (\Delta, \thyp{x}{A}{q}) = \Gamma \cup \Delta \text{ otherwise} 
+%     % \\
+%     %   \cdot^\Gamma_\Delta = \cdot 
+%     %   \qquad
+%     %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta
+%     %     = \Theta^\Gamma_\Delta, 
+%     %       \thyp{x}{A}{q} \text{ if } x \in \Delta \lor x \notin \Gamma
+%     %   \qquad
+%     %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta = \Theta^\Gamma_\Delta \text{ otherwise}
+%     % \\
+%     %   \cdot^\Gamma_\Delta = \cdot 
+%     %   \qquad
+%     %   (\ms{L}, \llhyp{\ell}{\Theta}{A})^\Gamma_\Delta
+%     %   = \ms{L}^\Gamma_\Delta, \llhyp{\ell}{\Theta^\Gamma_\Delta}{A}
+%   \end{gather*}
+%   \caption{Manipulation of \isotopessa contexts}
+%   \Description{Manipulation of isotope-SSA contexts}
+%   \label{fig:context-manipulation}
+% \end{figure}
 
 \begin{theorem}[Weakening] \
   \begin{itemize}
@@ -518,16 +497,79 @@
   \end{itemize}
 \end{theorem}
 
-\TODO{restriction of substitutions to contexts, further context manipulation}
+\begin{figure}
+  \begin{grammar}
+    <\(\gamma, \delta, \theta\)> ::= \(\cdot\)
+      \;|\; \(\substcons{\gamma}{x}{a}\)
+  \end{grammar}
+  \caption{Grammar for \isotopessa substitutions}
+  \Description{Grammar for isotope-SSA substitutions}
+  \label{fig:ssa-subst-grammar}
+\end{figure}
 
-\TODO{substitution is a RELATION}
+\begin{figure}
+  \begin{gather*}
+    \prftree[r]{\rle{subst-nil}}
+      {\issubst{\cdot}{\cdot}{\cdot}}
+      \qquad
+    \prftree[r]{\rle{subst-cons}}
+      {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
+      {\hasty{\Theta_x}{0}{a}{A}{q}}
+      {\tlin{\Theta_x}{q}}
+      {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
+      {\issubst{\substcons{\gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+      \\
+    \prftree[r]{\rle{lb-subst-nil}}
+    {\lbsubst{\cdot}{\cdot}{\ms{K}}}
+      \qquad
+    \prftree[r]{\rle{lb-subst-cons}}
+      {\lbsubst{L}{\ms{L}}{\ms{K}}}
+      {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{K}}}
+      {\lbsubst{\llbsubstcons{L}{\ell}{x}{t}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa substitutions}
+  \Description{Typing rules for isotope-SSA substitutions}
+  \label{fig:ssa-subst-typing}
+\end{figure}
 
-\TODO{label substitution}
+\begin{figure}
+  \begin{gather*}
+    \gamma_\cdot = \cdot
+    \qquad
+    \gamma_{\Delta, \thyp{x}{A}{q}} = \substcons{\gamma_\Delta}{x}{a}
+    \text{ if } x \mapsto a \in \gamma
+    \qquad
+    \gamma_{\Delta, \thyp{x}{A}{q}} = \substcons{\gamma_\Delta}{x}{x}
+    \text{ otherwise} 
+    \\
+    \stmtletsubst{\cdot}{t} = t
+    \qquad
+    \stmtletsubst{\substcons{\gamma}{x}{a}}{t} 
+      = \letstmt{x}{a}{\stmtletsubst{\gamma}{t}}
+    \qquad
+    \exprletsubst{\cdot}{e} = e
+    \qquad
+    \exprletsubst{\substcons{\gamma}{x}{a}}{e} 
+      = \letstmt{x}{a}{\stmtletsubst{\gamma}{e}}
+    \\
+    \gamma^{\cdot} = \cdot
+    \qquad
+    \gamma^{\ms{L}, \llhyp{\ell}{\Delta}{A}} 
+      = \llbsubstcons{\gamma^{\ms{L}}}{\ell}{x}
+        {\stmtletsubst{\gamma^\Delta}{\lbrb{\ell}{x}}}
+  \end{gather*}
+  \caption{Operations on \isotopessa substitutions}
+  \Description{Operations on isotope-SSA substitutions}
+  \label{fig:ssa-subst-lift}
+\end{figure}
 
-\TODO{lifting of substitutions to label substitutions}
-
-\begin{theorem}[Substitution Weakening] \
-  \TODO{this}
+\begin{theorem}[Substitution Weakening] 
+  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
+  \begin{itemize}
+    \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
+    \item \(\issubst{\gamma_\Delta}{\Theta_\Delta}{\Delta}\)
+    \item \(\issubst{\gamma_\Xi}{\Theta_\Xi}{\Xi}\)
+  \end{itemize}
 \end{theorem}
 
 \begin{theorem}[Substitution] 
@@ -537,6 +579,14 @@
     \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Theta}{[\gamma]t}{[\gamma]\ms{L}}\)
   \end{itemize}
 \end{theorem}
+
+\TODO{substitution/label substitution grammar?}
+
+\TODO{do we need to define capture avoiding substitution vs. rewriting?}
+
+\TODO{substitution composition/label substitution composition?}
+
+\TODO{substitution weakening}
 
 \begin{figure}
   \begin{grammar}
@@ -857,8 +907,8 @@
       : \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
       \\
     \dnt{\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
-      = \dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{A}{t}}}
-      ; [[\iota_0, \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{t}{L}}], \iota_1]
+      = \dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      ; [[\iota_0, \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}], \iota_1]
       \\
     \dnt{\lhaslb{\ms{L}}{\cdot}{\ms{L}}}
       = \iota_0
@@ -878,6 +928,10 @@
 \begin{theorem}[Semantic Upgrade]
   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\hasty{\Gamma}{1}{a}{A}{q}}{}\]
+\end{theorem}
+
+\begin{theorem}[Semantic Weakening] \
+  \TODO{this}
 \end{theorem}
 
 \begin{figure}
@@ -904,8 +958,6 @@
       ; \sorry \)
   \end{itemize}
 \end{theorem}
-
-\TODO{\(\implies\) E-graph optimization}
 
 \begin{figure}
   \begin{align*}
@@ -961,6 +1013,8 @@
 \begin{theorem}[Rewriting] \
   \TODO{this}
 \end{theorem}
+
+\TODO{\(\implies\) E-graph optimization}
 
 \section{Basic Models}
 
