@@ -532,6 +532,31 @@
   \label{fig:ssa-subst-typing}
 \end{figure}
 
+% \begin{figure}
+%   \begin{gather*}
+%     \prftree[r]{\rle{subst-nil}}
+%       {\issubst{\gamma}{\cdot}{\cdot}}
+%       \qquad
+%     \prftree[r]{\rle{subst-cons}}
+%       {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
+%       {\hasty{\Theta_x}{0}{\gamma(x)}{A}{q}}
+%       {\tlin{\Theta_x}{q}}
+%       {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
+%       {\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+%       \\
+%     \prftree[r]{\rle{lb-subst-nil}}
+%     {\lbsubst{\mc{L}}{\cdot}{\ms{K}}}
+%       \qquad
+%     \prftree[r]{\rle{lb-subst-cons}}
+%       {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+%       {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
+%       {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+%   \end{gather*}
+%   \caption{Typing rules for functional \isotopessa substitutions}
+%   \Description{Typing rules for functional isotope-SSA substitutions}
+%   \label{fig:ssa-subst-func-typing}
+% \end{figure}
+
 \begin{figure}
   \begin{gather*}
     \gamma_\cdot = \cdot
@@ -558,7 +583,7 @@
       = \llbsubstcons{\gamma^{\ms{L}}}{\ell}{x}
         {\stmtletsubst{\gamma^\Delta}{\lbrb{\ell}{x}}}
   \end{gather*}
-  \caption{Operations on \isotopessa substitutions}
+  \caption{Operations on \isotopessa substitutions.}
   \Description{Operations on isotope-SSA substitutions}
   \label{fig:ssa-subst-lift}
 \end{figure}
@@ -578,6 +603,12 @@
     \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
     \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Theta}{[\gamma]t}{[\gamma]\ms{L}}\)
   \end{itemize}
+\end{theorem}
+
+\begin{theorem}[Substitution Lifting]
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\ms{L}\), then there 
+  exists \(\ms{K}\) such that 
+  \(\lbsubst{\gamma^{\ms{L}}}{\ms{L}}{\ms{K}}\)
 \end{theorem}
 
 \TODO{substitution/label substitution grammar?}
