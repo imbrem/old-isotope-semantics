@@ -64,9 +64,6 @@
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\issubst}[3]{#1: #2 \mapsto #3}
 \newcommand{\lbsubst}[3]{#1: #2 \rightsquigarrow #3}
-\newcommand{\substcons}[3]{[{#2 \mapsto #3}]{#1}}
-\newcommand{\lbsubstcons}[4]{[{#2(#3) \mapsto #4}]{#1}}
-\newcommand{\llbsubstcons}[4]{\lbsubstcons{#1}{\lbl{#2}}{#3}{#4}}
 \newcommand{\exprletsubst}[2]{{#1};{#2}}
 \newcommand{\stmtletsubst}[2]{{#1};{#2}}
 \newcommand{\mhole}[1]{{#1}^?}
@@ -77,6 +74,12 @@
 \newcommand{\tyhole}[5]{#1: #2 \mapsto_{#3} {#4}^{#5}}
 \newcommand{\blkhole}[3]{#1: #2 \mapsto #3}
 \newcommand{\cfghole}[3]{#1: #2 \mapsto #3}
+\newcommand{\substctx}[2]{{#1}^{#2}}
+\newcommand{\substlbs}[2]{{#1}^{#2}}
+\newcommand{\restrictsubst}[2]{{#1}_{#2}}
+\newcommand{\subsubst}[2]{#1 \subseteq #2}
+\newcommand{\isrw}[3]{#1: #2 \mapsto #3}
+\newcommand{\strictlbsubst}[3]{#1: #2 \rightsquigarrow_= #3}
 
 % Denotational semantics
 \newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
@@ -420,13 +423,13 @@
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
         \(\issubst{\gamma}{\Theta}{\Gamma}\) &
         ... \\
-        \(\lbsubst{L}{\ms{L}}{\ms{K}}\) &
+        \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) &
         ... \\
-        \(\mhasty{\Gamma}{H}{p}{\mhole{a}}{A}{q}\) &
+        \(\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}\) &
         ... \\
-        \(\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}\) &
+        \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) &
         ... \\
-        \(\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}}\) &
+        \(\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}\) &
         ...
     \end{tabular}
     \endgroup
@@ -435,59 +438,6 @@
   \Description{Metatheoretic typing judgements for isotope-SSA}
   \label{fig:ssa-meta-judgements}
 \end{figure}
-
-% \begin{theorem}[Minimal Context] \
-%   For all \(a, A\), there exists \(\Delta\) such that \(\forall \Gamma, \hasty{\Gamma}{p}{a}{A}{q} \implies \cwk{\Gamma}{\Delta} \land \hasty{\Delta}{p}{a}{A}{q}\). If such a \(\Gamma\) exists, then \(\Delta\) is unique; in this case we call \(\Delta\) \textbf{minimal}.
-% \end{theorem}
-
-% \begin{figure}
-%   \begin{gather*}
-%     \prftree[r]{\rle{subset-nil}}
-%       {\cdot \subseteq \cdot}
-%       \qquad
-%     \prftree[r]{\rle{subset-cons}}
-%       {\Gamma \subseteq \Delta}
-%       {\Gamma, \thyp{x}{A}{q} \subseteq \Delta, \thyp{x}{A}{q}}
-%       \qquad
-%     \prftree[r]{\rle{subset-drop}}
-%       {\Gamma \subseteq \Delta}
-%       {\Gamma \subseteq \Delta, \thyp{x}{A}{q}} 
-%     \\
-%     \prftree[r]{\rle{in-head}}
-%       {\thyp{x}{A}{q} \in \Gamma, \thyp{x}{A}{q}}
-%       \qquad
-%     \prftree[r]{\rle{in-cons}}
-%       {\thyp{x}{A}{q} \in \Gamma}
-%       {\thyp{x}{A}{q} \in \Gamma, \thyp{y}{B}{r}}
-%     \\
-%     \prftree[r]{\rle{var-head}}
-%       {x \in \Gamma, \thyp{x}{A}{q}}
-%       \qquad
-%     \prftree[r]{\rle{var-cons}}
-%       {x \in \Gamma}
-%       {x \in \Gamma, \thyp{y}{B}{r}} 
-%     \\
-%     \Gamma \cup \cdot = \Gamma \qquad
-%     \Gamma \cup (\Delta, \thyp{x}{A}{q}) = (\Gamma \cup \Delta), \thyp{x}{A}{q} \text{ if } x \notin \Gamma \qquad
-%     \Gamma \cup (\Delta, \thyp{x}{A}{q}) = \Gamma \cup \Delta \text{ otherwise} 
-%     % \\
-%     %   \cdot^\Gamma_\Delta = \cdot 
-%     %   \qquad
-%     %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta
-%     %     = \Theta^\Gamma_\Delta, 
-%     %       \thyp{x}{A}{q} \text{ if } x \in \Delta \lor x \notin \Gamma
-%     %   \qquad
-%     %   (\Theta, \thyp{x}{A}{q})^\Gamma_\Delta = \Theta^\Gamma_\Delta \text{ otherwise}
-%     % \\
-%     %   \cdot^\Gamma_\Delta = \cdot 
-%     %   \qquad
-%     %   (\ms{L}, \llhyp{\ell}{\Theta}{A})^\Gamma_\Delta
-%     %   = \ms{L}^\Gamma_\Delta, \llhyp{\ell}{\Theta^\Gamma_\Delta}{A}
-%   \end{gather*}
-%   \caption{Manipulation of \isotopessa contexts}
-%   \Description{Manipulation of isotope-SSA contexts}
-%   \label{fig:context-manipulation}
-% \end{figure}
 
 \begin{theorem}[Weakening] \
   \begin{itemize}
@@ -498,126 +448,109 @@
 \end{theorem}
 
 \begin{figure}
-  \begin{grammar}
-    <\(\gamma, \delta, \theta\)> ::= \(\cdot\)
-      \;|\; \(\substcons{\gamma}{x}{a}\)
-  \end{grammar}
-  \caption{Grammar for \isotopessa substitutions}
-  \Description{Grammar for isotope-SSA substitutions}
-  \label{fig:ssa-subst-grammar}
-\end{figure}
-
-\begin{figure}
   \begin{gather*}
+    \boxed{\gamma: \ms{Var} \to \ms{Expr}}
+    \\
     \prftree[r]{\rle{subst-nil}}
-      {\issubst{\cdot}{\cdot}{\cdot}}
+      {\issubst{\gamma}{\cdot}{\cdot}}
       \qquad
     \prftree[r]{\rle{subst-cons}}
       {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
-      {\hasty{\Theta_x}{0}{a}{A}{q}}
+      {\hasty{\Theta_x}{0}{\gamma(x)}{A}{q}}
       {\tlin{\Theta_x}{q}}
       {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
-      {\issubst{\substcons{\gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
-      \\
+      {\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+    \\
+    \boxed{\mc{L}: \ms{Label} \to \ms{Expr} \to \ms{Block} \text{ s.t. for fresh } x, [a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)}
+    \\
     \prftree[r]{\rle{lb-subst-nil}}
-    {\lbsubst{\cdot}{\cdot}{\ms{K}}}
+    {\lbsubst{\mc{L}}{\cdot}{\ms{K}}}
       \qquad
     \prftree[r]{\rle{lb-subst-cons}}
-      {\lbsubst{L}{\ms{L}}{\ms{K}}}
-      {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{K}}}
-      {\lbsubst{\llbsubstcons{L}{\ell}{x}{t}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+      {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
+      {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+    \\
+    \prftree[r]{\rle{lb-strict}}
+      {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      {\ms{labels}(\ms{L}) = \ms{labels}(\ms{K})}
+      {\strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
   \end{gather*}
-  \caption{Typing rules for \isotopessa substitutions}
+  \caption{Typing rules for \isotopessa substitutions. We assume that for all but finitely many \(x\), \(\lbl{\ell}\), \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) = \lbrb{\ell}{x}\).}
   \Description{Typing rules for isotope-SSA substitutions}
   \label{fig:ssa-subst-typing}
 \end{figure}
 
-% \begin{figure}
-%   \begin{gather*}
-%     \prftree[r]{\rle{subst-nil}}
-%       {\issubst{\gamma}{\cdot}{\cdot}}
-%       \qquad
-%     \prftree[r]{\rle{subst-cons}}
-%       {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
-%       {\hasty{\Theta_x}{0}{\gamma(x)}{A}{q}}
-%       {\tlin{\Theta_x}{q}}
-%       {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
-%       {\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
-%       \\
-%     \prftree[r]{\rle{lb-subst-nil}}
-%     {\lbsubst{\mc{L}}{\cdot}{\ms{K}}}
-%       \qquad
-%     \prftree[r]{\rle{lb-subst-cons}}
-%       {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-%       {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
-%       {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
-%   \end{gather*}
-%   \caption{Typing rules for functional \isotopessa substitutions}
-%   \Description{Typing rules for functional isotope-SSA substitutions}
-%   \label{fig:ssa-subst-func-typing}
-% \end{figure}
-
 \begin{figure}
   \begin{gather*}
-    \gamma_\cdot = \cdot
-    \qquad
-    \gamma_{\Delta, \thyp{x}{A}{q}} = \substcons{\gamma_\Delta}{x}{a}
-    \text{ if } x \mapsto a \in \gamma
-    \qquad
-    \gamma_{\Delta, \thyp{x}{A}{q}} = \substcons{\gamma_\Delta}{x}{x}
-    \text{ otherwise} 
+    \subsubst{\gamma}{\gamma'} \iff 
+      \forall x, \gamma(x) \in \{x, \gamma'(x)\}
     \\
-    \stmtletsubst{\cdot}{t} = t
+    \restrictsubst{\gamma}{\Gamma}(x) 
+      =
+      (\ms{if}\; x \in \Gamma
+      \;\ms{then}\;\gamma(x)
+      \;\ms{else}\;x)
+    \\
+    \stmtletsubst{\substctx{\gamma}{\cdot}}{t} = t
     \qquad
-    \stmtletsubst{\substcons{\gamma}{x}{a}}{t} 
-      = \letstmt{x}{a}{\stmtletsubst{\gamma}{t}}
+    \stmtletsubst{\substctx{\gamma}{\Gamma, x: A^q}}{t} 
+      = \letstmt{x}{\gamma(x)}{\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}}
     \qquad
     \exprletsubst{\cdot}{e} = e
     \qquad
-    \exprletsubst{\substcons{\gamma}{x}{a}}{e} 
-      = \letstmt{x}{a}{\stmtletsubst{\gamma}{e}}
+    \exprletsubst{\substctx{\gamma}{\Gamma, x: A^q}}{e} 
+      = \letstmt{x}{\gamma(x)}{\substctx{\gamma}{\Gamma}}
     \\
-    \gamma^{\cdot} = \cdot
+    \substlbs{\gamma}{\cdot}(\lbl{\ell}, x) = \lbrb{\ell}{x}
     \qquad
-    \gamma^{\ms{L}, \llhyp{\ell}{\Delta}{A}} 
-      = \llbsubstcons{\gamma^{\ms{L}}}{\ell}{x}
-        {\stmtletsubst{\gamma^\Delta}{\lbrb{\ell}{x}}}
+    \substlbs{\gamma}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}(\lbl{k}, x)
+      = 
+      (\ms{if}\; \lbl{k} = \lbl{\ell} 
+      \;\ms{then}\;\stmtletsubst{\substctx{\gamma}{\Gamma}}{\lbrb{\ell}{x}}
+      \;\ms{else}\;\substlbs{\gamma}{\ms{L}}(\lbl{\ell}, x))
+    \\
+    [\mc{L}](\lbrb{\ell}{a}) = \mc{L}(\lbl{\ell}, a)
+    \qquad
+    [\mc{L}]\ite{e}{s}{t} = \ite{e}{[\mc{L}]s}{[\mc{L}]t}
+    \\
+    [\mc{L}](\letstmt{x}{a}{t}) = (\letstmt{x}{a}{[\mc{L}]t})
+    \qquad
+    [\mc{L}](\letstmt{(x, y)}{a}{t}) = (\letstmt{(x, y)}{a}{[\mc{L}]t})
+    \\
+    [\mc{L}]\ewhere{t}{L} = \ewhere{[\mc{L}]t}{[\mc{L}]L}
+    \\
+    [\mc{L}]\cdot = \cdot
+    \qquad
+    [\mc{L}](\lwbranch{\ell}{x: A}{t})
+    = (\lwbranch{\ell}{x: A}{[\mc{L}]t})
   \end{gather*}
-  \caption{Operations on \isotopessa substitutions.}
+  \caption{Operations on \isotopessa substitutions. In particular, note that for all \(\Gamma\), \(\subsubst{\restrictsubst{\gamma}{\Gamma}}{\gamma}\)}
   \Description{Operations on isotope-SSA substitutions}
-  \label{fig:ssa-subst-lift}
+  \label{fig:ssa-subst-ops}
 \end{figure}
 
-\begin{theorem}[Substitution Weakening] 
+\begin{lemma}[Substitution Weakening] 
   If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
   \begin{itemize}
     \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
     \item \(\issubst{\gamma_\Delta}{\Theta_\Delta}{\Delta}\)
     \item \(\issubst{\gamma_\Xi}{\Theta_\Xi}{\Xi}\)
   \end{itemize}
-\end{theorem}
+  Furthermore, if \(\subsubst{\gamma}{\gamma'}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then \(\issubst{\gamma'}{\Theta}{\Gamma}\).
+\end{lemma}
 
 \begin{theorem}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
     \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
-    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Theta}{[\gamma]t}{[\gamma]\ms{L}}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), \(\strictlbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}\), and then \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
   \end{itemize}
 \end{theorem}
 
-\begin{theorem}[Substitution Lifting]
-  Given \(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\ms{L}\), then there 
-  exists \(\ms{K}\) such that 
-  \(\lbsubst{\gamma^{\ms{L}}}{\ms{L}}{\ms{K}}\)
+\begin{theorem}[Label Substitution] 
+  Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), if \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
 \end{theorem}
-
-\TODO{substitution/label substitution grammar?}
-
-\TODO{do we need to define capture avoiding substitution vs. rewriting?}
-
-\TODO{substitution composition/label substitution composition?}
-
-\TODO{substitution weakening}
 
 \begin{figure}
   \begin{grammar}
@@ -656,41 +589,41 @@
     \prftree[r]{\rle{hole-tm}}
       {\tyhole{\lhole{X}}{\Delta}{p}{A}{q}}
       {\cwk{\Gamma}{\Delta}}
-      {\mhasty{\Gamma}{H}{p}{\lhole{X}}{A}{q}} \qquad
+      {\mhasty{H}{\Gamma}{p}{\lhole{X}}{A}{q}} \qquad
     \prftree[r]{\rle{var}}
       {\cwk{\Gamma}{\thyp{x}{A}{q}}}
-      {\mhasty{\Gamma}{H}{p}{x}{A}{q}} \qquad
+      {\mhasty{H}{\Gamma}{p}{x}{A}{q}} \qquad
     \prftree[r]{\rle{app}}
       {f \in \mc{I}_p^q(A, B)}
-      {\mhasty{\Gamma}{H}{1}{\mhole{a}}{A}{q}}
-      {\mhasty{\Gamma}{H}{p}{f\;\mhole{a}}{B}{q}} \\
+      {\mhasty{H}{\Gamma}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{H}{\Gamma}{p}{f\;\mhole{a}}{B}{q}} \\
     \prftree[r]{\rle{pair}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhasty{\Delta}{H}{1}{\mhole{a}}{A}{q}}
-      {\mhasty{\Xi}{H}{1}{\mhole{b}}{B}{q}}
-      {\mhasty{\Gamma}{H}{p}{(\mhole{a}, \mhole{b})}{A \otimes B}{q}} \\
+      {\mhasty{H}{\Delta}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{H}{\Xi}{1}{\mhole{b}}{B}{q}}
+      {\mhasty{H}{\Gamma}{p}{(\mhole{a}, \mhole{b})}{A \otimes B}{q}} \\
     \prftree[r]{\rle{unit}}
       {\cwk{\Gamma}{\cdot}}
-      {\mhasty{\Gamma}{H}{p}{()}{\mb{1}}{q}} \qquad
+      {\mhasty{H}{\Gamma}{p}{()}{\mb{1}}{q}} \qquad
     \prftree[r]{\rle{true}}
       {\cwk{\Gamma}{\cdot}}
-      {\mhasty{\Gamma}{H}{p}{\ctt}{\mb{2}}{q}} \qquad
+      {\mhasty{H}{\Gamma}{p}{\ctt}{\mb{2}}{q}} \qquad
     \prftree[r]{\rle{false}}
       {\cwk{\Gamma}{\cdot}}
-      {\mhasty{\Gamma}{H}{p}{\cff}{\mb{2}}{q}} \\
+      {\mhasty{H}{\Gamma}{p}{\cff}{\mb{2}}{q}} \\
     \prftree[r]{\rle{let}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhasty{\Delta, \thyp{x}{A}{}}{H}{p}{\mhole{e}}{B}{q}}
-      {\mhasty{\Xi}{H}{1}{\mhole{a}}{A}{q}}
-      {\mhasty{\Gamma}{H}{p}{\letexpr{x}{\mhole{a}}{\mhole{e}}}{B}{q}} \qquad
+      {\mhasty{H}{\Delta, \thyp{x}{A}{}}{p}{\mhole{e}}{B}{q}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{H}{\Gamma}{p}{\letexpr{x}{\mhole{a}}{\mhole{e}}}{B}{q}} \qquad
     \prftree[r]{\rle{blk}}
-      {\mhaslb{\Gamma}{H}{\mhole{t}}{\llhyp{\ell}{\cdot}{A}}}
-      {\mhasty{\Gamma}{H}{0}{\lbsplice{\ell}{A}{\mhole{t}}}{A}{\varnothing}} \\
+      {\mhaslb{H}{\Gamma}{\mhole{t}}{\llhyp{\ell}{\cdot}{A}}}
+      {\mhasty{H}{\Gamma}{0}{\lbsplice{\ell}{A}{\mhole{t}}}{A}{\varnothing}} \\
     \prftree[r]{\rle{let2}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{H}{p}{\mhole{e}}{C}{q}}
-      {\mhasty{\Xi}{1}{H}{\mhole{a}}{A \otimes B}{q}}
-      {\mhasty{\Gamma}{H}{p}{\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}}{C}{q}}
+      {\mhasty{H}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{\mhole{e}}{C}{q}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A \otimes B}{q}}
+      {\mhasty{H}{\Gamma}{p}{\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}}{C}{q}}
   \end{gather*}
   \caption{Typing rules for \isotopessa terms with holes}
   \Description{Typing rules for isotope-SSA terms with holes}
@@ -702,34 +635,34 @@
     \prftree[r]{\rle{hole-blk}}
       {\blkhole{\lhole{T}}{\Delta}{\ms{L}} \in H}
       {\cwk{\Gamma}{\Delta}}
-      {\mhaslb{\Gamma}{H}{\lhole{T}}{\ms{L}}} 
+      {\mhaslb{H}{\Gamma}{\lhole{T}}{\ms{L}}} 
       \qquad
     \prftree[r]{\rle{br}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
-      {\mhasty{\Xi}{H}{0}{\mhole{a}}{A}{\tint}}
-      {\mhaslb{\Gamma}{H}{\lbrb{\ell}{\mhole{a}}}{\ms{L}}} 
+      {\mhasty{H}{\Xi}{0}{\mhole{a}}{A}{\tint}}
+      {\mhaslb{H}{\Gamma}{\lbrb{\ell}{\mhole{a}}}{\ms{L}}} 
       \\
     \prftree[r]{\rle{ite}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhasty{\Delta}{H}{0}{\mhole{e}}{\mb{2}}{\tint}}
-      {\mhaslb{\Xi}{H}{\mhole{s}}{\ms{L}}}
-      {\mhaslb{\Xi}{H}{\mhole{t}}{\ms{L}}}
-      {\mhaslb{\Gamma}{H}{\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}}{\ms{L}}} \\
+      {\mhasty{H}{\Delta}{0}{\mhole{e}}{\mb{2}}{\tint}}
+      {\mhaslb{H}{\Xi}{\mhole{s}}{\ms{L}}}
+      {\mhaslb{H}{\Xi}{\mhole{t}}{\ms{L}}}
+      {\mhaslb{H}{\Gamma}{\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}}{\ms{L}}} \\
     \prftree[r]{\rle{let-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhaslb{\Delta, \thyp{x}{A}{}}{H}{\mhole{t}}{\ms{L}}}
-      {\mhasty{\Xi}{H}{1}{\mhole{a}}{A}{q}}
-      {\mhaslb{\Gamma}{H}{\letstmt{x}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
+      {\mhaslb{H}{\Delta, \thyp{x}{A}{}}{\mhole{t}}{\ms{L}}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A}{q}}
+      {\mhaslb{H}{\Gamma}{\letstmt{x}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
     \prftree[r]{\rle{let2-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhaslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{H}{\mhole{t}}{\ms{L}}}
-      {\mhasty{\Xi}{H}{1}{\mhole{a}}{A \otimes B}{q}}
-      {\mhaslb{\Gamma}{H}{\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
+      {\mhaslb{H}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{\mhole{t}}{\ms{L}}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A \otimes B}{q}}
+      {\mhaslb{H}{\Gamma}{\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
     \prftree[r]{\rle{where}}
-      {\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}}
-      {\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}}}
-      {\mhaslb{\Gamma}{H}{\ewhere{\mhole{t}}{\mhole{L}}}{\ms{K}}} 
+      {\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}}
+      {\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}}
+      {\mhaslb{H}{\Gamma}{\ewhere{\mhole{t}}{\mhole{L}}}{\ms{K}}} 
       \qquad
     \prftree[r]{\rle{hole-cfg}}
       {\cfghole{\lhole{W}}{\ms{L}}{\ms{K}} \in H}
@@ -737,18 +670,40 @@
       {\mlhaslb{\ms{L}}{H}{\lhole{W}}{\ms{K}}}
       \\
     \prftree[r]{\rle{nil-br}}
-      {\mlhaslb{\ms{L}}{H}{\cdot}{\ms{L}}} \qquad
+      {\mlhaslb{H}{\ms{L}}{\cdot}{\ms{L}}} \qquad
     \prftree[r]{\rle{cons-br}}
-      {\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
-      {\mhaslb{\Gamma, \thyp{x}{A}{}}{H}{\mhole{t}}{\ms{L}}}
-      {\mlhaslb{\ms{L}}{H}{\mhole{L}, \lwbranch{\ell}{x: A}{\mhole{t}}}{\ms{K}}}
+      {\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      {\mhaslb{H}{\Gamma, \thyp{x}{A}{}}{\mhole{t}}{\ms{L}}}
+      {\mlhaslb{H}{\ms{L}}{\mhole{L}, \lwbranch{\ell}{x: A}{\mhole{t}}}{\ms{K}}}
   \end{gather*}
   \caption{Typing rules for \isotopessa blocks with holes}
   \Description{Typing rules for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-typing}
 \end{figure}
 
-\TODO{rewriting}
+\begin{figure}
+  \begin{gather*}
+    \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock}}
+    \\
+    \sorry
+  \end{gather*}
+  \caption{Typing rules for \isotopessa rewrites}
+  \Description{Typing rules for isotope-SSA rewrites}
+  \label{fig:rewrite-typing}
+\end{figure}
+
+\begin{theorem}[Rewriting]
+  Given \(\isrw{\mc{H}}{H}{I}\), we have
+  \begin{itemize}
+    \item If \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), then \(\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}\)
+    \item If \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), then \(\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}\)
+  \end{itemize}
+  Furthermore, we have that 
+  \begin{itemize}
+    \item \(\mhasty{\cdot}{\Gamma}{p}{a}{A}{q} \iff \hasty{\Gamma}{p}{a}{A}{q}\)
+    \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
+  \end{itemize}
+\end{theorem}
 
 \section{SSA Semantics}
 
@@ -949,33 +904,61 @@
   \label{fig:ssa-structural-blocks}
 \end{figure}
 
-\begin{theorem}[Coherence]
+\begin{lemma}[Coherence] \
   \begin{itemize}
     \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
     \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \csplits{\Gamma}{\Delta}{\Xi}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \cwk{\Gamma}{\Delta}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
   \end{itemize}
-\end{theorem}
+\end{lemma}
 
-\begin{theorem}[Semantic Upgrade]
+\begin{lemma}[Semantic Upgrade]
   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\hasty{\Gamma}{1}{a}{A}{q}}{}\]
-\end{theorem}
+\end{lemma}
 
-\begin{theorem}[Semantic Weakening] \
-  \TODO{this}
-\end{theorem}
+\begin{lemma}[Semantic Weakening] 
+  If \(\cwk{\Gamma}{\Delta}\) and \(\hasty{\Gamma}{p}{a}{A}{q}\), then
+  \[
+    \dnt{\hasty{\Gamma}{p}{a}{A}{q}} = \dnt{\cwk{\Gamma}{\Delta}};\dnt{\hasty{\Delta}{p}{a}{A}{q}}
+  \]
+\end{lemma}
 
 \begin{figure}
   \begin{gather*}
-    \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_0(\dnt{\Theta}, \dnt{\Gamma})} \\
-    \dnt{\issubst{\substcons{\Gamma}{x}{a}}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
-      = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{0}{a}{A}{q}} \\
+    \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1(\dnt{\Theta}, \dnt{\Gamma})} 
+    \\
+    \dnt{\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+      = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{1}{a}{A}{q}} \\
     \dnt{\issubst{\cdot}{\cdot}{\cdot}} = \ms{id}
+    \\
+    \boxed{\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}: \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}})} 
   \end{gather*}
   \caption{Semantics for \isotopessa substitutions}
   \Description{Semantics for isotope-SSA substitutions}
   \label{fig:ssa-subst-semantics}
 \end{figure}
+
+\begin{lemma}[Substitution Coherence] \
+  \begin{itemize}
+    \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1: \strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \strictlbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{lemma}
+
+\begin{lemma}[Semantic Substitution Splitting] 
+  Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
+  if \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\) and \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), then
+  \[
+    \dnt{\issubst{\gamma}{\Theta}{\Gamma}};\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+    = \dnt{\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}};
+      \dnt{\issubst{\gamma}{\Theta_\Delta}{\Delta}}
+      \otimes \dnt{\issubst{\gamma}{\Theta_\Xi}{\Xi}}
+  \]
+\end{lemma}
 
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
@@ -983,11 +966,16 @@
     \item \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
       ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
       = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}\)
-    \item \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
+    \item Given \(\strictlbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}\), \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
       ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
-      = \dnt{\haslb{\Theta}{[\gamma]t}{[\gamma]\ms{L}}}
-      ; \sorry \)
+      = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
+      ; \dnt{\strictlbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}\)
   \end{itemize}
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+  \[
+    \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+    = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+  \]
 \end{theorem}
 
 \begin{figure}
@@ -1002,7 +990,7 @@
       &= \dnt{H} \times \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}}) 
       \\
     \dnt{\cdot} 
-      &= {()}
+      &= \mb{1}
   \end{align*}
   \caption{Semantics for \isotopessa holes}
   \Description{Semantics for isotope-SSA holes}
@@ -1012,7 +1000,7 @@
 \begin{figure}
   \begin{gather*}
     \boxed{
-      \dnt{\mhasty{\Gamma}{H}{p}{\mhole{a}}{A}{q}}
+      \dnt{\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}}
       : \dnt{H} \to \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})}
       \\
     \sorry
@@ -1025,13 +1013,13 @@
 \begin{figure}
   \begin{gather*}
     \boxed{
-      \dnt{\mhaslb{\Gamma}{H}{\mhole{t}}{\ms{L}}}
+      \dnt{\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}}
       : \dnt{H} \to \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}})}
       \\
     \sorry
       \\  
     \boxed{
-      \dnt{\mlhaslb{\ms{L}}{H}{\mhole{L}}{\ms{K}}}
+      \dnt{\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}}
       : \dnt{H} \to \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
       \\
     \sorry
@@ -1041,11 +1029,54 @@
   \label{fig:blocks-with-holes-semantics}
 \end{figure}
 
-\begin{theorem}[Rewriting] \
-  \TODO{this}
+\begin{figure}
+  \begin{gather*}
+    \boxed{
+      \dnt{\isrw{\mc{H}}{I}{H}}
+      : \dnt{I} \to \dnt{H} 
+    }
+    \\
+    \sorry
+  \end{gather*}
+  \caption{Semantics for \isotopessa rewrites}
+  \Description{Semantics for isotope-SSA rewrites}
+  \label{fig:rewrite-semantics}
+\end{figure}
+
+\begin{lemma}[Rewriting Coherence] \
+  \begin{itemize}
+    \item Given any two derivations \(D_1: \mhasty{H}{\Gamma}{p}{a}{A}{q}\), \(D_2: \mhasty{\Gamma}{p}{H}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \mhaslb{H}{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \isrw{\mc{H}}{I}{H}\), \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{lemma}
+
+\begin{theorem}[Semantic Rewriting]
+  Given \(\isrw{\mc{H}}{I}{H}\), we have that
+  \begin{itemize}
+    \item For all \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), \(m \in \dnt{I}\), we have
+    \[
+      \dnt{\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}}(m)
+      = \dnt{\mhasty{H}{\Gamma}{p}{a}{A}{q}}(\dnt{\isrw{\mc{H}}{I}{H}}(m))
+    \]
+    \item For all \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), \(m \in \dnt{I}\), we have
+    \[
+      \dnt{\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}}(m)
+      = \dnt{\mhaslb{H}{\Gamma}{t}{\ms{L}}}(\dnt{\isrw{\mc{H}}{I}{H}}(m))
+    \]
+  \end{itemize}
+
+  Furthermore, we have that
+  \[
+    \dnt{\mhasty{\cdot}{\Gamma}{p}{a}{A}{q}}() = \dnt{\hasty{\Gamma}{p}{a}{A}{q}}
+    \qquad
+    \dnt{\mhaslb{\cdot}{\Gamma}{t}{\ms{L}}}() = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+  \]
 \end{theorem}
 
 \TODO{\(\implies\) E-graph optimization}
+
+\TODO{rewriting substitution + weakening?}
 
 \section{Basic Models}
 
