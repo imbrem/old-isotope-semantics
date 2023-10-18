@@ -79,7 +79,7 @@
 \newcommand{\restrictsubst}[2]{{#1}_{#2}}
 \newcommand{\subsubst}[2]{#1 \subseteq #2}
 \newcommand{\isrw}[3]{#1: #2 \mapsto #3}
-\newcommand{\strictlbsubst}[3]{#1: #2 \rightsquigarrow_= #3}
+% \newcommand{\strictlbsubst}[3]{#1: #2 \rightsquigarrow_= #3}
 
 % Denotational semantics
 \newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
@@ -291,6 +291,8 @@
   \label{fig:ssa-judgements}
 \end{figure}
 
+\TODO{some text about each typing judgement}
+
 \begin{figure}
   \begin{gather*}    
     \prftree[r]{\rle{base-lin}}{q \subseteq \ms{lin}(X)}{\tlin{X}{q}} \qquad
@@ -332,6 +334,8 @@
   \Description{Structural rules for isotope-SSA}
   \label{fig:ssa-structural}
 \end{figure}
+
+\TODO{some text about each structural rule}
 
 \begin{figure}
   \begin{gather*}    
@@ -375,6 +379,8 @@
   \label{fig:ssa-term-typing}
 \end{figure}
 
+\TODO{some text about each typing rule}
+
 \begin{figure}
   \begin{gather*}    
     \prftree[r]{\rle{br}}
@@ -414,6 +420,18 @@
   \label{fig:ssa-block-typing}
 \end{figure}
 
+\TODO{some text about each block typing rule}
+
+\subsection{Syntactic Metatheory}
+
+\begin{theorem}[Weakening] \
+  \begin{itemize}
+    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\), \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
+    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
+  \end{itemize}
+\end{theorem}
+
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -430,7 +448,9 @@
         \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) &
         ... \\
         \(\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}\) &
-        ...
+        ... \\
+        \(\isrw{\mc{H}}{I}{H}\) &
+        ... \\
     \end{tabular}
     \endgroup
   \end{center}
@@ -439,13 +459,7 @@
   \label{fig:ssa-meta-judgements}
 \end{figure}
 
-\begin{theorem}[Weakening] \
-  \begin{itemize}
-    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\), \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
-    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
-    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
-  \end{itemize}
-\end{theorem}
+\TODO{some text about each metatheoretic judgement}
 
 \begin{figure}
   \begin{gather*}
@@ -470,16 +484,18 @@
       {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
       {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
       {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
-    \\
-    \prftree[r]{\rle{lb-strict}}
-      {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-      {\ms{labels}(\ms{L}) = \ms{labels}(\ms{K})}
-      {\strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+    % \\
+    % \prftree[r]{\rle{lb-strict}}
+    %   {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+    %   {\ms{labels}(\ms{L}) = \ms{labels}(\ms{K})}
+    %   {\strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
   \end{gather*}
   \caption{Typing rules for \isotopessa substitutions. We assume that for all but finitely many \(x\), \(\lbl{\ell}\), \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) = \lbrb{\ell}{x}\).}
   \Description{Typing rules for isotope-SSA substitutions}
   \label{fig:ssa-subst-typing}
 \end{figure}
+
+\TODO{some text about substitution}
 
 \begin{figure}
   \begin{gather*}
@@ -530,6 +546,8 @@
   \label{fig:ssa-subst-ops}
 \end{figure}
 
+\TODO{some text about substitution operations}
+
 \begin{lemma}[Substitution Weakening] 
   If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
   \begin{itemize}
@@ -540,17 +558,23 @@
   Furthermore, if \(\subsubst{\gamma}{\gamma'}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then \(\issubst{\gamma'}{\Theta}{\Gamma}\).
 \end{lemma}
 
+\TODO{some text about substitution weakening}
+
 \begin{theorem}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
     \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
-    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), \(\strictlbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}\), and then \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{L}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
   \end{itemize}
 \end{theorem}
+
+\TODO{some text about substitution}
 
 \begin{theorem}[Label Substitution] 
   Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), if \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
 \end{theorem}
+
+\TODO{some text about label substitution}
 
 \begin{figure}
   \begin{grammar}
@@ -583,6 +607,8 @@
   \Description{Grammar for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-grammar}
 \end{figure}
+
+\TODO{some text about terms with holes}
 
 \begin{figure}
   \begin{gather*}    
@@ -629,6 +655,8 @@
   \Description{Typing rules for isotope-SSA terms with holes}
   \label{fig:terms-with-holes-typing}
 \end{figure}
+
+\TODO{some text about term with hole typing rules}
 
 \begin{figure}
   \begin{gather*}    
@@ -681,6 +709,8 @@
   \label{fig:blocks-with-holes-typing}
 \end{figure}
 
+\TODO{some text about block with hole typing rules}
+
 \begin{figure}
   \begin{gather*}
     \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock}}
@@ -692,24 +722,31 @@
   \label{fig:rewrite-typing}
 \end{figure}
 
+\TODO{some text about rewrite typing rules}
+
 \begin{theorem}[Rewriting]
   Given \(\isrw{\mc{H}}{H}{I}\), we have
   \begin{itemize}
     \item If \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), then \(\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}\)
     \item If \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), then \(\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}\)
   \end{itemize}
+  
   Furthermore, we have that 
   \begin{itemize}
     \item \(\mhasty{\cdot}{\Gamma}{p}{a}{A}{q} \iff \hasty{\Gamma}{p}{a}{A}{q}\)
     \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
   \end{itemize}
 \end{theorem}
+'
+\TODO{some text about rewriting}
 
 \section{SSA Semantics}
 
-\TODO{premonoidal categories}
+\TODO{premonoidal/effectful categories}
 
 \TODO{Elgot structure}
+
+\TODO{relevant/affine/intuitionistic subcategories}
 
 \begin{figure}
   \begin{gather*}
@@ -731,6 +768,8 @@
   \Description{Semantics for isotope-SSA types and contexts}
   \label{fig:ssa-type-semantics}
 \end{figure}
+
+\TODO{some text about type/context semantics}
 
 \begin{figure}
   \begin{gather*}
@@ -805,6 +844,8 @@
   \label{fig:ssa-structural-semantics}
 \end{figure}
 
+\TODO{some text about structural semantics}
+
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\hasty{\Gamma}{p}{a}{A}{q}}
@@ -856,6 +897,8 @@
   \label{fig:ssa-structural-terms}
 \end{figure}
 
+\TODO{some text about term semantics}
+
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\haslb{\Gamma}{t}{\ms{L}}}
@@ -904,6 +947,12 @@
   \label{fig:ssa-structural-blocks}
 \end{figure}
 
+\TODO{some text about block semantics}
+
+\subsection{Semantic Metatheory}
+
+\TODO{some text about semantic metatheory}
+
 \begin{lemma}[Coherence] \
   \begin{itemize}
     \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
@@ -914,17 +963,41 @@
   \end{itemize}
 \end{lemma}
 
+\TODO{some text about coherence, implicit use above}
+
 \begin{lemma}[Semantic Upgrade]
   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\hasty{\Gamma}{1}{a}{A}{q}}{}\]
 \end{lemma}
 
+\TODO{some text about upgrade}
+
 \begin{lemma}[Semantic Weakening] 
-  If \(\cwk{\Gamma}{\Delta}\) and \(\hasty{\Gamma}{p}{a}{A}{q}\), then
+  If \(\cwk{\Gamma}{\Delta}\), then 
+  \begin{itemize}
+    \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
+    \[
+      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+      ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
+      = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+    \]
+    \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
+    \[
+      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+      ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
+      = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
+    \]
+  \end{itemize}
+
+  Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
   \[
-    \dnt{\hasty{\Gamma}{p}{a}{A}{q}} = \dnt{\cwk{\Gamma}{\Delta}};\dnt{\hasty{\Delta}{p}{a}{A}{q}}
+    \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+    ; \dnt{\lwk{\ms{L}}{\ms{K}}}
+    = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
   \]
 \end{lemma}
+
+\TODO{some text about semantic weakening}
 
 \begin{figure}
   \begin{gather*}
@@ -941,11 +1014,13 @@
   \label{fig:ssa-subst-semantics}
 \end{figure}
 
+\TODO{some text about substitution semantics}
+
 \begin{lemma}[Substitution Coherence] \
   \begin{itemize}
     \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
     \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1: \strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \strictlbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+    % \item Given any two derivations \(D_1: \strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \strictlbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
   \end{itemize}
 \end{lemma}
 
@@ -963,13 +1038,19 @@
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
-    \item \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
+    \item For all \(\hasty{\Gamma}{p}{a}{A}{q}\), 
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
       ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
-      = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}\)
-    \item Given \(\strictlbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}\), \(\upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
+      = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
+    \]
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}\), \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
       ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
       = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
-      ; \dnt{\strictlbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}\)
+      ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
+    \]
   \end{itemize}
   Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), we have
   \[
@@ -977,6 +1058,8 @@
     = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
   \]
 \end{theorem}
+
+\TODO{some text about semantic substitution}
 
 \begin{figure}
   \begin{align*}
@@ -997,6 +1080,8 @@
   \label{fig:holes-semantics}
 \end{figure}
 
+\TODO{some text about semantics of holes}
+
 \begin{figure}
   \begin{gather*}
     \boxed{
@@ -1009,6 +1094,10 @@
   \Description{Semantics for isotope-SSA blocks with holes}
   \label{fig:terms-with-holes-semantics}
 \end{figure}
+
+\TODO{fill}
+
+\TODO{some text about semantics of terms with holes}
 
 \begin{figure}
   \begin{gather*}
@@ -1029,6 +1118,10 @@
   \label{fig:blocks-with-holes-semantics}
 \end{figure}
 
+\TODO{fill}
+
+\TODO{some text about semantics of blocks with holes}
+
 \begin{figure}
   \begin{gather*}
     \boxed{
@@ -1042,6 +1135,10 @@
   \Description{Semantics for isotope-SSA rewrites}
   \label{fig:rewrite-semantics}
 \end{figure}
+
+\TODO{fill}
+
+\TODO{some text about semantics of rewrites}
 
 \begin{lemma}[Rewriting Coherence] \
   \begin{itemize}
