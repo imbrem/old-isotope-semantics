@@ -432,6 +432,12 @@
   \end{itemize}
 \end{theorem}
 
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix}
+
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -484,11 +490,6 @@
       {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
       {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
       {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
-    % \\
-    % \prftree[r]{\rle{lb-strict}}
-    %   {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-    %   {\ms{labels}(\ms{L}) = \ms{labels}(\ms{K})}
-    %   {\strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
   \end{gather*}
   \caption{Typing rules for \isotopessa substitutions. We assume that for all but finitely many \(x\), \(\lbl{\ell}\), \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) = \lbrb{\ell}{x}\).}
   \Description{Typing rules for isotope-SSA substitutions}
@@ -558,21 +559,49 @@
   Furthermore, if \(\subsubst{\gamma}{\gamma'}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then \(\issubst{\gamma'}{\Theta}{\Gamma}\).
 \end{lemma}
 
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix?}
+
 \TODO{some text about substitution weakening}
 
 \begin{theorem}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
     \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
-    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{L}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K}, \ms{W}'\) such that 
+    \begin{itemize}
+      \item \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) 
+      \item \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\) 
+      \item \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
+    \end{itemize}
   \end{itemize}
 \end{theorem}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix}
 
 \TODO{some text about substitution}
 
 \begin{theorem}[Label Substitution] 
-  Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), if \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
+  Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
+  \begin{itemize}
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
+    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
+  \end{itemize}
 \end{theorem}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix}
 
 \TODO{some text about label substitution}
 
@@ -737,7 +766,13 @@
     \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
   \end{itemize}
 \end{theorem}
-'
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix}
+
 \TODO{some text about rewriting}
 
 \section{SSA Semantics}
@@ -963,6 +998,12 @@
   \end{itemize}
 \end{lemma}
 
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix? This is just a trivial induction.}
+
 \TODO{some text about coherence, implicit use above}
 
 \begin{lemma}[Semantic Upgrade]
@@ -997,6 +1038,12 @@
   \]
 \end{lemma}
 
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix}
+
 \TODO{some text about semantic weakening}
 
 \begin{figure}
@@ -1020,9 +1067,14 @@
   \begin{itemize}
     \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
     \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
-    % \item Given any two derivations \(D_1: \strictlbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \strictlbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
   \end{itemize}
 \end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix? just trivial induction.}
 
 \begin{lemma}[Semantic Substitution Splitting] 
   Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
@@ -1044,20 +1096,47 @@
       ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
       = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
     \]
-    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}\), \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
+    \item For all 
+      \(\haslb{\Gamma}{t}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\), 
+      \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
     \[
       \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
       ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
       = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
       ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
     \]
+    \item For all 
+      \(\lhaslb{\ms{W}}{L}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
+      \(\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}\),
+      \[
+        \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+        ; \dnt{\lhaslb{\ms{W'}}{[\gamma]L}{\ms{K}}}
+        = \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}}
+        ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}}
+        + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+      \]
   \end{itemize}
-  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-  \[
-    \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-    = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-  \]
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
+  \begin{itemize} 
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+    \[
+      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+    \]
+    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), we have
+    \[
+      \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{L}}}
+    \]
+  \end{itemize}
 \end{theorem}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+\TODO{float proof to appendix}
 
 \TODO{some text about semantic substitution}
 
@@ -1148,6 +1227,12 @@
   \end{itemize}
 \end{lemma}
 
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix? just trivial induction}
+
 \begin{theorem}[Semantic Rewriting]
   Given \(\isrw{\mc{H}}{I}{H}\), we have that
   \begin{itemize}
@@ -1171,6 +1256,12 @@
   \]
 \end{theorem}
 
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\TODO{pull down to appendix}
+
 \TODO{\(\implies\) E-graph optimization}
 
 \TODO{rewriting substitution + weakening?}
@@ -1186,6 +1277,8 @@
 \TODO{Is Elgot}
 
 \TODO{Ye Olde Reader/Writer/State Transformer}
+
+\TODO{Is Elgot}
 
 \section{Weak Memory}
 
