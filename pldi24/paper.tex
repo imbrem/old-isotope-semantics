@@ -886,11 +886,28 @@ The semantics for an \isotopessa dialect are given by:
   \item A family of categories \(\mc{C}^q_1\) parametrized by quantity \(q \subseteq \{\trel, \taff\}\)
   \item \(q \subseteq q'\) implies \(\mc{C}^{q'}_1\) is a wide subcategory of \(\mc{C}^q_1\)
   \item All \(\mc{C}^q_1\) share symmetric monoidal structure (i.e., the inclusion functors between them are strict symmetric monoidal functors).
-  \item A symmetric premonoidal category \(\mc{C}_0\)
+  \item A symmetric premonoidal category \(\mc{C}_0\) equipped with an Elgot structure
+  \item An object \(\mb{2}\), morphisms \(\ms{tt}, \ms{ff}: \mc{C}_1^\tint(\mb{1}, \mb{2})\), and a family of isomorphisms \(\ms{ite}_A: 2 \otimes A \simeq A + A\) such that 
+  \begin{itemize}
+    \item \(\ms{ite}_A^{-1} = [\lambda_A^{-1};\ms{tt} \otimes A, \lambda_A^{-1};\ms{ff} \otimes A]\)
+    \item \(\mb{2} \otimes f;\ms{ite}_A = \ms{ite}_A;f + f\)
+  \end{itemize}
   \item An identity on objects functor functor \(\upg{\cdot}{}: \mc{C}^\varnothing_1 \to \mc{C}_0\) which preserves all symmetric premonoidal structure
-  \item A mapping from base types \(A\) to objects in \(|\mc{C}|\)
-  \item A mapping from functions \(f \in \mc{I}_p^q(A, B)\) to morphisms \(\dnt{f}: \mc{C}_p^q(A, B)\), where \(\mc{C}_0^q = \mc{C}_0\)
-  \item 
+  \item A mapping from base types \(X\) to objects in \(\dnt{X}: |\mc{C}|\)
+  \item A mapping from functions \(f \in \mc{I}_p^q(A, B)\) to morphisms \(\dnt{f}: \mc{C}_p^q(\dnt{A}, \dnt{B})\), where \(\mc{C}_0^q = \mc{C}_0\)
+  \item A set of \textit{affine} objects \(A, B \in \ms{Aff}(\mc{C}) \subseteq |\mc{C}|\) equipped with maps \(\ms{drop}(A): \mc{C}_1^\tint(A, \mb{1})\) such that:
+  \begin{itemize}
+    \item \(\ms{drop}(A \otimes B) = \ms{drop}(A) \otimes \ms{drop}(B); \lambda_\mb{1}\)
+    \item For all \(f: \mc{C}^\taff_1(A, B), f;\ms{drop}(B) = \ms{drop}(A)\)
+  \end{itemize}
+  \item A set of \textit{relevant} objects \(A, B \in \ms{Rel}(\mc{C}) \subseteq |\mc{C}|\) equipped with maps \(\ms{split}(A): \mc{C}_1^\tint(A, A \times A)\) such that:
+  \begin{itemize}
+    \item \(\ms{split}(A \otimes B) = \ms{split}(A) \otimes \ms{split}(B);\alpha;A \otimes \sigma_{A, B} \otimes B;\alpha\)
+    \item For all \(f: \mc{C}^\trel_1(A, B), f;\ms{split}(B) = \ms{split}(A);f \otimes f\)
+    \item \textit{Commutativity}: \(\ms{split}(A);\sigma = \ms{split}(A)\)
+    \item \textit{Associativity}: \(\ms{split}(A);A \otimes \ms{split}(A) = \ms{split}(A);\ms{split}(A) \otimes A;\alpha\)
+    \item \textit{Comonoid}: if \(A \in \ms{Aff}(\mc{C})\), \(\ms{split}(A);\ms{drop}(A) \otimes A = \lambda^{-1}\) and \(\ms{split}(A);A \otimes \ms{drop}(A) = \rho^{-1}\)
+  \end{itemize}
 \end{itemize}
 
 \TODO{premonoidal/effectful categories}
