@@ -171,11 +171,15 @@
 
 \maketitle
 
+\TODO{abstract?}
+
 \section{Introduction}
 
 Static Single Assignment, or SSA, is a cornerstone of modern compiler design, on which projects such as the LLVM compiler infrastructure, GCC's GIMPLE intermediate representation, Cranelift, and MLIR are based. One of the core advantages of putting programs in SSA form is the ability to reason about programs in a more equational manner: since variables always have exactly one definition, we can justify complex optimizations like global value numbering (which would otherwise need to take into account complex flow-sensitive definitions) and more easily implement various analyses. The semantics of SSA, however, can be quite complex to reason about, especially when considering the somewhat unintuitive scoping rules of variables and \(\phi\)-function arguments.
 
-In this paper, we give a type-theoretic account of SSA-style programs, which we extend with support for substructural types. This allows us to perform proofs and inductive definitions over SSA programs much more easily, which we take advantage of to give SSA a categorical semantics in terms of distributive effectful categories equipped with an Elgot structure. We then give some models, and prove various optimizations sound on them.
+\TODO{write about ``what is SSA", article style}
+
+\TODO{basic blocks, strange scoping rules...}
 
 \paragraph{Contributions}
 
@@ -1271,6 +1275,12 @@ In this paper, we give a type-theoretic account of SSA-style programs, which we 
 \TODO{Ye Olde Reader/Writer/State Transformer}
 
 \TODO{Is Elgot}
+
+\section{Separation Logic}
+
+\TODO{State transformer on traces}
+
+\TODO{Monoidal functor, yielding sliding}
 
 \section{Weak Memory}
 
