@@ -59,3 +59,53 @@
   keywords = {SPARC TSO, denotational semantics, pomsets, concurrency, weak memory models},
   abstract = {The SPARC TSO weak memory model is defined axiomatically, with a non-compositional formulation that makes modular reasoning about programs difficult. Our denotational approach uses pomsets to provide a compositional semantics capturing exactly the behaviours permitted by SPARC TSO. Our approach facilitates the study of SPARC TSO and supports modular analysis of program behaviour.}
 }
+
+@inproceedings{llvm,
+  author    = {Lattner, Chris and Adve, Vikram},
+  title     = {LLVM: A Compilation Framework for Lifelong Program Analysis \& Transformation},
+  year      = {2004},
+  isbn      = {0769521029},
+  publisher = {IEEE Computer Society},
+  address   = {USA},
+  abstract  = {This paper describes LLVM (Low Level Virtual Machine),a compiler framework designed to support transparent, lifelongprogram analysis and transformation for arbitrary programs,by providing high-level information to compilertransformations at compile-time, link-time, run-time, and inidle time between runs.LLVM defines a common, low-levelcode representation in Static Single Assignment (SSA) form,with several novel features: a simple, language-independenttype-system that exposes the primitives commonly used toimplement high-level language features; an instruction fortyped address arithmetic; and a simple mechanism that canbe used to implement the exception handling features ofhigh-level languages (and setjmp/longjmp in C) uniformlyand efficiently.The LLVM compiler framework and coderepresentation together provide a combination of key capabilitiesthat are important for practical, lifelong analysis andtransformation of programs.To our knowledge, no existingcompilation approach provides all these capabilities.We describethe design of the LLVM representation and compilerframework, and evaluate the design in three ways: (a) thesize and effectiveness of the representation, including thetype information it provides; (b) compiler performance forseveral interprocedural problems; and (c) illustrative examplesof the benefits LLVM provides for several challengingcompiler problems.},
+  booktitle = {Proceedings of the International Symposium on Code Generation and Optimization: Feedback-Directed and Runtime Optimization},
+  pages     = {75},
+  location  = {Palo Alto, California},
+  series    = {CGO '04}
+}
+
+@inproceedings{mlir,
+  author    = {Lattner, Chris and Amini, Mehdi and Bondhugula, Uday and Cohen, Albert and Davis, Andy and Pienaar, Jacques and Riddle, River and Shpeisman, Tatiana and Vasilache, Nicolas and Zinenko, Oleksandr},
+  title     = {MLIR: Scaling Compiler Infrastructure for Domain Specific Computation},
+  year      = {2021},
+  isbn      = {9781728186139},
+  publisher = {IEEE Press},
+  address   = {Piscataway, NJ, USA},
+  url       = {https://doi.org/10.1109/CGO51591.2021.9370308},
+  doi       = {10.1109/CGO51591.2021.9370308},
+  abstract  = {This work presents MLIR, a novel approach to building reusable and extensible compiler infrastructure. MLIR addresses software fragmentation, compilation for heterogeneous hardware, significantly reducing the cost of building domain specific compilers, and connecting existing compilers together.MLIR facilitates the design and implementation of code generators, translators and optimizers at different levels of abstraction and across application domains, hardware targets and execution environments. The contribution of this work includes (1) discussion of MLIR as a research artifact, built for extension and evolution, while identifying the challenges and opportunities posed by this novel design, semantics, optimization specification, system, and engineering. (2) evaluation of MLIR as a generalized infrastructure that reduces the cost of building compilers---describing diverse use-cases to show research and educational opportunities for future programming languages, compilers, execution environments, and computer architecture. The paper also presents the rationale for MLIR, its original design principles, structures and semantics.},
+  booktitle = {Proceedings of the 2021 IEEE/ACM International Symposium on Code Generation and Optimization},
+  pages     = {2–14},
+  numpages  = {13},
+  location  = {Virtual Event, Republic of Korea},
+  series    = {CGO '21}
+}
+
+@misc{cranelift,
+  author = {Cranelift Development Team},
+  title  = {Cranelift: A Simple, Fast WebAssembly Code Generator},
+  year   = 2023,
+  url    = {https://github.com/bytecodealliance/wasmtime/tree/main/cranelift}
+}
+
+@inproceedings{circt,
+  author    = {Andrew Lenharth and Chris Lattner},
+  title     = {CIRCT: Lifting hardware development out of the 20th century},
+  booktitle = {LLVM Developer Meeting},
+  year      = {2021},
+  date      = {November 17},
+  location  = {Online},
+  publisher = {SiFive},
+  address   = {1875 S Grant St \#600, San Mateo, CA, USA},
+  numpages  = {58}
+}
