@@ -175,11 +175,28 @@
 
 \section{Introduction}
 
-Static Single Assignment, or SSA, is a cornerstone of modern compiler design, on which projects such as the LLVM compiler infrastructure, GCC's GIMPLE intermediate representation, Cranelift, and MLIR are based. One of the core advantages of putting programs in SSA form is the ability to reason about programs in a more equational manner: since variables always have exactly one definition, we can justify complex optimizations like global value numbering (which would otherwise need to take into account complex flow-sensitive definitions) and more easily implement various analyses. The semantics of SSA, however, can be quite complex to reason about, especially when considering the somewhat unintuitive scoping rules of variables and \(\phi\)-function arguments.
+Static Single Assignment, or SSA, is a cornerstone of modern compiler design, on which projects such as the LLVM compiler infrastructure, GCC's GIMPLE intermediate representation, Cranelift, and MLIR are based. One of the core advantages of putting programs in SSA form is the ability to reason about programs in a more equational manner: since variables always have exactly one definition, we can justify complex optimizations like global value numbering (which would otherwise need to take into account complex flow-sensitive definitions) and more easily implement various analyses. 
 
-\TODO{write about ``what is SSA", article style}
+In a standard SSA-based compiler, to represent a function, we begin by decomposing it into basic blocks of the following form:
+\TODO{this}
+A program written in this manner being in ``SSA form'' simply means that every variable name is defined exactly once. For example,
+\TODO{this}
+is not in SSA form, but can easily be converted into SSA form by rewriting it as
+\TODO{this}
+Unfortunately, things get a little more tricky when we try to define variables in loops or branches. For example, consider the following code:
+\TODO{this}
+There are two competing definitions of x in the left and right blocks, and it’s unclear how to disambiguate between them. The usual solution is to introduce a \(\phi\)-node. In particular, we can write:
+\TODO{this}
+\TODO{segue}
+The semantics of SSA, however, can be quite complex to reason about, especially when considering the somewhat unintuitive scoping rules of variables and \(\phi\)-function arguments.
 
-\TODO{basic blocks, strange scoping rules...}
+\TODO{basic-blocks with arguments}
+
+\TODO{dominance frontiers}
+
+\TODO{inductive presentation}
+
+\TODO{what we're doing}
 
 \paragraph{Contributions}
 
