@@ -828,9 +828,25 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
 
 \begin{figure}
   \begin{gather*}
-    \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock}}
+    \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock} \sqcup \ms{MCfg}}
     \\
-    \sorry
+    \prftree[r]{\rle{rw-nil}}
+      {\isrw{\mc{H}}{H}{\cdot}}
+    \qquad
+    \prftree[r]{\rle{rw-tm}}
+      {\isrw{\mc{H}}{I}{H}}
+      {\mhasty{I}{\Gamma}{p}{\mc{H}(\lhole{X})}{A}{q}}
+      {\isrw{\mc{H}}{I}{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}}
+    \\
+    \prftree[r]{\rle{rw-blk}}
+      {\isrw{\mc{H}}{I}{H}}
+      {\mhaslb{I}{\Gamma}{\mc{H}(\lhole{T})}{\ms{L}}}
+      {\isrw{\mc{H}}{I}{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}}
+    \qquad
+    \prftree[r]{\rle{rw-cfg}}
+      {\isrw{\mc{H}}{I}{H}}
+      {\mlhaslb{I}{\ms{L}}{\mc{H}(\lhole{W})}{\ms{K}}}
+      {\isrw{\mc{H}}{I}{H, \cfghole{\lhole{L}}{\ms{L}}{\ms{K}}}}
   \end{gather*}
   \caption{Typing rules for \isotopessa rewrites}
   \Description{Typing rules for isotope-SSA rewrites}
@@ -863,6 +879,20 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
 
 \section{SSA Semantics}
 
+\TODO{define a substructural effectful category, rewrite as ``substructural effectful category \(\mc{C}\)" equipped with proper structrure}
+
+The semantics for an \isotopessa dialect are given by:
+\begin{itemize}
+  \item A family of categories \(\mc{C}^q_1\) parametrized by quantity \(q \subseteq \{\trel, \taff\}\)
+  \item \(q \subseteq q'\) implies \(\mc{C}^{q'}_1\) is a wide subcategory of \(\mc{C}^q_1\)
+  \item All \(\mc{C}^q_1\) share symmetric monoidal structure (i.e., the inclusion functors between them are strict symmetric monoidal functors).
+  \item A symmetric premonoidal category \(\mc{C}_0\)
+  \item An identity on objects functor functor \(\upg{\cdot}{}: \mc{C}^\varnothing_1 \to \mc{C}_0\) which preserves all symmetric premonoidal structure
+  \item A mapping from base types \(A\) to objects in \(|\mc{C}|\)
+  \item A mapping from functions \(f \in \mc{I}_p^q(A, B)\) to morphisms \(\dnt{f}: \mc{C}_p^q(A, B)\), where \(\mc{C}_0^q = \mc{C}_0\)
+  \item 
+\end{itemize}
+
 \TODO{premonoidal/effectful categories}
 
 \TODO{Elgot structure}
@@ -871,16 +901,16 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
 
 \begin{figure}
   \begin{gather*}
-    \boxed{\dnt{A}}: |\mc{C}_1| \\
+    \boxed{\dnt{A}}: |\mc{C}| \\
     \dnt{X} = \ms{base}(X) 
       \text{ where } 
       \dnt{\mb{1}} = \mb{1}, 
       \dnt{\mb{2}} = \mb{2}
     \qquad \dnt{A \otimes B} = \dnt{A} \otimes \dnt{B} \\
-    \boxed{\dnt{\Gamma}}: |\mc{C}_1| \\
+    \boxed{\dnt{\Gamma}}: |\mc{C}| \\
     \dnt{\cdot} = \mb{1} \qquad 
     \dnt{\Gamma, \thyp{x}{A}{q}} = \dnt{\Gamma} \otimes \dnt{A} \\
-    \boxed{\dnt{\ms{L}}}: |\mc{C}_0| \\
+    \boxed{\dnt{\ms{L}}}: |\mc{C}| \\
     \dnt{\cdot} = \mb{0} \qquad
     \dnt{\ms{L}, \llhyp{\ell}{\Gamma}{A}} = 
       \dnt{\ms{L}} + \dnt{\Gamma} \otimes \dnt{A}
@@ -1134,7 +1164,7 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
 
 \begin{figure}
   \begin{gather*}
-    \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1(\dnt{\Theta}, \dnt{\Gamma})} 
+    \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1^\varnothing(\dnt{\Theta}, \dnt{\Gamma})} 
     \\
     \dnt{\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
       = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{1}{a}{A}{q}} \\
@@ -1294,7 +1324,16 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
       : \dnt{I} \to \dnt{H} 
     }
     \\
-    \sorry
+    \dnt{\isrw{\mc{H}}{I}{\cdot}}\;i = ()
+    \qquad
+    \dnt{\isrw{\mc{H}}{I}{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}}\;i
+    = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mhasty{I}{\Gamma}{p}{\mc{H}(\lhole{X})}{A}{q}}\;i)
+    \\
+    \dnt{\isrw{\mc{H}}{I}{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}}
+    = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mhaslb{I}{\Gamma}{\mc{H}(\lhole{T})}{\ms{L}}}\;i)
+    \\
+    \dnt{\isrw{\mc{H}}{I}{H, \cfghole{\lhole{L}}{\ms{L}}{\ms{K}}}}
+    = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mlhaslb{I}{\ms{L}}{\mc{H}(\lhole{W})}{\ms{K}}}\;i)
   \end{gather*}
   \caption{Semantics for \isotopessa rewrites}
   \Description{Semantics for isotope-SSA rewrites}
