@@ -944,7 +944,13 @@ since only the left-hand side contains the pair \((b_0, b_1)\), this correspondi
 \end{equation}
 Rather than directly give a concrete example of a general substructural monoidal category, it makes more sense to first jump to the next definition, which will provide us with one more naturally:
 \begin{definition}[Susbtructural Effectful Category]
-  \ \TODO{this}
+  A \textbf{substructural effectful category} \(\mc{C}_1 \to \mc{C}_0\) consists of
+  \begin{itemize}
+    \item A substructural monoidal category \(\mc{C}_1\)
+    \item A symmetric premonoidal category \(\mc{C}_0\)
+    \item An identity-on-objects functor \(\upg{\cdot}{}: \mc{C}_1^\varnothing \to \mc{C}_0\) preserving all symmetric premonoidal structure (which naturally induces functors \(\upg{\cdot}{}: \mc{C}_1^q \to \mc{C}_0\) which do the same)
+  \end{itemize}
+  We'll define \(\mc{C}_0^q\) to simply be \(\mc{C}_0\) to allow us to write \(\mc{C}_p^q\) for all \(p \in \{0, 1\}\), \(q \subseteq \{\ms{a}, \ms{r}\}\). Following this convention, we define \(\upg{f}{0}\) to be \(\upg{f}{}\) for morphisms in \(\mc{C}_1^q\) and simply \(f\) for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) to simply be the identity functor on \(\mc{C}_1^q\).
 \end{definition}
 
 \TODO{state monad}
