@@ -53,6 +53,8 @@
 }}
 \newcommand{\sorry}{\textcolor{red}{\textbf{sorry}}}
 
+\newcommand{\todo}[1]{\stepcounter{todos} \textcolor{red}{TODO \arabic{todos}:} #1}
+
 % Math fonts
 \newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
 \newcommand{\mb}[1]{\ensuremath{\mathbf{#1}}}
@@ -156,7 +158,30 @@
 \orcid{0000-0002-6905-1303}
 
 \begin{abstract}
-  TODO THIS
+  Static single-assignment form (SSA) is one of the most widely used
+  compiler intermediate representations. In this paper, we build on
+  the observation that SSA can be seen as a language of basic blocks
+  with arguments (or first-order procedures tail-calling one another)
+  to give a type theory for SSA programs. Notably, the type system and
+  equational theory of our language is designed to support
+  substituting impure terms for variables, which makes it easy to
+  validate compiler optimisations such as hoisting assignments out of
+  loops.
+
+  We give a categorical axiomatisation of our type theory and show
+  that our equational theory is sound with respect to it. Our
+  categorical semantics generalises the notions of premonoidal
+  category and Freyd category to support substructural features,
+  including both support for substructural types, as well as
+  F\"{u}hrmann's notion of central, copyable and discardable
+  morphisms.
+
+  Finally, we exhibit a number of concrete models of our categorical
+  axiomatisation, including in particular a model of TSO-style weak
+  memory based on the semantics of \citet{sparky}. This demonstrates
+  that our approach is strong enough to connect machine models of
+  concurrency to compiler IRs supporting a rich collection of sound
+  rewrites.
 \end{abstract}
 
 \begin{CCSXML}
@@ -200,12 +225,68 @@
 
 \maketitle
 
-\TODO{abstract?}
 
 \section{Introduction}
 
-Static Single Assignment, or SSA, is a cornerstone of modern compiler design, on which projects such as the LLVM compiler infrastructure, GCC's GIMPLE intermediate representation, Cranelift, and MLIR are based. One of the core advantages of putting programs in SSA form is the ability to reason about programs in a more equational manner: since variables always have exactly one definition, we can justify complex optimizations like global value numbering (which would otherwise need to take into account complex flow-sensitive definitions) and more easily implement various analyses. 
+Static Single Assignment, or SSA, has been a cornerstone of compiler
+design ever since its introduction by \cite{ssa-original} in the late
+1980s. Older compiler intermediate representations permitted the same
+local variable to be assigned multiple times, whereas SSA requires
+each variable bindings to be immutable -- they cannot be modified
+after initialisation. This makes many dataflow analyses easier to
+compute, and (just as in functional languages) makes it much easier to
+justify compiler optimisations in terms of equational rewrites.
 
+In fact, the relationship between SSA form and functional programming
+has been known for decades: \citet{kelsey-ssa-cps} showed that SSA can
+be seen as a subset of continuation-passing style, and
+\citet{appel-ssa} built on this to observe that every SSA program can
+be viewed as a collection of first-order functions which tail-call one
+another. This makes the equivalence of the functional view to the
+traditional $\phi$-node presentation very easy to see. In the
+functional style, each tail call lists its arguments. In contrast, a
+$\phi$-node collects together the arguments from every callsite, which
+lets the tail-calls/jumps to omit their arguments. Thus, the main
+difference between SSA and a functional program is where in the
+program text the arguments to a tail call are listed.
+
+\TODO{Example here?}
+
+This ``basic blocks with arguments'' presentation of SSA has become
+very popular in industry, with compiler backends such as
+Cranelift~\cite{cranelift}, MLIR~\cite{mlir}, and SIL~\cite{SIL} all
+using this representation. This tight connection might suggest that
+the semantics of SSA representations is trivial: we can just interpret
+an SSA program as a corresponding functional program, and then rewrite
+the SSA programs using the equational theory of functional programs.
+
+While this is a perfectly sound thing to do, it is not strong enough
+to write a good compiler. Compiler IRs like SSA are fundamentally
+about effectful programs, and the equational theory of effectful
+functional programs is very weak. Instead of a full substitution rule,
+the equational theory of impure functional languages only justifies
+substituting values for variables (the $\beta$-value rule). This weak
+substitution rule suffices to validate some basic compiler
+optimisations such as constant propagation and copy propagation, but
+is not strong enough to justify many other essential compiler
+optimisations. For example, hoisting a store out of a loop or
+conditional involves moving an effectful term (an assignment) out of
+its original position in the program. As another example, dead store
+elimination removes an effectful term from the program altogether. \todo{Another example?}
+
+These examples illustrate that many optimisations require taking
+\emph{effectful} terms and moving them around and substituting them
+for variables.
+
+
+
+
+
+
+
+% 
+% , on which projects such as the LLVM compiler infrastructure, GCC's GIMPLE intermediate representation, Cranelift, and MLIR are based. One of the core advantages of putting programs in SSA form is the ability to reason about programs in a more equational manner: since variables always have exactly one definition, we can justify complex optimizations like global value numbering (which would otherwise need to take into account complex flow-sensitive definitions) and more easily implement various analyses. 
+% 
 \TODO{text...}
 
 \paragraph{Contributions}
