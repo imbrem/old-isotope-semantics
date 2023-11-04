@@ -1112,17 +1112,26 @@ We can verify that the associators, unitors, and symmetry lie in \(\ms{SRel}^{\{
 \begin{definition}[Elgot category] 
   An \textbf{Elgot category} is a category \(\mc{C}\) with coproducts equipped with an operator \(\cdot^\dagger: \mc{C}(A, B + A) \to \mc{C}(A, B)\) satisfying the following properties:
   \begin{itemize}
-    \item \textbf{Fixpoint:} ...
-    \item \textbf{Naturality:} ...
-    \item \textbf{Codiagonal:} ...
-    \item \textbf{Uniformity:} ...
+    \item \textbf{Fixpoint:} \(f;[\ms{id}, f^\dagger] = f^\dagger\)
+    \item \textbf{Naturality:} \((f;g + \ms{id})^\dagger = f^\dagger;g\)
+    \item \textbf{Codiagonal:} \(\forall f \in \mc{C}(A, (B + A) + A), (f^\dagger)^\dagger = (f;[\ms{id}, \iota_1])^\dagger\)
+    \item \textbf{Uniformity:}
+    \(
+      h;f = g;\ms{id} + h \implies h;f^\dagger = g^\dagger
+    \)
   \end{itemize}
   A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
 \end{definition}
+\TODO{why do these matter? they show up in the proofs, but...}
+Some important properties of all Elgot categories include:
+\begin{itemize}
+  \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id}, (h;[\iota_0, g])^\dagger]\). \TODO{Proposition 16 of \cite{goncharov-guarded-unguarded}; also Lemma 31 of \cite{goncharov-squaring}}
+  \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\). \TODO{Lemma 31 of \cite{goncharov-squaring}}
+\end{itemize}
+\TODO{Hyland and Hasegawa traces?}
+\TODO{intuition? Can draw diagrams, but those take up space}
 
-\TODO{text}
-
-\TODO{distributivity of monads}
+\TODO{results on distributivity of monads}
 
 \TODO{result: if a monad is Elgot, the state/reader/writer transformers yield Elgot monads}
 
