@@ -1040,9 +1040,58 @@ We can obtain an example of a substructural effectful category quite easily by, 
 \), we can verify that this satisfies the axioms of a substructural effectful category.
 Note that here the \textit{central} morphisms are precisely those which do not read from or write to the state, and therefore which commute with all other morphisms.
 
-We can further use this example to get a substructural \textit{monoidal} category by considering a primitive form of separation logic.
-
-\TODO{separation logic}
+We can further use this example to get a substructural \textit{monoidal} category by considering a primitive form of separation logic: let's introduce a grammar of predicates \(\varphi, \psi ::= \top, \ms{S}, \bot\) for programs which cannot access state, can access state, and are invalid, respectively. The separating conjunction operator on these predicates is then given by
+\begin{equation}
+  \top * \varphi = \varphi * \top = \varphi
+  \qquad
+  \bot * \varphi = \varphi * \bot = \bot
+  \qquad
+  \ms{S} * \ms{S} = \bot
+\end{equation}
+We'll then define a category \(\ms{SRel}\) with objects of the form \((A, \varphi)\) and morphisms
+\begin{equation}
+  \begin{gathered}
+    \boxed{
+      \ms{SRel}((A, \varphi), (B, \psi)) 
+      \subseteq A \to \ms{S} \to \mc{P}(A \times S) 
+    }
+    \\
+    \begin{aligned}
+      \ms{SRel}((A, \top), (B, \top)) &= \{f \in A \to S \to \mc{P}(A \times S) \mid \exists g. f = \lambda a, s. g(a) \times \{s\}\} \\
+      \ms{SRel}((A, \ms{S}), (B, \ms{S})) &= A \to S \to \mc{P}(A \times S) \\
+      \ms{SRel}((A, \varphi), (B, \psi)) &= \{\lambda a, s. \varnothing\} \quad \text{otherwise}
+    \end{aligned}
+  \end{gathered}
+\end{equation}
+Note that it is precisely the \textit{central} morphisms \(\ms{C}_0(A, B)\) which lie in \(\ms{SRel}((A, \top), (B, \top))\). We can then define the tensor product on objects as \((A, \varphi) \otimes (B, \psi) = (A \otimes B, \varphi * \psi)\), and, for \(f \in \mathsf{SRel}((A, \varphi), (B, \psi))\), and tensor product functors
+\begin{equation}
+  \begin{aligned}
+  f \otimes (C, \phi) &= f \otimes C,
+  & (C, \phi) \otimes f &= C \otimes f
+  && \text{if}\; \varphi * \phi \neq \bot, \psi * \phi \neq \bot \\
+  f \otimes (C, \phi) &= \lambda a, s. \varnothing,
+  & (C, \phi) \otimes f &=  \lambda a, s. \varnothing
+  && \text{otherwise}
+  \end{aligned} 
+\end{equation}
+Lifting associators, unitors, and symmetries from \(\mc{C}_0\) in the obvious manner (setting them to \(\lambda a, s. \varnothing\) where necessary), we can verify that \(\ms{SRel}\) is a \textit{premonoidal} category. we can see that it is in fact \textit{monoidal} by nothing that, for any \(f, g\), \(f \ltimes g = f \rtimes g\) since either \(f\) is central, \(g\) is central, or their product is the empty morphism \(\lambda a, s. \varnothing\). Hence, to get a \textit{substructural} monoidal category, we simply need to define:
+\begin{equation}
+  \begin{gathered}
+  \ms{Aff}(\ms{SRel}) = \ms{Rel}(\ms{SRel}) = \{(A, \top) | A \in \ms{Set}\} \neq |\ms{SRel}|
+  \\
+  \begin{aligned}
+    \ms{SRel}^\varnothing((A, \phi), (B, \psi))
+    &= \ms{SRel}((A, \phi), (B, \psi)) \\
+    \ms{SRel}^{\{\ms{a}\}}((A, \phi), (B, \psi)) 
+    &= \{f \in \ms{SRel}((A, \phi), (B, \psi)) \mid \forall a, s. |f(a, s)| \geq 1 \lor \phi \neq \psi \lor \phi = \bot \} \\
+    \ms{SRel}^{\{\ms{r}\}}((A, \phi), (B, \psi)) 
+    &= \{f \in \ms{SRel}((A, \phi), (B, \psi)) \mid \forall a, s. |f(a, s)| \leq 1 \lor \phi \neq \psi \lor \phi = \bot \} \\
+    \implies \ms{SRel}^{\{\ms{a}, \ms{r}\}}((A, \phi), (B, \psi)) 
+    &= \{f \in \ms{SRel}((A, \phi), (B, \psi)) \mid \forall a, s. |f(a, s)| = 1 \lor \phi \neq \psi \lor \phi = \bot \} \\
+  \end{aligned}
+  \end{gathered}
+\end{equation}
+We can verify that the associators, unitors, and symmetry lie in \(\ms{SRel}^{\{\ms{a}, \ms{r}\}}\) and that all other desired axioms are satisfied.
 
 \TODO{distributive category}
 
