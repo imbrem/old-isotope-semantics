@@ -87,9 +87,9 @@
 \newcommand{\lhyp}[3]{#1[#2](#3)}
 \newcommand{\llhyp}[3]{\lhyp{\lbl{#1}}{#2}{#3}}
 \newcommand{\rle}[1]{{\scriptsize\textsf{#1}}}
-\newcommand{\taff}{\ms{a}}
-\newcommand{\trel}{\ms{r}}
-\newcommand{\tint}{\ms{i}}
+\newcommand{\taff}{{\{\ms{a}\}}}
+\newcommand{\trel}{{\{\ms{r}\}}}
+\newcommand{\tint}{{\{\ms{a}, \ms{r}\}}}
 \newcommand{\hasty}[5]{#1 \vdash_{#2} #3: {#4}^{#5}}
 \newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
@@ -556,27 +556,31 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
       {\hasty{\Xi}{1}{a}{A}{\tint}}
-      {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} \qquad
+      {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} 
+    \\
     \prftree[r]{\rle{ite}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\hasty{\Delta}{1}{e}{\mb{2}}{\tint}}
       {\haslb{\Xi}{s}{\ms{L}}}
       {\haslb{\Xi}{t}{\ms{L}}}
-      {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} \\
+      {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} 
+    \\
     \prftree[r]{\rle{let-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
       {\hasty{\Xi}{0}{a}{A}{q}}
-      {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} \\
+      {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} 
+    \\
     \prftree[r]{\rle{let2-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
       {\hasty{\Xi}{0}{a}{A \otimes B}{q}}
-      {\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}} \\
+      {\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}} \qquad
     \prftree[r]{\rle{where}}
       {\haslb{\Gamma}{t}{\ms{L}}}
       {\lhaslb{\ms{L}}{L}{\ms{K}}}
-      {\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}} \qquad
+      {\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}}
+    \\
     \prftree[r]{\rle{nil-br}}
       {\lhaslb{\ms{L}}{\cdot}{\ms{L}}} \qquad
     \prftree[r]{\rle{cons-br}}
@@ -1187,29 +1191,38 @@ Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
 
 \TODO{intuition? Can draw diagrams, but those take up space}
 
-\TODO{result: if a monad is Elgot, the state/reader/writer transformers yield Elgot monads}
+\begin{proposition}
+  If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;\mb{T}\;S = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda A. S \to \ms{T}(A)\), and \(\ms{WriterT}\;\mb{T}\;S = \lambda A. \ms{T}(A \times S)\) are all Elgot
+\end{proposition}
 
 \subsection{Denotational Semantics}
 
-\TODO{coherent syntax for affine/relevant morphisms... see below...}
+\TODO{make aff and rel syntax nicer/more consistent here? Subcategory syntax would be nice for lemmas and just coherence.}
 
-\TODO{text}
-
-The semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and instructions \(\mc{I}\) are given by:
+We're now ready to give a semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
 \begin{itemize}
-  \item A \textit{substructural effectful category} \(\mc{C}\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot}, equipped with
-  \item A function \(\ms{base}(X)\) from base types \(X \in \mc{T}\) to objects in \(|\mc{C}|\), such that \(\ms{a} \in \ms{lin}(X) \implies X \in \ms{Aff}(\mc{C})\) and \(\ms{r} \in \ms{lin}(X) \implies X \in \ms{Rel}(\mc{C})\)
+  \item A \textit{substructural effectful category} \(\mc{C} = \mc{C}_1 \to \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot}, equipped with
+  \item A function \(\ms{base}(X)\) from base types \(X \in \mc{T}\) to objects in \(|\mc{C}|\), such that \(\ms{a} \in \ms{lin}(X) \implies \ms{base}(X) \in \ms{Aff}(\mc{C})\) and \(\ms{r} \in \ms{lin}(X) \implies \ms{base}(X) \in \ms{Rel}(\mc{C})\)
   \item A function \(\ms{inst}(f)\) from instructions \(f \in \mc{I}_p^q(A, B)\) to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
 \end{itemize}
-\TODO{make aff and rel syntax nicer/more consistent here? Subcategory syntax would be nice for lemmas and just coherence.}
+We begin by giving a semantics for types and contexts in terms of objects in \(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}; this allows us to give a semantics for structural judgements in Figure \ref{fig:ssa-structural-semantics}.
+
+\TODO{some text about what the semantics actually are...}
+
+We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} followed by a semantics for blocks and label-sets in Figure \ref{fig:ssa-block-semantics}.
+
+\TODO{ditto}
+
+\TODO{rename blocks to statements? label-sets to CFGs?}
 
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{A}}: |\mc{C}| \\
     \dnt{X} = \ms{base}(X) 
-      \text{ where } 
-      \dnt{\mb{1}} = \mb{1}, 
-      \dnt{\mb{2}} = \mb{2}
+    \qquad
+    \dnt{\mb{1}} = \mb{1}
+    \qquad
+    \dnt{\mb{2}} = \mb{2} = \mb{1} + \mb{1}
     \qquad \dnt{A \otimes B} = \dnt{A} \otimes \dnt{B} \\
     \boxed{\dnt{\Gamma}}: |\mc{C}| \\
     \dnt{\cdot} = \mb{1} \qquad 
@@ -1224,23 +1237,24 @@ The semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and inst
   \label{fig:ssa-type-semantics}
 \end{figure}
 
-\TODO{some text about type/context semantics}
-
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\tlin{A}{\taff}: \mc{C}_1^\tint(\dnt{A}, \mb{1})}}
       \\
-    \dnt{\tlin{X}{\taff}} = \ms{drop}(X) \qquad
-    \dnt{\tlin{A \otimes B}{\taff}} 
-      = \dnt{\tlin{A}{\taff}} \otimes \dnt{\tlin{B}{\taff}}
-      ; \lambda \\
+      \dnt{\tlin{A}{\taff}} = \ms{drop}(\dnt{A})
+      % \dnt{\tlin{X}{\taff}} = \ms{drop}(X) \qquad
+      % \dnt{\tlin{A \otimes B}{\taff}} 
+      %   = \dnt{\tlin{A}{\taff}} \otimes \dnt{\tlin{B}{\taff}}
+      %   ; \lambda 
+      \\
     \boxed{\dnt{\tlin{A}{\trel}}
       : \mc{C}_1^\tint(\dnt{A}, \dnt{A} \otimes \dnt{A})}
       \\
-    \dnt{\tlin{X}{\trel}} = \ms{split}(X) \qquad
-    \dnt{\tlin{A \otimes B}{\trel}} = 
-      \dnt{\tlin{A}{\trel}} \otimes \dnt{\tlin{B}{\trel}}
-      ;\alpha;\dnt{A} \otimes \sigma \otimes \dnt{B};\alpha 
+      \dnt{\tlin{A}{\trel}} = \ms{split}(\dnt{A})
+      % \dnt{\tlin{X}{\trel}} = \ms{split}(X) \qquad
+      % \dnt{\tlin{A \otimes B}{\trel}} = 
+      %   \dnt{\tlin{A}{\trel}} \otimes \dnt{\tlin{B}{\trel}}
+      %   ;\alpha;\dnt{A} \otimes \sigma \otimes \dnt{B};\alpha 
       \\
     \boxed{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
       : \mc{C}_1^\tint(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})}
@@ -1299,8 +1313,6 @@ The semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and inst
   \label{fig:ssa-structural-semantics}
 \end{figure}
 
-\TODO{some text about structural semantics}
-
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\hasty{\Gamma}{p}{a}{A}{q}}
@@ -1349,7 +1361,7 @@ The semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and inst
   \end{gather*}
   \caption{Semantics for \isotopessa terms}
   \Description{Semantics for isotope-SSA terms}
-  \label{fig:ssa-structural-terms}
+  \label{fig:ssa-term-semantics}
 \end{figure}
 
 \TODO{some text about term semantics}
@@ -1399,7 +1411,7 @@ The semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and inst
   \end{gather*}
   \caption{Semantics for \isotopessa blocks}
   \Description{Semantics for isotope-SSA blocks}
-  \label{fig:ssa-structural-blocks}
+  \label{fig:ssa-block-semantics}
 \end{figure}
 
 \TODO{some text about block semantics}
