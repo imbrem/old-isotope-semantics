@@ -89,7 +89,7 @@
 \newcommand{\rle}[1]{{\scriptsize\textsf{#1}}}
 \newcommand{\taff}{\ms{a}}
 \newcommand{\trel}{\ms{r}}
-\newcommand{\tint}{{\{\ms{a}, \ms{r}\}}}
+\newcommand{\tint}{\ms{i}}
 \newcommand{\hasty}[5]{#1 \vdash_{#2} #3: {#4}^{#5}}
 \newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
 \newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
@@ -1038,18 +1038,15 @@ since only the left-hand side contains the pair \((b_0, b_1)\), this correspondi
 To get a substructural premonoidal category, we can apply the state monad transformer to the power set monad to obtain the Kleisli category with morphisms of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times S)\). Once again, it is clear that all objects have split and drop morphisms inherited from \(\ms{Set}\), and therefore are affine and relevant
 
 \begin{definition}[Susbtructural Effectful Category]
-  A \textbf{substructural effectful category} \(\mc{C}_1 \to \mc{C}_0\) consists of
+  A \textbf{substructural effectful category} \(\mc{C}\) consists of
   \begin{itemize}
     \item A substructural monoidal category \(\mc{C}_1\); we call the morphisms in this category \textbf{central} or \textbf{linear}
-    \item A substructural premonoidal category \(\mc{C}_0\)
-    \item An identity-on-objects functor \(\upg{\cdot}{}: \mc{C}_1^\varnothing \to \mc{C}_0^\varnothing\) which:
-    \begin{itemize}
-      \item Preserves all symmetric premonoidal structure (which naturally induces functors \(\upg{\cdot}{}: \mc{C}_1^q \to \mc{C}_0\) which do the same)
-      \item Sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\)
-    \end{itemize}
+    \item A substructural premonoidal category \(\mc{C}_0\) sharing the same affine and relevant objects as \(\mc{C}_1\)
+    \item An identity-on-objects functor \(\upg{\cdot}{}: \mc{C}_1^\varnothing \to \mc{C}_0^\varnothing\) preserving all substructural premonoidal structure, i.e., preserves all symmetries, associators, unitors, drops, and splits and sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\).
+    In particular, restricting \(\upg{\cdot}{}\) appropriately makes all \(\mc{C}_1^q \to \mc{C}_0^q\) into effectful categories.
   \end{itemize}
   We define \(\upg{f}{0}\) to be \(\upg{f}{}\) for morphisms in \(\mc{C}_1^q\) and simply \(f\) for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) to simply be the identity functor on \(\mc{C}_1^q\).
-
+ 
   Morphisms in \(\mc{C}_p^{\{\ms{a}\}}\) are called \textbf{copyable}, morphisms in \(\mc{C}_p^{\{\ms{r}\}}\) are called \textbf{discardable},
   while morphisms in \(\mc{C}_1^{\{\ms{a}\}}, \mc{C}_1^{\{\ms{r}\}}, \mc{C}_1^{\{\ms{a}, \ms{r}\}}\) specifically are called \textbf{affine}, \textbf{relevant}, and \textbf{intuitionistic} or \textbf{pure} respectively.
 \end{definition}
@@ -1121,18 +1118,29 @@ We can use these observations to deduce that every strong monad \(\mb{T}\) on a 
 
 \subsection{Distributivity}
 
-\TODO{text}
+% \TODO{text}
 
-\begin{definition}[If-then-else category] \
-  \TODO{this}
-\end{definition}
+% \begin{definition}[If-then-else category] \
+%   \TODO{this}
+% \end{definition}
 
-\TODO{results on if-then-else of monads}
+% \TODO{results on if-then-else of monads}
 
 \begin{definition}[Distributive (pre)monoidal category] 
-  A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category with all finite coproducts equipped with a natural family of central isomorphisms \(\delta_{A, B, C}: (A + B) \otimes C \simeq A \otimes C + B \otimes C\).
-  \TODO{complex coherence conditions in \cite{laplaza-distributivity}, what we need for if-then-else}
+  A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category with all finite coproducts equipped with a natural family of central isomorphisms (the \textbf{distributor}) \(\delta_{A, B, C}: (A + B) \otimes C \simeq A \otimes C + B \otimes C\). This isomorphism is subject to rather complex coherence conditions, worked out in full for the more general case of \textit{rig categories} in \cite{laplaza-distributivity}, but for our purposes we will only make use of the following:
+  \begin{equation*}
+    \delta_{A, B, C}^{-1} = [\iota_0 \otimes C, \iota_1 \otimes C] 
+    \qquad
+    \sigma^+_{A, B} \otimes C;\delta_{B, A, C} = \delta_{A, B, C};\sigma^+_{A \otimes C, B \otimes C}
+  \end{equation*}
+  Note in particular that this implies that \(\iota_i \otimes C;\delta_{A, B, C} = \iota_i\). A substructural (pre)monodial category is \textbf{distributive} if it is distributive as a (pre)monoidal category, and its distributor is \textit{pure}. A substructural effectful category \(\mc{C}\) is \textbf{distributive} if \(\mc{C}_0\) is distributive (as a substructural (pre)monoidal category).
 \end{definition}
+
+\TODO{can swap be derived from the previous two? Does this imply some of the other equations from \cite{laplaza-distributivity}? Alas for modularity!}
+
+\TODO{results on distributivity of monads}
+
+\TODO{results on distributivity of effectful things}
 
 \TODO{text}
 
@@ -1168,6 +1176,8 @@ Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
 \TODO{result: if a monad is Elgot, the state/reader/writer transformers yield Elgot monads}
 
 \subsection{Denotational Semantics}
+
+\TODO{coherent syntax for affine/relevant morphisms... see below...}
 
 \TODO{text}
 
