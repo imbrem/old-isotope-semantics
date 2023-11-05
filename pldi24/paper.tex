@@ -1440,7 +1440,7 @@ We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} fol
 
 \begin{lemma}[Semantic Upgrade]
   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
-  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\hasty{\Gamma}{1}{a}{A}{q}}{}\]
+  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
 \end{lemma}
 
 \TODO{some text about upgrade}
