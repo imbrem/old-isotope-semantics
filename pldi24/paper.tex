@@ -1729,12 +1729,6 @@ We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} fol
 
 \TODO{already done above?}
 
-\subsection{Separation Logic}
-
-\TODO{State transformer on traces}
-
-\TODO{Monoidal functor, yielding sliding}
-
 \subsection{Weak Memory}
 
 \TODO{\cite{sparky}}
@@ -1748,6 +1742,38 @@ We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} fol
 \TODO{Build The Weak Memory Monad, which is too powerful, so we do...}
 
 \TODO{Karoubi envelope as premonoidal demonstration?}
+
+\subsection{Separation Logic}
+
+Building on the ideas in \cite{mellies-ftrs}, we will show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
+
+We'll start by considering the category \(\ms{HRel}\), which we will take to have morphisms of the form \(A \to \ms{Heap} \to \mc{P}^+(A \times \ms{Heap} \times \ms{String}^* + \ms{String}^\omega)\), which is the result of applying the state-transformer monad with state \(\ms{Heap}\) to the trace monad with the infinite monoid of lists of strings described in the previous section.
+
+\TODO{by the above, this is an \isotopessa model w/ nice properties; moving on!}
+
+We now define a separation logic with predicates having the following grammar:
+\begin{grammar}
+  <\(\varphi, \psi\)> ::= 
+    \(\varnothing\) 
+    \;|\; \(e \mapsto a\) 
+    \;|\; \(\varphi * \psi\)
+    \;|\; \(\forall x: A, \varphi\)
+    \;|\; \(\exists x: A, \varphi\)
+    \;|\; \(\varphi \land \psi\)
+    \;|\; \(\varphi \lor \psi\)
+    \;|\; \(\varphi \Rightarrow \psi\)
+    \;|\; \(\top\)
+    \;|\; \(\bot\)
+\end{grammar}
+where \(e, a\) denote regular \isotopessa expressions and \(A, B\) regular \isotopessa types.
+
+We can now do something somewhat tricky with \isotopessa dialects:
+\TODO{truly pure expressions \(\implies\) semantics for expressions}
+\TODO{giving us a semantics for separation logic stuff}
+\TODO{now we define the category \(\ms{Sep}\) w/ objects contexts + predicates}
+\TODO{tensor product, niceties \(\implies\) category, yey}
+\TODO{sliding}
+\TODO{therefore, substructural \textit{effectful} w/ nontrivial linear objects}
 
 \section{Implementation}
 
