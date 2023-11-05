@@ -1114,17 +1114,20 @@ We can verify that the associators, unitors, and symmetry lie in \(\ms{SRel}^{\{
 
 In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a substructural premonoidal category, with \(\mc{C}^\varnothing = \mc{C}\) and \(\mc{C}^{\{\ms{a}, \ms{r}\}}, \mc{C}^{\{\ms{a}\}}, \mc{C}^{\{\ms{r}\}}\) the subcategory consisting only of the associators, unitors, and symmetry, and only the identity object considered affine and relevant. On the other extreme, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a substructural Cartesian category with all morphisms both relevant and affine; in fact, this is the case \textit{if and only if} a category is Cartesian, hence the term "substructural Cartesian category."
 
-We can use these observations to deduce that every strong monad \(\mb{T}\) on a substructural monoidal category \(\mc{C}\) induces a substructural premonoidal category \(\mc{C}_{\mb{T}}\) (the Kleisli category) with affine/relevant objects the same as in \(\mc{C}\), and affine/relevant morphisms containing the image of all affine/relevant morphisms in \(\mc{C}\) under the inclusion functor \(\mc{C} \to \mc{C}_{\mb{T}}\).
+We can also deduce the following:
+\begin{proposition}
+  If \(\mc{C}\) is a substructural monoidal category then the Kleisli category \(\mc{C}_{\mb{T}}\) is a substructural premonoidal category with:
+  \begin{itemize}
+    \item \(\ms{Aff}(\mc{C}_{\mb{T}}) = \ms{Aff}(\mc{C})\), \(\ms{Rel}(\mc{C}_{\mb{T}}) = \ms{Rel}(\mc{C})\)
+    \item \(\mc{C}_{\mb{T}}^q(A, B) = \upg{\mc{C}^q(A, B)}{}\), where \(\upg{f}{} = f;\eta\)
+    \item Drops \(\upg{\ms{drop}(A)}{}\) and splits \(\upg{\ms{split}(A)}{}\)
+  \end{itemize} 
+  In particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a substructural effectful category.
+\end{proposition}
+
+\TODO{work into text?}
 
 \subsection{Distributivity}
-
-% \TODO{text}
-
-% \begin{definition}[If-then-else category] \
-%   \TODO{this}
-% \end{definition}
-
-% \TODO{results on if-then-else of monads}
 
 \begin{definition}[Distributive (pre)monoidal category] 
   A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category with all finite coproducts equipped with a natural family of central isomorphisms (the \textbf{distributor}) \(\delta_{A, B, C}: (A + B) \otimes C \simeq A \otimes C + B \otimes C\). This isomorphism is subject to rather complex coherence conditions, worked out in full for the more general case of \textit{rig categories} in \cite{laplaza-distributivity}, but for our purposes we will only make use of the following:
@@ -1135,12 +1138,23 @@ We can use these observations to deduce that every strong monad \(\mb{T}\) on a 
   \end{equation*}
   Note in particular that this implies that \(\iota_i \otimes C;\delta_{A, B, C} = \iota_i\). A substructural (pre)monodial category is \textbf{distributive} if it is distributive as a (pre)monoidal category, and its distributor is \textit{pure}. A substructural effectful category \(\mc{C}\) is \textbf{distributive} if \(\mc{C}_0\) is distributive (as a substructural (pre)monoidal category).
 \end{definition}
-
-\TODO{can swap be derived from the previous two? Does this imply some of the other equations from \cite{laplaza-distributivity}? Alas for modularity!}
-
-\TODO{results on distributivity of monads}
-
-\TODO{results on distributivity of effectful things}
+Many (pre)monoidal categories are distributive, including of course \(\ms{Set}\), but also categories which can be derived from monads on more primitive categories such as \(\ms{PFun}\) and \(\ms{Rel}\), as can be deduced from the following proposition:
+\begin{proposition}
+  If \(\mc{C}\) is a distributive substructural monoidal category and \(\mb{T}\) is a strong monad on \(\mc{C}\), then the Kleisli category \(\mc{C}_{\mb{T}}\) is a distributive substructural effectful category (with affine and relevant objects and morphisms inherited from \(\mc{C}\))
+\end{proposition}
+\begin{proof}
+  Let \(\delta_{A, B, C}: \mc{C}((A + B) \otimes C, A \otimes C + B \otimes C)\) denote \(\mc{C}\)'s distributor. We will write composition in \(\mc{C}\) as "\(;\)" and composition in the Kleisli category \(\mb{T}\) as "\(\gg\)".
+  We will show that
+  \(\upg{\delta_{A, B, C}}{} = \delta_{A, B, C};\ms{pure}: \mc{C}_{\mb{T}}((A + B) \otimes C, A \otimes C + B \otimes C)\) satisfies the desired properties of a distributor. In particular, it is:
+  \begin{itemize}
+    \item Central: this follows immediately from being the image of a pure morphism
+    \item Affine: \(\upg{\delta}{} \gg \upg{\ms{drop}}{} = \upg{(\delta;\ms{drop})}{} = \upg{\ms{drop}}{}\)
+    \item Relevant: \(\upg{\delta}{} \gg \upg{\ms{split}}{} = \upg{(\delta;\ms{split})}{} = \upg{(\ms{split};\delta \otimes \delta)}{} = \upg{\ms{split}}{} \gg \upg{\delta}{} \otimes \upg{\delta}{}\)
+    \item Left inverse: \(\upg{\delta}{} \gg \upg{[\iota_0 \otimes C, \iota_1 \otimes C]}{} = \upg{\delta;[\iota_0 \otimes C, \iota_1 \otimes C]}{} = \ms{id}\)
+    \item Right inverse: \(\upg{[\iota_0 \otimes C, \iota_1 \otimes C]}{} \gg \upg{\delta}{} = \upg{[\iota_0 \otimes C, \iota_1 \otimes C];\delta}{} = \ms{id}\)
+    \item Symmetric: \(\upg{\sigma^+}{} \otimes C \gg \upg{\delta}{} = \upg{\sigma^+ \otimes C;\delta}{} = \upg{\delta;\sigma^+}{} = \upg{\delta}{} \gg \upg{\sigma^+}{}\)
+  \end{itemize}
+\end{proof}
 
 \TODO{text}
 
