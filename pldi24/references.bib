@@ -239,3 +239,186 @@
   biburl    = {https://dblp.org/rec/conf/lics/Reynolds02.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+
+@article{leaky-semicolon,
+  author    = {Alan Jeffrey and
+               James Riely and
+               Mark Batty and
+               Simon Cooksey and
+               Ilya Kaysin and
+               Anton Podkopaev},
+  title     = {The leaky semicolon: compositional semantic dependencies for relaxed-memory
+               concurrency},
+  journal   = {Proc. {ACM} Program. Lang.},
+  volume    = {6},
+  number    = {{POPL}},
+  pages     = {1--30},
+  year      = {2022},
+  url       = {https://doi.org/10.1145/3498716},
+  doi       = {10.1145/3498716},
+  timestamp = {Mon, 28 Aug 2023 21:30:20 +0200},
+  biburl    = {https://dblp.org/rec/journals/pacmpl/JeffreyRBCKP22.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{rosen-gvn-1988,
+  author    = {Rosen, B. K. and Wegman, M. N. and Zadeck, F. K.},
+  title     = {Global Value Numbers and Redundant Computations},
+  year      = {1988},
+  isbn      = {0897912527},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/73560.73562},
+  doi       = {10.1145/73560.73562},
+  booktitle = {Proceedings of the 15th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+  pages     = {12–27},
+  numpages  = {16},
+  location  = {San Diego, California, USA},
+  series    = {POPL '88}
+}
+
+@phdthesis{schneider-phd,
+  author    = {Sigurd Schneider},
+  title     = {A verified compiler for a linear imperative / functional intermediate
+               language},
+  school    = {Saarland University, Saarbr{\"{u}}cken, Germany},
+  year      = {2018},
+  url       = {https://publikationen.sulb.uni-saarland.de/handle/20.500.11880/27296},
+  urn       = {urn:nbn:de:bsz:291--ds-275667},
+  timestamp = {Sat, 17 Jul 2021 09:07:30 +0200},
+  biburl    = {https://dblp.org/rec/phd/dnb/Schneider18d.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+% removed number    = {2},
+% they really need to start allowing comments *inside* the records...
+@inproceedings{chakravarty-functional-ssa-2003,
+  author    = {Manuel M. T. Chakravarty and
+               Gabriele Keller and
+               Patryk Zadarnowski},
+  editor    = {Jens Knoop and
+               Wolf Zimmermann},
+  title     = {A Functional Perspective on {SSA} Optimisation Algorithms},
+  booktitle = {Compiler Optimization Meets Compiler Verification, COCV@ETAPS 2003,
+               Warsaw, Poland, April 12, 2003},
+  series    = {Electronic Notes in Theoretical Computer Science},
+  volume    = {82},
+  pages     = {347--361},
+  publisher = {Elsevier},
+  address   = {Warsaw, Poland},
+  year      = {2003},
+  url       = {https://doi.org/10.1016/S1571-0661(05)82596-4},
+  doi       = {10.1016/S1571-0661(05)82596-4},
+  timestamp = {Tue, 13 Dec 2022 10:38:55 +0100},
+  biburl    = {https://dblp.org/rec/journals/entcs/ChakravartyKZ03.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{barthe-compcert-ssa-2014,
+  author     = {Barthe, Gilles and Demange, Delphine and Pichardie, David},
+  title      = {Formal Verification of an SSA-Based Middle-End for CompCert},
+  year       = {2014},
+  issue_date = {March 2014},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {36},
+  number     = {1},
+  issn       = {0164-0925},
+  url        = {https://doi.org/10.1145/2579080},
+  doi        = {10.1145/2579080},
+  abstract   = {CompCert is a formally verified compiler that generates compact and efficient code for a large subset of the C language. However, CompCert foregoes using SSA, an intermediate representation employed by many compilers that enables writing simpler, faster optimizers. In fact, it has remained an open problem to verify formally an SSA-based compiler. We report on a formally verified, SSA-based middle-end for CompCert. In addition to providing a formally verified SSA-based middle-end, we address two problems raised by Leroy in [2009]: giving an intuitive formal semantics to SSA, and leveraging its global properties to reason locally about program optimizations.},
+  journal    = {ACM Trans. Program. Lang. Syst.},
+  month      = {mar},
+  articleno  = {4},
+  numpages   = {35},
+  keywords   = {mechanized proof, Single static assignment, compiler verification}
+}
+
+@inproceedings{buchwald-verified-ssa-2016,
+  author    = {Sebastian Buchwald and
+               Denis Lohner and
+               Sebastian Ullrich},
+  editor    = {Ayal Zaks and
+               Manuel V. Hermenegildo},
+  title     = {Verified construction of static single assignment form},
+  booktitle = {Proceedings of the 25th International Conference on Compiler Construction,
+               {CC} 2016, Barcelona, Spain, March 12-18, 2016},
+  pages     = {67--76},
+  publisher = {{ACM}},
+  address   = {Barcelona, Spain},
+  year      = {2016},
+  url       = {https://doi.org/10.1145/2892208.2892211},
+  doi       = {10.1145/2892208.2892211},
+  timestamp = {Tue, 06 Nov 2018 16:57:57 +0100},
+  biburl    = {https://dblp.org/rec/conf/cc/BuchwaldLU16.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{herklotz-gsa-2023,
+  author    = {Herklotz, Yann and Demange, Delphine and Blazy, Sandrine},
+  title     = {Mechanised Semantics for Gated Static Single Assignment},
+  year      = {2023},
+  isbn      = {9798400700262},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3573105.3575681},
+  doi       = {10.1145/3573105.3575681},
+  abstract  = {The Gated Static Single Assignment (GSA) form was proposed by Ottenstein et al. in 1990, as an intermediate representation for implementing advanced static analyses and optimisation passes in compilers. Compared to SSA, GSA records additional data dependencies and provides more context, making optimisations more effective and allowing one to reason about programs as data-flow graphs. Many practical implementations have been proposed that follow, more or less faithfully, Ottenstein et al.'s seminal paper. But many discrepancies remain between these, depending on the kind of dependencies they are supposed to track and to leverage in analyses and code optimisations. In this paper, we present a formal semantics for GSA, mechanised in Coq. In particular, we clarify the nature and the purpose of gates in GSA, and define control-flow insensitive semantics for them. We provide a specification that can be used as a reference description for GSA. We also specify a translation from SSA to GSA and prove that this specification is semantics-preserving. We demonstrate that the approach is practical by implementing the specification as a validated translation within the CompCertSSA verified compiler.},
+  booktitle = {Proceedings of the 12th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+  pages     = {182–196},
+  numpages  = {15},
+  keywords  = {Verified Compilation, SSA, Gated SSA},
+  location  = {Boston, MA, USA},
+  series    = {CPP 2023}
+}
+
+% added numpages based on # of pages in PDF
+@inproceedings{pop-ssa-inout-2009,
+  title       = {{In and Out of SSA : a Denotational Specification}},
+  author      = {Pop, Sebastian and Jouvelot, Pierre and Silber, George Andr{\'e}},
+  url         = {https://minesparis-psl.hal.science/hal-00915979},
+  booktitle   = {{Workshop Static Single-Assignment Form Seminar,}},
+  publisher   = {Universität des Saarlandes},
+  address     = {Autrans, France},
+  year        = {2009},
+  month       = Apr,
+  keywords    = {static single assignment ; SSA ; RAM model ; partial recursive functions theory ; program slicing},
+  pdf         = {https://minesparis-psl.hal.science/hal-00915979/file/E-285.pdf},
+  hal_id      = {hal-00915979},
+  hal_version = {v1},
+  numpages    = {15}
+}
+
+% added number of pages based on PDF
+@article{garbuzov-structural-cfg-2018,
+  author     = {Dmitri Garbuzov and
+                William Mansky and
+                Christine Rizkallah and
+                Steve Zdancewic},
+  title      = {Structural Operational Semantics for Control Flow Graph Machines},
+  journal    = {CoRR},
+  volume     = {abs/1805.05400},
+  year       = {2018},
+  url        = {http://arxiv.org/abs/1805.05400},
+  eprinttype = {arXiv},
+  eprint     = {1805.05400},
+  timestamp  = {Mon, 13 Aug 2018 16:46:51 +0200},
+  biburl     = {https://dblp.org/rec/journals/corr/abs-1805-05400.bib},
+  bibsource  = {dblp computer science bibliography, https://dblp.org},
+  numpages   = {27}
+}
+
+% address of conference, publisher IEEE
+@inproceedings{hua-explicit-ssa-2010,
+  author    = {Baojian Hua and Bo Xu and Ying Gao},
+  booktitle = {2010 2nd International Conference on Education Technology and Computer},
+  title     = {Explicitly typed static single-assignment form},
+  year      = {2010},
+  volume    = {1},
+  publisher = {IEEE},
+  address   = {Shanghai, China},
+  number    = {},
+  pages     = {V1-43-V1-47},
+  doi       = {10.1109/ICETC.2010.5529303}
+}
+
