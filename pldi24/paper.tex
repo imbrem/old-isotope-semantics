@@ -1772,8 +1772,14 @@ We can now define the \textit{trace monad} of a stream action as follows:
   and 
   \[\mu_A\;T = \{[\lambda (a, m). m \cdot a, \ms{id}](t) \mid t \in T\}\]
   where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') = \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). This is an Elgot monad, with iteration operator
-  \(f^\dagger(a) = \bigcup_{n \in \nats \cup \{\infty\}}f_n(a)\), where
-  \TODO{this}
+  \(f^\dagger(a) = f^\infty(a) \cup \bigcup_{n \in \nats}\{\iota_0 (\iota_0\;b, m) \in f_n(a)\} \cup \{\iota_1 t \in f_n(a)\}\), where
+  \[
+    f_0 = f, \qquad f_{n + 1} = f \gg [\upg{\iota_0}{}, f_n]
+  \]
+  \[
+    f^\infty(a) = \{\Theta (\lambda n. m_n) \mid a_0 = a \land \forall n, \exists a_{n + 1}. \iota_0 (\iota_1\;a_{n + 1}, m_n) \in f(a_n)\}
+  \]
+  \TODO{clean this up}
 \end{definition}
 
 \TODO{text}
