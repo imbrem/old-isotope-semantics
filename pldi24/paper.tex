@@ -303,7 +303,7 @@ for variables.
 \item Our generic equational theory justifies a variety of powerful optimisation techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and strength reduction. 
 \item We show how Elgot monads give rise to models of our language. We use this to derive semantics from a general trace monad, and show that various monad transformers such as state transformers preserve the needed Elgot structure. 
 \item We use these tools to demonstrate the existence of a variety of concrete models satisfying these categorical axioms. Starting first from simple languges such as state plus printing, we also show how more challenging semantics such as the TSO semantics for weak memory also fit into our framework. This thus gives rise to an SSA-based IR with support for weak memory operations, which is fully semantically-justified.
-\item \TODO{We also have a small implementation, which \ldots}
+\item \todo{We also have a small implementation, which \ldots}
 \item Our weak memory semantics and our results about Elgot monads are formalised in the Lean theorem prover. \TODO{Other stuff}
 \end{itemize}
 
@@ -980,7 +980,15 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
 
 \TODO{intro text}
 
-\TODO{define premonoidal category?}
+\begin{definition}[Binoidal Category] \
+  \TODO{this}
+\end{definition}
+
+\begin{definition}[Premonoidal Category] \
+  \TODO{this}
+\end{definition}
+
+\TODO{text}
 
 \begin{definition}[Substructural (Pre)monoidal Category]
   A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A}, \mc{R})\) where:
@@ -1737,6 +1745,8 @@ In this section, we will build on the bare-bones models given in Section \ref{se
 
 \TODO{text}
 
+\TODO{find better notation than \(\Pi\)?}
+
 \begin{definition}[Stream Action]
   A \textbf{stream action} of a monoid \(M\) on a set \(I\) is a pair \((\Pi, \cdot)\) where \(\Pi: M^\omega \to I\) is a map from streams of \(M\) to \(I\) and \(\cdot: M \to I \to I\) is a monoid action such that
   \(
@@ -1784,11 +1794,16 @@ Two important examples include:
 
 \TODO{text, \cite{sparky}}
 
-\begin{definition}[Pomset] \
-  \ \TODO{this}
+\begin{definition}[Pomset] 
+  A \textbf{pomset} over a set of actions \(\mc{A}\) with a distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\)
+  \TODO{finish, clean}
 \end{definition}
 
 \TODO{Form a monoid, so we can define...}
+
+Let \(\ms{Pom}\) denote the monoid of pomsets...
+
+\TODO{stream action... trace monad \(\ms{Traces}\;\ms{Pom}\;\ms{Pom}\)...}
 
 \TODO{The SC Monad, which, via composition w/ the state transformer w/ a buffer as state, lets us}
 
@@ -1804,38 +1819,33 @@ Two important examples include:
 
 Building on the ideas in \cite{mellies-ftrs}, we will show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
 
-We'll start by considering the category \(\ms{HRel}\), which we will take to have morphisms of the form \(A \to \ms{Heap} \to \mc{P}^+(A \times \ms{Heap} \times \ms{Bytes}^* + \ms{Bytes}^{\leq \omega})\), which is the result of applying the state-transformer monad with state \(\ms{Heap}\) to the trace monad with the infinite monoid of lists of strings described in the previous section.
+We'll start by considering the category \(\ms{HRel}\), which we will take to have morphisms of the form \(A \to \ms{Heap} \to \mc{P}^+(A \times \ms{Heap} \times \ms{Bytes}^* + \ms{Bytes}^{\leq \omega})\), which is the result of applying the state-transformer monad with state \(\ms{Heap}\) to the trace monad with the monoid of lists of bytestrings described in the previous section.
 
-\TODO{Name for ND trace monad}
+\TODO{say something better than "bytestrings"}
 
-% \TODO{by the above, this is an \isotopessa model w/ nice properties; moving on!}
+\TODO{what is a \(\ms{Heap}\)}
 
-% We now define a separation logic with predicates having the following grammar:
-% \begin{grammar}
-%   <\(\varphi, \psi\)> ::= 
-%     \(\varnothing\) 
-%     \;|\; \(e \mapsto a\) 
-%     \;|\; \(\varphi * \psi\)
-%     \;|\; \(\forall x: A, \varphi\)
-%     \;|\; \(\exists x: A, \varphi\)
-%     \;|\; \(\varphi \land \psi\)
-%     \;|\; \(\varphi \lor \psi\)
-%     \;|\; \(\varphi \Rightarrow \psi\)
-%     \;|\; \(\top\)
-%     \;|\; \(\bot\)
-% \end{grammar}
-% where \(e, a\) denote regular \isotopessa expressions and \(A, B\) regular \isotopessa types.
+\TODO{Use name \ms{Traces}}
 
-% We can now do something somewhat tricky with \isotopessa dialects:
-% \TODO{truly pure expressions \(\implies\) semantics for expressions}
-% \TODO{giving us a semantics for separation logic stuff}
-% \TODO{now we define the category \(\ms{Sep}\) w/ objects contexts + predicates}
-% \TODO{tensor product, niceties \(\implies\) category, yey}
-% \TODO{sliding}
-% \TODO{therefore, substructural \textit{effectful} w/ nontrivial linear objects}
+\TODO{by the above, this is an \isotopessa model w/ nice properties; moving on!}
+
+Given a set \(A\), we can define a predicate \(\varphi\) on \(A\), \(\mb{Heap}\) pairs to have the following type:
+\TODO{this}
+\TODO{Objects \((A, \varphi)\), \((B, \psi)\)}
+\TODO{arrows}
+\TODO{note on magic wand}
+\TODO{Tensor product and separating conjunction}
+\TODO{Coproduct, Elgot structure inherited from base category}
+\TODO{sliding w/ properly restricted equality}
+
+\TODO{so, it's a substructural effectful category mmkay}
+\TODO{central = no printing}
+\TODO{linear objects iff non duplicable}
+\TODO{relevant morphisms iff deterministic}
+\TODO{affine morphisms always (if no heap effects?)}
 
 \section{Implementation}
-
+ 
 \TODO{this}
 
 \TODO{remove? time + space...}
@@ -1860,12 +1870,19 @@ We'll start by considering the category \(\ms{HRel}\), which we will take to hav
 
 \TODO{\cite{hua-explicit-ssa-2010}}
 
+\TODO{\cite{rvsdg}}
+
 \TODO{this}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
 
-\TODO{start appendix}
+\clearpage 
+
+\appendix
+
+\section{Appendix}
+
 
 \end{document}
 \endinput
