@@ -1743,7 +1743,9 @@ In this section, we will build on the bare-bones models given in Section \ref{se
 
 \subsection{Trace Models}
 
-We will begin by giving a useful foundation for a wide class of \isotopessa models: the "trace models", which accumulate a (potentially infinite) nondeterministic trace of monoidal "events". This will later come in handy for reasoning about output behaviour and weak memory.
+\TODO{fix this text}
+
+We will begin by giving a useful foundation for a wide class of \isotopessa models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially infinite) nondeterministic trace of monoidal "events". These will later come in handy for reasoning about output behaviour and weak memory.
 
 We begin with some definitions:
 \begin{definition}[Stream Action]
@@ -1771,31 +1773,24 @@ We can now define the \textit{trace monad} of a stream action as follows:
   where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') = \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). This is an Elgot monad, with iteration operator
   \(f^\dagger(a) = \bigcup_{n \in \nats \cup \{\infty\}}f_n(a)\), where
   \TODO{this}
-
-  \TODO{deterministic trace monad; inherited Elgot structure: use as example of "Elgot submonad"? Go cite \cite{carette-central-2022}}
 \end{definition}
 
 \TODO{text}
 
-\TODO{merge det/nondet}
-
-\TODO{induces a substructural effectful category...}
-
-\TODO{central = commutative, "commutes with infinity" (i.e. is absorbed by infinity)}
-
-\TODO{relevant = idempotent}
-
-\TODO{affine = no effect on trace}
-
-\TODO{text}
-
-\TODO{induces a substructural effectful category...}
-
-\TODO{central = commutative, "commutes with infinity" (i.e. is absorbed by infinity)}
-
-\TODO{relevant = deterministic + idempotent; inclusion of trace monad}
-
-\TODO{affine = no effect on trace}
+\begin{definition}[Submonad] 
+  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and, for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where \(f^\dagger\) is computed as in \(\mb{T}\).
+\end{definition}
+Some important examples of submonads include:
+\begin{itemize}
+  \item \todo{unit submonad of every monad}
+  \item \todo{union, intersection of (Elgot) submonads; lattice of submonads}
+  \item \todo{commuting absorbtive submonad of trace monad: example of...}
+  \item \todo{central submonad. Go cite \cite{carette-central-2022}}
+  \item \todo{deterministic, idempotent trace monad: relevant submonad}
+  \item \todo{noneffectful trace monad: affine submonad}
+  \item \todo{cap and centralize, cap and purify}
+\end{itemize}
+\TODO{in particular, these induce a substructural effectful category...}
 
 \subsection{Heaps and Separation Logic}
 
