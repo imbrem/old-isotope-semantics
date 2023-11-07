@@ -1789,8 +1789,8 @@ We can now define the \textit{trace monad} of a stream action as follows:
 \end{definition}
 Some important examples of submonads include:
 \begin{itemize}
-  \item \todo{unit submonad of every monad}
-  \item \todo{union, intersection of (Elgot) submonads; lattice of submonads}
+  \item The \textbf{unit submonad} \(\ms{pure}(\mb{T})\) of every monad \(\mb{T}\) with \(\ms{pure}(\mb{T})\;A = \{\eta_A\;a \mid a \in A\}\); similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\).
+  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise unions \(\bigvee_i\mb{S}_i = \lambda A. \bigcup_i \mb{S}_i\;A\) and intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads, forming a lattice with bottom element \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\)
   \item \todo{commuting absorbtive submonad of trace monad: example of...}
   \item \todo{central submonad. Go cite \cite{carette-central-2022}}
   \item \todo{deterministic, idempotent trace monad: relevant submonad}
