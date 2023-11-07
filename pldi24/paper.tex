@@ -1758,7 +1758,8 @@ We begin with some definitions:
 Some basic examples include:
 \begin{enumerate}
   \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\) forms a stream action on the one element set \(\mathbf{1}\).
-  \item \todo{product, giving monoidal structure?}
+  \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta = \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
+  \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta = \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i \cdot_i l_i)_i\).
   \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\), the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell \cdot s\) prepends the (finite) list \(\ell\) to the (potentially infinite) sequence \(s\).
   \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts on \(\nats \cup \{\infty\}\) by addition.
 \end{enumerate}
