@@ -1741,24 +1741,25 @@ We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} fol
 
 In this section, we will build on the bare-bones models given in Section \ref{sec:semantics} to develop more sophisticated models capable of underpinning \isotopessa dialects supporting features such as weak memory and separation logic.
 
-\subsection{Basic Models}
+\subsection{Trace Models}
 
 \TODO{text}
 
-\TODO{find better notation than \(\Pi\)?}
-
 \begin{definition}[Stream Action]
-  A \textbf{stream action} of a monoid \(M\) on a set \(I\) is a pair \((\Pi, \cdot)\) where \(\Pi: M^\omega \to I\) is a map from streams of \(M\) to \(I\) and \(\cdot: M \to I \to I\) is a monoid action such that
+  A \textbf{stream action} of a monoid \(M\) on a set \(I\) equipped with a monoid action \(\cdot: M \times I \to I\) is a function \(\Theta: M^\omega \to I\) is a map from streams of \(M\) to \(I\) satisfying
   \(
-    m \cdot \Pi \ell = \Pi (m: \ell) 
-  \)
-  where \(m:\ell\) denotes the stream formed by prefixing \(m\) to \(\ell\).
+    m \cdot \Theta(\ell) = \Theta(m \colon \ell)
+  \),
+  where \(m \colon \ell\) denotes the stream formed by prefixing \(m\) to the stream \(\ell\).
 \end{definition}
-Two important examples include:
-\begin{itemize}
-  \item For any monoid \(M\), the unique maps \(\Pi: (\nats \to M) \to \mb{1}\), \(\cdot: M \to \mb{1} \to \mb{1}\) form a stream action on \(\mb{1}\)
-  \item The concatenation map \(\Pi: (A^*)^\omega \to A^\omega\) and the concatenation action \(\cdot: A^* \to A^{\leq \omega} \to A^{\leq \omega}\) form a stream action of the monoid of lists of \(A\), \(A^*\), on the set of potentially infinite sequences of \(A\), \(A^{\leq \omega}\).
-\end{itemize}
+Some basic examples include:
+\begin{enumerate}
+  \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\) forms a stream action on the one element set \(\mathbf{1}\).
+  \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\), the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell \cdot s\) prepends the (finite) list \(\ell\) to the (potentially infinite) sequence \(s\).
+  \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts on \(\nats \cup \{\infty\}\) by addition.
+\end{enumerate}
+We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\). For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq \omega}) = Z(A^*) = \{[\,]\}\), while \(\mc{SZ}(\nats, \nats \cup \{\infty\}) = \{0\} \subseteq Z(\nats) = \nats\). Generally, \(\mc{SZ}(M, I)\) always contains the unit of \(M\).
+
 
 \TODO{text}
 
@@ -1766,18 +1767,7 @@ Two important examples include:
   Given a stream action \((\Pi, \cdot)\) of \(M\) on \(I\), we can define the \textbf{trace monad} \(\ms{Trace}\;\Pi\;A = A \times M + I\), with
   \(\eta_A = \lambda a.\iota_0 (a, 1)\)
   and \(\mu_A = [\lambda (a, m). m \cdot a, \ms{id}]\)
-  where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') = \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). This is an Elgot monad, with
-  \[f^\dagger(a) = ...\]
-\end{definition}
-
-\TODO{text}
-
-\begin{definition}[Nondeterministic Trace Monad]
-  Given a stream action \((\Pi, \cdot)\) of \(M\) on \(I\), we can define the \textbf{nondeterministic trace monad} \(\ms{Trace}\;\Sigma\;A = \mc{P}^+(A \times M + I)\), with
-  \(\eta_A = \lambda a.\{\iota_0 (a, 1)\}\)
-  and \(\mu_A = ...\)
-  This is an Elgot monad, with
-  \[f^\dagger(a) = ...\]
+  where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') = \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\).
 \end{definition}
 
 \TODO{text}
@@ -1786,36 +1776,29 @@ Two important examples include:
 
 \TODO{central = commutative, "commutes with infinity" (i.e. is absorbed by infinity)}
 
-\TODO{relevant = deterministic}
+\TODO{relevant = idempotent}
 
 \TODO{affine = no effect on trace}
 
-\subsection{Weak Memory}
-
-\TODO{text, \cite{sparky}}
-
-\begin{definition}[Pomset] 
-  A \textbf{pomset} over a set of actions \(\mc{A}\) with a distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\)
-  \TODO{finish, clean}
+\begin{definition}[Nondeterministic Trace Monad]
+  Given a stream action \((\Pi, \cdot)\) of \(M\) on \(I\), we can define the \textbf{nondeterministic trace monad} \(\ms{Trace}\;\Sigma\;A = \mc{P}^+(A \times M + I)\), with
+  \(\eta_A = \lambda a.\{\iota_0 (a, 1)\}\)
+  and \(\mu_A = ...\)
+  This is an Elgot monad, with
+  \[f^\dagger(a) = \{\} \cup \{\} \cup \{\}\]
 \end{definition}
 
-\TODO{Form a monoid, so we can define...}
+\TODO{text}
 
-Let \(\ms{Pom}\) denote the monoid of pomsets...
+\TODO{induces a substructural effectful category...}
 
-\TODO{stream action... trace monad \(\ms{Traces}\;\ms{Pom}\;\ms{Pom}\)...}
+\TODO{central = commutative, "commutes with infinity" (i.e. is absorbed by infinity)}
 
-\TODO{The SC Monad, which, via composition w/ the state transformer w/ a buffer as state, lets us}
+\TODO{relevant = deterministic + idempotent; inclusion of trace monad}
 
-\TODO{Build The Weak Memory Monad, which is too powerful, so we do...}
+\TODO{affine = no effect on trace}
 
-\begin{definition}[Monadic Predicate] \
-  \TODO{this and naming}
-\end{definition}
-
-\TODO{Proper Weak Memory Monad, preserves the Elgot structure (yey)}
-
-\subsection{Separation Logic}
+\subsection{Heaps and Separation Logic}
 
 Building on the ideas in \cite{mellies-ftrs}, we will show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
 
@@ -1843,6 +1826,34 @@ Given a set \(A\), we can define a predicate \(\varphi\) on \(A\), \(\mb{Heap}\)
 \TODO{linear objects iff non duplicable}
 \TODO{relevant morphisms iff deterministic}
 \TODO{affine morphisms always (if no heap effects?)}
+
+\TODO{equality vs \cite{mellies-ftrs}}
+\TODO{potential solutions}
+
+\subsection{Weak Memory}
+
+\TODO{text, \cite{sparky}}
+
+\begin{definition}[Pomset] 
+  A \textbf{pomset} over a set of actions \(\mc{A}\) with a distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\)
+  \TODO{finish, clean}
+\end{definition}
+
+\TODO{Form a monoid, so we can define...}
+
+Let \(\ms{Pom}\) denote the monoid of pomsets...
+
+\TODO{stream action... trace monad \(\ms{Traces}\;\ms{Pom}\;\ms{Pom}\)...}
+
+\TODO{The SC Monad, which, via composition w/ the state transformer w/ a buffer as state, lets us}
+
+\TODO{Build The Weak Memory Monad, which is too powerful, so we do...}
+
+\begin{definition}[Monadic Predicate] \
+  \TODO{this and naming}
+\end{definition}
+
+\TODO{Proper Weak Memory Monad, preserves the Elgot structure (yey)}
 
 \section{Implementation}
  
