@@ -988,6 +988,19 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
   \TODO{this}
 \end{definition}
 
+\begin{definition}[Effectful Category] \
+  \TODO{this}
+\end{definition}
+
+\begin{definition}[(Symmetric) Premonoidal Subcategory]
+  Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is closed under whiskering and contains all associators, unitors, and symmetries. We say a subcategory is \textbf{monoidal} if, for all \(f: \mc{S}(A, B)\), \(g: \mc{S}(A', B')\), \(f \ltimes g = f \rtimes g\); we say it is \textbf{central} if this generalizes to the case where only one of \(f, g\) is in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
+\end{definition} 
+Note that the set of symmetric premonoidal subcategories, monoidal subcategories, and central subcategories of a category \(\mc{C}\) are all closed under intersections and therefore, in particular, form a complete meet-semilattice with shared bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the smallest possible symmetric premonodial subcategory. The largest symmetric premonoidal subcategory is of course \(\mc{C}\), while the largest central subcategory is the center of \(\mc{C}\) \(Z(\mb{C})\); the existence of a top-element means that in these cases we may induce the structure of a complete lattice in the usual manner.
+
+\begin{definition}[Strictly Effectful Category] \
+  \TODO{this}
+\end{definition}
+
 \TODO{text}
 
 \begin{definition}[Substructural (Pre)monoidal Category]
@@ -1790,13 +1803,15 @@ We can now define the \textit{trace monad} of a stream action as follows:
 Some important examples of submonads include:
 \begin{itemize}
   \item The \textbf{unit submonad} \(\ms{pure}(\mb{T})\) of every monad \(\mb{T}\) with \(\ms{pure}(\mb{T})\;A = \{\eta_A\;a \mid a \in A\}\); similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\).
-  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads, forming a meet-semilattice with bottom element \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\)
+  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads, forming a complete meet-semilattice with bottom element \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\); this induces a complete lattice in the standard manner
   \item \todo{commuting absorbtive submonad of trace monad: example of...}
   \item \todo{central submonad. Go cite \cite{carette-central-2022}}
   \item \todo{deterministic, idempotent trace monad: relevant submonad}
   \item \todo{noneffectful trace monad: affine submonad}
   \item \todo{cap and centralize, cap and purify}
 \end{itemize}
+\TODO{a submonad induces a wide subcategory}
+
 \TODO{in particular, these induce a substructural effectful category...}
 
 \subsection{Heaps and Separation Logic}
