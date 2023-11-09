@@ -19,6 +19,7 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{subfig}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -309,58 +310,92 @@ for variables.
 
 \section{Background}
 
-In a standard SSA-based compiler, to represent a function, we begin by decomposing it into basic blocks of the following form:
-\begin{lstlisting}
-'label:
-  var = instruction
-  ...
-  var = instruction
-  terminator
-\end{lstlisting}
+In a standard SSA-based compiler, to represent a function, we begin by decomposing it into basic blocks, which can be viewed as \textit{label}, followed by a sequence of \textit{instructions}, each defining a \textit{variable}, followed by a \textit{terminator}.
 A program written in this manner being in ``SSA form'' simply means that every variable name is defined exactly once. For example,
-\begin{lstlisting}
+\TODO{text}
+
+\newsavebox\notssafib
+
+\begin{lrbox}{\notssafib}
+\begin{minipage}{0.3\textwidth}
+\begin{lstlisting}[frame=none,numbers=none]
 'entry:
-  x = 7
-  x = add x 2
-  ret x
-\end{lstlisting}
-is not in SSA form, but can easily be converted into SSA form by rewriting it as
-\begin{lstlisting}
-'entry:
-  x0 = 7
-  x1 = add x0 2
-  ret x1
-\end{lstlisting}
-Unfortunately, things get a little more tricky when we try to define variables in loops or branches. For example, consider the following code:
-\begin{lstlisting}
-'entry:
-  br arg0 'left `right
-'left:
-  x = 7
-  jmp 'exit
-'right:
-  x = 3
-  jmp 'exit
+  m = 0
+  n = 1
+  brz i 'exit 'loop
+'loop:
+  t = add m n
+  m = n
+  n = t
+  N = sub i 1
+  brz i 'exit 'loop
 'exit:
-  ret x
+  ret m
 \end{lstlisting}
-There are two competing definitions of \(x\) in the left and right blocks, and it’s unclear how to disambiguate between them. The usual solution is to introduce a \(\phi\)-node. In particular, we can write:
-\begin{lstlisting}
+\end{minipage}
+\end{lrbox}
+
+\newsavebox\ssafib
+
+\begin{lrbox}{\ssafib}
+\begin{minipage}{0.3\textwidth}
+\begin{lstlisting}[frame=none,numbers=none]
 'entry:
-  br arg0 'left `right
-'left:
-  x0 = 7
-  jmp 'exit
-'right:
-  x1 = 3
-  jmp 'exit
-'exit:
-  x2 = phi 'left x0 'right x1
-  ret x2
+  m0 = 0
+  n0 = 1
+  brz N 
+    'exit (m0) 
+    'loop (i, m0, n0)
+'loop(i0, m1, n1):
+  m2 = n1
+  n2 = add m1 n1
+  i1 = sub i0 1
+  brz z1 
+    'exit (m2) 
+    'loop (i1, m2, n2)
+'exit(m3):
+  ret m3
 \end{lstlisting}
-\TODO{make above into graphs?}
-\TODO{segue}
-The semantics of SSA, however, can be quite complex to reason about, especially when considering the somewhat unintuitive scoping rules of variables and \(\phi\)-function arguments.
+\end{minipage}
+\end{lrbox}
+
+\newsavebox\ourfib
+
+\begin{lrbox}{\ourfib}
+\begin{minipage}{0.3\textwidth}
+\begin{lstlisting}[frame=none,numbers=none]
+let m0 = 0;
+let n1 = 1;
+if eq i 0 {
+  br 'exit(m0)
+} else {
+  br 'loop(i, m0, n0)
+} where
+'loop(i0, m1, n1) =>
+  let m2 = n1;
+  let n2 = add m1 n1;
+  let i1 = sub i0 1;
+  if eq i1 0 {
+    br 'exit(m2)
+  } else {
+    br 'loop(i1, m2, n2)
+  }
+'exit(m3) => ret m3
+\end{lstlisting}
+\end{minipage}
+\end{lrbox}
+
+\begin{figure}
+  \centering
+  \subfloat[3-address code]{\usebox\notssafib}
+  \quad
+  \subfloat[Basic blocks with arguments]{\usebox\ssafib}
+  \quad
+  \subfloat[Our syntax]{\usebox\ourfib}
+  \caption{A simple program for computing the \texttt{i}th Fibonacci number, represented as 3-address code, basic-blocks with arguments, and in our SSA syntax}
+  \Description{}
+  \label{fig:ssa-examples}
+\end{figure}
 
 \TODO{basic-blocks with arguments}
 
