@@ -372,7 +372,13 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
 
 \section{SSA Syntax}
 
-\TODO{text}
+In Figure \ref{fig:ssa-grammar}, we present a formal grammar for our SSA syntax. We begin by giving a grammar for \textit{types} \(A, B, C\), parametrized by a set of \textit{base types} \(X\). We require the existence of a \textit{unit type} \(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all tensor products \(A \otimes B\); we write \(\otimes\) to underscore the fact that types are allowed to be substructural.
+
+We separate program fragments into 3 main syntactic categories: \textit{expressions} \(a, b, c, e\), \textit{blocks} \(s, t\), and \textit{label-sets} \(L\). While we make a distinction between \textit{pure} and \textit{impure} expressions, this is done at the level of typing rules rather than via syntax. A \textit{block} is conceptualized as a series of \textit{let-bindings} followed by a \textit{terminator}. Here, a terminator is either an unconditional branch to another block with an argument or an if-statement. A block may be encapsulated within a \textit{where-block}, which defines other blocks the inner block can branch to; these blocks can also branch to each other in a mutually recursive fashion. Similarly to blocks, expressions may also contain let-bindings; this is somewhat of a departure from classical SSA, in which there is only one kind of variable binding, but facilitates various optimizations and corresponds more closely to the in-memory representation, where pure expressions are represented as E-graph nodes. Note that we do \textit{not} give a grammar or semantics for top-level functions, which we can view as simply a list of arguments and a block. Except for inlining, we will only consider the optimization and analysis of a single function body at a time.
+
+We proceed to give a grammar for \textit{contexts} \(\Gamma\), which consist of a list of variables \(x\) given a type \(A\) annotated with a \textit{quantity} \(q \subseteq \tint\). This tells us whether the variable is \textit{affine} (i.e., can be ignored) and/or \textit{relevant} (i.e., whether it can be used multiple times). A variable which is both affine and relevant is called \textit{intuitionistic}. Whether we can use a variable also depends on the \textit{linearity} of its type.
+
+We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist of a list of \textit{labels} each annotated with a context \(\Gamma\), denoting the variables which must be live on entry to the block (corresponding to the set a dominance frontier would compute), and an \textit{argument} \(A\).
 
 \begin{figure}
   \begin{center}
@@ -418,14 +424,6 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
   \label{fig:ssa-grammar}
 \end{figure}
 
-\TODO{late \ms{where}-binding, and other sugar (?)}
-
-\TODO{top-level functions}
-
-\TODO{table of typing judgements}
-
-\TODO{contexts, label-contexts}
-
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -460,6 +458,8 @@ The semantics of SSA, however, can be quite complex to reason about, especially 
   \Description{Typing judgements for isotope-SSA}
   \label{fig:ssa-judgements}
 \end{figure}
+
+We can now list out our primary typing judgements, which are given in Figure \ref{fig:ssa-judgements}.
 
 \TODO{some text about each typing judgement}
 
