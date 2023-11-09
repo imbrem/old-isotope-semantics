@@ -431,12 +431,12 @@ We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist
     \setlength{\tabcolsep}{2em}
     \begin{tabular}{rl}
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
-        \(\hasty{\Gamma}{p}{x}{A}{q}\) &
+        \(\hasty{\Gamma}{p}{a}{A}{q}\) &
         \(a\) is a term of type \(A\) in context \(\Gamma\) with purity \(p\) and quantity \(q\) \\
         \(\haslb{\Gamma}{t}{\ms{L}}\) &
-        \(t\) is a block targeting label-set \(\ms{L}\) in context \(\Gamma\) \\
+        \(t\) is a block targeting labels \(\ms{L}\) in context \(\Gamma\) \\
         \(\lhaslb{\ms{L}}{L}{\ms{K}}\) &
-        The labels \(L\) send label-set \(\ms{L}\) to label-set \(\ms{K}\) \\
+        The label-set \(L\) sends labels \(\ms{L}\) to labels \(\ms{K}\) \\
         \(\csplits{\Gamma}{\Delta}{\Xi}\) &
         The context \(\Gamma\) splits into \(\Delta\) and \(\Xi\) \\
         \(\lwk{\ms{L}}{\ms{K}}\) &
@@ -459,9 +459,9 @@ We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist
   \label{fig:ssa-judgements}
 \end{figure}
 
-We can now list out our primary typing judgements, which are given in Figure \ref{fig:ssa-judgements}.
+We can now list out our primary typing judgements, which are given in Figure \ref{fig:ssa-judgements}. We have three main typing judgements: \(\hasty{\Gamma}{p}{x}{A}{q}\) is the typing judgement for expressions, which says that the expression \(a\) has type \(A\) in context \(\Gamma\). The annotation \(q\) means that the expression itself has quantity \(q \subseteq \tint\), while the annotation \(p\) means that the expression has purity \(p\) (1 for pure, 0 for impure). \(\haslb{\Gamma}{t}{\ms{L}}\) is the typing block for blocks, which says that, using variables in \(\Gamma\), the block \(t\) exits by jumping to labels in \(\ms{L}\). Finally, \(\lhaslb{\ms{L}}{L}{\ms{K}}\) says that the label-set \(L\) defines the labels \(\ms{L}\) in terms of the labels \(\ms{K}\) (blocks in \(L\) are allowed to recursively call into \(\ms{L}\) or exit to \(\ms{K}\)).
 
-\TODO{some text about each typing judgement}
+To define these, we will need a few basic structural judgements. \(\csplits{\Gamma}{\Delta}{\Xi}\) means that the context \(\Gamma\) can be split into contexts \(\Delta\) and \(\Xi\). We use the notion of splitting, rather than weakening, a context as primitive to be able to deal with linearity, since not all variables can be dropped or duplicated. This can be used to define weakening \(\cwk{\Gamma}{\Delta}\) as simply "splitting \(\Gamma\) into \(\Delta\) and the empty context", since a split is allowed to drop affine variables. Finally, \(\lwk{\ms{L}}{\ms{K}}\) means that the label-set \(\ms{L}\) weakens to the label-set \(\ms{K}\), i.e. that \(\ms{K}\) has more labels, but for shared labels, needs less variables to be live (but the same non-affine variables!) The typing rules for these judgements are given in Figure \ref{fig:ssa-structural}.
 
 \begin{figure}
   \begin{gather*}    
