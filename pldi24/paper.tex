@@ -234,13 +234,14 @@
 \section{Introduction}
 
 Static Single Assignment, or SSA, has been a cornerstone of compiler
-design ever since its introduction by \cite{ssa-original} in the late
-1980s. Older compiler intermediate representations permitted the same
-local variable to be assigned multiple times, whereas SSA requires
-each variable bindings to be immutable -- they cannot be modified
-after initialisation. This makes many dataflow analyses easier to
-compute, and (just as in functional languages) makes it much easier to
-justify compiler optimisations in terms of equational rewrites.
+design ever since its introduction by
+\cite{ssa-original,rosen-gvn-1988} in the late 1980s. Older compiler
+intermediate representations permitted the same local variable to be
+assigned multiple times, whereas SSA requires each variable bindings
+to be immutable -- they cannot be modified after initialisation. This
+makes many dataflow analyses easier to compute, and (just as in
+functional languages) makes it much easier to justify compiler
+optimisations in terms of equational rewrites.
 
 In fact, the relationship between SSA form and functional programming
 has been known for decades: \citet{kelsey-ssa-cps} showed that SSA can
@@ -254,8 +255,6 @@ $\phi$-node collects together the arguments from every callsite, which
 lets the tail-calls/jumps to omit their arguments. Thus, the main
 difference between SSA and a functional program is where in the
 program text the arguments to a tail call are listed.
-
-\TODO{Example here?}
 
 This ``basic blocks with arguments'' presentation of SSA has become
 very popular in industry, with compiler backends such as
@@ -271,41 +270,155 @@ about effectful programs, and the equational theory of effectful
 functional programs is very weak. Instead of a full substitution rule,
 the equational theory of impure functional languages only justifies
 substituting values for variables (the $\beta$-value rule). This weak
-substitution rule suffices to validate some basic compiler
-optimisations such as constant propagation and copy propagation, but
-is not strong enough to justify many other essential compiler
-optimisations. For example, hoisting a store out of a loop or
-conditional involves moving an effectful term (an assignment) out of
-its original position in the program. As another example, dead store
-elimination removes an effectful term from the program altogether. \todo{Another example?}
+equational rule suffices to validate some basic compiler optimisations
+such as constant propagation and copy propagation, but is not strong
+enough to justify many other essential compiler optimisations. For
+example, hoisting a store out of a loop or conditional involves moving
+an effectful term (an assignment) out of its original position in the
+program. As another example, dead store elimination removes an
+effectful term from the program altogether. \todo{Add link to figure with code for these examples}
 
 These examples illustrate that many optimisations require taking
 \emph{effectful} terms and moving them around and substituting them
-for variables.
+for variables. Since this is not a generally valid program
+transformation, we need a finer classification of programs than
+merely pure and effectful to judge when a substitution is allowed.
+
+A useful taxonomy was introduced by \citet{fuhrmann}, who classified
+effects based on (1) whether or not the order of effects mattered,
+(2) whether it was sound to discard an effectful operation, and (3)
+whether it was sound to duplicate an effectful operation. 
+
+Suppose we substitute \texttt{print("hello")} for $x$ in the program
+below:
+\begin{verbatim}
+let x = print("hello");            let y = print("world");
+let y = print("world");   =/=>     let z = print("hello");
+let z = x;                         ...
+...
+\end{verbatim}
+
+In this case, substituting a term for a variable changes the order the
+I/O actions are performed, which changes the program's observable
+behaviour. On the other hand, suppose we have an effect which increments
+a counter. Then the same transformation is sound. 
+\begin{verbatim}
+let x = increment(a);            let y = increment(b);
+let y = increment(b);   ===>     let z = increment(a);
+let z = x;                        ...
+...
+\end{verbatim}
+
+F\"{u}hrmann called these commutative effects \emph{central}, which we
+also call \emph{linear}. 
+
+It can also matter whether an effect is performed at all or not. For example:
+\begin{verbatim}
+let x = may_loop();    =/=>      return 5;
+return 5 
+\end{verbatim}
+In this example, even though $x$ is not used, the call to \texttt{may_loop()} cannot
+be erased, as the observable behaviour of the program can change if it goes into an
+infinite loop.
+
+On the other hand, if the effectful operation is merely nondeterministic, then it is
+safe to discard results. 
+\begin{verbatim}
+let x = rand();    ===>          return 5;
+return 5 
+\end{verbatim}
+F\"{u}hrmann called these operations \emph{discardable}. In this paper, we use his
+terminology, and also call such effects \emph{affine}.
+
+Now consider the following example: 
+\begin{verbatim}
+let x = rand();    =/=>     let y = rand();
+let y = x;                  let z = rand();
+let z = x;                  return y == z;
+return y == z
+\end{verbatim}
+
+In this case, substituting for $x$ duplicates the call to \texttt{rand()}, and can change
+this from a program which always returns true to one which can return either true or false. 
+
+On the other hand, if the effect is the possibility of nontermination, then the
+substitution is sound. 
+\begin{verbatim}
+let x = may_loop();    ===>     let y = may_loop();
+let y = x;                      let z = may_loop();
+let z = x;                      return y == z;
+return y == z
+\end{verbatim}
+F\"{u}hrmann called such operations \emph{copyable}. In this paper, we use his
+terminology, and also call such effects \emph{relevant}.
+
+With these distinction in place, we can \emph{define} a pure
+expression as one which is all three of central, copyable, and
+discardable.
+
+In addition to working with effects, compiler intermediate
+representations also have to track accesses to memory. This
+information is typically gathered via ad-hoc alias analyses, but a
+compositional alternative to these analyses is to track this
+information via substructural type systems such as linear and
+affine types, which associate aliasing and ownership information
+with individual substructural values. Having aliasing information
+justifies important optimisations such as loop hoisting: 
+\begin{verbatim}
+while(e) {              x = read(a);
+  x = read(a);          while(e) { 
+  body             ==>    body
+}                       }
+\end{verbatim}
+This transformation is only sound if the body of the loop \texttt{body}
+does not access \texttt{a}, which is precisely the kind of frame condition
+that linear types can track. 
+
+Moreover, since we already want to track whether effectful
+\emph{expressions} can be duplicated or discarded, the very same
+machinery can be reused to track whether \emph{values} are
+linear/affine/relevant.
+
+Historically, compiler writers have treated the semantics of their IR
+quite informally, since the "intended model" of the language is a
+simple sequential machine operating over a heap which is a flat array
+of bytes. Unfortunately, over time both the intended model and the
+actual hardware have drifted away from this simple mental model.
+Compiler frameworks have to model concurrent accesses to memory in
+order to compile multithreaded code, and furthermore the IR's memory
+model has to be sound with respect to the actual weak memory models
+supported by hardware.
+
+As a result, it is now much harder to judge whether a particular
+optimisation is sound or not. Moreover, different kinds of hardware
+such as x86, GPUs, and ARM all offer different memory models. This
+means that we need an abstract semantics for compiler IRs, which can
+permit a separation of concerns. This will let compiler writers
+validate their optimisations against the abstract semantics, and will
+let us separately show that a particular machine model faithfully
+implements the semantics.
+
+In this paper, we show that this is possible. We give a type system
+for SSA which uses substructural types to both track effects at a
+fine-grained level, and to track ownership of values. We then
+rigorously justify a variety of optimisations by reference to an
+abstract categorical axiomatisation of this language. We then show
+that our categorical axioms have a variety of concrete models,
+particularly including one of TSO-style weak memory originally
+introduced by \citet{sparky}. This lets us argue that a host of
+SSA-based optimisations are sound with respect to the x86 memory
+model.
 
 
-
-
-
-
-
-% 
-% , on which projects such as the LLVM compiler infrastructure, GCC's GIMPLE intermediate representation, Cranelift, and MLIR are based. One of the core advantages of putting programs in SSA form is the ability to reason about programs in a more equational manner: since variables always have exactly one definition, we can justify complex optimizations like global value numbering (which would otherwise need to take into account complex flow-sensitive definitions) and more easily implement various analyses. 
-% 
-\TODO{text...}
-
-\TODO{cite \cite{rosen-gvn-1988} somewhere?}
-
-\paragraph{Contributions}
+\paragraph{Contributions} 
 
 \begin{itemize}
-\item We have a syntax and type system for SSA-style programs. We include support for substructural types, and our type-theoretic syntax makes formulating inlining and rewriting easier than in the traditional CFG-based formulations. 
-\item We show that our language has a compositional intepretation in any effectful category with an Elgot structure. We use this structure to give generic proofs of the expected substitution properties as well as prove the soundness of an equational theory for the language.
-\item Our generic equational theory justifies a variety of powerful optimisation techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and strength reduction. 
-\item We show how Elgot monads give rise to models of our language. We use this to derive semantics from a general trace monad, and show that various monad transformers such as state transformers preserve the needed Elgot structure. 
+\item We give a type system for SSA-style programs, which has a full substitution theorem and equational theory. This language includes substructural types, both for controlling effects and tracking ownership in values, and our strong substitution principle makes formulating inlining and rewriting optimisations easier than in the traditional CFG-based formulations. 
+\item We give an axiomatic semantics for our language, by showing that it has a compositional intepretation in any effectful category with an Elgot structure. We use this structure to give generic proofs of the soundness of substitution and rewriting properties.
+\item Our abstract semantics justifies a variety of powerful optimisation techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and strength reduction. 
+\item We show how Elgot monads give rise to instances of our categorical semantics. We use this to derive semantics from a general trace monad, and show that various monad transformers such as state transformers preserve the needed Elgot structure. 
 \item We use these tools to demonstrate the existence of a variety of concrete models satisfying these categorical axioms. Starting first from simple languges such as state plus printing, we also show how more challenging semantics such as the TSO semantics for weak memory also fit into our framework. This thus gives rise to an SSA-based IR with support for weak memory operations, which is fully semantically-justified.
-\item \todo{We also have a small implementation, which \ldots}
-\item Our weak memory semantics and our results about Elgot monads are formalised in the Lean theorem prover. \TODO{Other stuff}
+\item Our weak memory semantics and our results about Elgot monads are formalised in the Lean theorem prover.
 \end{itemize}
 
 \section{Background}
