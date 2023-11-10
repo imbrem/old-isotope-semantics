@@ -20,6 +20,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{subfig}
+\usepackage{fancyvrb}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -233,199 +234,251 @@
 
 \section{Introduction}
 
-Static Single Assignment, or SSA, has been a cornerstone of compiler
-design ever since its introduction by
-\cite{ssa-original,rosen-gvn-1988} in the late 1980s. Older compiler
-intermediate representations permitted the same local variable to be
-assigned multiple times, whereas SSA requires each variable bindings
-to be immutable -- they cannot be modified after initialisation. This
-makes many dataflow analyses easier to compute, and (just as in
-functional languages) makes it much easier to justify compiler
-optimisations in terms of equational rewrites.
+Static Single Assignment, or SSA, has been a cornerstone of compiler design ever
+since its introduction by \cite{ssa-original,rosen-gvn-1988} in the late 1980s.
+Older compiler intermediate representations permitted the same local variable to
+be assigned multiple times, whereas SSA requires each variable bindings to be
+immutable -- they cannot be modified after initialisation. This makes many
+dataflow analyses easier to compute, and (just as in functional languages) makes
+it much easier to justify compiler optimisations in terms of equational
+rewrites.
 
-In fact, the relationship between SSA form and functional programming
-has been known for decades: \citet{kelsey-ssa-cps} showed that SSA can
-be seen as a subset of continuation-passing style, and
-\citet{appel-ssa} built on this to observe that every SSA program can
-be viewed as a collection of first-order functions which tail-call one
-another. This makes the equivalence of the functional view to the
-traditional $\phi$-node presentation very easy to see. In the
-functional style, each tail call lists its arguments. In contrast, a
-$\phi$-node collects together the arguments from every callsite, which
-lets the tail-calls/jumps to omit their arguments. Thus, the main
-difference between SSA and a functional program is where in the
-program text the arguments to a tail call are listed.
+In fact, the relationship between SSA form and functional programming has been
+known for decades: \citet{kelsey-ssa-cps} showed that SSA can be seen as a
+subset of continuation-passing style, and \citet{appel-ssa} built on this to
+observe that every SSA program can be viewed as a collection of first-order
+functions which tail-call one another. This makes the equivalence of the
+functional view to the traditional $\phi$-node presentation very easy to see. In
+the functional style, each tail call lists its arguments. In contrast, a
+$\phi$-node collects together the arguments from every callsite, which lets the
+tail-calls/jumps to omit their arguments. Thus, the main difference between SSA
+and a functional program is where in the program text the arguments to a tail
+call are listed.
 
-This ``basic blocks with arguments'' presentation of SSA has become
-very popular in industry, with compiler backends such as
-Cranelift~\cite{cranelift}, MLIR~\cite{mlir}, and SIL~\cite{SIL} all
-using this representation. This tight connection might suggest that
-the semantics of SSA representations is trivial: we can just interpret
-an SSA program as a corresponding functional program, and then rewrite
-the SSA programs using the equational theory of functional programs.
+This "basic blocks with arguments" presentation of SSA has become very popular
+in industry, with compiler backends such as Cranelift~\cite{cranelift},
+MLIR~\cite{mlir}, and SIL~\cite{SIL} all using this representation. This tight
+connection might suggest that the semantics of SSA representations is trivial:
+we can just interpret an SSA program as a corresponding functional program, and
+then rewrite the SSA programs using the equational theory of functional
+programs.
 
-While this is a perfectly sound thing to do, it is not strong enough
-to write a good compiler. Compiler IRs like SSA are fundamentally
-about effectful programs, and the equational theory of effectful
-functional programs is very weak. Instead of a full substitution rule,
-the equational theory of impure functional languages only justifies
-substituting values for variables (the $\beta$-value rule). This weak
-equational rule suffices to validate some basic compiler optimisations
-such as constant propagation and copy propagation, but is not strong
-enough to justify many other essential compiler optimisations. For
-example, hoisting a store out of a loop or conditional involves moving
-an effectful term (an assignment) out of its original position in the
-program. As another example, dead store elimination removes an
-effectful term from the program altogether. \todo{Add link to figure with code for these examples}
+While this is a perfectly sound thing to do, it is not strong enough to write a
+good compiler. Compiler IRs like SSA are fundamentally about effectful programs,
+and the equational theory of effectful functional programs is very weak. Instead
+of a full substitution rule, the equational theory of impure functional
+languages only justifies substituting values for variables (the $\beta$-value
+rule). This weak equational rule suffices to validate some basic compiler
+optimisations such as constant propagation and copy propagation, but is not
+strong enough to justify many other essential compiler optimisations. For
+example, hoisting a store out of a loop or conditional involves moving an
+effectful term (an assignment) out of its original position in the program. As
+another example, dead store elimination removes an effectful term from the
+program altogether. \todo{Add link to figure with code for these examples}
 
 These examples illustrate that many optimisations require taking
-\emph{effectful} terms and moving them around and substituting them
-for variables. Since this is not a generally valid program
-transformation, we need a finer classification of programs than
-merely pure and effectful to judge when a substitution is allowed.
+\emph{effectful} terms and moving them around and substituting them for
+variables. Since this is not a generally valid program transformation, we need a
+finer classification of programs than merely pure and effectful to judge when a
+substitution is allowed.
 
-A useful taxonomy was introduced by \citet{fuhrmann}, who classified
-effects based on (1) whether or not the order of effects mattered,
-(2) whether it was sound to discard an effectful operation, and (3)
-whether it was sound to duplicate an effectful operation. 
-
-Suppose we substitute \texttt{print("hello")} for $x$ in the program
-below:
-\begin{verbatim}
-let x = print("hello");            let y = print("world");
-let y = print("world");   =/=>     let z = print("hello");
-let z = x;                         ...
+A useful taxonomy was introduced by \citet{fuhrmann-direct-1999}, classifying
+effects based on (1) whether or not the order of effects mattered, (2) whether
+it was sound to discard an effectful operation, and (3) whether it was sound to
+duplicate an effectful operation. Suppose we substitute \texttt{print("hello")}
+for $x$ in the program below:
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+let x = print("hello");
+let y = print("world");
+let z = x;   
 ...
-\end{verbatim}
-
-In this case, substituting a term for a variable changes the order the
-I/O actions are performed, which changes the program's observable
-behaviour. On the other hand, suppose we have an effect which increments
-a counter. Then the same transformation is sound. 
-\begin{verbatim}
-let x = increment(a);            let y = increment(b);
-let y = increment(b);   ===>     let z = increment(a);
-let z = x;                        ...
+\end{BVerbatim}
+\qquad \qquad \centernot\implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+let y = print("world");
+let x = print("hello");
 ...
-\end{verbatim}
-
-F\"{u}hrmann called these commutative effects \emph{central}, which we
-also call \emph{linear}. 
-
-It can also matter whether an effect is performed at all or not. For example:
-\begin{verbatim}
-let x = may_loop();    =/=>      return 5;
+\end{BVerbatim}
+\end{equation}
+In this case, substituting a term for a variable changes the order the I/O
+actions are performed, which changes the program's observable behaviour. On the
+other hand, suppose we have an effect which increments a counter. Then the same
+transformation is sound, since \(x\) is used exactly once:
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+let x = increment(a);
+let y = increment(b);
+let z = x;
+...
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+let y = increment(b);
+let z = increment(a);
+...
+\end{BVerbatim}
+\end{equation}
+F\"{u}hrmann called such commutative effects \emph{central}, which we also call
+\emph{linear}. It can also matter whether an effect is performed at all or not.
+For example, consider:
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+let x = may_loop();
 return 5 
-\end{verbatim}
-In this example, even though $x$ is not used, the call to \texttt{may_loop()} cannot
-be erased, as the observable behaviour of the program can change if it goes into an
-infinite loop.
-
-On the other hand, if the effectful operation is merely nondeterministic, then it is
-safe to discard results. 
-\begin{verbatim}
-let x = rand();    ===>          return 5;
+\end{BVerbatim}
+\qquad \qquad \centernot\implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+return 5
+\end{BVerbatim}
+\end{equation}
+In this example, even though $x$ is not used, the call to \texttt{may_loop()}
+cannot be erased, as the observable behaviour of the program can change if it
+goes into an infinite loop. On the other hand, if the effectful operation is
+merely nondeterministic, then it is safe to discard results:
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+let x = rand();
 return 5 
-\end{verbatim}
-F\"{u}hrmann called these operations \emph{discardable}. In this paper, we use his
-terminology, and also call such effects \emph{affine}.
-
-Now consider the following example: 
-\begin{verbatim}
-let x = rand();    =/=>     let y = rand();
-let y = x;                  let z = rand();
-let z = x;                  return y == z;
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+return 5
+\end{BVerbatim}
+\end{equation}
+F\"{u}hrmann called these operations \emph{discardable}. In this paper, we use
+his terminology, and also call such effects \emph{affine}. Now consider the
+following example: 
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+let x = rand();
+let y = x;
+let z = x;
+return y == z 
+\end{BVerbatim}
+\qquad \qquad \centernot\implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+let y = rand();
+let z = rand();
 return y == z
-\end{verbatim}
-
-In this case, substituting for $x$ duplicates the call to \texttt{rand()}, and can change
-this from a program which always returns true to one which can return either true or false. 
-
-On the other hand, if the effect is the possibility of nontermination, then the
-substitution is sound. 
-\begin{verbatim}
-let x = may_loop();    ===>     let y = may_loop();
-let y = x;                      let z = may_loop();
-let z = x;                      return y == z;
+\end{BVerbatim}
+\end{equation}
+In this case, substituting for $x$ duplicates the call to \texttt{rand()}, and
+can change this from a program which always returns true to one which can return
+either true or false. On the other hand, if the effect is the possibility of
+nontermination, then the substitution is sound. 
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+let x = may_loop();
+let y = x;
+let z = x;
+return y == z 
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+let y = may_loop();
+let z = may_loop();
 return y == z
-\end{verbatim}
+\end{BVerbatim}
+\end{equation}
 F\"{u}hrmann called such operations \emph{copyable}. In this paper, we use his
-terminology, and also call such effects \emph{relevant}.
+terminology, and also call such effects \emph{relevant}. With these distinction
+in place, we can \emph{define} a pure expression as one which is all three of
+central, copyable, and discardable.
 
-With these distinction in place, we can \emph{define} a pure
-expression as one which is all three of central, copyable, and
-discardable.
+In addition to working with effects, compiler intermediate representations also
+have to track accesses to memory. This information is typically gathered via
+ad-hoc alias analyses, but a compositional alternative to these analyses is to
+track this information via substructural type systems such as linear and affine
+types, which associate aliasing and ownership information with individual
+substructural values. Having aliasing information justifies important
+optimisations such as loop hoisting: 
+\begin{equation}
+\begin{BVerbatim}[baseline=c]
+while (e) {
+  x = read(a);
+  body
+}
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c]
+x = read(a);
+while(e) {
+  body
+}
+\end{BVerbatim}
+\end{equation}
+This transformation is only sound if the body of the loop \texttt{body} does not
+access \texttt{a}, which is precisely the kind of frame condition that linear
+types can track. 
 
-In addition to working with effects, compiler intermediate
-representations also have to track accesses to memory. This
-information is typically gathered via ad-hoc alias analyses, but a
-compositional alternative to these analyses is to track this
-information via substructural type systems such as linear and
-affine types, which associate aliasing and ownership information
-with individual substructural values. Having aliasing information
-justifies important optimisations such as loop hoisting: 
-\begin{verbatim}
-while(e) {              x = read(a);
-  x = read(a);          while(e) { 
-  body             ==>    body
-}                       }
-\end{verbatim}
-This transformation is only sound if the body of the loop \texttt{body}
-does not access \texttt{a}, which is precisely the kind of frame condition
-that linear types can track. 
+Moreover, since we already want to track whether effectful \emph{expressions}
+can be duplicated or discarded, the very same machinery can be reused to track
+whether \emph{values} are linear/affine/relevant.
 
-Moreover, since we already want to track whether effectful
-\emph{expressions} can be duplicated or discarded, the very same
-machinery can be reused to track whether \emph{values} are
-linear/affine/relevant.
-
-Historically, compiler writers have treated the semantics of their IR
-quite informally, since the "intended model" of the language is a
-simple sequential machine operating over a heap which is a flat array
-of bytes. Unfortunately, over time both the intended model and the
-actual hardware have drifted away from this simple mental model.
-Compiler frameworks have to model concurrent accesses to memory in
-order to compile multithreaded code, and furthermore the IR's memory
-model has to be sound with respect to the actual weak memory models
+Historically, compiler writers have treated the semantics of their IR quite
+informally, since the "intended model" of the language is a simple sequential
+machine operating over a heap which is a flat array of bytes. Unfortunately,
+over time both the intended model and the actual hardware have drifted away from
+this simple mental model. Compiler frameworks have to model concurrent accesses
+to memory in order to compile multithreaded code, and furthermore the IR's
+memory model has to be sound with respect to the actual weak memory models
 supported by hardware.
 
-As a result, it is now much harder to judge whether a particular
-optimisation is sound or not. Moreover, different kinds of hardware
-such as x86, GPUs, and ARM all offer different memory models. This
-means that we need an abstract semantics for compiler IRs, which can
-permit a separation of concerns. This will let compiler writers
-validate their optimisations against the abstract semantics, and will
-let us separately show that a particular machine model faithfully
+As a result, it is now much harder to judge whether a particular optimisation is
+sound or not. Moreover, different kinds of hardware such as x86, GPUs, and ARM
+all offer different memory models. This means that we need an abstract semantics
+for compiler IRs, which can permit a separation of concerns. This will let
+compiler writers validate their optimisations against the abstract semantics,
+and will let us separately show that a particular machine model faithfully
 implements the semantics.
 
-In this paper, we show that this is possible. We give a type system
-for SSA which uses substructural types to both track effects at a
-fine-grained level, and to track ownership of values. We then
-rigorously justify a variety of optimisations by reference to an
-abstract categorical axiomatisation of this language. We then show
-that our categorical axioms have a variety of concrete models,
-particularly including one of TSO-style weak memory originally
-introduced by \citet{sparky}. This lets us argue that a host of
-SSA-based optimisations are sound with respect to the x86 memory
-model.
-
+In this paper, we show that this is possible. We give a type system for SSA
+which uses substructural types to both track effects at a fine-grained level,
+and to track ownership of values. We then rigorously justify a variety of
+optimisations by reference to an abstract categorical axiomatisation of this
+language. We then show that our categorical axioms have a variety of concrete
+models, particularly including one of TSO-style weak memory originally
+introduced by \citet{sparky}. This lets us argue that a host of SSA-based
+optimisations are sound with respect to the x86 memory model.
 
 \paragraph{Contributions} 
 
 \begin{itemize}
-\item We give a type system for SSA-style programs, which has a full substitution theorem and equational theory. This language includes substructural types, both for controlling effects and tracking ownership in values, and our strong substitution principle makes formulating inlining and rewriting optimisations easier than in the traditional CFG-based formulations. 
-\item We give an axiomatic semantics for our language, by showing that it has a compositional intepretation in any effectful category with an Elgot structure. We use this structure to give generic proofs of the soundness of substitution and rewriting properties.
-\item Our abstract semantics justifies a variety of powerful optimisation techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and strength reduction. 
-\item We show how Elgot monads give rise to instances of our categorical semantics. We use this to derive semantics from a general trace monad, and show that various monad transformers such as state transformers preserve the needed Elgot structure. 
-\item We use these tools to demonstrate the existence of a variety of concrete models satisfying these categorical axioms. Starting first from simple languges such as state plus printing, we also show how more challenging semantics such as the TSO semantics for weak memory also fit into our framework. This thus gives rise to an SSA-based IR with support for weak memory operations, which is fully semantically-justified.
-\item Our weak memory semantics and our results about Elgot monads are formalised in the Lean theorem prover.
+\item We give a type system for SSA-style programs, which has a full
+substitution theorem and equational theory. This language includes substructural
+types, both for controlling effects and tracking ownership in values, and our
+strong substitution principle makes formulating inlining and rewriting
+optimisations easier than in the traditional CFG-based formulations. 
+\item We give an axiomatic semantics for our language, by showing that it has a
+compositional intepretation in any effectful category with an Elgot structure.
+We use this structure to give generic proofs of the soundness of substitution
+and rewriting properties.
+\item Our abstract semantics justifies a variety of powerful optimisation
+techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and
+strength reduction. 
+\item We show how Elgot monads give rise to instances of our categorical
+semantics. We use this to derive semantics from a general trace monad, and show
+that various monad transformers such as state transformers preserve the needed
+Elgot structure. 
+\item We use these tools to demonstrate the existence of a variety of concrete
+models satisfying these categorical axioms. Starting first from simple languges
+such as state plus printing, we also show how more challenging semantics such as
+the TSO semantics for weak memory also fit into our framework. This thus gives
+rise to an SSA-based IR with support for weak memory operations, which is fully
+semantically-justified.
+\item Our weak memory semantics and our results about Elgot monads are
+formalised in the Lean theorem prover.
 \end{itemize}
 
 \section{Background}
 
-In a standard SSA-based compiler, to represent a function, we begin by decomposing it into basic blocks, which can be viewed as \textit{label}, followed by a sequence of \textit{instructions}, each defining a \textit{variable}, followed by a \textit{terminator}.
-A program written in this manner being in ``SSA form'' simply means that every variable name is defined exactly once. For example,
-\TODO{text}
+In a standard SSA-based compiler, to represent a function, we begin by
+decomposing it into basic blocks, which can be viewed as \textit{label},
+followed by a sequence of \textit{instructions}, each defining a
+\textit{variable}, followed by a \textit{terminator}. A program written in this
+manner being in ``SSA form'' simply means that every variable name is defined
+exactly once. For example, \TODO{text}
 
 \newsavebox\notssafib
 
@@ -520,13 +573,44 @@ if eq i 0 {
 
 \section{SSA Syntax}
 
-In Figure \ref{fig:ssa-grammar}, we present a formal grammar for our SSA syntax. We begin by giving a grammar for \textit{types} \(A, B, C\), parametrized by a set of \textit{base types} \(X\). We require the existence of a \textit{unit type} \(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all tensor products \(A \otimes B\); we write \(\otimes\) to underscore the fact that types are allowed to be substructural.
+In Figure \ref{fig:ssa-grammar}, we present a formal grammar for our SSA syntax.
+We begin by giving a grammar for \textit{types} \(A, B, C\), parametrized by a
+set of \textit{base types} \(X\). We require the existence of a \textit{unit
+type} \(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all tensor products
+\(A \otimes B\); we write \(\otimes\) to underscore the fact that types are
+allowed to be substructural.
 
-We separate program fragments into 3 main syntactic categories: \textit{expressions} \(a, b, c, e\), \textit{blocks} \(s, t\), and \textit{label-sets} \(L\). While we make a distinction between \textit{pure} and \textit{impure} expressions, this is done at the level of typing rules rather than via syntax. A \textit{block} is conceptualized as a series of \textit{let-bindings} followed by a \textit{terminator}. Here, a terminator is either an unconditional branch to another block with an argument or an if-statement. A block may be encapsulated within a \textit{where-block}, which defines other blocks the inner block can branch to; these blocks can also branch to each other in a mutually recursive fashion. Similarly to blocks, expressions may also contain let-bindings; this is somewhat of a departure from classical SSA, in which there is only one kind of variable binding, but facilitates various optimizations and corresponds more closely to the in-memory representation, where pure expressions are represented as E-graph nodes. Note that we do \textit{not} give a grammar or semantics for top-level functions, which we can view as simply a list of arguments and a block. Except for inlining, we will only consider the optimization and analysis of a single function body at a time.
+We separate program fragments into 3 main syntactic categories:
+\textit{expressions} \(a, b, c, e\), \textit{blocks} \(s, t\), and
+\textit{label-sets} \(L\). While we make a distinction between \textit{pure} and
+\textit{impure} expressions, this is done at the level of typing rules rather
+than via syntax. A \textit{block} is conceptualized as a series of
+\textit{let-bindings} followed by a \textit{terminator}. Here, a terminator is
+either an unconditional branch to another block with an argument or an
+if-statement. A block may be encapsulated within a \textit{where-block}, which
+defines other blocks the inner block can branch to; these blocks can also branch
+to each other in a mutually recursive fashion. Similarly to blocks, expressions
+may also contain let-bindings; this is somewhat of a departure from classical
+SSA, in which there is only one kind of variable binding, but facilitates
+various optimizations and corresponds more closely to the in-memory
+representation, where pure expressions are represented as E-graph nodes. Note
+that we do \textit{not} give a grammar or semantics for top-level functions,
+which we can view as simply a list of arguments and a block. Except for
+inlining, we will only consider the optimization and analysis of a single
+function body at a time.
 
-We proceed to give a grammar for \textit{contexts} \(\Gamma\), which consist of a list of variables \(x\) given a type \(A\) annotated with a \textit{quantity} \(q \subseteq \tint\). This tells us whether the variable is \textit{affine} (i.e., can be ignored) and/or \textit{relevant} (i.e., whether it can be used multiple times). A variable which is both affine and relevant is called \textit{intuitionistic}. Whether we can use a variable also depends on the \textit{linearity} of its type.
+We proceed to give a grammar for \textit{contexts} \(\Gamma\), which consist of
+a list of variables \(x\) given a type \(A\) annotated with a \textit{quantity}
+\(q \subseteq \tint\). This tells us whether the variable is \textit{affine}
+(i.e., can be ignored) and/or \textit{relevant} (i.e., whether it can be used
+multiple times). A variable which is both affine and relevant is called
+\textit{intuitionistic}. Whether we can use a variable also depends on the
+\textit{linearity} of its type.
 
-We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist of a list of \textit{labels} each annotated with a context \(\Gamma\), denoting the variables which must be live on entry to the block (corresponding to the set a dominance frontier would compute), and an \textit{argument} \(A\).
+We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist
+of a list of \textit{labels} each annotated with a context \(\Gamma\), denoting
+the variables which must be live on entry to the block (corresponding to the set
+a dominance frontier would compute), and an \textit{argument} \(A\).
 
 \begin{figure}
   \begin{center}
@@ -607,9 +691,31 @@ We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist
   \label{fig:ssa-judgements}
 \end{figure}
 
-We can now list out our primary typing judgements, which are given in Figure \ref{fig:ssa-judgements}. We have three main typing judgements: \(\hasty{\Gamma}{p}{x}{A}{q}\) is the typing judgement for expressions, which says that the expression \(a\) has type \(A\) in context \(\Gamma\). The annotation \(q\) means that the expression itself has quantity \(q \subseteq \tint\), while the annotation \(p\) means that the expression has purity \(p\) (1 for pure, 0 for impure). \(\haslb{\Gamma}{t}{\ms{L}}\) is the typing block for blocks, which says that, using variables in \(\Gamma\), the block \(t\) exits by jumping to labels in \(\ms{L}\). Finally, \(\lhaslb{\ms{L}}{L}{\ms{K}}\) says that the label-set \(L\) defines the labels \(\ms{L}\) in terms of the labels \(\ms{K}\) (blocks in \(L\) are allowed to recursively call into \(\ms{L}\) or exit to \(\ms{K}\)).
+We can now list out our primary typing judgements, which are given in Figure
+\ref{fig:ssa-judgements}. We have three main typing judgements:
+\(\hasty{\Gamma}{p}{x}{A}{q}\) is the typing judgement for expressions, which
+says that the expression \(a\) has type \(A\) in context \(\Gamma\). The
+annotation \(q\) means that the expression itself has quantity \(q \subseteq
+\tint\), while the annotation \(p\) means that the expression has purity \(p\)
+(1 for pure, 0 for impure). \(\haslb{\Gamma}{t}{\ms{L}}\) is the typing block
+for blocks, which says that, using variables in \(\Gamma\), the block \(t\)
+exits by jumping to labels in \(\ms{L}\). Finally,
+\(\lhaslb{\ms{L}}{L}{\ms{K}}\) says that the label-set \(L\) defines the labels
+\(\ms{L}\) in terms of the labels \(\ms{K}\) (blocks in \(L\) are allowed to
+recursively call into \(\ms{L}\) or exit to \(\ms{K}\)).
 
-To define these, we will need a few basic structural judgements. \(\csplits{\Gamma}{\Delta}{\Xi}\) means that the context \(\Gamma\) can be split into contexts \(\Delta\) and \(\Xi\). We use the notion of splitting, rather than weakening, a context as primitive to be able to deal with linearity, since not all variables can be dropped or duplicated. This can be used to define weakening \(\cwk{\Gamma}{\Delta}\) as simply "splitting \(\Gamma\) into \(\Delta\) and the empty context", since a split is allowed to drop affine variables. Finally, \(\lwk{\ms{L}}{\ms{K}}\) means that the label-set \(\ms{L}\) weakens to the label-set \(\ms{K}\), i.e. that \(\ms{K}\) has more labels, but for shared labels, needs less variables to be live (but the same non-affine variables!) The typing rules for these judgements are given in Figure \ref{fig:ssa-structural}.
+To define these, we will need a few basic structural judgements.
+\(\csplits{\Gamma}{\Delta}{\Xi}\) means that the context \(\Gamma\) can be split
+into contexts \(\Delta\) and \(\Xi\). We use the notion of splitting, rather
+than weakening, a context as primitive to be able to deal with linearity, since
+not all variables can be dropped or duplicated. This can be used to define
+weakening \(\cwk{\Gamma}{\Delta}\) as simply "splitting \(\Gamma\) into
+\(\Delta\) and the empty context", since a split is allowed to drop affine
+variables. Finally, \(\lwk{\ms{L}}{\ms{K}}\) means that the label-set \(\ms{L}\)
+weakens to the label-set \(\ms{K}\), i.e. that \(\ms{K}\) has more labels, but
+for shared labels, needs less variables to be live (but the same non-affine
+variables!) The typing rules for these judgements are given in Figure
+\ref{fig:ssa-structural}.
 
 \begin{figure}
   \begin{gather*}    
@@ -2017,12 +2123,6 @@ Let \(\ms{Pom}\) denote the monoid of pomsets...
 \end{definition}
 
 \TODO{Proper Weak Memory Monad, preserves the Elgot structure (yey)}
-
-\section{Implementation}
- 
-\TODO{this}
-
-\TODO{remove? time + space...}
 
 \section{Related Work}
 
