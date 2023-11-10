@@ -19,7 +19,7 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage{subfig}
+\usepackage{subcaption}
 \usepackage{fancyvrb}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -480,84 +480,67 @@ followed by a sequence of \textit{instructions}, each defining a
 manner being in ``SSA form'' simply means that every variable name is defined
 exactly once. For example, \TODO{text}
 
-\newsavebox\notssafib
-
-\begin{lrbox}{\notssafib}
-\begin{minipage}{0.3\textwidth}
-\begin{lstlisting}[frame=none,numbers=none]
-'entry:
-  m = 0
-  n = 1
-  brz i 'exit 'loop
-'loop:
-  t = add m n
-  m = n
-  n = t
-  N = sub i 1
-  brz i 'exit 'loop
-'exit:
-  ret m
-\end{lstlisting}
-\end{minipage}
-\end{lrbox}
-
-\newsavebox\ssafib
-
-\begin{lrbox}{\ssafib}
-\begin{minipage}{0.3\textwidth}
-\begin{lstlisting}[frame=none,numbers=none]
-'entry:
-  m0 = 0
-  n0 = 1
-  brz N 
-    'exit (m0) 
-    'loop (i, m0, n0)
-'loop(i0, m1, n1):
-  m2 = n1
-  n2 = add m1 n1
-  i1 = sub i0 1
-  brz z1 
-    'exit (m2) 
-    'loop (i1, m2, n2)
-'exit(m3):
-  ret m3
-\end{lstlisting}
-\end{minipage}
-\end{lrbox}
-
-\newsavebox\ourfib
-
-\begin{lrbox}{\ourfib}
-\begin{minipage}{0.3\textwidth}
-\begin{lstlisting}[frame=none,numbers=none]
-let m0 = 0;
-let n1 = 1;
-if eq i 0 {
-  br 'exit(m0)
-} else {
-  br 'loop(i, m0, n0)
-} where
-'loop(i0, m1, n1) =>
-  let m2 = n1;
-  let n2 = add m1 n1;
-  let i1 = sub i0 1;
-  if eq i1 0 {
-    br 'exit(m2)
-  } else {
-    br 'loop(i1, m2, n2)
-  }
-'exit(m3) => ret m3
-\end{lstlisting}
-\end{minipage}
-\end{lrbox}
-
 \begin{figure}
   \centering
-  \subfloat[3-address code]{\usebox\notssafib}
-  \quad
-  \subfloat[Basic blocks with arguments]{\usebox\ssafib}
-  \quad
-  \subfloat[Our syntax]{\usebox\ourfib}
+  \begin{subfigure}[t]{0.33\textwidth}
+    \begin{BVerbatim}[baseline=t, gobble=3]
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n
+      n = t
+      N = sub i 1
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    \end{BVerbatim}
+    \caption{3-address code}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.32\textwidth}
+    \begin{BVerbatim}[baseline=t, gobble=3]
+      'entry:
+      m0 = 0
+      n0 = 1
+      brz N 
+        'exit (m0) 
+        'loop (i, m0, n0)
+    'loop(i0, m1, n1):
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz z1 
+        'exit (m2) 
+        'loop (i1, m2, n2)
+    'exit(m3):
+      ret m3
+    \end{BVerbatim}
+    \caption{Basic blocks with arguments}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.33\textwidth}
+    \begin{BVerbatim}[baseline=t, gobble=3]
+    let m0 = 0;
+    let n1 = 1;
+    if eq i 0 {
+      br 'exit (m0)
+    } else {
+      br 'loop (i, m0, n0)
+    } where
+    'loop(i0, m1, n1) =>
+      let m2 = n1;
+      let n2 = add m1 n1;
+      let i1 = sub i0 1;
+      if eq i1 0 {
+        br 'exit (m2)
+      } else {
+        br 'loop (i1, m2, n2)
+      }
+    'exit(m3) => ret m3
+    \end{BVerbatim}
+    \caption{Our syntax}
+  \end{subfigure}
   \caption{A simple program for computing the \texttt{i}th Fibonacci number, represented as 3-address code, basic-blocks with arguments, and in our SSA syntax}
   \Description{}
   \label{fig:ssa-examples}
