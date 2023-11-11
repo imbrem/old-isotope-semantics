@@ -693,6 +693,16 @@ for shared labels, needs less variables to be live (but the same non-affine
 variables!) The typing rules for these judgements are given in Figure
 \ref{fig:ssa-structural}.
 
+\TODO{note that label-set weakening is "backwards"}
+
+\TODO{be consistent with label-context vs label-set}
+
+\TODO{rewrite \textit{all} this \textit{way} better}
+
+The rules \rle{unit-lin} and \rle{bool-lin} state that both the unit and boolean types must be intuitionistic; the rule \rle{pair-lin} says that the linearity of a pair is simply the intersection of the linearity of its components. The rules \rle{nil-lin} and \rle{cons-lin} together say that the linearity of a context is the intersection of the linearity of its variables, where the linearity of a variable is the intersection of the linearity of its type and its quantity annotation.
+
+The rules for context splitting \(\csplits{\Gamma}{\Delta}{\Xi}\) work by partitioning variables in \(\Gamma\) into either \(\Delta\) or \(\Xi\), only permitting a variable to be in both if it is \textit{relevant} and only permitting a variable to be ignored (dropped) if it is \textit{affine}. In particular, the rule \rle{split-nil} provides a base case by saying that the empty context can be split into two empty contexts, while the rules \rle{split-left} and \rle{split-right} send \(x: A^q\) to the left or right subcontext repsectively; both these rules also allow us to reduce the quantity \(q\) to a quantity \(r \subseteq q\), "forgetting" some of our capabilities. The rule \rle{split-dup} allows the duplication of a variable which has a relevant type \(A\) \textit{and} a relevant quantity \(q\), with the option to weaken the quantity to \textit{different} quantities \(r\) and \(s\) on the left-hand side and right-hand sides respectively. Finally, the rule \rle{split-aff} simply allows us to ignore a variable \(x: A^q\) if \(A\) and \(q\) are affine. The rule \rle{join-nil} is the analogue to \rle{split-nil} for \textit{label-contexts}, providing a base case in that the empty label weakens into itself. The rule \rle{join-cons} says that if \(\ms{L}\) weakens into \(\ms{K}\) and \(\Delta\) weakens into \(\Gamma\), then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}\), allowing us to "forget" any extra variables dropped by \(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply says that if \(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) also weakens to any extension of \(\ms{K}\).
+
 \begin{figure}
   \begin{gather*}    
     % \prftree[r]{\rle{base-lin}}{q \subseteq \ms{lin}(X)}{\tlin{X}{q}} \qquad
@@ -738,8 +748,6 @@ variables!) The typing rules for these judgements are given in Figure
   \Description{Structural rules for isotope-SSA}
   \label{fig:ssa-structural}
 \end{figure}
-
-\TODO{some text about each structural rule}
 
 \begin{figure}
   \begin{gather*}    
