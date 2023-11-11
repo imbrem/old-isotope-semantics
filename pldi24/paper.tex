@@ -539,19 +539,15 @@ exactly once. For example, the program in Figure \ref{fig:3-addr} has 3 basic bl
       }
     'exit(m3) => ret m3
     \end{BVerbatim}
-    \label{fig:our-syn}
     \caption{Our syntax}
+    \label{fig:our-syn}
   \end{subfigure}
   \caption{A simple program for computing the \texttt{i}th Fibonacci number, represented as 3-address code, basic-blocks with arguments, and in our SSA syntax}
   \Description{}
   \label{fig:ssa-examples}
 \end{figure}
 
-\TODO{dominance frontiers?}
-
-\TODO{inductive presentation}
-
-\TODO{seque into what we're doing}
+For our type theoretic presentation of SSA, we will treat a very slight generalization of the standard basic blocks with arguments syntax, in that we will support \textit{nested scopes} and, in particular, \textit{if-statements}. The program in Figure \ref{fig:bb-arg} translated to our syntax is given in Figure \ref{fig:our-syn}. These do not introduce any new expressivity: an if-statement can be viewed as syntactic sugar for a conditional branch to one of two anonymous basic blocks, while nested scopes simply \textit{restrict} where we can branch to. In particular, in Section \ref{ssec:ssa-norm}, we will formalize interconversion with traditional SSA and show how it is semantically sound to simply merge all nested scopes. The point of the slightly modified syntax is simply to make some of our metatheoretic results more practical to state.
 
 In Figure \ref{fig:ssa-grammar}, we present a formal grammar for our SSA syntax.
 We begin by giving a grammar for \textit{types} \(A, B, C\), parametrized by a
@@ -1967,6 +1963,12 @@ We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} fol
 \end{proof}
 
 \TODO{pull down to appendix}
+
+\subsection{Normalization}
+
+\label{ssec:ssa-norm}
+
+\TODO{this}
 
 \subsection{Optimizations}
 
