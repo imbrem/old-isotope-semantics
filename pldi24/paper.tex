@@ -410,11 +410,9 @@ while(e) {
 \end{equation}
 This transformation is only sound if the body of the loop \texttt{body} does not
 access \texttt{a}, which is precisely the kind of frame condition that linear
-types can track. 
-
-Moreover, since we already want to track whether effectful \emph{expressions}
-can be duplicated or discarded, the very same machinery can be reused to track
-whether \emph{values} are linear/affine/relevant.
+types can track. Moreover, since we already want to track whether effectful
+\emph{expressions} can be duplicated or discarded, the very same machinery can
+be reused to track whether \emph{values} are linear/affine/relevant.
 
 Historically, compiler writers have treated the semantics of their IR quite
 informally, since the "intended model" of the language is a simple sequential
@@ -471,14 +469,14 @@ semantically-justified.
 formalised in the Lean theorem prover.
 \end{itemize}
 
-\section{Background}
+\section{SSA Syntax}
 
 In a standard SSA-based compiler, to represent a function, we begin by
 decomposing it into basic blocks, which can be viewed as \textit{label},
 followed by a sequence of \textit{instructions}, each defining a
 \textit{variable}, followed by a \textit{terminator}. A program written in this
-manner being in ``SSA form'' simply means that every variable name is defined
-exactly once. For example, \TODO{text}
+manner being in "SSA form" simply means that every variable name is defined
+exactly once. For example, the program in Figure \ref{fig:3-addr} has 3 basic blocks, one of which is a distinguished \textit{entry block}, but is \textit{not} in SSA form, since the variables \(m, n\) and \(i\) are each modified through subsequent assignments (\(t\) is recomputed on every iteration of the loop, but since it only has one definition, it \textit{is} in SSA form). To convert this program to SSA form, we would traditionally use \(\phi\)-functions, or, equivalently, annotate each basic block with arguments, as in Figure \ref{fig:bb-arg}.
 
 \begin{figure}
   \centering
@@ -492,12 +490,13 @@ exactly once. For example, \TODO{text}
       t = add m n
       m = n
       n = t
-      N = sub i 1
+      i = sub i 1
       brz i 'exit 'loop
     'exit:
       ret m
     \end{BVerbatim}
     \caption{3-address code}
+    \label{fig:3-addr}
   \end{subfigure}
   \begin{subfigure}[t]{0.32\textwidth}
     \begin{BVerbatim}[baseline=t, gobble=3]
@@ -518,6 +517,7 @@ exactly once. For example, \TODO{text}
       ret m3
     \end{BVerbatim}
     \caption{Basic blocks with arguments}
+    \label{fig:bb-arg}
   \end{subfigure}
   \begin{subfigure}[t]{0.33\textwidth}
     \begin{BVerbatim}[baseline=t, gobble=3]
@@ -539,6 +539,7 @@ exactly once. For example, \TODO{text}
       }
     'exit(m3) => ret m3
     \end{BVerbatim}
+    \label{fig:our-syn}
     \caption{Our syntax}
   \end{subfigure}
   \caption{A simple program for computing the \texttt{i}th Fibonacci number, represented as 3-address code, basic-blocks with arguments, and in our SSA syntax}
@@ -546,15 +547,11 @@ exactly once. For example, \TODO{text}
   \label{fig:ssa-examples}
 \end{figure}
 
-\TODO{basic-blocks with arguments}
-
-\TODO{dominance frontiers}
+\TODO{dominance frontiers?}
 
 \TODO{inductive presentation}
 
-\TODO{what we're doing}
-
-\section{SSA Syntax}
+\TODO{seque into what we're doing}
 
 In Figure \ref{fig:ssa-grammar}, we present a formal grammar for our SSA syntax.
 We begin by giving a grammar for \textit{types} \(A, B, C\), parametrized by a
@@ -629,9 +626,9 @@ a dominance frontier would compute), and an \textit{argument} \(A\).
       <\(p\)> ::= 0 \;|\; 1
 
       <\(q\)> ::= \(\varnothing\) 
-      \;|\; \(\{\taff\}\) 
-      \;|\; \(\{\trel\}\) 
-      \;|\; \(\{\taff, \trel\}\)
+      \;|\; \(\taff\) 
+      \;|\; \(\trel\) 
+      \;|\; \(\tint\)
     \end{grammar}
   \end{center}
   \caption{Grammar for \isotopessa, parametrized over a set of instructions \(f \in \mc{I}\)}
