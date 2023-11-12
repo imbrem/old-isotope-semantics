@@ -619,11 +619,25 @@ to \textit{different} quantities \(r\) and \(s\) on the left-hand side and
 right-hand sides respectively. Finally, the rule \rle{split-aff} simply allows
 us to ignore a variable \(x: A^q\) if \(A\) and \(q\) are affine.
 
-\TODO{segue to label-contexts \(\ms{L}\)}
-
-The rule \rle{join-nil} is the analogue to \rle{split-nil} for \textit{label-contexts}, providing a base case in that the empty label weakens into itself. The rule \rle{join-cons} says that if \(\ms{L}\) weakens into \(\ms{K}\) and \(\Delta\) weakens into \(\Gamma\), then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}\), allowing us to "forget" any extra variables dropped by \(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply says that if \(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) also weakens to any extension of \(\ms{K}\).
-
-\TODO{label-weakening is backwards}
+\textit{Label-contexts} \(\ms{L}\) are defined to consist of a list of
+\textit{labels} \(\lbl{\ell}\) annotated with a context \(\Gamma\) and an
+argument type \(A\). The judgement \(\lwk{\ms{L}}{\ms{K}}\) states that
+\(\ms{L}\) is a subcontext of \(\ms{K}\), i.e., that every program which
+"branches to \(\ms{L}\)" (i.e., finishes by either nontermination or branching
+to one of the labels \(\lbl{\ell}\) with the appropriate preserved variables
+\(\Gamma\) and argument \(A\)) can also be viewed as branching to \(\ms{K}\).
+The conditions for this are formalized in Figure \ref{fig:ssa-structural} as
+follows: the rule \rle{join-nil} provides a base case stating that the empty
+label weakens into itself. The rule \rle{join-cons} says that if \(\ms{L}\)
+weakens into \(\ms{K}\) and \(\Delta\) weakens into \(\Gamma\), then
+\(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}\),
+allowing us to "forget" any extra variables dropped by \(\cwk{\Gamma}{\Delta}\).
+Finally, the rule \rle{join-zero} simply says that if \(\lwk{\ms{L}}{\ms{K}}\),
+then \(\ms{L}\) also weakens to any extension of \(\ms{K}\). Note that this
+judgement is "backwards," in that the "larger" context is on the \textit{right};
+this corresponds to the placement of the label context on the right-hand side of
+the typing judgement for blocks, and is by analogy to our semantics for blocks
+and label-sets in Section \ref{sec:semantics}.
 
 \begin{figure}
   \begin{center}
