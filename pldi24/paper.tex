@@ -547,46 +547,83 @@ exactly once. For example, the program in Figure \ref{fig:3-addr} has 3 basic bl
   \label{fig:ssa-examples}
 \end{figure}
 
-For our type theoretic presentation of SSA, we will treat a very slight generalization of the standard basic blocks with arguments syntax, in that we will support \textit{nested scopes} and, in particular, \textit{if-statements}. The program in Figure \ref{fig:bb-arg} translated to our syntax is given in Figure \ref{fig:our-syn}. These do not introduce any new expressivity: an if-statement can be viewed as syntactic sugar for a conditional branch to one of two anonymous basic blocks, while nested scopes simply \textit{restrict} where we can branch to. In particular, in Section \ref{ssec:ssa-norm}, we will formalize interconversion with traditional SSA and show how it is semantically sound to simply merge all nested scopes. The point of the slightly modified syntax is simply to make some of our metatheoretic results more practical to state.
+For our type theoretic presentation of SSA, we will treat a very slight
+generalization of the standard basic blocks with arguments syntax, in that we
+will support \textit{nested scopes} and, in particular, \textit{if-statements}.
+The program in Figure \ref{fig:bb-arg} translated to our syntax is given in
+Figure \ref{fig:our-syn}. These do not introduce any new expressivity: an
+if-statement can be viewed as syntactic sugar for a conditional branch to one of
+two anonymous basic blocks, while nested scopes simply \textit{restrict} where
+we can branch to. In particular, in Section \ref{ssec:ssa-norm}, we will
+formalize interconversion with traditional SSA and show how it is semantically
+sound to simply merge all nested scopes. The point of the slightly modified
+syntax is simply to make some of our metatheoretic results more practical to
+state.
 
-In Figure \ref{fig:ssa-grammar}, we present a formal grammar for our SSA syntax.
-We begin by giving a grammar for \textit{types} \(A, B, C\), parametrized by a
-set of \textit{base types} \(X\). We require the existence of a \textit{unit
-type} \(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all tensor products
-\(A \otimes B\); we write \(\otimes\) to underscore the fact that types are
-allowed to be substructural.
+The grammar for our syntax is given in Figure \ref{fig:ssa-grammar}, while the
+typing judgements themselves are given in \ref{fig:ssa-judgements}. We begin by
+giving a grammar for \textit{types} \(A, B, C\), parametrized by a set of
+\textit{base types} \(X\); all syntactically well-formed types are also
+semantically valid. We postulate the existence of a \textit{unit type}
+\(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all tensor products \(A
+\otimes B\); we write \(\otimes\) to underscore the fact that types are allowed
+to be substructural, assigning every type a linearity \(\ms{lin}(A)\) satisfying
+the constraints in Figure \ref{fig:ssa-structural}. In particular, the rules
+\rle{unit-lin} and \rle{bool-lin} state that both the unit and boolean types
+must be intuitionistic; the rule \rle{pair-lin} says that the linearity of a
+pair is simply the intersection of the linearity of its components. The rules
+\rle{nil-lin} and \rle{cons-lin} together say that the linearity of a context is
+the intersection of the linearity of its variables, where the linearity of a
+variable is the intersection of the linearity of its type and its quantity
+annotation.
 
-We separate program fragments into 3 main syntactic categories:
-\textit{expressions} \(a, b, c, e\), \textit{blocks} \(s, t\), and
-\textit{label-sets} \(L\). While we make a distinction between \textit{pure} and
-\textit{impure} expressions, this is done at the level of typing rules rather
-than via syntax. A \textit{block} is conceptualized as a series of
-\textit{let-bindings} followed by a \textit{terminator}. Here, a terminator is
-either an unconditional branch to another block with an argument or an
-if-statement. A block may be encapsulated within a \textit{where-block}, which
-defines other blocks the inner block can branch to; these blocks can also branch
-to each other in a mutually recursive fashion. Similarly to blocks, expressions
-may also contain let-bindings; this is somewhat of a departure from classical
-SSA, in which there is only one kind of variable binding, but facilitates
-various optimizations and corresponds more closely to the in-memory
-representation, where pure expressions are represented as E-graph nodes. Note
-that we do \textit{not} give a grammar or semantics for top-level functions,
-which we can view as simply a list of arguments and a block. Except for
-inlining, we will only consider the optimization and analysis of a single
-function body at a time.
+Our grammar proper is split into three main syntactic categories:
+\begin{itemize}
+  \item \textit{Expressions} \(a, b, c, d, e\), which are typed via the
+  judgement \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the expression \(a\)
+  is of type \(A\) with \textit{purity} \(p = 1\) if \textit{pure}, or \(p = 0\)
+  otherwise, and \textit{quantity} \(q \subseteq \{\ms{a}, \ms{r}\}\). The rules
+  for this judgement are given in Figure \ref{fig:ssa-term-typing}; in
+  particular, we note that a impure terms cannot be \textit{nested}; that is,
+  all proper subterms of any term are pure.
+  \item \textit{Blocks} \(s, t\), which are typed via the judgement
+  \(\haslb{\ms{L}}{t}{\Gamma}\), which says that the block \(t\) is well-formed
+  with respect to the context \(\Gamma\) and branches only to labels in
+  \(\ms{L}\). The rules for this judgement are given in Figure
+  \ref{fig:ssa-block-typing}.
+  \item \textit{Label-sets} or \textit{control-flow graphs} \(L\), which are
+  typed via the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\)
+  defines a control-flow graph with inputs \(\ms{L}\) and outputs \(\ms{K}\)
+  (some of which may also be in \(\ms{L}\), indicating recursive control-flow).
+  The rules for this judgement are given in Figure \ref{fig:ssa-block-typing}.
+\end{itemize}
+Here \textit{contexts} \(\Gamma\), consist of a list of variables \(x\) given a
+type \(A\) annotated with a \textit{quantity} \(q \subseteq \tint\). A variable
+\(x: A^q\) is called \textit{affine} if its type \(A\) is affine (i.e.
+\(\tlin{A}{\taff}\)) \textit{and} \(\taff \subseteq q\), in which case it can be
+freely ignored. Similarly, \(x\) is \textit{relevant} if its type \(A\) relevant
+(i.e. \(\tlin{A}{\trel}\)) \textit{and} \(\trel \subseteq q\), in which case it
+can be freely ignored. This is formalized in the structural judgement
+\(\csplits{\Gamma}{\Delta}{\Xi}\), which says that \(\Gamma\) can be split into
+subcontexts \(\Delta\) and \(\Xi\) (weakening is simply the special case
+\(\cwk{\Gamma}{\Delta} \iff \csplits{\Gamma}{\Delta}{\cdot}\)), as per the
+typing rules in Figure \ref{fig:ssa-structural}. In particular, the rule
+\rle{split-nil} provides a base case by saying that the empty context can be
+split into two empty contexts, while the rules \rle{split-left} and
+\rle{split-right} send \(x: A^q\) to the left or right subcontext repsectively;
+both these rules also allow us to reduce the quantity \(q\) to a quantity \(r
+\subseteq q\), "forgetting" some of our capabilities. The rule \rle{split-dup}
+allows the duplication of a variable which has a relevant type \(A\)
+\textit{and} a relevant quantity \(q\), with the option to weaken the quantity
+to \textit{different} quantities \(r\) and \(s\) on the left-hand side and
+right-hand sides respectively. Finally, the rule \rle{split-aff} simply allows
+us to ignore a variable \(x: A^q\) if \(A\) and \(q\) are affine.
 
-We proceed to give a grammar for \textit{contexts} \(\Gamma\), which consist of
-a list of variables \(x\) given a type \(A\) annotated with a \textit{quantity}
-\(q \subseteq \tint\). This tells us whether the variable is \textit{affine}
-(i.e., can be ignored) and/or \textit{relevant} (i.e., whether it can be used
-multiple times). A variable which is both affine and relevant is called
-\textit{intuitionistic}. Whether we can use a variable also depends on the
-\textit{linearity} of its type.
+\TODO{segue to label-contexts \(\ms{L}\)}
 
-We can then give a grammar for \textit{label-contexts} \(\ms{L}\), which consist
-of a list of \textit{labels} each annotated with a context \(\Gamma\), denoting
-the variables which must be live on entry to the block (corresponding to the set
-a dominance frontier would compute), and an \textit{argument} \(A\).
+The rule \rle{join-nil} is the analogue to \rle{split-nil} for \textit{label-contexts}, providing a base case in that the empty label weakens into itself. The rule \rle{join-cons} says that if \(\ms{L}\) weakens into \(\ms{K}\) and \(\Delta\) weakens into \(\Gamma\), then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}\), allowing us to "forget" any extra variables dropped by \(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply says that if \(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) also weakens to any extension of \(\ms{K}\).
+
+\TODO{label-weakening is backwards}
 
 \begin{figure}
   \begin{center}
@@ -666,42 +703,6 @@ a dominance frontier would compute), and an \textit{argument} \(A\).
   \Description{Typing judgements for isotope-SSA}
   \label{fig:ssa-judgements}
 \end{figure}
-
-We can now list out our primary typing judgements, which are given in Figure
-\ref{fig:ssa-judgements}. We have three main typing judgements:
-\(\hasty{\Gamma}{p}{x}{A}{q}\) is the typing judgement for expressions, which
-says that the expression \(a\) has type \(A\) in context \(\Gamma\). The
-annotation \(q\) means that the expression itself has quantity \(q \subseteq
-\tint\), while the annotation \(p\) means that the expression has purity \(p\)
-(1 for pure, 0 for impure). \(\haslb{\Gamma}{t}{\ms{L}}\) is the typing block
-for blocks, which says that, using variables in \(\Gamma\), the block \(t\)
-exits by jumping to labels in \(\ms{L}\). Finally,
-\(\lhaslb{\ms{L}}{L}{\ms{K}}\) says that the label-set \(L\) defines the labels
-\(\ms{L}\) in terms of the labels \(\ms{K}\) (blocks in \(L\) are allowed to
-recursively call into \(\ms{L}\) or exit to \(\ms{K}\)).
-
-To define these, we will need a few basic structural judgements.
-\(\csplits{\Gamma}{\Delta}{\Xi}\) means that the context \(\Gamma\) can be split
-into contexts \(\Delta\) and \(\Xi\). We use the notion of splitting, rather
-than weakening, a context as primitive to be able to deal with linearity, since
-not all variables can be dropped or duplicated. This can be used to define
-weakening \(\cwk{\Gamma}{\Delta}\) as simply "splitting \(\Gamma\) into
-\(\Delta\) and the empty context", since a split is allowed to drop affine
-variables. Finally, \(\lwk{\ms{L}}{\ms{K}}\) means that the label-set \(\ms{L}\)
-weakens to the label-set \(\ms{K}\), i.e. that \(\ms{K}\) has more labels, but
-for shared labels, needs less variables to be live (but the same non-affine
-variables!) The typing rules for these judgements are given in Figure
-\ref{fig:ssa-structural}.
-
-\TODO{note that label-set weakening is "backwards"}
-
-\TODO{be consistent with label-context vs label-set}
-
-\TODO{rewrite \textit{all} this \textit{way} better}
-
-The rules \rle{unit-lin} and \rle{bool-lin} state that both the unit and boolean types must be intuitionistic; the rule \rle{pair-lin} says that the linearity of a pair is simply the intersection of the linearity of its components. The rules \rle{nil-lin} and \rle{cons-lin} together say that the linearity of a context is the intersection of the linearity of its variables, where the linearity of a variable is the intersection of the linearity of its type and its quantity annotation.
-
-The rules for context splitting \(\csplits{\Gamma}{\Delta}{\Xi}\) work by partitioning variables in \(\Gamma\) into either \(\Delta\) or \(\Xi\), only permitting a variable to be in both if it is \textit{relevant} and only permitting a variable to be ignored (dropped) if it is \textit{affine}. In particular, the rule \rle{split-nil} provides a base case by saying that the empty context can be split into two empty contexts, while the rules \rle{split-left} and \rle{split-right} send \(x: A^q\) to the left or right subcontext repsectively; both these rules also allow us to reduce the quantity \(q\) to a quantity \(r \subseteq q\), "forgetting" some of our capabilities. The rule \rle{split-dup} allows the duplication of a variable which has a relevant type \(A\) \textit{and} a relevant quantity \(q\), with the option to weaken the quantity to \textit{different} quantities \(r\) and \(s\) on the left-hand side and right-hand sides respectively. Finally, the rule \rle{split-aff} simply allows us to ignore a variable \(x: A^q\) if \(A\) and \(q\) are affine. The rule \rle{join-nil} is the analogue to \rle{split-nil} for \textit{label-contexts}, providing a base case in that the empty label weakens into itself. The rule \rle{join-cons} says that if \(\ms{L}\) weakens into \(\ms{K}\) and \(\Delta\) weakens into \(\Gamma\), then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}\), allowing us to "forget" any extra variables dropped by \(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply says that if \(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) also weakens to any extension of \(\ms{K}\).
 
 \begin{figure}
   \begin{gather*}    
