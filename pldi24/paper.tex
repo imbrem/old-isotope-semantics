@@ -828,6 +828,31 @@ typed in \(\Delta\).
   \label{fig:ssa-term-typing}
 \end{figure}
 
+The rules for block typing are given in Figure \ref{fig:ssa-block-typing}.
+\rle{br} says that, given a pure term \(a: A\) which is \textit{both} affine and
+relevant (i.e. intuitionistic), we can type a block \(\lbrb{\ell}{a}\) which
+branches to \(\ell\) with argument \(a\), where \(\ms{L}\) contains the context
+\(\ell\) with an argument type of \(A\) and an appropriate set of unused
+variables. The rule \rle{ite} typechecks if-then-else statements by stating
+that, if \(\Gamma\) splits into \(\Delta\) and \(\Xi\), where \(\Xi\) typechecks
+a pure, intuitionistic discriminant \(e: \mb{2}\) and \(\Delta\) typechecks both
+\(s, t\) to branch into \(\ms{L}\), then the whole if-statement
+\(\ite{e}{s}{t}\) also typechecks as branching into \(\ms{L}\) in constext
+\(\Gamma\). \rle{let-blk} and \rle{let2-blk} are quite similar to their
+expression analogues, except that the bound expression \(e\) is allowed to be
+impure (otherwise, programs could only make use of pure functions!), and the
+remainder of the context plus the bound variable is used to type a block rather
+than a term. Finally, probably the most interesting rule is \rle{where}, which
+says that, given a block \(t\) which branches to \(\ms{L}\) in context
+\(\Gamma\), and labels \(L\) mapping \(\ms{L}\) to \(\ms{K}\), \(\ewhere{t}{L}\)
+branches to \(\ms{K}\). Here, \(L\) mapping \(\ms{L}\) to \(\ms{K}\) is defined
+using the typing rules \rle{nil-br}, which says that an empty list of blocks
+leaves the target label-set unchanged, and \rle{cons-br}, which says that if
+\(L\) maps \(\ms{L}\) to either \(\ms{K}\) or the label
+\(\lbl{\ell}[\Gamma](A)\), and \(t\) branches to \(\ms{L}\) in the context
+\(\Gamma, \thyp{x}{A}{}\), then \(L\) maps \(\ms{L}\) to \(\ms{K}\), having
+(potentially recursively) defined \(\lbl{\ell}\).
+
 \begin{figure}
   \begin{gather*}    
     \prftree[r]{\rle{br}}
@@ -870,8 +895,6 @@ typed in \(\Delta\).
   \Description{Typing rules for isotope-SSA blocks}
   \label{fig:ssa-block-typing}
 \end{figure}
-
-\TODO{some text about each block typing rule}
 
 \subsection{Syntactic Metatheory}
 
