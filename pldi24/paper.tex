@@ -2225,28 +2225,35 @@ computation.
 
 \subsection{Weak Memory}
 
-\TODO{text, \cite{sparky}}
-
+Another interesting use of the trace monad to build a sophisticated \isotopessa model is to build a model of TSO-style weak memory based on \citet{sparky}. We begin with the following definitions:
 \begin{definition}[Pomset] 
-  A \textbf{pomset} over a set of actions \(\mc{A}\) with a distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\)
-  \TODO{finish, clean}
+  A \textbf{pomset} \(\alpha\) over a set of actions \(\mc{A}\) with a
+  distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
+  partially-ordered \textbf{carrier set} \(P\) such that every \(p \in P\) has
+  finitely many predecessors equipped with a mapping \(\alpha: P \to \mc{A}\)
+  quotiented under the equivalence relation \(\alpha: P \to \mc{A} \simeq
+  \alpha': Q \to \mc{A}\) if, after removing finitely many \(\delta\) from \(P\)
+  and \(Q\), there exists a partial order isomorphism between them which
+  respects the values of \(\alpha, \alpha'\). A pomset is \textbf{finite} if its
+  carrier set is.
 \end{definition}
+(Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\), which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to \mc{A}\), where \(P + Q\) is given the lexicographic ordering and \(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many predecessors. They also form a monoid under parallel composition \(\alpha || \beta\), which is defined by the function \([\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
 
-\TODO{Form a monoid, so we can define...}
+Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\), where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega \to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on finite pomsets, which allows us to define the \textbf{sequential consistency monad} \(\ms{SC}\;A = \ms{Traces}\;\Sigma\;A\).
 
-Let \(\ms{Pom}\) denote the monoid of pomsets...
+\TODO{how to do reads}
 
-\TODO{stream action... trace monad \(\ms{Traces}\;\ms{Pom}\;\ms{Pom}\)...}
+\TODO{how to do writes}
 
-\TODO{The SC Monad, which, via composition w/ the state transformer w/ a buffer as state, lets us}
+\TODO{weak memory monad}
 
-\TODO{Build The Weak Memory Monad, which is too powerful, so we do...}
+\TODO{new read/write}
 
-\begin{definition}[Monadic Predicate] \
-  \TODO{this and naming}
-\end{definition}
+\TODO{fence}
 
-\TODO{Proper Weak Memory Monad, preserves the Elgot structure (yey)}
+\TODO{submonad rune}
+
+\TODO{Buffer continuity}
 
 \section{Related Work}
 
