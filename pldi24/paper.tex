@@ -2266,9 +2266,9 @@ operations \(\ms{read}_x: \mc{I}^\varnothing_0(\mb{1}, \ms{Word})\),
 \(\ms{write}_x: \mc{I}^\varnothing_0(\ms{Word}, \mb{1})\) with
 semantics
 \begin{equation}
-  \dnt{\ms{read}_x} = \lambda (). \{(v, \{x = v\}) | v \in \ms{Word}\}
+  \dnt{\ms{read}_x} = R_x^{\ms{PO}} = \lambda (). \{(v, \{x = v\}) | v \in \ms{Word}\}
   \qquad
-  \dnt{\ms{write}_x} = \lambda v. \{((), \{x := v\})\}
+  \dnt{\ms{write}_x} = W_x^{\ms{PO}} =  \lambda v. \{((), \{x := v\})\}
 \end{equation}
 The semantics of \(\ms{read}\) in particular give a hint as to how this model
 works: rather than tracking the state of the heap, we simply \textit{emit} a
@@ -2296,22 +2296,61 @@ nonterminating) morphisms as follows:
 It's tempting to try to use this as a tensor product of morphisms and so
 graduate to a bona fide monoidal category rather than our current premonoidal
 setting, since spatial concurrency is one of the headline use-cases of the
-former, but this definition does \textit{not} support sliding:
-\begin{equation}
-  (\ms{write}_x || \ms{id}) ; (\ms{id} || \ms{write}_y)
-  \neq (\ms{id} || \ms{write}_y) ; (\ms{write}_x || \ms{id})
-\end{equation}
-since the left-hand side will emit the pomset \([x := a, y := b]\) while the right-hand side will emit the pomset \([y := b, x := a]\). If we did want this behaviour, we'd need to have a significantly more sophisticated model of composition which effectively takes nontermination into account, which we will leave to future work.
+former, but unfortunately, sliding still fails:
+\(
+  (W_x^{\ms{PO}} || \ms{id}) ; (\ms{id} || W_y^{\ms{PO}})
+  \neq (\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}} || \ms{id})
+\),
+since the left-hand side will emit the pomset \([x := a, y := b]\) while the
+right-hand side will emit the pomset \([y := b, x := a]\). If we did want this
+behaviour, we'd need to have a significantly more sophisticated model of
+composition which effectively takes nontermination into account, which we will
+leave to future work.
 
 To graduate from SC concurrency to a genuine, if maximally simple, weak memory
-model, we need to introduce a \textit{buffer} of type \(\ms{Buf} = \mc{A}^*\) of
-lists of actions, which we will interpret as linear pomsets ordered by index. In particular, we define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;\ms{PO}\), which gives us another \isotopessa model in the usual manner.
+model, we need to introduce a \textit{buffer} of type \(\ms{Buf} = \mc{A}_w^*\)
+of lists of write actions, which we will interpret as linear pomsets ordered by
+index. In particular, we define the monad \(\ms{TSO} =
+\ms{StateT}\;\ms{Buf}\;\ms{PO}\). Given a buffer \(\ms{Buf}\), we can define the
+result of reads \([\cdot]_x: \ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the
+buffer as follows:
+\begin{equation}
+  (L;\{x := v\})[x] = v
+  \qquad
+  (L;\{y := v\})[x] = L[x]
+  \qquad
+  [][x] = \bot
+\end{equation}
+Note that writes at the \textit{end} of the buffer are prioritized, since later
+writes overwrite earlier ones! We will implement TSO ordering by buffering all
+our writes, in which case they are only visible to the local thread. At any
+point, we may choose to \textit{flush} some of the writes in buffer to the
+global pomset of events. This is implemented via the morphism (called
+\(\ms{split}\) in \cite{sparky})
+\begin{equation}
+  \ms{pflush} = \lambda ()\;L. \{((), L', L'') | L = L';L''\}
+  : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
+\end{equation}
+On the other hand, reads events will first attempt to read from the buffer, and,
+if there is no corresponding write in the buffer, will read an arbitrary value,
+in both cases pushing an event to the global pomset; that is, the semantics of
+reads and writes are given by
+\begin{equation}
+  \begin{aligned}
+  \dnt{\ms{read}_x} = R_x^{\ms{TSO}} 
+    &= \ms{pflush};(\lambda ()\;L. \{(v, L, \{x = v\}) \mid L[x] = v \lor L[x] = \bot\});\ms{pflush} \\
+  \dnt{\ms{write}_x} = W_x^{\ms{TSO}}
+    &= \ms{pflush};(\lambda v\;L. \{(v, L)\});\ms{pflush}
+  \end{aligned}
+\end{equation}
 
 \TODO{new read/write}
 
+\TODO{in the presence of parallel composition}
+
 \TODO{fence}
 
-\TODO{too powerful, submonad rune of buffer continuity}
+\TODO{big power, such transactional memory, much wow}
 
 \section{Related Work}
 
