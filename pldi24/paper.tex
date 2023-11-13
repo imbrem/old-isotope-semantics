@@ -583,9 +583,7 @@ Our grammar proper is split into three main syntactic categories:
   judgement \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the expression \(a\)
   is of type \(A\) with \textit{purity} \(p = 1\) if \textit{pure}, or \(p = 0\)
   otherwise, and \textit{quantity} \(q \subseteq \{\ms{a}, \ms{r}\}\). The rules
-  for this judgement are given in Figure \ref{fig:ssa-term-typing}; in
-  particular, we note that a impure terms cannot be \textit{nested}; that is,
-  all proper subterms of any term are pure.
+  for this judgement are given in Figure \ref{fig:ssa-term-typing}.
   \item \textit{Blocks} \(s, t\), which are typed via the judgement
   \(\haslb{\ms{L}}{t}{\Gamma}\), which says that the block \(t\) is well-formed
   with respect to the context \(\Gamma\) and branches only to labels in
@@ -764,6 +762,29 @@ and label-sets in Section \ref{sec:semantics}.
   \label{fig:ssa-structural}
 \end{figure}
 
+We can now get to the typing judgement for expressions in Figure
+\ref{fig:ssa-term-typing}. The rule \rle{var} is essentially the standard rule
+for variables, with the requirement that, other than \(x\), all variables in
+\(\Gamma\) are affine. Note that the quantity \(q\) of the \textit{expression}
+\(x\) is must satisfy \(q \subseteq q'\), where \(x: A^{q'} \in \Gamma\); this
+reflects that we're allowed to \textit{forget} capabilities, but not
+\textit{add} them. The \rle{app} rule is also mostly standard: given an
+instruction \(f\) which takes in an argument \(A\) and has a return type of
+\(B\) and a \textit{pure} expression \(\hasty{\Gamma}{1}{a}{A}{q}\), we conclude
+that \(\hasty{\Gamma}{p}{f\;a}{B}{q}\). We, of course, require that \(f\) itself
+have purity \(p\) and quantity \(q\), i.e. that \(f \in \mc{I}_p^q(A, B)\). The
+\rle{pair} rule says that we can type a pair \((a, b)\) in \(\Gamma\) if
+\(\csplits{\Gamma}{\Delta}{\Xi}\) where \(\Delta\) types \(a\) and \(\Xi\) types
+\(b\); the quantity of a pair is simply the intersection of the quantity of its
+components (this is expressed in the rule by allowing any quantity which types
+\textit{both} components), and both components must be pure. Finally, we have
+the rules \rle{let} and \rle{let2}, corresponding to let-bindings and
+destructuring let-bindings respectively. In both cases, we split the context
+\(\Gamma\) into subcontext \(\Delta, \Xi\), one of which is used to type a pure
+subterm \(a\), which is bound to variables \(x\) or destructured to variables
+\(x, y\) respectively, in a potentially impure term \(e\) which is otherwise
+typed in \(\Delta\).
+
 \begin{figure}
   \begin{gather*}    
     \prftree[r]{\rle{var}}
@@ -806,8 +827,6 @@ and label-sets in Section \ref{sec:semantics}.
   \Description{Typing rules for isotope-SSA terms}
   \label{fig:ssa-term-typing}
 \end{figure}
-
-\TODO{some text about each typing rule}
 
 \begin{figure}
   \begin{gather*}    
