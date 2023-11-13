@@ -2322,7 +2322,7 @@ action \(\bufloc{x} := v\) by a thread denotes adding a write \(x := v\) to the
 thread's write buffer. We may then define the set of TSO actions
 \(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup \mc{A}_b\). A buffer will be defined
 to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\), which we will interpret
-as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index. In particular, we
+as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index (with the empty list corresponding to \(\{\delta\}\)). In particular, we
 define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\),
 where \(\Sigma\) is the stream action of finite pomsets over
 \(\mc{A}_{\ms{TSO}}\) on pomsets over \(\mc{A}_{\ms{TSO}}\); we can view
@@ -2354,11 +2354,10 @@ where buffer flushing is implemented via the morphism (called \(\ms{split}\) in
   \ms{pflush} = \lambda ()\;L. \{((), R, \alpha) | L = \alpha;R\}
   : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
 \end{equation}
-
-\TODO{fence}
-
-\TODO{big power, such transactional memory, much wow}
-
+To be able to perform synchronization, we will also need to introduce a \(\ms{fence}: \mc{I}^\varnothing_0(\mb{1}, \mb{1})\) instruction, which simply causes all actions before the fence to be observed before any actions after the fence. For \(\ms{TSO}\), implementing this is as simple as flushing the buffer, giving
+\begin{equation}
+  \dnt{\ms{fence}} = \lambda ()\;L. \{((), [], L;\{\delta\})\}
+\end{equation}
 We can now define the parallel composition of morphisms in a "fork-join" style as follows: we first flush the buffer completely (i.e., taking it and sticking it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel with separate buffers, \textit{filtering out executions which completely flush the buffer}. Since both threads end up with an empty buffer, the resulting joined buffer is also empty, giving us the following:
 \begin{equation}
   \begin{aligned}
