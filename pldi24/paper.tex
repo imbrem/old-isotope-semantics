@@ -2057,8 +2057,6 @@ In this section, we will build on the bare-bones models given in Section \ref{se
 
 \subsection{Trace Models}
 
-\TODO{fix this text}
-
 We will begin by giving a useful foundation for a wide class of \isotopessa models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially infinite) nondeterministic trace of monoidal "events". These will later come in handy for reasoning about output behaviour and weak memory.
 
 We begin with some definitions:
@@ -2098,20 +2096,27 @@ We can now define the \textit{trace monad} of a stream action as follows:
 
 \TODO{text}
 
+\begin{definition}[Relevant, Affine Monad]
+  A monad \(\mb{T}\) on \(\ms{Set}\) is \textbf{relevant} if its Kleisli category satisfies \(f;\ms{split} = \ms{split};f \ltimes f = \ms{split};f \rtimes f\), where \(\ms{split} = \upg{\lambda a. (a, a)}{}\). \(\mb{T}\) is \textbf{affine} if its Kleisli category satisfies \(f;\ms{drop} = \ms{drop}\), where \(\ms{drop} = \upg{\lambda a.()}{}\). A monad is \textbf{intuitionistic} if it is both relevant and affine.
+\end{definition}
+
 \begin{definition}[Submonad] 
-  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and, for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where \(f^\dagger\) is computed as in \(\mb{T}\).
+  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and, for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\) from \(\mb{T}\).
 \end{definition}
 Some important examples of submonads include:
-\begin{itemize}
+\begin{enumerate}
   \item The \textbf{unit submonad} \(\ms{pure}(\mb{T})\) of every monad \(\mb{T}\) with \(\ms{pure}(\mb{T})\;A = \{\eta_A\;a \mid a \in A\}\); similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\).
-  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads, forming a complete meet-semilattice with bottom element \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\); this induces a complete lattice in the standard manner
-  \item \todo{commuting absorbtive submonad of trace monad: example of...}
-  \item \todo{central submonad. Go cite \cite{carette-central-2022}}
-  \item \todo{deterministic, idempotent trace monad: relevant submonad}
-  \item \todo{noneffectful trace monad: affine submonad}
-  \item \todo{cap and centralize, cap and purify}
-\end{itemize}
-\TODO{a submonad induces a wide subcategory}
+  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads, forming a complete meet-semilattice with bottom element \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\); this induces a complete lattice in the standard manner.
+  \item In particular, the intersection of a relevant/affine/commutative submonad and another submonad is relevant/affine/commutative respectively. Since every commutative submonad induces a central subcategory of the Kleisli category of the parent monad, it follows that a triple of a relevant, affine, and commutative submonad make the Kleisli category of a monad \(\mb{T}\) into a substructural effectful category with all objects both affine and relevant.
+  \item If \(C \subseteq Z(M)\) is submonoid of \(M\), then \(A \mapsto \mc{P}^+(A \times C), \mc{P}^+(A \times C \times I) \subseteq \ms{Traces}\;\Theta\;A\) are submonads
+  \item In particular, if \(M_C \subseteq Z(M)\) is a central submonoid of \(M\) such that \(\forall m \in M_C, \forall i \in I, m \cdot i = i\), then \(A \mapsto \mc{P}^+(A \times M_C) \subseteq \ms{Traces}\;\Theta\;A\) is a submonad whose Kleisli category is a central subcategory of the Kleisli category of \(\ms{Traces}\;\Theta\;A\). Note \(M_C = \{\ms{id}\}\) is always such a submonoid.
+  \label{item:central-submonad}
+  \item Similarly, if \(M_R \subseteq Z(M)\) is a submonoid of \(M\) such that \(\forall m \in M_R, m \cdot m = m\), then \(A \mapsto \{S \in \mc{P}^+(A \times M_R + I) \mid |S| = 1\} \subseteq \ms{Traces}\;\Theta\;A\) is a \textit{relevant} submonad. Note \(M_R = \{\ms{id}\}\) is always such a submonoid.
+  \label{item:relevant-submonad}
+  \item Finally, \(A \mapsto \mc{P}^+(A) \subseteq \ms{Traces}\;\Theta\;A\) is a \textit{relevant} submonad.
+  \label{item:affine-submonad}
+\end{enumerate}
+In particular, \ref{item:central-submonad}, \ref{item:relevant-submonad}, \ref{item:affine-submonad} equip the Kleisli category of \(\ms{Traces}\;\Theta\;A\) with the structure of a substructural effectful category given choices of \(M_C\), \(M_R\).
 
 \TODO{in particular, these induce a substructural effectful category...}
 
