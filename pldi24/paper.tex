@@ -2288,12 +2288,11 @@ On that note, we support the parallel execution of multiple (potentially
 nonterminating) morphisms as follows:
 \begin{equation}
   \begin{aligned}
-  f || g = \lambda (a, b). 
-  & \{\iota_0 ((a', b'), \alpha || \beta) 
-    \mid \iota_0 (a', \alpha) \in f\;a 
-    \land \iota_0 (b', \beta) \in f\;b\} 
-  \\ & \cup \{\iota_1 (\alpha || \beta) \mid (\iota_0 (a', \alpha) \in f\;a \lor \iota_1\;\alpha \in f\;a) \land \iota_1 \beta \in f\;b\} 
-  \\ & \cup \{\iota_1 (\alpha || \beta) \mid \iota_1\;\alpha \in f\;a \land \iota_0 (b', \beta) \in f\;b\}: \ms{Set}_{\ms{PO}}(A \otimes B, A' \otimes B')
+  f_0 || f_1 = \lambda (a_0, a_1). 
+  & \{\iota_0 ((b_0, b_1), \alpha_0 || \alpha_1) 
+    \mid \iota_0 (b_i, \alpha_i) \in f_i\;a_i\} 
+  \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid (\iota_0 (b_0, \alpha_0) \in f_0\;a \lor \iota_0\;\alpha_0 \in f_0\;a_0) \land \iota_1 \alpha_1 \in f_1\;a_1\} 
+  \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid \iota_1\;\alpha_0 \in f_0\;a_0 \land \iota_0 (a_1, \alpha_1) \in f_1\;a_1\}: \ms{Set}_{\ms{PO}}(A \otimes A', B \otimes B')
   \end{aligned}
 \end{equation}
 It's tempting to try to use this as a tensor product of morphisms and so
@@ -2355,12 +2354,21 @@ where buffer flushing is implemented via the morphism (called \(\ms{split}\) in
   \ms{pflush} = \lambda ()\;L. \{((), R, \alpha) | L = \alpha;R\}
   : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
 \end{equation}
-\TODO{text explaining this}
-\TODO{in the presence of parallel composition}
 
 \TODO{fence}
 
 \TODO{big power, such transactional memory, much wow}
+
+We can now define the parallel composition of morphisms in a "fork-join" style as follows: we first flush the buffer completely (i.e., taking it and sticking it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel with separate buffers, \textit{filtering out executions which completely flush the buffer}. Since both threads end up with an empty buffer, the resulting joined buffer is also empty, giving us the following:
+\begin{equation}
+  \begin{aligned}
+    f_0 || f_1 = \lambda (a_0, a_1)\;L. 
+    & \{\iota_0 ((b_0, b_1), [], L;(\alpha_0 || \alpha_1)) 
+      \mid \iota_0 (b_i, [], \alpha_i) \in f_i\;a_i\;[]\} 
+    \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid (\iota_0 (b_0, [], \alpha_0) \in f_0\;a \lor \iota_0\;\alpha_0 \in f_0\;a_0\;[]) \land \iota_1 \alpha_1 \in f_1\;a_1\;[]\} 
+    \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid \iota_1\;\alpha_0 \in f_0\;a_0\;[] \land \iota_0 (a_1, [], \alpha_1) \in f_1\;a_1\;[]\}
+    \end{aligned}
+\end{equation}
 
 \section{Related Work}
 
