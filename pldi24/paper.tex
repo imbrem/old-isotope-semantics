@@ -2225,7 +2225,9 @@ computation.
 
 \subsection{Weak Memory}
 
-Another interesting use of the trace monad to build a sophisticated \isotopessa model is to build a model of TSO-style weak memory based on \citet{sparky}. We begin with the following definitions:
+Another interesting use of the trace monad to build a sophisticated \isotopessa model is to build a model of TSO-style weak memory based on \citet{sparky}. For simplicity, we will consider an infinite set of named locations \(x, y, z \in \ms{Loc}\) which are subject to concurrent modification by all processors via TSO reads, writes, and fences.
+
+We begin with the following definitions:
 \begin{definition}[Pomset] 
   A \textbf{pomset} \(\alpha\) over a set of actions \(\mc{A}\) with a
   distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
@@ -2239,7 +2241,15 @@ Another interesting use of the trace monad to build a sophisticated \isotopessa 
 \end{definition}
 (Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\), which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to \mc{A}\), where \(P + Q\) is given the lexicographic ordering and \(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many predecessors. They also form a monoid under parallel composition \(\alpha || \beta\), which is defined by the function \([\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
 
-Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\), where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega \to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on finite pomsets, which allows us to define the \textbf{sequential consistency monad} \(\ms{SC}\;A = \ms{Traces}\;\Sigma\;A\).
+Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\), where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega \to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on finite pomsets. 
+
+We define a \textbf{program order pomset} to be a pomset with \(\mc{A} =
+\mc{A}_w \cup \mc{A}_r \cup \{\delta\}\), where \(\mc{A}_r\) consists of
+\textit{reads} of the form \(x = v\) and \(\mc{A}_w\) consists of
+\textit{writes} of the form \(x := v\) for locations \(x\) and values \(v \in
+\ms{Word}\). We define the \textbf{program order monad} \(\ms{PO}\;A =
+\ms{Traces}\;\Sigma\;A\), where \(\Sigma\) is the stream action on finite
+program order pomsets given by sequential composition for \(\mc{A}\).
 
 \TODO{how to do reads}
 
