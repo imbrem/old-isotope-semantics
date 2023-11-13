@@ -2225,7 +2225,7 @@ computation.
 
 \subsection{Weak Memory}
 
-Another interesting use of the trace monad to build a sophisticated \isotopessa model is to build a model of TSO-style weak memory based on \citet{sparky}. For simplicity, we will consider an infinite set of named locations \(x, y, z \in \ms{Loc}\) which are subject to concurrent modification by all processors via TSO reads, writes, and fences.
+Another interesting use of the trace monad to build a sophisticated \isotopessa model is to build a model of TSO-style weak memory based on \citet{sparky}. For simplicity, we will consider an infinite set of named, fixed locations \(x, y, z \in \ms{Loc}\) which are subject to concurrent modification by all processors via TSO reads, writes, and fences.
 
 We begin with the following definitions:
 \begin{definition}[Pomset] 
@@ -2237,7 +2237,7 @@ We begin with the following definitions:
   \alpha': Q \to \mc{A}\) if, after removing finitely many \(\delta\) from \(P\)
   and \(Q\), there exists a partial order isomorphism between them which
   respects the values of \(\alpha, \alpha'\). A pomset is \textbf{finite} if its
-  carrier set is.
+  carrier set is. We will write unordered pomsets using multiset notation, e.g. \(\{a, a, b\}\), and linearly ordered pomsets using list notation, e.g. \([a, a, b]\).
 \end{definition}
 (Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\), which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to \mc{A}\), where \(P + Q\) is given the lexicographic ordering and \(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many predecessors. They also form a monoid under parallel composition \(\alpha || \beta\), which is defined by the function \([\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
 
@@ -2249,11 +2249,50 @@ We define a \textbf{program order pomset} to be a pomset with \(\mc{A} =
 \textit{writes} of the form \(x := v\) for locations \(x\) and values \(v \in
 \ms{Word}\). We define the \textbf{program order monad} \(\ms{PO}\;A =
 \ms{Traces}\;\Sigma\;A\), where \(\Sigma\) is the stream action on finite
-program order pomsets given by sequential composition for \(\mc{A}\).
+program order pomsets given by sequential composition for \(\mc{A}\). This
+yields an \isotopessa model with support for concurrent read and write
+operations \(\ms{read}_x: \mc{I}^\varnothing_0(\mb{1}, \ms{Word})\),
+\(\ms{write}_x: \mc{I}^\varnothing_0(\ms{Word}, \mb{1})\) with
+semantics
+\begin{equation}
+  \dnt{\ms{read}_x} = \lambda (). \{(v, \{x = v\}) | v \in \ms{Word}\}
+  \qquad
+  \dnt{\ms{write}_x} = \lambda v. \{((), \{x := v\})\}
+\end{equation}
+The semantics of \(\ms{read}\) in particular give a hint as to how this model
+works: rather than tracking the state of the heap, we simply \textit{emit} a
+pomset of the events that would have to happen for a given execution (in the
+case of a read, a read event \(x = v\) whenever the read returns \(v\), and in
+the case of a write, the single write event \(x := v\) for a write of \(v\)),
+and later post-filter on the pomset of an entire program to get a sequentially
+consistent execution. Hence, our semantics remains compositional, allowing us to
+reason about each program fragment individually, while still allowing us to add
+arbitrary external state (e.g. another program concurrently modifying the heap)
+before finally considering the execution of an entire program.
 
-\TODO{how to do reads}
+On that note, we support the parallel execution of multiple (potentially
+nonterminating) morphisms as follows:
+\begin{equation}
+  \begin{aligned}
+  f || g = \lambda (a, b). 
+  & \{\iota_0 ((a', b'), \alpha || \beta) 
+    \mid \iota_0 (a', \alpha) \in f\;a 
+    \land \iota_0 (b', \beta) \in f\;b\} 
+  \\ & \cup \{\iota_1 (\alpha || \beta) \mid (\iota_0 (a', \alpha) \in f\;a \lor \iota_1\;\alpha \in f\;a) \land \iota_1 \beta \in f\;b\} 
+  \\ & \cup \{\iota_1 (\alpha || \beta) \mid \iota_1\;\alpha \in f\;a \land \iota_0 (b', \beta) \in f\;b\}: \ms{Set}_{\ms{PO}}(A \otimes B, A' \otimes B')
+  \end{aligned}
+\end{equation}
+It's tempting to try to use this as a tensor product of morphisms and so
+graduate to a bona fide monoidal category rather than our current premonoidal
+setting, since spatial concurrency is one of the headline use-cases of the
+latter, but this definition does \textit{not} support sliding:
+\begin{equation}
+  (\ms{write}_x || \ms{id}) ; (\ms{id} || \ms{write}_y)
+  \neq (\ms{id} || \ms{write}_y) ; (\ms{write}_x || \ms{id})
+\end{equation}
+since the left-hand side will emit the pomset \([x := a, y := b]\) while the right-hand side will emit the pomset \([y := b, x := a]\). If we did want this behaviour, we'd need to have a significantly more sophisticated model of composition which effectively takes nontermination into account, which we will leave to future work.
 
-\TODO{how to do writes}
+To graduate from SC concurrency to a genuine, if maximally simple, weak memory model, we need to introduce a \textit{buffer} of type \(\ms{Buf} = \mc{A}^*\) of lists of actions, which we will interpret as linear pomsets ordered by index.
 
 \TODO{weak memory monad}
 
@@ -2261,9 +2300,7 @@ program order pomsets given by sequential composition for \(\mc{A}\).
 
 \TODO{fence}
 
-\TODO{submonad rune}
-
-\TODO{Buffer continuity}
+\TODO{too powerful, submonad rune of buffer continuity}
 
 \section{Related Work}
 
