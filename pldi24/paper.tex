@@ -2231,15 +2231,26 @@ We begin with the following definitions:
 \begin{definition}[Pomset] 
   A \textbf{pomset} \(\alpha\) over a set of actions \(\mc{A}\) with a
   distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
-  partially-ordered \textbf{carrier set} \(P\) such that every \(p \in P\) has
-  finitely many predecessors equipped with a mapping \(\alpha: P \to \mc{A}\)
-  quotiented under the equivalence relation \(\alpha: P \to \mc{A} \simeq
-  \alpha': Q \to \mc{A}\) if, after removing finitely many \(\delta\) from \(P\)
-  and \(Q\), there exists a partial order isomorphism between them which
-  respects the values of \(\alpha, \alpha'\). A pomset is \textbf{finite} if its
-  carrier set is. We will write unordered pomsets using multiset notation, e.g. \(\{a, a, b\}\), and linearly ordered pomsets using list notation, e.g. \([a, a, b]\).
+  \textit{nonempty} partially-ordered \textbf{carrier set} \(P\) such that every
+  \(p \in P\) has finitely many predecessors equipped with a mapping \(\alpha: P
+  \to \mc{A}\) quotiented under the equivalence relation \(\alpha: P \to \mc{A}
+  \simeq \alpha': Q \to \mc{A}\) if, after removing finitely many \(\delta\)
+  from \(P\) and \(Q\), there exists a partial order isomorphism between them
+  which respects the values of \(\alpha, \alpha'\). A pomset is \textbf{finite}
+  if its carrier set is. We will write unordered pomsets using multiset
+  notation, e.g. \(\{a, a, b\}\), and linearly ordered pomsets using list
+  notation, e.g. \([a, a, b]\).
 \end{definition}
-(Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\), which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to \mc{A}\), where \(P + Q\) is given the lexicographic ordering and \(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many predecessors. They also form a monoid under parallel composition \(\alpha || \beta\), which is defined by the function \([\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
+(Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\),
+which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to
+\mc{A}\), where \(P + Q\) is given the lexicographic ordering and
+\(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many
+predecessors. They also form a monoid under parallel composition \(\alpha ||
+\beta\), which is defined by the function \([\alpha, \beta]: P + Q \to \mc{A}\)
+where \(P + Q\) is given the standard partial ordering (with elements of \(P\)
+and \(Q\) incomparable). Note in both cases the monoidal unit is \(\{\delta\}\),
+since we only consider nonempty pomsets but allow the removal of finitely many
+ticks.
 
 Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\), where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega \to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on finite pomsets. 
 
@@ -2285,16 +2296,16 @@ nonterminating) morphisms as follows:
 It's tempting to try to use this as a tensor product of morphisms and so
 graduate to a bona fide monoidal category rather than our current premonoidal
 setting, since spatial concurrency is one of the headline use-cases of the
-latter, but this definition does \textit{not} support sliding:
+former, but this definition does \textit{not} support sliding:
 \begin{equation}
   (\ms{write}_x || \ms{id}) ; (\ms{id} || \ms{write}_y)
   \neq (\ms{id} || \ms{write}_y) ; (\ms{write}_x || \ms{id})
 \end{equation}
 since the left-hand side will emit the pomset \([x := a, y := b]\) while the right-hand side will emit the pomset \([y := b, x := a]\). If we did want this behaviour, we'd need to have a significantly more sophisticated model of composition which effectively takes nontermination into account, which we will leave to future work.
 
-To graduate from SC concurrency to a genuine, if maximally simple, weak memory model, we need to introduce a \textit{buffer} of type \(\ms{Buf} = \mc{A}^*\) of lists of actions, which we will interpret as linear pomsets ordered by index.
-
-\TODO{weak memory monad}
+To graduate from SC concurrency to a genuine, if maximally simple, weak memory
+model, we need to introduce a \textit{buffer} of type \(\ms{Buf} = \mc{A}^*\) of
+lists of actions, which we will interpret as linear pomsets ordered by index. In particular, we define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;\ms{PO}\), which gives us another \isotopessa model in the usual manner.
 
 \TODO{new read/write}
 
