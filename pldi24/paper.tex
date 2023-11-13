@@ -2118,19 +2118,19 @@ Some important examples of submonads include:
 \end{enumerate}
 In particular, \ref{item:central-submonad}, \ref{item:relevant-submonad}, \ref{item:affine-submonad} equip the Kleisli category of \(\ms{Traces}\;\Theta\;A\) with the structure of a substructural effectful category given choices of \(M_C\), \(M_R\).
 
-\TODO{in particular, these induce a substructural effectful category...}
+\subsection{Heaps, Printing, and Separation Logic}
 
-\subsection{Heaps and Separation Logic}
+As a concrete example, we can now introduce the \textbf{printing monad}, which is simply defined as \(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where \(\Sigma: (\ms{Bytes}^*)^\omega \to \ms{Bytes}^{\leq \omega}\) denotes concatenation of lists of bytestrings.
 
-Building on the ideas in \cite{mellies-ftrs}, we will show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
+\TODO{substructural effectful category}
 
-We'll start by considering the category \(\ms{HRel}\), which we will take to have morphisms of the form \(A \to \ms{Heap} \to \mc{P}^+(A \times \ms{Heap} \times \ms{Bytes}^* + \ms{Bytes}^{\leq \omega})\), which is the result of applying the state-transformer monad with state \(\ms{Heap}\) to the trace monad with the monoid of lists of bytestrings described in the previous section.
-
-\TODO{say something better than "bytestrings"}
+\TODO{heap via \(\ms{StateT}\), lifting of central/relevant/affine submonads}
 
 \TODO{what is a \(\ms{Heap}\)}
 
-\TODO{Use name \ms{Traces}}
+\TODO{segue to separation logic}
+
+Building on the ideas in \cite{mellies-ftrs}, we will show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
 
 \TODO{by the above, this is an \isotopessa model w/ nice properties; moving on!}
 
@@ -2141,15 +2141,16 @@ Given a set \(A\), we can define a predicate \(\varphi\) on \(A\), \(\mb{Heap}\)
 \TODO{note on magic wand}
 \TODO{Tensor product and separating conjunction}
 \TODO{Coproduct, Elgot structure inherited from base category}
-\TODO{sliding w/ properly restricted equality}
-\TODO{equality vs \cite{mellies-ftrs}}
-\TODO{potential solutions}
 
 \TODO{so, it's a substructural effectful category mmkay}
-\TODO{central = no printing}
+\TODO{central = no printing, no heap}
 \TODO{linear objects iff non duplicable}
 \TODO{relevant morphisms iff deterministic}
 \TODO{affine morphisms always (if no heap effects?)}
+
+\TODO{equality vs \cite{mellies-ftrs}}
+\TODO{sliding w/ properly restricted equality}
+\TODO{\(\implies\) central = no printing, heap allowed}
 
 \subsection{Weak Memory}
 
