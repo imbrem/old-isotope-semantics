@@ -2173,9 +2173,7 @@ us an \isotopessa model supporting the instructions \(\ms{print} \in
 
 We can make things a little more interesting by adding a heap to the mix, defining our monad \(\ms{Comp} = \ms{StateT}\;\ms{Heap}\;\ms{Print}\), where \(\ms{Heap} = \nats \rightharpoonup \nats\) is simply a partial function. The Kleisli category of this monad can be equipped with the structure of a substructural effectful category by simply taking the affine/relevant morphisms to be the lifts of the affine/relevant morphisms in \(\ms{Set}_{\ms{Print}}\); as it inherits an Elgot structure from that on \(\ms{Set}_{\ms{Print}}\), we therefore have an \isotopessa model supporting the instructions \(\ms{set}: \mc{I}^\varnothing_0(\nats \times \nats, \mb{1})\), \(\ms{get}: \mc{I}^\varnothing_0(\nats, \nats)\), \(\ms{alloc}: \mc{I}^\varnothing_0(\nats, \nats)\), and \(\ms{free}: \mc{I}^\varnothing_0(\nats, \mb{1})\). We can assign semantics to \(\ms{set}\) in the standard fashion, with \(\dnt{\ms{set}} = \lambda (p, v)\;h. \{\iota_0((), [p \mapsto v]h, [])\}\). \(\ms{get}\) is a bit more tricky, since it is unclear what to do when we try to access uninitialized memory: one option is simply to return an arbitrary value, with \(\dnt{\ms{get}} = \lambda p\;h. \{\iota_0(v, h, []) \mid v = h\;p \lor p \notin h\}\); for now, this will do. Finally, \(\dnt{\ms{alloc}} = \lambda v\;h.\{\iota_0\;(p, h', []) \mid h' = h \sqcup p \mapsto v\}\) simply fills a random empty heap cell with the provided value, returning a pointer to the cell, while \(\dnt{\ms{free}} = \lambda p\;h. \{\iota_0\;((), h \setminus p, [])\}\)
 
-\TODO{segue to separation logic}
-
-Building on the ideas in \cite{mellies-ftrs}, we will show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
+We can use this construction to, building on the ideas in \cite{mellies-ftrs}, show how a simple separation logic based on \cite{reynolds-separation-2002} slightly adapted to the categorical setting gives us a very rich \isotopessa model supporting a basic notion of refinement types, while at the same time giving us a nontrivial notion of nonlinear types.
 
 Given a set \(A\), we can define a heap-predicate \(\Phi\) over \(A\) to be of type \(A \to \ms{Heap} \to \ms{Prop}\). 
 Taking as objects pairs \((A, \Phi)\), we can define the category \(\ms{Sep}\) to have morphisms
@@ -2226,9 +2224,14 @@ This implies that \(\ms{Sep}\) is an \isotopessa model supporting the following 
   \item \(\ms{alloc}: \mc{I}^\varnothing_0((\nats, \ms{emp}), (\nats, \lambda \ell. \exists v. \ell \mapsto v))\)
   \item \(\ms{free}: \mc{I}^\varnothing_0((\nats, \lambda \ell. \exists v. \ell \mapsto v), (\mb{1}, \ms{emp}))\)
 \end{itemize}
+We can clearly see that this is a refinement type system in the sence of \cite{mellies-ftrs}: in particular, there is a forgetful functor \((A, \Phi) \mapsto A\) which is simply the identity on morphisms. Unfortunately, this means that our notion of equality is a little too stringent, since we need to consider equality on inputs which do not match our preconditions.
 
-\TODO{equality vs \cite{mellies-ftrs}}
+\TODO{example, + example set}
+
+\TODO{restricted equality}
+
 \TODO{sliding w/ properly restricted equality}
+
 \TODO{\(\implies\) central = no printing, heap allowed: can make heap operations relevant/affine too!}
 
 \subsection{Weak Memory}
