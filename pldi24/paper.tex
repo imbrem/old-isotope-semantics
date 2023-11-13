@@ -2097,36 +2097,79 @@ We can now define the \textit{trace monad} of a stream action as follows:
 \TODO{text}
 
 \begin{definition}[Relevant, Affine Monad]
-  A monad \(\mb{T}\) on \(\ms{Set}\) is \textbf{relevant} if its Kleisli category satisfies \(f;\ms{split} = \ms{split};f \ltimes f = \ms{split};f \rtimes f\), where \(\ms{split} = \upg{\lambda a. (a, a)}{}\). \(\mb{T}\) is \textbf{affine} if its Kleisli category satisfies \(f;\ms{drop} = \ms{drop}\), where \(\ms{drop} = \upg{\lambda a.()}{}\). A monad is \textbf{intuitionistic} if it is both relevant and affine.
+  A monad \(\mb{T}\) on \(\ms{Set}\) is \textbf{relevant} if its Kleisli
+  category satisfies \(f;\ms{split} = \ms{split};f \ltimes f = \ms{split};f
+  \rtimes f\), where \(\ms{split} = \upg{\lambda a. (a, a)}{}\). \(\mb{T}\) is
+  \textbf{affine} if its Kleisli category satisfies \(f;\ms{drop} = \ms{drop}\),
+  where \(\ms{drop} = \upg{\lambda a.()}{}\). A monad is \textbf{intuitionistic}
+  if it is both relevant and affine.
 \end{definition}
 
 \begin{definition}[Submonad] 
-  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and, for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\) from \(\mb{T}\).
+  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a
+  collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq
+  \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in
+  \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say
+  that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and,
+  for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where
+  \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an
+  (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\)
+  from \(\mb{T}\).
 \end{definition}
 Some important examples of submonads include:
 \begin{enumerate}
-  \item The \textbf{unit submonad} \(\ms{pure}(\mb{T})\) of every monad \(\mb{T}\) with \(\ms{pure}(\mb{T})\;A = \{\eta_A\;a \mid a \in A\}\); similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\).
-  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads, forming a complete meet-semilattice with bottom element \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\); this induces a complete lattice in the standard manner.
-  \item In particular, the intersection of a relevant/affine/commutative submonad and another submonad is relevant/affine/commutative respectively. Since every commutative submonad induces a central subcategory of the Kleisli category of the parent monad, it follows that a triple of a relevant, affine, and commutative submonad make the Kleisli category of a monad \(\mb{T}\) into a substructural effectful category with all objects both affine and relevant.
-  \item If \(C \subseteq Z(M)\) is submonoid of \(M\), then \(A \mapsto \mc{P}^+(A \times C), \mc{P}^+(A \times C \times I) \subseteq \ms{Traces}\;\Theta\;A\) are submonads
-  \item In particular, if \(M_C \subseteq Z(M)\) is a central submonoid of \(M\) such that \(\forall m \in M_C, \forall i \in I, m \cdot i = i\), then \(A \mapsto \mc{P}^+(A \times M_C) \subseteq \ms{Traces}\;\Theta\;A\) is a submonad whose Kleisli category is a central subcategory of the Kleisli category of \(\ms{Traces}\;\Theta\;A\). Note \(M_C = \{\ms{id}\}\) is always such a submonoid.
+  \item The \textbf{unit submonad} \(\ms{pure}(\mb{T})\) of every monad
+  \(\mb{T}\) with \(\ms{pure}(\mb{T})\;A = \{\eta_A\;a \mid a \in A\}\);
+  similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\).
+  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise
+  intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are
+  submonads, forming a complete meet-semilattice with bottom element
+  \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\); this induces a complete
+  lattice in the standard manner.
+  \item In particular, the intersection of a relevant/affine/commutative
+  submonad and another submonad is relevant/affine/commutative respectively.
+  Since every commutative submonad induces a central subcategory of the Kleisli
+  category of the parent monad, it follows that a triple of a relevant, affine,
+  and commutative submonad make the Kleisli category of a monad \(\mb{T}\) into
+  a substructural effectful category with all objects both affine and relevant.
+  \item If \(C \subseteq Z(M)\) is submonoid of \(M\), then \(A \mapsto
+  \mc{P}^+(A \times C + \mb{0}), \mc{P}^+(A \times C \times I) \subseteq
+  \ms{Traces}\;\Theta\;A\) are submonads
+  \item In particular, if \(M_C \subseteq Z(M)\) is a central submonoid of \(M\)
+  such that \(\forall m \in M_C, \forall i \in I, m \cdot i = i\), then \(A
+  \mapsto \mc{P}^+(A \times M_C + \mb{0}) \subseteq \ms{Traces}\;\Theta\;A\) is
+  a submonad whose Kleisli category is a central subcategory of the Kleisli
+  category of \(\ms{Traces}\;\Theta\;A\). Note \(M_C = \{1\}\) is always such a
+  submonoid.
   \label{item:central-submonad}
-  \item Similarly, if \(M_R \subseteq Z(M)\) is a submonoid of \(M\) such that \(\forall m \in M_R, m \cdot m = m\), then \(A \mapsto \{S \in \mc{P}^+(A \times M_R + I) \mid |S| = 1\} \subseteq \ms{Traces}\;\Theta\;A\) is a \textit{relevant} submonad. Note \(M_R = \{\ms{id}\}\) is always such a submonoid.
+  \item Similarly, if \(M_R \subseteq M_C\) is a submonoid such that \(\forall m
+  \in M_R, m \cdot m = m\), then \(A \mapsto \{S \in \mc{P}^+(A \times M_R + I)
+  \mid |S| = 1\} \subseteq \ms{Traces}\;\Theta\;A\) is a \textit{relevant}
+  submonad. Note \(M_R = \{1\}\) is always such a submonoid.
   \label{item:relevant-submonad}
-  \item Finally, \(A \mapsto \mc{P}^+(A) \subseteq \ms{Traces}\;\Theta\;A\) is a \textit{relevant} submonad.
+  \item Finally, \(A \mapsto \mc{P}^+(A \times \{1\} + \mb{0}) \subseteq
+  \ms{Traces}\;\Theta\;A\) is an \textit{affine} submonad.
   \label{item:affine-submonad}
 \end{enumerate}
-In particular, \ref{item:central-submonad}, \ref{item:relevant-submonad}, \ref{item:affine-submonad} equip the Kleisli category of \(\ms{Traces}\;\Theta\;A\) with the structure of a substructural effectful category given choices of \(M_C\), \(M_R\).
+In particular, \ref{item:central-submonad}, \ref{item:relevant-submonad},
+\ref{item:affine-submonad} equip the Kleisli category of
+\(\ms{Traces}\;\Theta\;A\) with the structure of a substructural effectful
+category given choices of \(M_C\), \(M_R\).
 
 \subsection{Heaps, Printing, and Separation Logic}
 
-As a concrete example, we can now introduce the \textbf{printing monad}, which is simply defined as \(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where \(\Sigma: (\ms{Bytes}^*)^\omega \to \ms{Bytes}^{\leq \omega}\) denotes concatenation of lists of bytestrings.
+As a concrete example, we can now introduce the \textbf{printing monad}, which
+is simply defined as \(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where
+\(\Sigma: (\ms{Bytes}^*)^\omega \to \ms{Bytes}^{\leq \omega}\) denotes
+concatenation of lists of bytestrings. This can be equipped with the structure
+of a substructural effectful category by choosing \(M_C = M_R = \{[]\}\), giving
+us an \isotopessa model supporting the instructions \(\ms{print} \in
+\mc{I}^\varnothing_0(\ms{Bytes}, \mb{1})\) and \(\ms{rand} \in
+\mc{I}^\taff_1(\mb{1}, A)\) for \(A\) nonempty, with standard semantics
+\(\dnt{\ms{print}} = \lambda b.\{\iota_0 ((), [b])\}\), \(\dnt{\ms{rand}} =
+\lambda (). \{\iota_0 (a, p[]) \mid a \in A\}\).
 
-\TODO{substructural effectful category}
-
-\TODO{heap via \(\ms{StateT}\), lifting of central/relevant/affine submonads}
-
-\TODO{what is a \(\ms{Heap}\)}
+We can make things a little more interesting by adding a heap to the mix, defining our monad \(\ms{Comp} = \ms{StateT}\;\ms{Heap}\;\ms{Print}\), where \(\ms{Heap} = \nats \rightharpoonup \nats\) is simply a partial function. The Kleisli category of this monad can be equipped with the structure of a substructural effectful category by simply taking the affine/relevant morphisms to be the lifts of the affine/relevant morphisms in \(\ms{Set}_{\ms{Print}}\); as it inherits an Elgot structure from that on \(\ms{Set}_{\ms{Print}}\), we therefore have an \isotopessa model supporting the instructions \(\ms{get}: \mc{I}^\varnothing_0(\nats, \nats)\) and \(\ms{set}: \mc{I}^\varnothing_0(\nats \times \nats, ())\). We can assign semantics to \(\ms{set}\) in the standard fashion, with \(\dnt{\ms{set}} = \lambda (p, v)\;h. \{\iota_0((), [p \mapsto v]h, [])\}\). \(\ms{get}\) is a bit more tricky, since it is unclear what to do when we try to access uninitialized memory: one option is simply to return an arbitrary value, with \(\dnt{\ms{get}} = \lambda p\;h. \{\iota_0(v, []) \mid v = h\;p \lor p \notin h\}\); for now, this will do.
 
 \TODO{segue to separation logic}
 
