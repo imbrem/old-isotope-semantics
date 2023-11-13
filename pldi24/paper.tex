@@ -2313,19 +2313,21 @@ leave to future work.
 To graduate from SC concurrency to a genuine, if maximally simple, weak memory
 model, we will to introduce a \textit{buffer} of write actions. We will
 implement TSO ordering by buffering all our writes, in which case they are only
-visible to the local thread. At any point, we may choose to \textit{flush} some
-of the writes in buffer to the global pomset of events. In particular, we will
-introduce the set \(\mc{A}_b = \{(\bufloc{x} := v)\}\) of \textit{buffer write
-actions}, where an action \(\bufloc{x} := v\) by a thread denotes adding a write
-\(x := v\) to the thread's write buffer. We may then define the set of TSO
-actions \(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup \mc{A}_b\). A buffer will be
-defined to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\), which we will
-interpret as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index. In
-particular, we define the monad \(\ms{TSO} =
-\ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\), where \(\Sigma\) is the stream
-action of finite pomsets over \(\mc{A}_{\ms{TSO}}\) on pomsets over
-\(\mc{A}_{\ms{TSO}}\); we can view \(\ms{PO}\) as a submonad of this monad in
-the standard manner.
+visible to the local thread. On the other hand, reads events will first attempt
+to read from the buffer, and, if there is no corresponding write in the buffer,
+will read an arbitrary value, in both cases pushing an event to the global
+pomset. At any point, we may choose to \textit{flush} some of the writes in
+buffer to the global pomset of events. In particular, we will introduce the set
+\(\mc{A}_b = \{(\bufloc{x} := v)\}\) of \textit{buffer write actions}, where an
+action \(\bufloc{x} := v\) by a thread denotes adding a write \(x := v\) to the
+thread's write buffer. We may then define the set of TSO actions
+\(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup \mc{A}_b\). A buffer will be defined
+to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\), which we will interpret
+as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index. In particular, we
+define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\),
+where \(\Sigma\) is the stream action of finite pomsets over
+\(\mc{A}_{\ms{TSO}}\) on pomsets over \(\mc{A}_{\ms{TSO}}\); we can view
+\(\ms{PO}\) as a submonad of this monad in the standard manner.
 
 Given a buffer \(\ms{Buf}\), we can define the result of reads \([\cdot]_x:
 \ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the buffer as follows:
@@ -2337,19 +2339,8 @@ Given a buffer \(\ms{Buf}\), we can define the result of reads \([\cdot]_x:
   [][x] = \bot
 \end{equation}
 Note that writes at the \textit{end} of the buffer are prioritized, since later
-writes overwrite earlier ones! 
-\TODO{segue}
-This is implemented via the morphism (called
-\(\ms{split}\) in \cite{sparky})
-\begin{equation}
-  \ms{pflush} = \lambda ()\;L. \{((), R, \alpha) | L = \alpha;R\}
-  : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
-\end{equation}
-\TODO{reflow}
-On the other hand, reads events will first attempt to read from the buffer, and,
-if there is no corresponding write in the buffer, will read an arbitrary value,
-in both cases pushing an event to the global pomset; that is, the semantics of
-reads and writes are given by
+writes overwrite earlier ones! The semantics of reads and writes are then given
+by
 \begin{equation}
   \begin{aligned}
   \dnt{\ms{read}_x} = R_x^{\ms{TSO}} 
@@ -2357,6 +2348,12 @@ reads and writes are given by
   \dnt{\ms{write}_x} = W_x^{\ms{TSO}}
     &= \ms{pflush};(\lambda v\;L. \{(v, (L;\{\bufloc{x} := v\}), \{x := v\})\});\ms{pflush}
   \end{aligned}
+\end{equation}
+where buffer flushing is implemented via the morphism (called \(\ms{split}\) in
+\cite{sparky})
+\begin{equation}
+  \ms{pflush} = \lambda ()\;L. \{((), R, \alpha) | L = \alpha;R\}
+  : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
 \end{equation}
 \TODO{text explaining this}
 \TODO{in the presence of parallel composition}
