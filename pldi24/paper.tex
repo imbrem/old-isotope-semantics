@@ -1069,28 +1069,59 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 
 \TODO{intro text}
 
-\begin{definition}[Binoidal Category] \
-  \TODO{this}
+\begin{definition}[Binoidal Category] 
+  A \textbf{binoidal category} \(\mc{C}\) is a category equipped with a binary
+  operation on objects \(\otimes: \mc{C} \times \mc{C} \to \mc{C}\) which is
+  independently functorial in each argument (i.e., for each object \(A\), \(A
+  \otimes -\) and \(- \otimes A\) are functors).
+\end{definition}
+Given \(f: \mc{C}(A, B)\), \(g: \mc{C}(A', B')\) in a binoidal category, we
+write \(f \ltimes g = f \otimes A';B \otimes g\) and \(f \rtimes g = A \otimes
+g;f \otimes B'\); we say \(f\) is \textbf{central} if, for all \(g\), \(f
+\ltimes g = f \rtimes g\) and \(g \ltimes f = g \rtimes f\), in which case we
+simply write \(f \otimes g\), \(g \otimes f\) respectively.
+
+\TODO{text}
+
+\begin{definition}[Premonoidal Category] 
+  A \textbf{premonoidal category} is a binoidal category with an identity object
+  \(I: \mc{C}\) such that
+  \begin{itemize}
+    \item There exist central natural isomorphisms \(\lambda_A: I \otimes A
+    \simeq A\) (the \textbf{left unitor}), \(\rho_A: A \otimes I \simeq A\) (the
+    \textbf{right unitor})
+    \item There exists a central isomorphism \(\alpha_{A, B, C}: (A \otimes B)
+    \otimes C \simeq A \otimes (B \otimes C)\) (the \textbf{associator})
+    \item Satisfying the \textbf{pentagon law}: \todo{this}
+    \item Satisfying the \textbf{triangle law}: \todo{this}
+  \end{itemize}
+  We say a premonoidal category is \textbf{symmetric} if it is equipped with a
+  central natural isomorphism \(\sigma_{A, B}: A \otimes B \simeq B \otimes A\)
+  (the \textbf{symmetry}) satisfying the \textbf{hexagon law} \todo{this}.
+
+  We say a premonoidal category is \textbf{monoidal} if every morphism is
+  central.
 \end{definition}
 
-\begin{definition}[Premonoidal Category] \
-  \TODO{this}
-\end{definition}
+\TODO{text}
 
 \begin{definition}[Effectful Category] \
   \TODO{this}
 \end{definition}
+
+\TODO{text}
 
 \begin{definition}[(Symmetric) Premonoidal Subcategory]
   Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is closed under whiskering and contains all associators, unitors, and symmetries. We say a subcategory is \textbf{monoidal} if, for all \(f: \mc{S}(A, B)\), \(g: \mc{S}(A', B')\), \(f \ltimes g = f \rtimes g\); we say it is \textbf{central} if this generalizes to the case where only one of \(f, g\) is in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
 \end{definition} 
 Note that the set of symmetric premonoidal subcategories, monoidal subcategories, and central subcategories of a category \(\mc{C}\) are all closed under intersections and therefore, in particular, form a complete meet-semilattice with shared bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the smallest possible symmetric premonodial subcategory. The largest symmetric premonoidal subcategory is of course \(\mc{C}\), while the largest central subcategory is the center of \(\mc{C}\) \(Z(\mb{C})\); the existence of a top-element means that in these cases we may induce the structure of a complete lattice in the usual manner.
 
-\begin{definition}[Strictly Effectful Category] \
-  \TODO{this}
-\end{definition}
+% Should we go down this road?
+% \begin{definition}[Strictly Effectful Category] \
+%   \TODO{this}
+% \end{definition}
 
-\TODO{text}
+% \TODO{text}
 
 \begin{definition}[Substructural (Pre)monoidal Category]
   A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A}, \mc{R})\) where:
