@@ -565,11 +565,11 @@ The program in Figure \ref{fig:bb-arg} translated to our syntax is given in
 Figure \ref{fig:our-syn}. These do not introduce any new expressivity: an
 if-statement can be viewed as syntactic sugar for a conditional branch to one of
 two anonymous basic blocks, while nested scopes simply \textit{restrict} where
-we can branch to. In particular, in Section \ref{ssec:ssa-norm}, we will
-formalize interconversion with traditional SSA and show how it is semantically
-sound to simply merge all nested scopes. The point of the slightly modified
-syntax is simply to make some of our metatheoretic results more practical to
-state.
+we can branch to. 
+% In particular, in Section \ref{ssec:ssa-norm}, we will formalize
+% interconversion with traditional SSA and show how it is semantically sound to
+% simply merge all nested scopes. The point of the slightly modified syntax is
+% simply to make some of our metatheoretic results more practical to state.
 
 The grammar for our syntax is given in Figure \ref{fig:ssa-grammar}, while the
 typing judgements themselves are given in \ref{fig:ssa-judgements}. We begin by
@@ -1822,11 +1822,11 @@ followed by a semantics for blocks and label-sets in Figure
 
 \TODO{some text about semantic substitution}
 
-\subsection{Normalization}
+% \subsection{Normalization}
 
-\label{ssec:ssa-norm}
+% \label{ssec:ssa-norm}
 
-\TODO{this}
+% \TODO{this}
 
 \subsection{Optimizations}
 
