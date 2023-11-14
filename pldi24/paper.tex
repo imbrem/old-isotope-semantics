@@ -1094,8 +1094,8 @@ if \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma,
 \lhyp{\lbl{\ell}}{\Gamma}{A}}{\ms{K}}\), in Figure \ref{fig:ssa-subst-typing}.
 Given a context \(\gamma\) and a label-set \(\ms{L}\), we can convert it to a
 label-substitution \(\substlbs{\gamma}{\ms{L}}\) using the definition in Figure
-\ref{fig:ssa-subst-ops}: using this, we can state the full substitution theorem
-as follows:
+\ref{fig:ssa-subst-ops}: using this, we can state the full substitution lemma as
+follows:
 \begin{lemma}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
@@ -1128,8 +1128,9 @@ as follows:
 
 % \TODO{some text about substitution weakening}
 
-\TODO{label substitution text}
-
+We can also, using the rules in Figure \ref{fig:ssa-subst-ops}, define
+capture-avoiding label-substitution for blocks \([\mc{L}]t\) and label-sets
+\([\mc{L}]L\), allowing us to state the following lemma:
 \begin{lemma}[Label Substitution] 
   Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
   \begin{itemize}
@@ -1140,7 +1141,7 @@ as follows:
   \end{itemize}
 \end{lemma}
 
-\TODO{some text about rewriting}
+\TODO{some text about rewriting?}
 
 \section{SSA Semantics}
 
