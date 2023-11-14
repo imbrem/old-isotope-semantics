@@ -1073,12 +1073,16 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 
 \label{sec:semantics}
 
-\TODO{intro text}
+In this section, we will give a categorical semantics for \isotopessa. Starting
+with Freyd categories, we will generalize to \textit{substructural effectful
+categories} to support substructurality. We will then require our substructural
+effectful category to have \textit{distributive coproducts} to implement
+branching. Finally, we will require an \textit{Elgot structure} to implement
+general, potentially nonterminating control flow.
 
 \subsection{Substructural Categories}
 
-\TODO{intro text}
-
+We begin with some basic definitions:
 \begin{definition}[Binoidal Category] 
   A \textbf{binoidal category} \(\mc{C}\) is a category equipped with a binary
   operation on objects \(\otimes: \mc{C} \times \mc{C} \to \mc{C}\) which is
@@ -1090,9 +1094,6 @@ write \(f \ltimes g = f \otimes A';B \otimes g\) and \(f \rtimes g = A \otimes
 g;f \otimes B'\); we say \(f\) is \textbf{central} if, for all \(g\), \(f
 \ltimes g = f \rtimes g\) and \(g \ltimes f = g \rtimes f\), in which case we
 simply write \(f \otimes g\), \(g \otimes f\) respectively.
-
-\TODO{text}
-
 \begin{definition}[Premonoidal Category] 
   A \textbf{premonoidal category} is a binoidal category with an identity object
   \(I: \mc{C}\) such that
@@ -1107,19 +1108,27 @@ simply write \(f \otimes g\), \(g \otimes f\) respectively.
   \end{itemize}
   We say a premonoidal category is \textbf{symmetric} if it is equipped with a
   central natural isomorphism \(\sigma_{A, B}: A \otimes B \simeq B \otimes A\)
-  (the \textbf{symmetry}) satisfying the \textbf{hexagon law} \todo{this}.
-
-  We say a premonoidal category is \textbf{monoidal} if every morphism is
-  central.
+  (the \textbf{symmetry}) satisfying the \textbf{hexagon law} \todo{this}. We
+  say a premonoidal category is \textbf{monoidal} if every morphism is central.
+\end{definition}
+One issue with the notion of a premonoidal category is that it is unclear what
+exactly a premonoidal functor should be: if we want them to compose, we would
+like to preserve central morphisms, but trying to preserve \textit{all} central
+morphisms is too strict a notion. We want, in essence, to be able to distinguish
+morphisms that are truly "pure" from those which simply happen to be central. To
+do that, we introduce the notion of an \textit{effectful category} as follows:
+\begin{definition}[Effectful Category] 
+  An \textbf{effectful category} \(\mc{V} \to \mc{C}\) is an identity on objects
+  functor \(\upg{\cdot}{}: \mc{V} \to \mc{C}\) from a monoidal category
+  \(\mc{V}\) to a premonoidal category \(\mc{C}\) which preserves all
+  premonoidal structure (i.e. sends associators to associators, unitors to
+  unitors, and tensor products to tensor products). It is \textbf{symmetric} if
+  both \(\mc{V}\) and \(\mc{C}\) are, and \(\upg{\cdot}{}\) preserves the
+  symmetry. A \textbf{Freyd category} is an effectful category where \(\mc{V}\)
+  is Cartesian.
 \end{definition}
 
-\TODO{text}
-
-\begin{definition}[Effectful Category] \
-  \TODO{this}
-\end{definition}
-
-\TODO{text}
+\TODO{text on Freyd categories}
 
 \begin{definition}[(Symmetric) Premonoidal Subcategory]
   Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is closed under whiskering and contains all associators, unitors, and symmetries. We say a subcategory is \textbf{monoidal} if, for all \(f: \mc{S}(A, B)\), \(g: \mc{S}(A', B')\), \(f \ltimes g = f \rtimes g\); we say it is \textbf{central} if this generalizes to the case where only one of \(f, g\) is in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
@@ -1131,7 +1140,7 @@ Note that the set of symmetric premonoidal subcategories, monoidal subcategories
 %   \TODO{this}
 % \end{definition}
 
-% \TODO{text}
+\TODO{text}
 
 \begin{definition}[Substructural (Pre)monoidal Category]
   A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A}, \mc{R})\) where:
@@ -1290,10 +1299,6 @@ Some important properties which hold for all Elgot categories include:
   \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\)
 \end{itemize}
 Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
-
-\TODO{Hyland and Hasegawa traces?}
-
-\TODO{intuition? Can draw diagrams, but those take up space}
 
 \begin{proposition}
   If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;\mb{T}\;S = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda A. S \to \ms{T}(A)\), and \(\ms{WriterT}\;\mb{T}\;S = \lambda A. \ms{T}(A \times S)\) are all Elgot
