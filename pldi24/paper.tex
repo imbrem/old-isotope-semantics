@@ -907,7 +907,7 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
   \label{fig:ssa-block-typing}
 \end{figure}
 
-\subsection{Syntactic Metatheory}
+\subsection{Weakening and Substitution}
 
 We can now state some of the basic metatheoretic properties of \isotopessa. We
 begin with weakening, which we state in our setting as follows:
@@ -1141,7 +1141,7 @@ capture-avoiding label-substitution for blocks \([\mc{L}]t\) and label-sets
   \end{itemize}
 \end{lemma}
 
-\TODO{some text about rewriting?}
+\TODO{small rewriting section here?}
 
 \section{SSA Semantics}
 
@@ -2277,7 +2277,7 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
 
 \section{Proofs}
 
-\subsection{Syntactic Metatheory}
+\subsection{Weakening and Substitution}
 
 \begin{theorem}[Weakening] \
   \begin{itemize}
@@ -2452,6 +2452,24 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
 
 \section{Rewriting}
 
+\subsection{Syntax}
+
+To properly be able to reason about congruence and congruence-based
+optimization, we need to introduce the concept of \textit{terms with holes},
+which are defined using the grammar in Figure
+\ref{fig:blocks-with-holes-grammar}. This simply extends the three main
+syntactic categories with \textit{holes} of the form \(\lhole{X}\),
+\(\lhole{T}\), \(\lhole{W}\). To \textit{type} terms with holes, we need to
+introduce the concept of a \textit{hole-context} \(H\), which types a hole as being
+one of:
+\begin{itemize}
+  \item \todo{expression}
+  \item \todo{block}
+  \item \todo{label-set}
+\end{itemize}
+\TODO{hole typing rules for expressions, blocks, label-sets; everything else is
+the same}.
+
 \begin{figure}
   \begin{grammar}
     <\(\mhole{a}, \mhole{b}, \mhole{c}, \mhole{e}\)> ::= \(\lhole{X}\)
@@ -2483,8 +2501,6 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
   \Description{Grammar for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-grammar}
 \end{figure}
-
-\TODO{some text about terms with holes}
 
 \begin{figure}
   \begin{gather*}    
@@ -2532,8 +2548,6 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
   \Description{Typing rules for isotope-SSA terms with holes}
   \label{fig:terms-with-holes-typing}
 \end{figure}
-
-\TODO{some text about term with hole typing rules}
 
 \begin{figure}
   \begin{gather*}    
@@ -2586,8 +2600,6 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
   \label{fig:blocks-with-holes-typing}
 \end{figure}
 
-\TODO{some text about block with hole typing rules}
-
 \begin{figure}
   \begin{gather*}
     \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock} \sqcup \ms{MCfg}}
@@ -2623,13 +2635,16 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
     \item If \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), then \(\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}\)
     \item If \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), then \(\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}\)
   \end{itemize}
-  
   Furthermore, we have that 
   \begin{itemize}
     \item \(\mhasty{\cdot}{\Gamma}{p}{a}{A}{q} \iff \hasty{\Gamma}{p}{a}{A}{q}\)
     \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
   \end{itemize}
 \end{theorem}
+
+\subsection{Semantics}
+
+\TODO{text}
 
 \begin{figure}
   \begin{align*}
