@@ -1618,19 +1618,28 @@ We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} fol
 
 \section{Concrete Models}
 
-In this section, we will build on the bare-bones models given in Section \ref{sec:semantics} to develop more sophisticated models capable of underpinning \isotopessa dialects supporting features such as weak memory and separation logic.
+In this section, we will build on the bare-bones models given in Section
+\ref{sec:semantics} to develop more sophisticated models capable of underpinning
+\isotopessa dialects supporting features such as weak memory and separation
+logic.
 
 \subsection{Trace Models}
 
-We will begin by giving a useful foundation for a wide class of \isotopessa models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially infinite) nondeterministic trace of monoidal "events". These will later come in handy for reasoning about output behaviour and weak memory.
+We will begin by giving a useful foundation for a wide class of \isotopessa
+models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially
+infinite) nondeterministic trace of monoidal "events". These will later come in
+handy for reasoning about output behaviour and weak memory.
 
 We begin with some definitions:
 \begin{definition}[Stream Action]
-  A \textbf{stream action} of a monoid \(M\) on a set \(I\) equipped with a monoid action \(\cdot: M \times I \to I\) is a function \(\Theta: M^\omega \to I\) is a map from streams of \(M\) to \(I\) satisfying
+  A \textbf{stream action} of a monoid \(M\) on a set \(I\) equipped with a
+  monoid action \(\cdot: M \times I \to I\) is a function \(\Theta: M^\omega \to
+  I\) mapping (infinite) streams of \(M\) to elements of \(I\) satisfying
   \(
     m \cdot \Theta(\ell) = \Theta(m \colon \ell)
   \),
-  where \(m \colon \ell\) denotes the stream formed by prefixing \(m\) to the stream \(\ell\).
+  where \(m \colon \ell\) denotes the stream formed by prefixing \(m\) to the
+  stream \(\ell\).
 \end{definition}
 Some basic examples include:
 \begin{enumerate}
@@ -1640,16 +1649,27 @@ Some basic examples include:
   \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\), the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell \cdot s\) prepends the (finite) list \(\ell\) to the (potentially infinite) sequence \(s\).
   \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts on \(\nats \cup \{\infty\}\) by addition.
 \end{enumerate}
-We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\). For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq \omega}) = Z(A^*) = \{[\,]\}\), while \(\mc{SZ}(\nats, \nats \cup \{\infty\}) = \{0\} \subseteq Z(\nats) = \nats\). Generally, \(\mc{SZ}(M, I)\) always contains the unit of \(M\).
+We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
+\(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
+those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\).
+For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq
+\omega}) = Z(A^*) = \{[\,]\}\), while \(\mc{SZ}(\nats, \nats \cup \{\infty\}) =
+\{0\} \subseteq Z(\nats) = \nats\). Generally, \(\mc{SZ}(M, I)\) always contains
+the unit of \(M\).
 
 We can now define the \textit{trace monad} of a stream action as follows:
 \begin{definition}[Trace Monad]
-  Given a stream action \(\Theta\) of \(M\) on \(I\), we can define the \textbf{nondeterministic trace monad} \(\ms{Traces}\;\Theta\;A = \mc{P}^+(A \times M + I)\), with
-  \(\eta_A = \lambda a.\iota_0 (a, 1)\)
-  and 
-  \[\mu_A\;T = \{[\lambda (a, m). m \cdot a, \ms{id}](t) \mid t \in T\}\]
-  where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') = \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). This is an Elgot monad, with iteration operator
-  \(f^\dagger(a) = f^\infty(a) \cup \bigcup_{n \in \nats}\{\iota_0 (\iota_0\;b, m) \in f_n(a)\} \cup \{\iota_1 t \in f_n(a)\}\), where
+  Given a stream action \(\Theta\) of \(M\) on \(I\), we can define the
+  \textbf{nondeterministic trace monad} \(\ms{Traces}\;\Theta\;A = \mc{P}^+(A
+  \times M + I)\), with \(\eta_A = \lambda a.\iota_0 (a, 1)\) and 
+  \[
+    \mu_A\;T = \{[\lambda (a, m). m \cdot a, \ms{id}](t) \mid t \in T\}
+  \]
+  where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') =
+  \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). This is an
+  Elgot monad, with iteration operator \(f^\dagger(a) = f^\infty(a) \cup
+  \bigcup_{n \in \nats}\{\iota_0 (\iota_0\;b, m) \in f_n(a)\} \cup \{\iota_1 t
+  \in f_n(a)\}\), where
   \[
     f_0 = f, \qquad f_{n + 1} = f \gg [\upg{\iota_0}{}, f_n]
   \]
