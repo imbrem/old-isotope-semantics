@@ -909,18 +909,35 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 
 \subsection{Syntactic Metatheory}
 
-\TODO{intro text}
-
+We can now state some of the basic metatheoretic properties of \isotopessa. We
+begin with weakening, which we state in our setting as follows:
 \begin{lemma}[Weakening] \
   \begin{itemize}
     \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
     \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
     \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
-    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\), then:
+    \begin{itemize}
+      \item If \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
+      \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\) then \(\lhaslb{\ms{W}}{L}{\ms{L}}\)
+    \end{itemize}
   \end{itemize}
 \end{lemma}
+That is, we can do the following and still keep our typing judgements valid
+\begin{itemize}
+  \item Add unused \textit{affine} variables
+  \item \textit{Reduce} the quantity of an expressions type
+  \item Add arbitrary unused labels, and remove unused \textit{affine} variables
+  from existing labels
+\end{itemize}
+This can be proved by a relatively straightforward mutual induction.
 
-\TODO{text}
+Our main metatheoretic results will be \textit{substitution} and
+\textit{label-substitution}, which will require introducing some new
+metatheoretic judgements to state properly, which we do in Figure
+\ref{fig:ssa-meta-judgements}.
+
+\TODO{some text about each metatheoretic judgement}
 
 \begin{figure}
   \begin{center}        
@@ -948,8 +965,6 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
   \Description{Metatheoretic typing judgements for isotope-SSA}
   \label{fig:ssa-meta-judgements}
 \end{figure}
-
-\TODO{some text about each metatheoretic judgement}
 
 \begin{figure}
   \begin{gather*}
@@ -1047,10 +1062,10 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 \begin{lemma}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
-    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
+    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\) and \(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}\)
     \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such
     that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and
-    \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\), \(\haslb{\Theta}{\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}}{\ms{K}}\)
     \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K},
     \ms{W}'\) such that 
     \begin{itemize}
