@@ -274,10 +274,13 @@ languages only justifies substituting values for variables (the $\beta$-value
 rule). This weak equational rule suffices to validate some basic compiler
 optimisations such as constant propagation and copy propagation, but is not
 strong enough to justify many other essential compiler optimisations. For
-example, hoisting a store out of a loop or conditional involves moving an
-effectful term (an assignment) out of its original position in the program. As
-another example, dead store elimination removes an effectful term from the
-program altogether. \todo{Add link to figure with code for these examples}
+example, hoisting a load out of a loop or conditional involves moving an
+effectful term out of its original position in the program (see Equation
+\ref{eqn:hoist}). As another example, dead store elimination removes an
+effectful term from the program altogether.
+
+%TODO: note that dead store elimination requires refinement, which we're not
+%covering in this paper...
 
 These examples illustrate that many optimisations require taking
 \emph{effectful} terms and moving them around and substituting them for
@@ -410,6 +413,7 @@ while(e) {
   body
 }
 \end{BVerbatim}
+\label{eqn:hoist}
 \end{equation}
 This transformation is only sound if the body of the loop \texttt{body} does not
 access \texttt{a}, which is precisely the kind of frame condition that linear
