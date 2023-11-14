@@ -937,8 +937,6 @@ Our main metatheoretic results will be \textit{substitution} and
 metatheoretic judgements to state properly, which we do in Figure
 \ref{fig:ssa-meta-judgements}.
 
-\TODO{some text about each metatheoretic judgement}
-
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -997,7 +995,27 @@ metatheoretic judgements to state properly, which we do in Figure
   \label{fig:ssa-subst-typing}
 \end{figure}
 
-\TODO{some text about substitution}
+In particular, the judgement \(\issubst{\gamma}{\Theta}{\Gamma}\) says that
+\(\gamma\), which is taken to be a map from variable names to expressions, is a
+valid substitution taking \(\Theta\) to \(\Gamma\). What this means is that, for
+each variable \(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted
+as a \textit{pure} term of type \(A^q\) in a subcontext of \(\Theta\), such that
+when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables
+in \(\Theta\) are used up: this is described formally via the typing rules
+\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
+to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
+\(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
+\subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/discarding
+of substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
+\(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
+
+\TODO{some text about substitution operations}
+
+\TODO{some text about label substitution}
+
+\TODO{some text about label substitution operations}
+
+\TODO{shuffle subst/lsubst and then ops?}
 
 \begin{figure}
   \begin{gather*}
@@ -1044,8 +1062,6 @@ metatheoretic judgements to state properly, which we do in Figure
   \Description{Operations on isotope-SSA substitutions}
   \label{fig:ssa-subst-ops}
 \end{figure}
-
-\TODO{some text about substitution operations}
 
 \begin{lemma}[Substitution Splitting] 
   If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
