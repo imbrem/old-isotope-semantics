@@ -551,7 +551,9 @@ exactly once. For example, the program in Figure \ref{fig:3-addr} has 3 basic bl
     \caption{Our syntax}
     \label{fig:our-syn}
   \end{subfigure}
-  \caption{A simple program for computing the \texttt{i}th Fibonacci number, represented as 3-address code, basic-blocks with arguments, and in our SSA syntax}
+  \caption{A simple program for computing the \texttt{i}th Fibonacci number,
+  represented as 3-address code, basic-blocks with arguments, and in our SSA
+  syntax} 
   \Description{}
   \label{fig:ssa-examples}
 \end{figure}
@@ -909,13 +911,14 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 
 \TODO{intro text}
 
-\begin{theorem}[Weakening] \
+\begin{lemma}[Weakening] \
   \begin{itemize}
-    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\), \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
+    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
+    \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
     \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
     \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
   \end{itemize}
-\end{theorem}
+\end{lemma}
 
 \TODO{text}
 
@@ -972,11 +975,10 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
       {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
       {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
   \end{gather*}
-  \caption{
-    Typing rules for \isotopessa substitutions. 
-    We generally assume that for all but finitely many variables \(x\) and labels \(\lbl{\ell}\), \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) = \lbrb{\ell}{x}\).
-  }
-  \Description{Typing rules for isotope-SSA substitutions}
+  \caption{ Typing rules for \isotopessa substitutions. We generally assume that
+    for all but finitely many variables \(x\) and labels \(\lbl{\ell}\),
+    \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) = \lbrb{\ell}{x}\). }
+    \Description{Typing rules for isotope-SSA substitutions}
   \label{fig:ssa-subst-typing}
 \end{figure}
 
@@ -1031,7 +1033,8 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 \TODO{some text about substitution operations}
 
 \begin{lemma}[Substitution Splitting] 
-  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
+  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
   \begin{itemize}
     \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
     \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
@@ -1041,29 +1044,32 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 
 \TODO{some text about substitution weakening}
 
-\begin{theorem}[Substitution] 
+\begin{lemma}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
     \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
-    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
-    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K}, \ms{W}'\) such that 
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such
+    that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and
+    \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K},
+    \ms{W}'\) such that 
     \begin{itemize}
       \item \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) 
       \item \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\) 
       \item \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
     \end{itemize}
   \end{itemize}
-\end{theorem}
+\end{lemma}
 
 \TODO{some text about substitution}
 
-\begin{theorem}[Label Substitution] 
+\begin{lemma}[Label Substitution] 
   Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
   \begin{itemize}
     \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
     \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
   \end{itemize}
-\end{theorem}
+\end{lemma}
 
 \TODO{some text about label substitution}
 
@@ -1131,9 +1137,23 @@ do that, we introduce the notion of an \textit{effectful category} as follows:
 \TODO{text on Freyd categories}
 
 \begin{definition}[(Symmetric) Premonoidal Subcategory]
-  Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is closed under whiskering and contains all associators, unitors, and symmetries. We say a subcategory is \textbf{monoidal} if, for all \(f: \mc{S}(A, B)\), \(g: \mc{S}(A', B')\), \(f \ltimes g = f \rtimes g\); we say it is \textbf{central} if this generalizes to the case where only one of \(f, g\) is in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
+  Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory
+  \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is
+  closed under whiskering and contains all associators, unitors, and symmetries.
+  We say a subcategory is \textbf{monoidal} if, for all \(f: \mc{S}(A, B)\),
+  \(g: \mc{S}(A', B')\), \(f \ltimes g = f \rtimes g\); we say it is
+  \textbf{central} if this generalizes to the case where only one of \(f, g\) is
+  in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
 \end{definition} 
-Note that the set of symmetric premonoidal subcategories, monoidal subcategories, and central subcategories of a category \(\mc{C}\) are all closed under intersections and therefore, in particular, form a complete meet-semilattice with shared bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the smallest possible symmetric premonodial subcategory. The largest symmetric premonoidal subcategory is of course \(\mc{C}\), while the largest central subcategory is the center of \(\mc{C}\) \(Z(\mb{C})\); the existence of a top-element means that in these cases we may induce the structure of a complete lattice in the usual manner.
+Note that the set of symmetric premonoidal subcategories, monoidal
+subcategories, and central subcategories of a category \(\mc{C}\) are all closed
+under intersections and therefore, in particular, form a complete
+meet-semilattice with shared bottom element \(\ms{Skeleton}(\mc{C})\), where
+\(\ms{Skeleton}(C)\) is the smallest possible symmetric premonodial subcategory.
+The largest symmetric premonoidal subcategory is of course \(\mc{C}\), while the
+largest central subcategory is the center of \(\mc{C}\) \(Z(\mb{C})\); the
+existence of a top-element means that in these cases we may induce the structure
+of a complete lattice in the usual manner.
 
 % Should we go down this road?
 % \begin{definition}[Strictly Effectful Category] \
@@ -1143,25 +1163,34 @@ Note that the set of symmetric premonoidal subcategories, monoidal subcategories
 \TODO{text}
 
 \begin{definition}[Substructural (Pre)monoidal Category]
-  A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A}, \mc{R})\) where:
+  A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A},
+  \mc{R})\) where:
   \begin{itemize}
-    \item \(\mc{C}\) is a family of categories \(\mc{C}^q\) parametrized by subsets \(q \subseteq \{\ms{a}, \ms{r}\}\) such that
+    \item \(\mc{C}\) is a family of categories \(\mc{C}^q\) parametrized by
+    subsets \(q \subseteq \{\ms{a}, \ms{r}\}\) such that
     \begin{itemize}
-      \item For all \(q \subseteq q'\), \(\mc{C}^{q'}\) is a wide subcategory of \(\mc{C}^q\), and in particular all object sets \(|\mc{C}^q|\) are the same. We will write this set as \(|\mc{C}|\)
-      \item All \(\mc{C}^q\) share symmetric (pre)monoidal structure, and are individually closed under the tensor products of morphisms
+      \item For all \(q \subseteq q'\), \(\mc{C}^{q'}\) is a wide subcategory of
+      \(\mc{C}^q\), and in particular all object sets \(|\mc{C}^q|\) are the
+      same. We will write this set as \(|\mc{C}|\)
+      \item All \(\mc{C}^q\) share symmetric (pre)monoidal structure, and are
+      individually closed under the tensor products of morphisms
       \item \(\mc{C}^{q \cap q'} = \mc{C}^q \cap \mc{C}^{q'}\)
     \end{itemize}
-    \item \(\mc{A} \subseteq |\mc{C}|\) is a set of \textbf{affine} objects closed under tensor products, such that
+    \item \(\mc{A} \subseteq |\mc{C}|\) is a set of \textbf{affine} objects
+    closed under tensor products, such that
     \begin{itemize}
       \item \(\mb{1} \in \mc{A}\)
-      \item Every \(A\) in \(\mc{A}\) is equipped with a central morphism \(\ms{drop}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, \mb{1})\)
+      \item Every \(A\) in \(\mc{A}\) is equipped with a central morphism
+      \(\ms{drop}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, \mb{1})\)
       \item \(\forall A, B \in \mc{A}, \ms{drop}(A \otimes B) = \ms{drop}(A) \otimes \ms{drop}(B);\lambda_I\)
       \item \(\forall A, B \in \mc{A}, \forall f: \mc{C}^{\{\ms{a}\}}(A, B), f;\ms{drop}(B) = \ms{drop}(A)\)
     \end{itemize}
-    \item \(\mc{R} \subseteq |\mc{C}|\) is a set of \textbf{relevant} objects closed under tensor products, such that
+    \item \(\mc{R} \subseteq |\mc{C}|\) is a set of \textbf{relevant} objects
+    closed under tensor products, such that
     \begin{itemize}
       \item \(\mb{1} \in \mc{R}\)
-      \item Every \(A\) in \(\mc{R}\) is equipped with a central morphism \(\ms{split}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, A \otimes A)\)
+      \item Every \(A\) in \(\mc{R}\) is equipped with a central morphism
+      \(\ms{split}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, A \otimes A)\)
       \item \(\forall A, B \in \mc{R}, \ms{split}(A \otimes B) = \ms{split}(A) \otimes \ms{split}(B);\alpha;A \otimes \sigma_{A, B} \otimes B;\alpha\)
       \item Associativity: \(\forall A \in \mc{R}, \ms{split}(A);\ms{split}(A) \otimes A;\alpha = \ms{split}(A);A \otimes \ms{split}(A)\)
       \item Commutativity: \(\forall A \in \mc{R}, \ms{split}(A);\sigma = \ms{split}(A)\)
@@ -1169,10 +1198,19 @@ Note that the set of symmetric premonoidal subcategories, monoidal subcategories
       \item \(\forall A, B \in \mc{R}, \forall f: \mc{C}^{\{\ms{r}\}}(A, B), f;\ms{split}(B) = \ms{split}(A);f \ltimes f = \ms{split}(A);f\rtimes f\)
     \end{itemize}
   \end{itemize}
-  We call the morphisms in \(\mc{C}^{\{\ms{a}\}}\) \textbf{affine}, the morphisms in \(\mc{C}^{\{\ms{r}\}}\) \textbf{relevant}, and the morphisms in \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) \textbf{pure} or \textbf{intuitionistic}. We call the morphisms in \(\mc{C}^\varnothing\) but not necessarily in any of the other \(\mc{C}^q\) \textbf{linear}. We call a substructural \textit{monoidal} category a \textbf{substructural Cartesian category} if \(\mc{A} = \mc{R} = |\mc{C}|\), in which case \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) is Cartesian.
+  We call the morphisms in \(\mc{C}^{\{\ms{a}\}}\) \textbf{affine}, the
+  morphisms in \(\mc{C}^{\{\ms{r}\}}\) \textbf{relevant}, and the morphisms in
+  \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) \textbf{pure} or \textbf{intuitionistic}. We
+  call the morphisms in \(\mc{C}^\varnothing\) but not necessarily in any of the
+  other \(\mc{C}^q\) \textbf{linear}. We call a substructural \textit{monoidal}
+  category a \textbf{substructural Cartesian category} if \(\mc{A} = \mc{R} =
+  |\mc{C}|\), in which case \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) is Cartesian.
 \end{definition}
-\TODO{Define \(\mc{C}^{\ms{a}}, \mc{C}^{\ms{r}}\) syntax? Make lattice generated by syntax?}
-A simple example of a substructural Cartesian category is the category of relations \(\ms{Rel}\), viewed as the Kleisli category of the power-set monad with morphisms of the form \(\ms{Rel}(A, B) = A \to \mc{P}(B)\). In particular, we can define:
+\TODO{Define \(\mc{C}^{\ms{a}}, \mc{C}^{\ms{r}}\) syntax? Make lattice generated
+by syntax?} A simple example of a substructural Cartesian category is the
+category of relations \(\ms{Rel}\), viewed as the Kleisli category of the
+power-set monad with morphisms of the form \(\ms{Rel}(A, B) = A \to \mc{P}(B)\).
+In particular, we can define:
 \begin{equation}
   \begin{aligned}
     \ms{Rel}^\varnothing(A, B) 
@@ -1189,57 +1227,96 @@ A simple example of a substructural Cartesian category is the category of relati
     &&= A \to B
   \end{aligned}
 \end{equation}
-Here, \(\ms{split}(A)\) is just the copy operator \(a \mapsto (a, a)\) and \(\ms{drop}(A)\) the deletion operator \(a \mapsto ()\); it is quite trivial to prove that these lie in \(\ms{Rel}^{\{\ms{a}, \ms{r}\}}\), being functions, and that they satisfy the axioms of a commutative comonoid, as desired. 
+Here, \(\ms{split}(A)\) is just the copy operator \(a \mapsto (a, a)\) and
+\(\ms{drop}(A)\) the deletion operator \(a \mapsto ()\); it is quite trivial to
+prove that these lie in \(\ms{Rel}^{\{\ms{a}, \ms{r}\}}\), being functions, and
+that they satisfy the axioms of a commutative comonoid, as desired. 
 
-Note that we cannot simply have \(\ms{Rel}^{\{\ms{a}\}} = \ms{Rel}\), since, for any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, R(a) = \varnothing\), we have
+Note that we cannot simply have \(\ms{Rel}^{\{\ms{a}\}} = \ms{Rel}\), since, for
+any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, R(a) =
+\varnothing\), we have
 \begin{equation}
   (R;\ms{drop}(B))(a) = \varnothing \neq \ms{drop}(A)(a) = \{()\}
 \end{equation}
-We will see that this corresponds to the fact that the following programs are not semantically equal
+We will see that this corresponds to the fact that the following programs are
+not semantically equal
 \begin{equation}
   \ms{let}\;x = \ms{loop}(); e \not\simeq e \qquad \text{where} \qquad x \notin \ms{fv}(e)
 \end{equation}
-Similarly, we cannot simply have \(\ms{Rel}^{\{\ms{r}\}} = \ms{Rel}\), since, for any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, |R(a)| \supseteq \{b_0, b_1\}\) where \(b_0 \neq b_1\), we have that
+Similarly, we cannot simply have \(\ms{Rel}^{\{\ms{r}\}} = \ms{Rel}\), since,
+for any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, |R(a)|
+\supseteq \{b_0, b_1\}\) where \(b_0 \neq b_1\), we have that
 \begin{equation}
   (R;\ms{split}(B))(a) = \{(b, b) \mid b \in R(a)\} \neq (\ms{split}(A);R)(a) = R(a) \times R(a) 
 \end{equation}
-since only the left-hand side contains the pair \((b_0, b_1)\), this corresponding to the fact that the following programs are not semantically equal
+since only the left-hand side contains the pair \((b_0, b_1)\), this
+corresponding to the fact that the following programs are not semantically equal
 \begin{equation}
   \ms{let}\;x = \ms{rand}(); (x, x) \not\simeq (\ms{rand}(), \ms{rand}())
 \end{equation}
-To get a substructural premonoidal category, we can apply the state monad transformer to the power set monad to obtain the Kleisli category with morphisms of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times S)\). Once again, it is clear that all objects have split and drop morphisms inherited from \(\ms{Set}\), and therefore are affine and relevant
+To get a substructural premonoidal category, we can apply the state monad
+transformer to the power set monad to obtain the Kleisli category with morphisms
+of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times
+S)\). Once again, it is clear that all objects have split and drop morphisms
+inherited from \(\ms{Set}\), and therefore are affine and relevant
 
 \begin{definition}[Susbtructural Effectful Category]
   A \textbf{substructural effectful category} \(\mc{C}\) consists of
   \begin{itemize}
-    \item A substructural monoidal category \(\mc{C}_1\); we call the morphisms in this category \textbf{central} or \textbf{linear}
-    \item A substructural premonoidal category \(\mc{C}_0\) sharing the same affine and relevant objects as \(\mc{C}_1\)
-    \item An identity-on-objects functor \(\upg{\cdot}{}: \mc{C}_1^\varnothing \to \mc{C}_0^\varnothing\) preserving all substructural premonoidal structure, i.e., preserves all symmetries, associators, unitors, drops, and splits and sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\).
-    In particular, restricting \(\upg{\cdot}{}\) appropriately makes all \(\mc{C}_1^q \to \mc{C}_0^q\) into effectful categories.
+    \item A substructural monoidal category \(\mc{C}_1\); we call the morphisms
+    in this category \textbf{central} or \textbf{linear}
+    \item A substructural premonoidal category \(\mc{C}_0\) sharing the same
+    affine and relevant objects as \(\mc{C}_1\)
+    \item An identity-on-objects functor \(\upg{\cdot}{}: \mc{C}_1^\varnothing
+    \to \mc{C}_0^\varnothing\) preserving all substructural premonoidal
+    structure, i.e., preserves all symmetries, associators, unitors, drops, and
+    splits and sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\). In particular,
+    restricting \(\upg{\cdot}{}\) appropriately makes all \(\mc{C}_1^q \to
+    \mc{C}_0^q\) into effectful categories.
   \end{itemize}
-  We define \(\upg{f}{0}\) to be \(\upg{f}{}\) for morphisms in \(\mc{C}_1^q\) and simply \(f\) for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) to simply be the identity functor on \(\mc{C}_1^q\).
+  We define \(\upg{f}{0}\) to be \(\upg{f}{}\) for morphisms in \(\mc{C}_1^q\)
+  and simply \(f\) for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) to simply
+  be the identity functor on \(\mc{C}_1^q\).
  
-  Morphisms in \(\mc{C}_p^{\{\ms{a}\}}\) are called \textbf{copyable}, morphisms in \(\mc{C}_p^{\{\ms{r}\}}\) are called \textbf{discardable},
-  while morphisms in \(\mc{C}_1^{\{\ms{a}\}}, \mc{C}_1^{\{\ms{r}\}}, \mc{C}_1^{\{\ms{a}, \ms{r}\}}\) specifically are called \textbf{affine}, \textbf{relevant}, and \textbf{intuitionistic} or \textbf{pure} respectively.
+  Morphisms in \(\mc{C}_p^{\{\ms{a}\}}\) are called \textbf{copyable}, morphisms
+  in \(\mc{C}_p^{\{\ms{r}\}}\) are called \textbf{discardable}, while morphisms
+  in \(\mc{C}_1^{\{\ms{a}\}}, \mc{C}_1^{\{\ms{r}\}}, \mc{C}_1^{\{\ms{a},
+  \ms{r}\}}\) specifically are called \textbf{affine}, \textbf{relevant}, and
+  \textbf{intuitionistic} or \textbf{pure} respectively.
 \end{definition}
 
-We can obtain an example of a substructural effectful category quite easily by, considering the power-set monad above, applying the state transformer to yield the Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to S \to \mc{P}(A \times S)\). Letting \(\mc{C}_1^q = \ms{Rel}^q\) and defining
+We can obtain an example of a substructural effectful category quite easily by,
+considering the power-set monad above, applying the state transformer to yield
+the Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to S \to
+\mc{P}(A \times S)\). Letting \(\mc{C}_1^q = \ms{Rel}^q\) and defining
 \(
   \upg{R}{} = \lambda a, s. R(a) \times \{s\}
 \), we can verify that this satisfies the axioms of a substructural effectful category.
-Note that here the \textit{central} morphisms are precisely those which do not read from or write to the state, and therefore which commute with all other morphisms.
+Note that here the \textit{central} morphisms are precisely those which do not
+read from or write to the state, and therefore which commute with all other
+morphisms.
 
-In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a substructural premonoidal category, with \(\mc{C}^\varnothing = \mc{C}\) and \(\mc{C}^{\{\ms{a}, \ms{r}\}}, \mc{C}^{\{\ms{a}\}}, \mc{C}^{\{\ms{r}\}}\) the subcategory consisting only of the associators, unitors, and symmetry, and only the identity object considered affine and relevant. On the other extreme, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a substructural Cartesian category with all morphisms both relevant and affine; in fact, this is the case \textit{if and only if} a category is Cartesian, hence the term "substructural Cartesian category."
+In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
+substructural premonoidal category, with \(\mc{C}^\varnothing = \mc{C}\) and
+\(\mc{C}^{\{\ms{a}, \ms{r}\}}, \mc{C}^{\{\ms{a}\}}, \mc{C}^{\{\ms{r}\}}\) the
+subcategory consisting only of the associators, unitors, and symmetry, and only
+the identity object considered affine and relevant. On the other extreme, every
+\textit{Cartesian} category \(\mc{C}\) can be viewed as a substructural
+Cartesian category with all morphisms both relevant and affine; in fact, this is
+the case \textit{if and only if} a category is Cartesian, hence the term
+"substructural Cartesian category."
 
 We can also deduce the following:
 \begin{proposition}
-  If \(\mc{C}\) is a substructural monoidal category then the Kleisli category \(\mc{C}_{\mb{T}}\) is a substructural premonoidal category with:
+  If \(\mc{C}\) is a substructural monoidal category then the Kleisli category
+  \(\mc{C}_{\mb{T}}\) is a substructural premonoidal category with:
   \begin{itemize}
     \item \(\ms{Aff}(\mc{C}_{\mb{T}}) = \ms{Aff}(\mc{C})\), \(\ms{Rel}(\mc{C}_{\mb{T}}) = \ms{Rel}(\mc{C})\)
     \item \(\mc{C}_{\mb{T}}^q(A, B) = \upg{\mc{C}^q(A, B)}{}\), where \(\upg{f}{} = f;\eta\)
     \item Drops \(\upg{\ms{drop}(A)}{}\) and splits \(\upg{\ms{split}(A)}{}\)
   \end{itemize} 
-  In particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a substructural effectful category.
+  In particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a
+  substructural effectful category.
 \end{proposition}
 
 \TODO{work into text?}
@@ -1247,17 +1324,34 @@ We can also deduce the following:
 \subsection{Distributivity}
 
 \begin{definition}[Distributive (pre)monoidal category] 
-  A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category with all finite coproducts equipped with a natural family of central isomorphisms (the \textbf{distributor}) \(\delta_{A, B, C}: (A + B) \otimes C \simeq A \otimes C + B \otimes C\). This isomorphism is subject to rather complex coherence conditions, worked out in full for the more general case of \textit{rig categories} in \cite{laplaza-distributivity}, but for our purposes we will only make use of the following:
+  A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category
+  with all finite coproducts equipped with a natural family of central
+  isomorphisms (the \textbf{distributor}) \(\delta_{A, B, C}: (A + B) \otimes C
+  \simeq A \otimes C + B \otimes C\). This isomorphism is subject to rather
+  complex coherence conditions, worked out in full for the more general case of
+  \textit{rig categories} in \cite{laplaza-distributivity}, but for our purposes
+  we will only make use of the following:
   \begin{equation*}
     \delta_{A, B, C}^{-1} = [\iota_0 \otimes C, \iota_1 \otimes C] 
     \qquad
     \sigma^+_{A, B} \otimes C;\delta_{B, A, C} = \delta_{A, B, C};\sigma^+_{A \otimes C, B \otimes C}
   \end{equation*}
-  Note in particular that this implies that \(\iota_i \otimes C;\delta_{A, B, C} = \iota_i\). A substructural (pre)monodial category is \textbf{distributive} if it is distributive as a (pre)monoidal category, and its distributor is \textit{pure}. A substructural effectful category \(\mc{C}\) is \textbf{distributive} if \(\mc{C}_0\) is distributive (as a substructural (pre)monoidal category).
+  Note in particular that this implies that \(\iota_i \otimes C;\delta_{A, B, C}
+  = \iota_i\). A substructural (pre)monodial category is \textbf{distributive}
+  if it is distributive as a (pre)monoidal category, and its distributor is
+  \textit{pure}. A substructural effectful category \(\mc{C}\) is
+  \textbf{distributive} if \(\mc{C}_0\) is distributive (as a substructural
+  (pre)monoidal category).
 \end{definition}
-Many (pre)monoidal categories are distributive, including of course \(\ms{Set}\), but also categories which can be derived from monads on more primitive categories such as \(\ms{PFun}\) and \(\ms{Rel}\), as can be deduced from the following proposition:
+Many (pre)monoidal categories are distributive, including of course
+\(\ms{Set}\), but also categories which can be derived from monads on more
+primitive categories such as \(\ms{PFun}\) and \(\ms{Rel}\), as can be deduced
+from the following proposition:
 \begin{proposition}
-  If \(\mc{C}\) is a distributive substructural monoidal category and \(\mb{T}\) is a strong monad on \(\mc{C}\), then the Kleisli category \(\mc{C}_{\mb{T}}\) is a distributive substructural effectful category (with affine and relevant objects and morphisms inherited from \(\mc{C}\))
+  If \(\mc{C}\) is a distributive substructural monoidal category and \(\mb{T}\)
+  is a strong monad on \(\mc{C}\), then the Kleisli category \(\mc{C}_{\mb{T}}\)
+  is a distributive substructural effectful category (with affine and relevant
+  objects and morphisms inherited from \(\mc{C}\))
 \end{proposition}
 \begin{proof}
   Let \(\delta_{A, B, C}: \mc{C}((A + B) \otimes C, A \otimes C + B \otimes C)\) denote \(\mc{C}\)'s distributor. We will write composition in \(\mc{C}\) as "\(;\)" and composition in the Kleisli category \(\mb{T}\) as "\(\gg\)".
@@ -1280,7 +1374,9 @@ Many (pre)monoidal categories are distributive, including of course \(\ms{Set}\)
 \TODO{text}
 
 \begin{definition}[Elgot category] 
-  An \textbf{Elgot category} is a category \(\mc{C}\) with coproducts equipped with an operator \(\cdot^\dagger: \mc{C}(A, B + A) \to \mc{C}(A, B)\) satisfying the following properties:
+  An \textbf{Elgot category} is a category \(\mc{C}\) with coproducts equipped
+  with an operator \(\cdot^\dagger: \mc{C}(A, B + A) \to \mc{C}(A, B)\)
+  satisfying the following properties:
   \begin{itemize}
     \item \textbf{Fixpoint:} \(f;[\ms{id}, f^\dagger] = f^\dagger\)
     \item \textbf{Naturality:} \((f;g + \ms{id})^\dagger = f^\dagger;g\)
@@ -1290,35 +1386,53 @@ Many (pre)monoidal categories are distributive, including of course \(\ms{Set}\)
       h;f = g;\ms{id} + h \implies h;f^\dagger = g^\dagger
     \)
   \end{itemize}
-  A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
+  A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry
+  \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
 \end{definition}
 \TODO{why do these matter? they show up in the proofs, but...}
 Some important properties which hold for all Elgot categories include:
 \begin{itemize}
-  \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id}, (h;[\iota_0, g])^\dagger]\)
+  \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id},
+  (h;[\iota_0, g])^\dagger]\)
   \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\)
 \end{itemize}
 Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
 
 \begin{proposition}
-  If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;\mb{T}\;S = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda A. S \to \ms{T}(A)\), and \(\ms{WriterT}\;\mb{T}\;S = \lambda A. \ms{T}(A \times S)\) are all Elgot
+  If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;\mb{T}\;S
+  = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda
+  A. S \to \ms{T}(A)\), and \(\ms{WriterT}\;\mb{T}\;S = \lambda A. \ms{T}(A
+  \times S)\) are all Elgot
 \end{proposition}
 
 \subsection{Denotational Semantics}
 
-\TODO{make aff and rel syntax nicer/more consistent here? Subcategory syntax would be nice for lemmas and just coherence.}
+\TODO{make aff and rel syntax nicer/more consistent here? Subcategory syntax
+would be nice for lemmas and just coherence.}
 
-We're now ready to give a semantics for an \isotopessa dialect with a set of types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
+We're now ready to give a semantics for an \isotopessa dialect with a set of
+types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
 \begin{itemize}
-  \item A \textit{substructural effectful category} \(\mc{C} = \mc{C}_1 \to \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot}, equipped with
-  \item A function \(\ms{base}(X)\) from base types \(X \in \mc{T}\) to objects in \(|\mc{C}|\), such that \(\ms{a} \in \ms{lin}(X) \implies \ms{base}(X) \in \ms{Aff}(\mc{C})\) and \(\ms{r} \in \ms{lin}(X) \implies \ms{base}(X) \in \ms{Rel}(\mc{C})\)
-  \item A function \(\ms{inst}(f)\) from instructions \(f \in \mc{I}_p^q(A, B)\) to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
+  \item A \textit{substructural effectful category} \(\mc{C} = \mc{C}_1 \to
+  \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot},
+  equipped with
+  \item A function \(\ms{base}(X)\) from base types \(X \in \mc{T}\) to objects
+  in \(|\mc{C}|\), such that \(\ms{a} \in \ms{lin}(X) \implies \ms{base}(X) \in
+  \ms{Aff}(\mc{C})\) and \(\ms{r} \in \ms{lin}(X) \implies \ms{base}(X) \in
+  \ms{Rel}(\mc{C})\)
+  \item A function \(\ms{inst}(f)\) from instructions \(f \in \mc{I}_p^q(A, B)\)
+  to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
 \end{itemize}
-We begin by giving a semantics for types and contexts in terms of objects in \(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}; this allows us to give a semantics for structural judgements in Figure \ref{fig:ssa-structural-semantics}.
+We begin by giving a semantics for types and contexts in terms of objects in
+\(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}; this allows us to give a
+semantics for structural judgements in Figure
+\ref{fig:ssa-structural-semantics}.
 
 \TODO{some text about what the semantics actually are...}
 
-We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics} followed by a semantics for blocks and label-sets in Figure \ref{fig:ssa-block-semantics}.
+We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics}
+followed by a semantics for blocks and label-sets in Figure
+\ref{fig:ssa-block-semantics}.
 
 \TODO{ditto}
 
@@ -2093,7 +2207,102 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
 
 \section{Proofs}
 
-\TODO{these}
+\subsection{Syntactic Metatheory}
+
+\begin{theorem}[Weakening] \
+  \begin{itemize}
+    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\), \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
+    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
+  \end{itemize}
+\end{theorem}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\begin{lemma}[Substitution Splitting] 
+  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
+  \begin{itemize}
+    \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
+    \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
+    \item \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\)
+  \end{itemize}
+\end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\begin{lemma}[Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K}, \ms{W}'\) such that 
+    \begin{itemize}
+      \item \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) 
+      \item \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\) 
+      \item \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
+    \end{itemize}
+  \end{itemize}
+\end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\begin{lemma}[Label Substitution] 
+  Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
+  \begin{itemize}
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
+    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
+  \end{itemize}
+\end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\subsection{Semantic Metatheory}
+
+\begin{lemma}[Semantic Upgrade]
+  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
+  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
+\end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\begin{lemma}[Semantic Weakening] 
+  If \(\cwk{\Gamma}{\Delta}\), then 
+  \begin{itemize}
+    \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
+    \[
+      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+      ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
+      = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+    \]
+    \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
+    \[
+      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+      ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
+      = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
+    \]
+  \end{itemize}
+
+  Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
+  \[
+    \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+    ; \dnt{\lwk{\ms{L}}{\ms{K}}}
+    = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
+  \]
+\end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
 \begin{lemma}[Substitution Coherence] \
   \begin{itemize}
@@ -2101,6 +2310,10 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
     \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
   \end{itemize}
 \end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
 \begin{lemma}[Semantic Substitution Splitting] 
   Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
@@ -2112,6 +2325,60 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
       \otimes \dnt{\issubst{\gamma}{\Theta_\Xi}{\Xi}}
   \]
 \end{lemma}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
+
+\begin{theorem}[Semantic Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item For all \(\hasty{\Gamma}{p}{a}{A}{q}\), 
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
+      ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+      = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
+    \]
+    \item For all 
+      \(\haslb{\Gamma}{t}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\), 
+      \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
+      ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
+      ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
+    \]
+    \item For all 
+      \(\lhaslb{\ms{W}}{L}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
+      \(\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}\),
+      \[
+        \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+        ; \dnt{\lhaslb{\ms{W'}}{[\gamma]L}{\ms{K}}}
+        = \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}}
+        ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}}
+        + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+      \]
+  \end{itemize}
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
+  \begin{itemize} 
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+    \[
+      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+    \]
+    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), we have
+    \[
+      \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{L}}}
+    \]
+  \end{itemize}
+\end{theorem}
+
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
 \section{Rewriting}
 
