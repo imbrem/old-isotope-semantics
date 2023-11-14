@@ -1262,7 +1262,7 @@ Many (pre)monoidal categories are distributive, including of course \(\ms{Set}\)
 \begin{proof}
   Let \(\delta_{A, B, C}: \mc{C}((A + B) \otimes C, A \otimes C + B \otimes C)\) denote \(\mc{C}\)'s distributor. We will write composition in \(\mc{C}\) as "\(;\)" and composition in the Kleisli category \(\mb{T}\) as "\(\gg\)".
   We will show that
-  \(\upg{\delta_{A, B, C}}{} = \delta_{A, B, C};\ms{pure}: \mc{C}_{\mb{T}}((A + B) \otimes C, A \otimes C + B \otimes C)\) satisfies the desired properties of a distributor. In particular, it is:
+  \(\upg{\delta_{A, B, C}}{}: \mc{C}_{\mb{T}}((A + B) \otimes C, A \otimes C + B \otimes C)\) satisfies the desired properties of a distributor. In particular, it is:
   \begin{itemize}
     \item Central: this follows immediately from being the image of a pure morphism
     \item Affine: \(\upg{\delta}{} \gg \upg{\ms{drop}}{} = \upg{(\delta;\ms{drop})}{} = \upg{\ms{drop}}{}\)
@@ -2091,7 +2091,29 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
 
 \appendix
 
-\section{Appendix}
+\section{Proofs}
+
+\TODO{these}
+
+\begin{lemma}[Substitution Coherence] \
+  \begin{itemize}
+    \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{lemma}
+
+\begin{lemma}[Semantic Substitution Splitting] 
+  Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
+  if \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\) and \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), then
+  \[
+    \dnt{\issubst{\gamma}{\Theta}{\Gamma}};\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+    = \dnt{\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}};
+      \dnt{\issubst{\gamma}{\Theta_\Delta}{\Delta}}
+      \otimes \dnt{\issubst{\gamma}{\Theta_\Xi}{\Xi}}
+  \]
+\end{lemma}
+
+\section{Rewriting}
 
 \begin{figure}
   \begin{grammar}
@@ -2271,27 +2293,6 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
     \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
   \end{itemize}
 \end{theorem}
-
-\begin{lemma}[Substitution Coherence] \
-  \begin{itemize}
-    \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
-  \end{itemize}
-\end{lemma}
-
-\TODO{pull down to appendix? just trivial induction.}
-
-\begin{lemma}[Semantic Substitution Splitting] 
-  Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
-  if \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\) and \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), then
-  \[
-    \dnt{\issubst{\gamma}{\Theta}{\Gamma}};\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
-    = \dnt{\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}};
-      \dnt{\issubst{\gamma}{\Theta_\Delta}{\Delta}}
-      \otimes \dnt{\issubst{\gamma}{\Theta_\Xi}{\Xi}}
-  \]
-\end{lemma}
-
 
 \begin{figure}
   \begin{align*}
