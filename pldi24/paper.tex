@@ -932,11 +932,6 @@ That is, we can do the following and still keep our typing judgements valid
 \end{itemize}
 This can be proved by a relatively straightforward mutual induction.
 
-Our main metatheoretic results will be \textit{substitution} and
-\textit{label-substitution}, which will require introducing some new
-metatheoretic judgements to state properly, which we do in Figure
-\ref{fig:ssa-meta-judgements}.
-
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -995,15 +990,19 @@ metatheoretic judgements to state properly, which we do in Figure
   \label{fig:ssa-subst-typing}
 \end{figure}
 
-In particular, the judgement \(\issubst{\gamma}{\Theta}{\Gamma}\) says that
-\(\gamma\), which is taken to be a map from variable names to expressions, is a
-valid substitution taking \(\Theta\) to \(\Gamma\). What this means is that, for
-each variable \(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted
-as a \textit{central} term of type \(A^q\) in a subcontext of \(\Theta\), such
-that when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine
-variables in \(\Theta\) are used up: this is described formally via the typing
-rules \rle{subst-nil}, which says that any function \(\gamma\) takes the empty
-context to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
+Our main metatheoretic results will be \textit{substitution} and
+\textit{label-substitution}, which will require introducing some new
+metatheoretic judgements to state properly, which we do in Figure
+\ref{fig:ssa-meta-judgements}. In particular, the judgement
+\(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which is taken to be
+a map from variable names to expressions, is a valid substitution taking
+\(\Theta\) to \(\Gamma\). What this means is that, for each variable
+\(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted as a
+\textit{central} term of type \(A^q\) in a subcontext of \(\Theta\), such that
+when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables
+in \(\Theta\) are used up: this is described formally via the typing rules
+\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
+to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
 \(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
 \subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/discarding
 of substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
@@ -1025,7 +1024,7 @@ and only relevant computationbs can be used in an expression substituting
 for a relevant variable.
 
 We can now state our substitution theorem for terms in a straightforward way: if
-\(\substctx{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
+\(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
 \(\hasty{\Theta}{p}{[\gamma]e}{A}{q}\) and
 \(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{e}}{A}{q}\).
 Unfortunately, the substitution theorem for blocks is a little more complicated:
