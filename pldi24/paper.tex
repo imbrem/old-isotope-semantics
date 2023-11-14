@@ -999,23 +999,45 @@ In particular, the judgement \(\issubst{\gamma}{\Theta}{\Gamma}\) says that
 \(\gamma\), which is taken to be a map from variable names to expressions, is a
 valid substitution taking \(\Theta\) to \(\Gamma\). What this means is that, for
 each variable \(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted
-as a \textit{pure} term of type \(A^q\) in a subcontext of \(\Theta\), such that
-when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables
-in \(\Theta\) are used up: this is described formally via the typing rules
-\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
-to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
+as a \textit{central} term of type \(A^q\) in a subcontext of \(\Theta\), such
+that when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine
+variables in \(\Theta\) are used up: this is described formally via the typing
+rules \rle{subst-nil}, which says that any function \(\gamma\) takes the empty
+context to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
 \(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
 \subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/discarding
 of substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
 \(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
 
-\TODO{some text about substitution operations}
+Given such a substitution \(\gamma\), there are two ways to use it. The first is
+standard capture-avoiding substitution, which we denote \([\gamma]e\) for
+expressions, \([\gamma]t\) for blocks, and \([\gamma]L\) for label-sets, as is
+standard. The second is to use the substitution to generate a set of
+let-bindings for a context \(\Gamma\), written
+\(\exprletsubst{\substctx{\gamma}{\Gamma}}{e}\) for expressions and
+\(\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}\) for blocks, as defined in Figure
+\ref{fig:ssa-subst-ops}. Note that this operation cannot be easily defined for
+label-sets. In Section \ref{sec:semantics}, we will show that this is
+semantically equivalent to regular capture-avoiding substitution, due to the
+fact that all terms in a substitution are central \textit{and} that only affine
+computations can be used in an expression substituting for an affine variable,
+and only relevant computationbs can be used in an expression substituting
+for a relevant variable.
+
+We can now state our substitution theorem for terms in a straightforward way: if
+\(\substctx{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
+\(\hasty{\Theta}{p}{[\gamma]e}{A}{q}\) and
+\(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{e}}{A}{q}\).
+Unfortunately, the substitution theorem for blocks is a little more complicated:
+the naive choice of attempting to show \(\haslb{\Gamma}{t}{\ms{L}} \implies
+\haslb{\Theta}{[\gamma]t}{\ms{L}}\) does not work, since \(\ms{L}\) may contain
+captured variables from \(\Gamma\) that are no longer available if we are typing
+\([\gamma]t\) in the context of \(\Theta\). To solve this problem, we need to
+introduce the concept of a \textit{label-substitution} \(\mc{L}\) \todo{rest}
 
 \TODO{some text about label substitution}
 
 \TODO{some text about label substitution operations}
-
-\TODO{shuffle subst/lsubst and then ops?}
 
 \begin{figure}
   \begin{gather*}
