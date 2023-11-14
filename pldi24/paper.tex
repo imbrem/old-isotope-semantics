@@ -402,13 +402,13 @@ optimisations such as loop hoisting:
 \begin{equation}
 \begin{BVerbatim}[baseline=c]
 while (e) {
-  x = read(a);
+  x = load(a);
   body
 }
 \end{BVerbatim}
 \qquad \qquad \implies \qquad \qquad
 \begin{BVerbatim}[baseline=c]
-x = read(a);
+x = load(a);
 while(e) {
   body
 }
@@ -423,7 +423,7 @@ be reused to track whether \emph{values} are linear/affine/relevant.
 
 Historically, compiler writers have treated the semantics of their IR quite
 informally, since the "intended model" of the language is a simple sequential
-machine operating over a heap which is a flat array of bytes. Unfortunately,
+machine operating over a flat array of bytes. Unfortunately,
 over time both the intended model and the actual hardware have drifted away from
 this simple mental model. Compiler frameworks have to model concurrent accesses
 to memory in order to compile multithreaded code, and furthermore the IR's
@@ -991,22 +991,25 @@ This can be proved by a relatively straightforward mutual induction.
 \end{figure}
 
 Our main metatheoretic results will be \textit{substitution} and
-\textit{label-substitution}, which will require introducing some new
-metatheoretic judgements to state properly, which we do in Figure
+\textit{label-substitution}, which will require introducing some
+substitution judgements to state properly, which we do in Figure
 \ref{fig:ssa-meta-judgements}. In particular, the judgement
-\(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which is taken to be
-a map from variable names to expressions, is a valid substitution taking
-\(\Theta\) to \(\Gamma\). What this means is that, for each variable
-\(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted as a
-\textit{central} term of type \(A^q\) in a subcontext of \(\Theta\), such that
-when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables
-in \(\Theta\) are used up: this is described formally via the typing rules
-\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
-to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
-\(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
-\subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/discarding
-of substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
-\(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
+\(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which is
+taken to be a map from variable names to expressions, is a valid
+substitution taking \(\Theta\) to \(\Gamma\). What this means is that,
+for each variable \(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can
+be interpreted as a \textit{central} term of type \(A^q\) in a
+subcontext of \(\Theta\), such that when this is done for all
+\(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables in \(\Theta\)
+are used up: this is described formally via the typing rules
+\rle{subst-nil}, which says that any function \(\gamma\) takes the
+empty context to itself, and \rle{subst-cons}, which says that if
+\(\gamma\) takes \(\Theta_\Gamma\) to \(\Gamma\),
+\(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\),
+\(q \subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the
+duplication/discarding of substructural variables), and \(\Theta\)
+splits into \(\Theta_\Gamma\) and \(\Theta_x\), then
+\(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
 
 Given such a substitution \(\gamma\), there are two ways to use it. The first is
 standard capture-avoiding substitution, which we denote \([\gamma]e\) for
@@ -2244,27 +2247,45 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
     \end{aligned}
 \end{equation}
 
-\section{Related Work}
+\section{Related Work and Discussion}
 
-\TODO{\cite{leaky-semicolon} for weak memory stuff: future work: add while loops, and also refinement}
+There is a vast literature on SSA and related compiler IRs, but for
+space reasons, we are forced to restrict our discussion to the most
+closely related work.
 
-\TODO{\cite{schneider-phd}}
+\paragraph{Weak memory} 
 
-\TODO{\cite{chakravarty-functional-ssa-2003}}
+\TODO{\citet{leaky-semicolon} for weak memory stuff: future work: add while loops, and also refinement}
+\TODO{\citet{paviotti-modular-relaxed-dep-20}}
 
-\TODO{\cite{barthe-compcert-ssa-2014}}
+\todo{Main thing here to say is that we need semantics for while loops, plus associativity of semicolon, if statements must support distributivity}
 
-\TODO{\cite{buchwald-verified-ssa-2016}}
+\paragraph{Type Theory for SSA}
 
-\TODO{\cite{herklotz-gsa-2023}}
+\TODO{\citet{hua-explicit-ssa-2010}}
+\TODO{\citet{ssa-types-matsuno-ohori-06}}
+\TODO{\citet{typed-effect-ssa-rigon-torrens-vasconcellos-20}}
 
-\TODO{\cite{pop-ssa-inout-2009}}
+\paragraph{Functional SSA}
 
-\TODO{\cite{garbuzov-structural-cfg-2018}}
+\TODO{\citet{chakravarty-functional-ssa-2003}}
 
-\TODO{\cite{hua-explicit-ssa-2010}}
+\subparagraph{Operational Semantics}
 
-\TODO{\cite{rvsdg}}
+\TODO{\citet{barthe-compcert-ssa-2014}}
+\TODO{\citet{buchwald-verified-ssa-2016}}
+\TODO{\citet{herklotz-gsa-2023}}
+\TODO{\citet{garbuzov-structural-cfg-2018}}
+\TODO{\citet{vellum}}
+
+\subparagraph{Denotational Semantics}
+
+\TODO{\citet{pop-ssa-inout-2009}}
+
+
+
+% \TODO{\cite{schneider-phd}}
+% \TODO{\cite{rvsdg}}
 
 \TODO{this}
 
