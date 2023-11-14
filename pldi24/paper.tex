@@ -474,6 +474,8 @@ formalised in the Lean theorem prover.
 
 \section{SSA Syntax}
 
+\TODO{standardize "branching to" wordmark? Is wordmark the word here?}
+
 In a standard SSA-based compiler, to represent a function, we begin by
 decomposing it into basic blocks, which can be viewed as \textit{label},
 followed by a sequence of \textit{instructions}, each defining a
@@ -901,6 +903,8 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
 
 \subsection{Syntactic Metatheory}
 
+\TODO{intro text}
+
 \begin{theorem}[Weakening] \
   \begin{itemize}
     \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\), \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
@@ -908,6 +912,8 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
     \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
   \end{itemize}
 \end{theorem}
+
+\TODO{text}
 
 \begin{figure}
   \begin{center}        
@@ -917,17 +923,17 @@ leaves the target label-set unchanged, and \rle{cons-br}, which says that if
     \begin{tabular}{rl}
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
         \(\issubst{\gamma}{\Theta}{\Gamma}\) &
-        ... \\
+        \(\gamma\) is a substitution taking \(\Theta\) to \(\Gamma\) \\
         \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) &
-        ... \\
-        \(\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}\) &
-        ... \\
-        \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) &
-        ... \\
-        \(\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}\) &
-        ... \\
-        \(\isrw{\mc{H}}{I}{H}\) &
-        ... \\
+        \(\mc{L}\) is a label substitution taking \(\ms{L}\) to \(\ms{K}\) \\
+        % \(\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}\) &
+        % ... \\
+        % \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) &
+        % ... \\
+        % \(\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}\) &
+        % ... \\
+        % \(\isrw{\mc{H}}{I}{H}\) &
+        % ... \\
     \end{tabular}
     \endgroup
   \end{center}
