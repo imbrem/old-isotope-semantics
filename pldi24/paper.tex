@@ -1031,12 +1031,7 @@ Unfortunately, the substitution theorem for blocks is a little more complicated:
 the naive choice of attempting to show \(\haslb{\Gamma}{t}{\ms{L}} \implies
 \haslb{\Theta}{[\gamma]t}{\ms{L}}\) does not work, since \(\ms{L}\) may contain
 captured variables from \(\Gamma\) that are no longer available if we are typing
-\([\gamma]t\) in the context of \(\Theta\). To solve this problem, we need to
-introduce the concept of a \textit{label-substitution} \(\mc{L}\) \todo{rest}
-
-\TODO{some text about label substitution}
-
-\TODO{some text about label substitution operations}
+\([\gamma]t\) in the context of \(\Theta\). 
 
 \begin{figure}
   \begin{gather*}
@@ -1084,25 +1079,33 @@ introduce the concept of a \textit{label-substitution} \(\mc{L}\) \todo{rest}
   \label{fig:ssa-subst-ops}
 \end{figure}
 
-\begin{lemma}[Substitution Splitting] 
-  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
-  then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
-  \begin{itemize}
-    \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
-    \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
-    \item \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\)
-  \end{itemize}
-\end{lemma}
-
-\TODO{some text about substitution weakening}
-
+To solve this problem, we need to introduce the concept of a
+\textit{label-substitution} \(\mc{L}\), which we define as a function that takes
+labels \(\lbl{\ell}\) and variables \(x\) to blocks \(t\) such that, for any
+fresh variable \(x\), \([a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)\). We
+introduce the judgement \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) to state that the
+label-substitution \(\mc{L}\) takes the label-set \(\ms{L}\) to the label-set
+\(\ms{K}\); that is, for each \(\lbl{\ell}[\Gamma](x: A) \in \ms{L}\), we have
+that \(\mc{L}(\lbl{\ell}, x)\) is a block that branches to \(\ms{K}\). This is
+formally defined via the rules \rle{lb-subst-nil}, which states that this is
+vacuously true for \(\ms{L} = \cdot\), and \rle{lb-subst-cons}, which says that
+if \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma,
+\thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}\) then \(\lbsubst{\mc{L}}{\ms{L},
+\lhyp{\lbl{\ell}}{\Gamma}{A}}{\ms{K}}\), in Figure \ref{fig:ssa-subst-typing}.
+Given a context \(\gamma\) and a label-set \(\ms{L}\), we can convert it to a
+label-substitution \(\substlbs{\gamma}{\ms{L}}\) using the definition in Figure
+\ref{fig:ssa-subst-ops}: using this, we can state the full substitution theorem
+as follows:
 \begin{lemma}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
-    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\) and \(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}\)
+    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then
+    \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\) and
+    \(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}\)
     \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such
     that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and
-    \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\), \(\haslb{\Theta}{\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}}{\ms{K}}\)
+    \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
+    \(\haslb{\Theta}{\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}}{\ms{K}}\)
     \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K},
     \ms{W}'\) such that 
     \begin{itemize}
@@ -1113,17 +1116,29 @@ introduce the concept of a \textit{label-substitution} \(\mc{L}\) \todo{rest}
   \end{itemize}
 \end{lemma}
 
-\TODO{some text about substitution}
+% \begin{lemma}[Substitution Splitting] 
+%   If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
+%   then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
+%   \begin{itemize}
+%     \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
+%     \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
+%     \item \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\)
+%   \end{itemize}
+% \end{lemma}
+
+% \TODO{some text about substitution weakening}
+
+\TODO{label substitution text}
 
 \begin{lemma}[Label Substitution] 
   Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
   \begin{itemize}
-    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
-    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\),
+    \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
+    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\),
+    \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
   \end{itemize}
 \end{lemma}
-
-\TODO{some text about label substitution}
 
 \TODO{some text about rewriting}
 
@@ -1353,7 +1368,8 @@ We can also deduce the following:
   \(\mc{C}_{\mb{T}}\) is a substructural premonoidal category with:
   \begin{itemize}
     \item \(\ms{Aff}(\mc{C}_{\mb{T}}) = \ms{Aff}(\mc{C})\), \(\ms{Rel}(\mc{C}_{\mb{T}}) = \ms{Rel}(\mc{C})\)
-    \item \(\mc{C}_{\mb{T}}^q(A, B) = \upg{\mc{C}^q(A, B)}{}\), where \(\upg{f}{} = f;\eta\)
+    \item \(\mc{C}_{\mb{T}}^q(A, B) = \upg{\mc{C}^q(A, B)}{}\), where
+    \(\upg{f}{} = f;\eta\)
     \item Drops \(\upg{\ms{drop}(A)}{}\) and splits \(\upg{\ms{split}(A)}{}\)
   \end{itemize} 
   In particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a
