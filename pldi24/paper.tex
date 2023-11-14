@@ -1381,6 +1381,8 @@ We can also deduce the following:
 
 \subsection{Distributivity}
 
+To add support for branching, we need to equip our category with a
+\textit{distributive coproduct structure}, as follows:
 \begin{definition}[Distributive (pre)monoidal category] 
   A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category
   with all finite coproducts equipped with a natural family of central
@@ -1429,8 +1431,10 @@ from the following proposition:
 
 \subsection{Elgot Categories}
 
-\TODO{text}
-
+The structure so far is enough to support non-looping control flow, but to allow
+general, potentially nonterminating control flow, we need a way to reason about
+iteration. To do so, we introduce the notion of an \textit{Elgot category} as
+follows:
 \begin{definition}[Elgot category] 
   An \textbf{Elgot category} is a category \(\mc{C}\) with coproducts equipped
   with an operator \(\cdot^\dagger: \mc{C}(A, B + A) \to \mc{C}(A, B)\)
@@ -1447,7 +1451,6 @@ from the following proposition:
   A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry
   \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
 \end{definition}
-\TODO{why do these matter? they show up in the proofs, but...}
 Some important properties which hold for all Elgot categories include:
 \begin{itemize}
   \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id},
@@ -1456,17 +1459,24 @@ Some important properties which hold for all Elgot categories include:
 \end{itemize}
 Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
 
+One important way of generating Elgot categories is through monads: a monad
+whose Kliesli category is Elgot is called an \textbf{Elgot monad}. Examples of
+Elgot monads include \(\ms{Option}\) (where \(\ms{None}\) is interpreted as
+nontermination), the powerset monad (where the empty set is interpreted as
+nontermination), and the trace monads we will explore in Section
+\ref{ssec:trace-monads}.
+
+It turns out that various monad transformers preserve Elgot structure, allowing
+us to build up Elgot monads in a composable fashion. In particular,
 \begin{proposition}
-  If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;\mb{T}\;S
+  If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;S\;\mb{T}
   = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda
   A. S \to \ms{T}(A)\), and \(\ms{WriterT}\;\mb{T}\;S = \lambda A. \ms{T}(A
-  \times S)\) are all Elgot
+  \times S)\) are all Elgot, with iteration operators lifted from \(\mb{T}\) in
+  the obvious manner.
 \end{proposition}
 
 \subsection{Denotational Semantics}
-
-\TODO{make aff and rel syntax nicer/more consistent here? Subcategory syntax
-would be nice for lemmas and just coherence.}
 
 We're now ready to give a semantics for an \isotopessa dialect with a set of
 types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
@@ -1842,6 +1852,8 @@ In this section, we will build on the bare-bones models given in Section
 logic.
 
 \subsection{Trace Models}
+
+\label{ssec:trace-monads}
 
 We will begin by giving a useful foundation for a wide class of \isotopessa
 models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially
