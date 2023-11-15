@@ -2285,31 +2285,50 @@ joined buffer is also empty, giving us the following:
 
 \section{Related Work and Discussion}
 
-There is a vast literature on SSA and related compiler IRs, but for space
-reasons, we are forced to restrict our discussion to the most closely related
-work.
+There is a vast literature on SSA and related compiler IRs, but for
+space reasons, we are forced to restrict our discussion to the most
+closely related work.
 
-\paragraph{Weak memory} 
+Originally, \citet{kelsey-ssa-cps} showed how to embed SSA into a CPS
+representation, and \citet{appel-ssa} showed informally how SSA can be
+seen as a collection of mutually-tail-recursive
+procedures. \citet{chakravarty-functional-ssa-2003} made Appel's
+observation formal, by showing how to translate SSA into A-normal
+form~\cite{anf}, and showed how to use the translation to prove the
+correctness of a constant propagation analysis. These translations
+were for an untyped source and target language, and
+\citet{typed-effect-ssa-rigon-torrens-vasconcellos-20} give a typed
+translation from SSA into the lambda calculus, which also tracks the
+effects of expressions. The effect tracking is handled Koka-style,
+where the effect system tracks a list of effect names. (In contrast,
+we track the centrality and duplicability of terms, without reference
+to the specific effect.) 
 
-\TODO{\citet{leaky-semicolon} for weak memory stuff: future work: add while loops, and also refinement}
-\TODO{\citet{paviotti-modular-relaxed-dep-20}}
-\TODO{\citet{sparky}}
+All of these papers give SSA semantics by translation -- that is,
+they defined the semantics of an SSA program to be the semantics of
+the image of the translation, whether CPS or ANF. There have also
+been a number of papers which have studied the semantics of SSA directly.
 
-\todo{Main thing here to say is that we need semantics for while loops, plus associativity of semicolon, if statements must support distributivity}
+\citet{ssa-types-matsuno-ohori-06} give a type theory for what appear
+to be ordinary three-address code programs, where the types of the
+variables at each program point represent the control flows from the
+assignment statements reaching that program point. However, the type
+information means that every well-typed program can be placed into
+SSA-form by inserting $\phi$-nodes in a completely type-directed
+way. This lets them avoid having to give an operational reading of
+$\phi$-nodes, since they can use the standard semantics for
+three-address code.
 
-\paragraph{Type Theory for SSA}
+\citet{hua-explicit-ssa-2010} give another type system for SSA
+programs, as well as a direct operational semantics for it, using the
+standard sequential heap semantics, as well as proving progress and
+preservation for their type system.
 
-\TODO{\citet{hua-explicit-ssa-2010}}
-\TODO{\citet{ssa-types-matsuno-ohori-06}}
-\TODO{\citet{typed-effect-ssa-rigon-torrens-vasconcellos-20}}
+There have also been many operational semantics for SSA arising from
+compiler verification efforts. \citet{barthe-compcert-ssa-2014} give
+a 
 
-\paragraph{Functional SSA}
-
-\TODO{\citet{chakravarty-functional-ssa-2003}}
-
-\subparagraph{Operational Semantics}
-
-\TODO{\citet{barthe-compcert-ssa-2014}}
+\TODO{}}
 \TODO{\citet{buchwald-verified-ssa-2016}}
 \TODO{\citet{herklotz-gsa-2023}}
 \TODO{\citet{garbuzov-structural-cfg-2018}}
@@ -2319,6 +2338,13 @@ work.
 
 \TODO{\citet{pop-ssa-inout-2009}}
 
+\paragraph{Weak memory} 
+
+\TODO{\citet{leaky-semicolon} for weak memory stuff: future work: add while loops, and also refinement}
+\TODO{\citet{paviotti-modular-relaxed-dep-20}}
+\TODO{\citet{sparky}}
+
+\todo{Main thing here to say is that we need semantics for while loops, plus associativity of semicolon, if statements must support distributivity}
 
 
 % \TODO{\cite{schneider-phd}}
