@@ -1403,9 +1403,10 @@ To add support for branching, we need to equip our category with a
   Note in particular that this implies that \(\iota_i \otimes C;\delta_{A, B, C}
   = \iota_i\). A substructural (pre)monodial category is \textbf{distributive}
   if it is distributive as a (pre)monoidal category, and its distributor is
-  \textit{pure}. A substructural effectful category \(\mc{C}\) is
-  \textbf{distributive} if \(\mc{C}_0\) is distributive (as a substructural
-  (pre)monoidal category).
+  \textit{pure}. A substructural effectful category \(\mc{C}_1 \to \mc{C}_0\) is
+  \textbf{distributive} if \(\mc{C}_1, \mc{C}_0\) are distributive (as a
+  substructural (pre)monoidal category) and \(\upg{\cdot}{}\) strictly preserves
+  all coproducts.
 \end{definition}
 Many (pre)monoidal categories are distributive, including of course
 \(\ms{Set}\), but also categories which can be derived from monads on more
@@ -1506,11 +1507,17 @@ particular, we begin by interpreting the judgements that a type is affine (i.e.
 \(\tlin{A}{\taff}\)) or relevant (i.e. \(\tlin{A}{\trel}\)) as the drop morphism
 \(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, I)\) and split morphism
 \(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, \dnt{A} \otimes \dnt{A})\) respectively.
-We can then interpret a weakening \(\csplits{\Gamma}{\Delta}{\Xi}\) as a pure
-morphism \(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\) which
-partitions the variables as appropriate, splitting and dropping as necessary;
-weakenings are then just interpreted as the postcomposition of the associated
-split morphism and the unitor.
+We can then interpret a context split \(\csplits{\Gamma}{\Delta}{\Xi}\) as a
+pure morphism \(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\)
+which partitions the variables as appropriate, splitting and dropping as
+necessary. We interpret a context weakening \(\cwk{\Gamma}{\Delta}\) as the
+associated split \(\csplits{\Gamma}{\Delta}{\cdot}\) postcomposed with a unitor.
+Finally, we interpret a label-context weakening \(\lwk{\ms{L}}{\ms{K}}\) as a
+pure morphism \(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where
+\(\rle{join-nil}\) is the identity, \(\rle{join-cons}\) is the sum of
+\(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and \(\dnt{\cwk{\Gamma}{\Delta}}\), and
+\(\rle{join-zero}\) is \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left
+injection.
 
 \begin{figure}
   \begin{gather*}
@@ -1593,17 +1600,16 @@ split morphism and the unitor.
       = \dnt{\csplits{\Gamma}{\Delta}{\cdot}};\rho 
       \\
     \boxed{\dnt{\lwk{\ms{L}}{\ms{K}}}
-      : \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}})} 
+      : \mc{C}_1^\tint(\dnt{\ms{L}}, \dnt{\ms{K}})} 
       \\
     \dnt{\lwk{\cdot}{\cdot}} = \ms{id} \qquad
     \dnt{\lwk
       {\ms{L}, \llhyp{\ell}{\Gamma}{A}}
       {\ms{K}, \llhyp{\ell}{\Delta}{A}}}
-      = \dnt{\lwk{\ms{L}}{\ms{K}}} + \upg{(\cwk{\Gamma}{\Delta} \otimes \dnt{A})}{} 
+      = \dnt{\lwk{\ms{L}}{\ms{K}}} + \upg{(\dnt{\cwk{\Gamma}{\Delta}} \otimes \dnt{A})}{} 
       \\
     \dnt{\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
-      = \dnt{\lwk{\ms{L}}{\ms{K}}};\rho_+^{-1}
-      ; \dnt{\ms{K}} \oplus 0_{\dnt{\Gamma} \otimes \dnt{A}}
+      = \dnt{\lwk{\ms{L}}{\ms{K}}};\iota_0
   \end{gather*}
   \caption{Semantics for \isotopessa structural judgements}
   \Description{Semantics for isotope-SSA structural judgements}
