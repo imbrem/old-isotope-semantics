@@ -1520,9 +1520,9 @@ necessary. We interpret a context weakening \(\cwk{\Gamma}{\Delta}\) as the
 associated split \(\csplits{\Gamma}{\Delta}{\cdot}\) postcomposed with a unitor.
 Finally, we interpret a label-context weakening \(\lwk{\ms{L}}{\ms{K}}\) as a
 pure morphism \(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where
-\(\rle{join-nil}\) is the identity, \(\rle{join-cons}\) is the sum of
+\rle{join-nil} is the identity, \rle{join-cons} is the sum of
 \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and \(\dnt{\cwk{\Gamma}{\Delta}}\), and
-\(\rle{join-zero}\) is \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left
+\rle{join-zero} is \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left
 injection.
 
 \begin{figure}
@@ -1639,7 +1639,7 @@ injection.
         \dnt{\csplits{\Gamma}{\Delta}{\Xi}};
         \dnt{\hasty{\Delta}{1}{a}{A}{q}} \otimes
         \dnt{\hasty{\Xi}{1}{b}{B}{q}}
-      )}{\uparrow p} 
+      )}{p} 
       \\
     \dnt{\hasty{\Gamma}{p}{()}{\mb{1}}{q}}
       = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p} 
@@ -1674,6 +1674,29 @@ injection.
 \end{figure}
 
 We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics}.
+Our treatment of \rle{var} is quite standard: the expression \(x\) types in
+\(\Gamma\) if all other variables in \(\Gamma\) and can be discarded, in which
+case the semantics is simply doing so, i.e.
+\(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\), lifting to \(\mc{C}_0\) as necessary.
+Similarly, to type a function application \rle{var}, we first take
+\(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which is guarnateed to be central, lift it
+to the appropriate category \(\mc{C}_p\), and then simply postcompose it with
+the denotation of \(f\). \rle{pair} is handled by composing the context split
+\(\csplits{\Gamma}{\Delta}{\Xi}\) taking the tensor product of the components
+\(\dnt{\hasty{\Delta}{1}{a}{A}{q}}\), \(\dnt{\hasty{\Xi}{1}{b}{B}{q}}\); this is
+well-defined since both components are central and \(\mc{C}_1\) is monoidal. We
+then lift the result to the appropriate \(\mc{C}_p\). The semantics of
+\rle{unit} is simply dropping the entire context; \(\dnt{\cwk{\Gamma}{\cdot}}\),
+while \rle{true}, and \rle{false} are each handled by first dropping the context
+and then postcomposing with the appropriate constant; in all cases, this is
+followed by lifting to \(\mc{C}_p\). Finally, \rle{let} and \rle{let2} are
+handled by first splitting the context, then passing the right hand component to
+the semantics of the bound expression \(\dnt{\hasty{\Xi}{1}{a}{A}{q}}\) or
+\(\dnt{\hasty{\Xi}{1}{a}{A \otimes B}{q}}\), and then, lifting to \(\mc{C}_p\)
+as necessary, after reassociating with \(\alpha\), passing everything to the
+inner expression \(\dnt{\hasty{\Delta, \thyp{x}{A}{q}}{p}{e}{B}{q}}\) or
+\(\dnt{\hasty{\Delta, \thyp{x}{A}{q}, \thyp{y}{B}{q}}{p}{e}{C}{q}}\). Note that
+this inner expression is not necessarily central, unlike the bound expression!
 
 \TODO{some text about what the semantics actually are...}
 
