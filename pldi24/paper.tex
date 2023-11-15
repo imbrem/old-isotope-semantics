@@ -595,12 +595,18 @@ Our grammar proper is split into three main syntactic categories:
   is of type \(A\) with \textit{centrality} \(p = 1\) if \textit{central}, or \(p = 0\)
   otherwise, and \textit{quantity} \(q \subseteq \{\ms{a}, \ms{r}\}\). The rules
   for this judgement are given in Figure \ref{fig:ssa-term-typing}.
+
+  So the centrality $p$ indicates whether it is safe to substitute this expression
+  for a variable, and $q$, plus the linearity of $A$, control how many times that
+  variable can occur. 
+  
   \item \textit{Blocks} \(s, t\), which are typed via the judgement
   \(\haslb{\ms{L}}{t}{\Gamma}\), which says that the block \(t\) is well-formed
   with respect to the context \(\Gamma\) and branches only to labels in
   \(\ms{L}\). The rules for this judgement are given in Figure
   \ref{fig:ssa-block-typing}.
-  \item \textit{Label-sets} or \textit{control-flow graphs} \(L\), which are
+
+\item \textit{Label-sets} or \textit{control-flow graphs} \(L\), which are
   typed via the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\)
   defines a control-flow graph with inputs \(\ms{L}\) and outputs \(\ms{K}\)
   (some of which may also be in \(\ms{L}\), indicating recursive control-flow).
