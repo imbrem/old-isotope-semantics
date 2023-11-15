@@ -1496,19 +1496,22 @@ types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
   to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
 \end{itemize}
 We begin by giving a semantics for types and contexts in terms of objects in
-\(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}; this allows us to give a
-semantics for structural judgements in Figure
-\ref{fig:ssa-structural-semantics}.
-
-\TODO{some text about what the semantics actually are...}
-
-We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics}
-followed by a semantics for blocks and label-sets in Figure
-\ref{fig:ssa-block-semantics}.
-
-\TODO{ditto}
-
-\TODO{rename blocks to statements? label-sets to CFGs?}
+\(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}: we map tensor products to
+tensor products, the unit type to the monoidal unit, and booleans to \(\mb{1} +
+\mb{1}\). Contexts are simply interpreted as the tensor products of the variable
+types which appear in them; in particular, the quantity annotations have
+\textit{no} effect on a context's semantics. We then give a semantics for
+structural judgements in Figure \ref{fig:ssa-structural-semantics}. In
+particular, we begin by interpreting the judgement that a type is affine,
+\(\tlin{A}{\taff}\), as the drop morphism \(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A},
+I)\) allowing us to discard the type by sending it to the monoidal unit; type
+being relevant, \(\tlin{A}{\trel}\) is similarly interpreted as the split
+morphism \(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, \dnt{A} \otimes \dnt{A})\). We
+can then interpret a weakening \(\csplits{\Gamma}{\Delta}{\Xi}\) as a pure
+morphism \(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\) which
+partitions the variables as appropriate, splitting and dropping as necessary;
+weakenings are then just interpreted as the postcomposition of the associated
+split morphism and the unitor.
 
 \begin{figure}
   \begin{gather*}
@@ -1659,7 +1662,9 @@ followed by a semantics for blocks and label-sets in Figure
   \label{fig:ssa-term-semantics}
 \end{figure}
 
-\TODO{some text about term semantics}
+We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics}.
+
+\TODO{some text about what the semantics actually are...}
 
 \begin{figure}
   \begin{gather*}
