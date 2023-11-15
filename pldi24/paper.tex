@@ -1502,12 +1502,11 @@ tensor products, the unit type to the monoidal unit, and booleans to \(\mb{1} +
 types which appear in them; in particular, the quantity annotations have
 \textit{no} effect on a context's semantics. We then give a semantics for
 structural judgements in Figure \ref{fig:ssa-structural-semantics}. In
-particular, we begin by interpreting the judgement that a type is affine,
-\(\tlin{A}{\taff}\), as the drop morphism \(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A},
-I)\) allowing us to discard the type by sending it to the monoidal unit; type
-being relevant, \(\tlin{A}{\trel}\) is similarly interpreted as the split
-morphism \(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, \dnt{A} \otimes \dnt{A})\). We
-can then interpret a weakening \(\csplits{\Gamma}{\Delta}{\Xi}\) as a pure
+particular, we begin by interpreting the judgements that a type is affine (i.e.
+\(\tlin{A}{\taff}\)) or relevant (i.e. \(\tlin{A}{\trel}\)) as the drop morphism
+\(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, I)\) and split morphism
+\(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, \dnt{A} \otimes \dnt{A})\) respectively.
+We can then interpret a weakening \(\csplits{\Gamma}{\Delta}{\Xi}\) as a pure
 morphism \(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\) which
 partitions the variables as appropriate, splitting and dropping as necessary;
 weakenings are then just interpreted as the postcomposition of the associated
@@ -1882,11 +1881,25 @@ We begin with some definitions:
 \end{definition}
 Some basic examples include:
 \begin{enumerate}
-  \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\) forms a stream action on the one element set \(\mathbf{1}\).
-  \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta = \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
-  \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta = \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i \cdot_i l_i)_i\).
-  \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\), the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell \cdot s\) prepends the (finite) list \(\ell\) to the (potentially infinite) sequence \(s\).
-  \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts on \(\nats \cup \{\infty\}\) by addition.
+  \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\)
+  forms a stream action on the one element set \(\mathbf{1}\).
+  \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and
+  stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta =
+  \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action
+  compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
+  \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action
+  \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta =
+  \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to
+  \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i
+  \cdot_i l_i)_i\).
+  \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream
+  action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\),
+  the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell
+  \cdot s\) prepends the (finite) list \(\ell\) to the (potentially infinite)
+  sequence \(s\).
+  \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a
+  stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts
+  on \(\nats \cup \{\infty\}\) by addition.
 \end{enumerate}
 We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
 \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
@@ -2242,7 +2255,12 @@ To be able to perform synchronization, we will also need to introduce a \(\ms{fe
 \begin{equation}
   \dnt{\ms{fence}} = \lambda ()\;L. \{((), [], L;\{\delta\})\}
 \end{equation}
-We can now define the parallel composition of morphisms in a "fork-join" style as follows: we first flush the buffer completely (i.e., taking it and sticking it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel with separate buffers, \textit{filtering out executions which completely flush the buffer}. Since both threads end up with an empty buffer, the resulting joined buffer is also empty, giving us the following:
+We can now define the parallel composition of morphisms in a "fork-join" style
+as follows: we first flush the buffer completely (i.e., taking it and sticking
+it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel
+with separate buffers, \textit{filtering out executions which completely flush
+the buffer}. Since both threads end up with an empty buffer, the resulting
+joined buffer is also empty, giving us the following:
 \begin{equation}
   \begin{aligned}
     f_0 || f_1 = \lambda (a_0, a_1)\;L. 
@@ -2255,9 +2273,9 @@ We can now define the parallel composition of morphisms in a "fork-join" style a
 
 \section{Related Work and Discussion}
 
-There is a vast literature on SSA and related compiler IRs, but for
-space reasons, we are forced to restrict our discussion to the most
-closely related work.
+There is a vast literature on SSA and related compiler IRs, but for space
+reasons, we are forced to restrict our discussion to the most closely related
+work.
 
 \paragraph{Weak memory} 
 
