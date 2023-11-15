@@ -2302,12 +2302,19 @@ translation from SSA into the lambda calculus, which also tracks the
 effects of expressions. The effect tracking is handled Koka-style,
 where the effect system tracks a list of effect names. (In contrast,
 we track the centrality and duplicability of terms, without reference
-to the specific effect.) 
+to the specific effect.)
 
-All of these papers give SSA semantics by translation -- that is,
-they defined the semantics of an SSA program to be the semantics of
-the image of the translation, whether CPS or ANF. There have also
-been a number of papers which have studied the semantics of SSA directly.
+All of these papers give SSA semantics by translation -- that is, they
+defined the semantics of an SSA program to be the semantics of the
+image of the translation, with the idea that the simpler semantics of
+the functional language can make proofs easier. The Grail language of
+\citet{beringer-imp-fun} makes this idea explicit by giving both a
+functional and imperative semantics to a low-level language, and
+showing the conditions under which they coincide. \citet{schneider-imp-fun} prove
+a similar result, and further mechanise the proof in Coq.
+
+There have also been a number of papers which have studied the
+semantics of SSA directly.
 
 \citet{ssa-types-matsuno-ohori-06} give a type theory for what appear
 to be ordinary three-address code programs, where the types of the
@@ -2326,19 +2333,37 @@ preservation for their type system.
 
 There have also been many operational semantics for SSA arising from
 compiler verification efforts. \citet{barthe-compcert-ssa-2014} give
-a 
+an operational semantics of SSA as part of the CompCertSSA project,
+and prove that the translation from three-address code into SSA is
+semantics preserving. \citet{herklotz-gsa-2023} also formalise an
+extension to SSA, ``gated SSA'', and give it a semantics, and give
+semantics-preserving translations between GSA and ordinary SSA. Going
+beyond CompCertSSA, \citet{vellum} have studied the semantics of the LLVM
+IR itself.
 
-\TODO{}}
-\TODO{\citet{buchwald-verified-ssa-2016}}
-\TODO{\citet{herklotz-gsa-2023}}
-\TODO{\citet{garbuzov-structural-cfg-2018}}
-\TODO{\citet{vellum}}
+There has been much less work on denotational semantics for SSA, or
+directly on its equational theory. \citet{pop-ssa-inout-2009} give an
+unusual denotational model of SSA in terms of the iteration structure
+of a program, which they use to better understand the loop-closing
+$\phi$-nodes found both in the gated SSA representation as well as
+practical compilers such as GCC.  \citet{garbuzov-structural-cfg-2018}
+exhibit a correspondence between an operational semantics for SSA, and
+an operational semantics for the call-by-push-value calculus of
+\citet{cbpv}. Despite working over an operational semantics, they use
+the normal-form bisimulations of \citet{lassen-bisim} to derive an
+equational theory for use in justifying optimisations. \todo{Their
+operational semantics does contain not contain any effects, which
+means that it cannot justify effect-dependent optimisations such as
+eliminating redundant writes.}
 
-\subparagraph{Denotational Semantics}
-
-\TODO{\citet{pop-ssa-inout-2009}}
-
-\paragraph{Weak memory} 
+We are the first paper to connect a weak memory semantics to the
+semantics of SSA. In order to establish a rich equational theory,
+we needed a number of features of the semantics which are sometimes
+difficult to come by in weak memory semantics. First, sequencing
+must be associative (i.e., $(t_1; t_2); t_3 \equiv t_1; (t_2; t_3)$).
+Second, the semantics must support loops, including the equation
+that a while-loop is equal to its unrolling. Finally, booleans need
+to be distributive (i.e., $(A \otimes \mb{2}) \simeq (A + A)$). 
 
 \TODO{\citet{leaky-semicolon} for weak memory stuff: future work: add while loops, and also refinement}
 \TODO{\citet{paviotti-modular-relaxed-dep-20}}
