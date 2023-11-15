@@ -2351,31 +2351,43 @@ exhibit a correspondence between an operational semantics for SSA, and
 an operational semantics for the call-by-push-value calculus of
 \citet{cbpv}. Despite working over an operational semantics, they use
 the normal-form bisimulations of \citet{lassen-bisim} to derive an
-equational theory for use in justifying optimisations. \todo{Their
+equational theory for use in justifying optimisations. Their
 operational semantics does contain not contain any effects, which
 means that it cannot justify effect-dependent optimisations such as
-eliminating redundant writes.}
+eliminating redundant writes.
 
-We are the first paper to connect a weak memory semantics to the
-semantics of SSA. In order to establish a rich equational theory,
-we needed a number of features of the semantics which are sometimes
-difficult to come by in weak memory semantics. First, sequencing
-must be associative (i.e., $(t_1; t_2); t_3 \equiv t_1; (t_2; t_3)$).
-Second, the semantics must support loops, including the equation
-that a while-loop is equal to its unrolling. Finally, booleans need
-to be distributive (i.e., $(A \otimes \mb{2}) \simeq (A + A)$). 
+Our work is the first to validate the equational theory of SSA against
+a weak memory semantics. We focused on denotational models of weak
+memory, since they make it easier to establish equational properties
+than the operational and axiomatic models. However, for our proof to
+go through, we needed a number of features of the semantics which are
+sometimes difficult to establish in the weak memory world. First,
+sequencing must be associative (i.e.,
+$(t_1; t_2); t_3 \equiv t_1; (t_2; t_3)$).  Second, the semantics must
+support loops, including the equation that a while-loop is equal to
+its unrolling. Finally, sums need to be distributive (e.g., in the
+boolean case, $(A \otimes \mb{2}) \simeq (A + A)$).
 
-\TODO{\citet{leaky-semicolon} for weak memory stuff: future work: add while loops, and also refinement}
-\TODO{\citet{paviotti-modular-relaxed-dep-20}}
-\TODO{\citet{sparky}}
+As a result, we focused on the TSO semantics of \citet{sparky}, which
+does have all the properties we need. For the weaker ARM-style models
+(which admit load buffering), there seem to be a number of models
+which are "near misses", in that they have some, but not all, the
+properties we need. The event structure model of
+\citet{paviotti-modular-relaxed-dep-20} is formulated in terms of
+step-indexing, so satisfies all of our needed properties except the
+loop unrolling property -- step-indexing means it is a refinement
+rather than an equation. The pomsets with preconditions model of
+\citet{jagadeesan-pwp-20} does not exactly satisfy the associativity
+of semicolon, and while the pomsets with predicate transformers model
+of \citet{leaky-semicolon} does satisfy associativity, it does not yet
+support loops.
 
-\todo{Main thing here to say is that we need semantics for while loops, plus associativity of semicolon, if statements must support distributivity}
-
-
-% \TODO{\cite{schneider-phd}}
-% \TODO{\cite{rvsdg}}
-
-\TODO{this}
+We do not think it would be prohibitively difficult to extend these
+models to support the required features, and we believe our results
+suggest that it would be have a high payoff: those features would
+suffice to build a model of our IR, giving us tight results
+validating the transformations compilers want against the low-level
+specification of the actual machine. 
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
