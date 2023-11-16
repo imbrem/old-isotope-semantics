@@ -1501,6 +1501,10 @@ types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
   \item A function \(\ms{inst}(f)\) from instructions \(f \in \mc{I}_p^q(A, B)\)
   to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
 \end{itemize}
+
+\TODO{We know \textit{what} these semantics are, unlike below, but maybe clarify
+\textit{why}} 
+
 We begin by giving a semantics for types and contexts in terms of objects in
 \(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}: we map tensor products to
 tensor products, the unit type to the monoidal unit, and booleans to \(\mb{1} +
@@ -1672,6 +1676,8 @@ injection.
   \label{fig:ssa-term-semantics}
 \end{figure}
 
+\TODO{\textit{what} is the semantics of a term}
+
 We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics}.
 Our treatment of \rle{var} is quite standard: the expression \(x\) types in
 \(\Gamma\) if all other variables in \(\Gamma\) and can be discarded, in which
@@ -1745,6 +1751,8 @@ this inner expression is not necessarily central, unlike the bound expression!
   \label{fig:ssa-block-semantics}
 \end{figure}
 
+\TODO{\textit{what} is the semantics of a block}
+
 We can now give a semantics for blocks in Figure \ref{fig:ssa-block-semantics}.
 Our semantics for break statements \(\lbrb{\ell}{a}\) is given by the semantics
 for splitting the context into variables which pass into dominated blocks and
@@ -1765,10 +1773,18 @@ expression case, except that now the bound expression \(a\) is allowed to be
 impure (and therefore in particular does not need to be upgraded).
 
 Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
-semantics for control-flow graphs: \todo{this}. We can now quite easily state
-the semantics of \rle{where}: we simply precompose the semantics of the inner
-block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the semantics of the associated
-control-flow graph \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}\); \todo{explain}
+semantics for control-flow graphs: \rle{nil-br} simply passes the input context
+\(\ms{L}\) through unchanced, while \rle{cons-br} takes any calls to
+\(\lbl{\ell}\) and passes them to the denotation
+\(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\), passing the rest of \(\ms{L}\) to
+\(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}\). We can now quite easily state the
+semantics of \rle{where}: we simply precompose the semantics of the inner block
+\(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the semantics of the associated
+control-flow graph \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}\).
+
+\TODO{explain what the above actually means, \textit{what} is the semantics of a
+CFG}
+
 
 \subsection{Semantic Metatheory}
 
@@ -2445,9 +2461,12 @@ specification of the actual machine.
 
 \begin{theorem}[Weakening] \
   \begin{itemize}
-    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\), \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
-    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
-    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
+    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
+    \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
+    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then
+    \(\haslb{\Gamma}{t}{\ms{L}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then
+    \(\haslb{\Gamma}{t}{\ms{K}}\)
   \end{itemize}
 \end{theorem}
 
@@ -2456,7 +2475,8 @@ specification of the actual machine.
 \end{proof}
 
 \begin{lemma}[Substitution Splitting] 
-  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
+  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
   \begin{itemize}
     \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
     \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
@@ -2464,8 +2484,49 @@ specification of the actual machine.
   \end{itemize}
 \end{lemma}
 
-\begin{proof} \
-  \TODO{this}
+\begin{proof} 
+  We proceed by induction on derivations \(\csplits{\Gamma}{\Delta}{\Xi}\). In
+  the \rle{split-nil} case, we have that \(\issubst{\gamma}{\cdot}{\cdot}\) by
+  \rle{subst-nil}. For all other cases, since \(\issubst{\gamma}{\Theta}{\Gamma,
+  \thyp{x}{A}{q}}\), we have by \rle{subst-cons} that
+  \(\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}\),
+  \(\issubst{\gamma}{\Theta_\Gamma}{\Gamma}\),
+  \(\hasty{\Theta_\Gamma}{1}{\gamma(x)}{A}{q}\). Since
+  \(\csplits{\Gamma}{\Delta}{\Xi}\), by induction, we have that
+  \(\csplits{\Theta_\Gamma}{\Theta_\Delta}{\Theta_\Xi}\) where \(\Theta_\Delta\)
+  and \(\Theta_\Xi\) have the desired properties above.
+  \begin{itemize}
+    \item \rle{split-left}: by left split association, we have that there exists
+    \(\Theta_{\Delta, \thyp{x}{A}{q}}\), \(\csplits{\Theta}{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Theta_\Xi}\), \(\csplits{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Theta_\Delta}{\Theta_x}\). Using the fact that
+    \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), we can conclude by
+    \rle{subst-cons} that \(\issubst{\gamma}{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Delta, \thyp{x}{A}{q}}\); the desired result hence
+    follows.
+    \item \rle{split-right}: by right split association, we have that there
+    exists \(\Theta_{\Xi, \thyp{x}{A}{q}}\),
+    \(\csplits{\Theta}{\Theta_\Delta}{\Theta_{\Xi, \thyp{x}{A}{q}}}\),
+    \(\csplits{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Theta_\Xi}{\Theta_x}\). Using the
+    fact that \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), we can conclude by
+    \rle{subst-cons} that \(\issubst{\gamma}{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Xi,
+    \thyp{x}{A}{q}}\); the desired result hence follows.
+    \item \rle{split-dup}: since \(\tlin{A}{\trel}\), it follows by
+    \rle{subst-cons} that \(\tlin{\Theta_x}{\trel}\), and hence that
+    \(\csplits{\Theta_x}{\Theta_x}{\Theta_x}\). Therefore, by split association,
+    we have that there exist \(\Theta_{\Delta, \thyp{x}{A}{q}}\), \(\Theta_{\Xi,
+    \thyp{x}{A}{q}}\) such that \(\csplits{\Theta}{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Theta_{\Xi, \thyp{x}{A}{q}}}\). Using the facts that
+    \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\),
+    \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), we can conclude by \rle{subst-cons}
+    that \(\issubst{\gamma}{\Theta_{\Delta, \thyp{x}{A}{q}}}{\Delta,
+    \thyp{x}{A}{q}}\), \(\issubst{\gamma}{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Xi,
+    \thyp{x}{A}{q}}\); the desired result hence follows.
+    \item \rle{split-drop}: since \(\tlin{A}{\taff}\), it follows by
+    \rle{subst-cons} that \(\tlin{\Theta_x}{\taff}\), and hence that
+    \(\cwk{\Theta_x}{\cdot}\). Therefore, by split association,
+    \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\), giving the desired result.
+  \end{itemize}
 \end{proof}
 
 \begin{lemma}[Substitution] 
@@ -2613,6 +2674,10 @@ specification of the actual machine.
 \begin{proof} \
   \TODO{this}
 \end{proof}
+
+\section{Loop Hoisting}
+
+\TODO{this?}
 
 \section{Rewriting}
 
