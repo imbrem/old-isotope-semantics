@@ -478,6 +478,8 @@ formalised in the Lean theorem prover.
 
 \section{SSA Syntax}
 
+\TODO{terms vs expression/blocks/label-sets}
+
 \TODO{standardize "branching to" wordmark? Is wordmark the word here?}
 
 In a standard SSA-based compiler, to represent a function, we begin by
@@ -840,8 +842,8 @@ term \(e\) which is otherwise typed in \(\Delta\).
       {\hasty{\Xi}{1}{a}{A \otimes B}{q}}
       {\hasty{\Gamma}{p}{\letexpr{(x, y)}{a}{e}}{C}{q}}
   \end{gather*}
-  \caption{Typing rules for \isotopessa terms}
-  \Description{Typing rules for isotope-SSA terms}
+  \caption{Typing rules for \isotopessa expressions}
+  \Description{Typing rules for isotope-SSA expressions}
   \label{fig:ssa-term-typing}
 \end{figure}
 
@@ -1665,8 +1667,8 @@ injection.
     % \dnt{\hasty{\Gamma}{0}{\lbsplice{\ell}{A}{t}}{A}{\varnothing}}
     %   = \dnt{\haslb{\Gamma}{t}{\llhyp{\ell}{\cdot}{A}}};\alpha_+
   \end{gather*}
-  \caption{Semantics for \isotopessa terms}
-  \Description{Semantics for isotope-SSA terms}
+  \caption{Semantics for \isotopessa expressions}
+  \Description{Semantics for isotope-SSA expressions}
   \label{fig:ssa-term-semantics}
 \end{figure}
 
@@ -1757,7 +1759,8 @@ calculating the discriminant \(\dnt{\hasty{\Delta}{1}{b}{\mb{2}}{\tint}}\),
 which must be pure and therefore needs to be lifted. This is then passed through
 the distributor \(\delta\), with each branch passed to the semantics of its
 corresponding block \(\dnt{\haslb{\Xi}{s}{\ms{L}}}\),
-\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\).Tap
+\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The semantics of \rle{let-blk} and \rle{let2-blk}
+are analogous to those of \rle{let} and \rle{let2} in the expression case, with the
 
 \TODO{some text about block semantics}
 
@@ -2652,7 +2655,7 @@ the same}.
     \;|\; \(H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}\)
     \;|\; \(H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\)
   \end{grammar}
-  \caption{Grammar for \isotopessa terms and blocks with holes}
+  \caption{Grammar for \isotopessa expressions and blocks with holes}
   \Description{Grammar for isotope-SSA blocks with holes}
   \label{fig:blocks-with-holes-grammar}
 \end{figure}
@@ -2699,8 +2702,8 @@ the same}.
       {\mhasty{H}{\Xi}{1}{\mhole{a}}{A \otimes B}{q}}
       {\mhasty{H}{\Gamma}{p}{\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}}{C}{q}}
   \end{gather*}
-  \caption{Typing rules for \isotopessa terms with holes}
-  \Description{Typing rules for isotope-SSA terms with holes}
+  \caption{Typing rules for \isotopessa expressions with holes}
+  \Description{Typing rules for isotope-SSA expressions with holes}
   \label{fig:terms-with-holes-typing}
 \end{figure}
 
@@ -2830,8 +2833,8 @@ the same}.
       \\
     \sorry
   \end{gather*}
-  \caption{Semantics for \isotopessa terms with holes}
-  \Description{Semantics for isotope-SSA blocks with holes}
+  \caption{Semantics for \isotopessa expressions with holes}
+  \Description{Semantics for isotope-SSA expressions with holes}
   \label{fig:terms-with-holes-semantics}
 \end{figure}
 
