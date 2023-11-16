@@ -1745,7 +1745,7 @@ this inner expression is not necessarily central, unlike the bound expression!
       \\
     \dnt{\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
       = \dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
-      ; [[\iota_0, \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}], \iota_1]
+      ; [\dnt{\ms{K}} + \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}, \iota_1]
       \\
     \dnt{\lhaslb{\ms{L}}{\cdot}{\ms{L}}}
       = \iota_0
@@ -1782,18 +1782,29 @@ expression \(a\) is allowed to be impure (and therefore in particular does not
 need to be upgraded).
 
 Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
-semantics for control-flow graphs: \rle{nil-br} simply passes the input context
-\(\ms{L}\) through unchanced, while \rle{cons-br} takes any calls to
-\(\lbl{\ell}\) and passes them to the denotation
-\(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\), passing the rest of \(\ms{L}\) to
-\(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}\). We can now quite easily state the
-semantics of \rle{where}: we simply precompose the semantics of the inner block
-\(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the semantics of the associated
-control-flow graph \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}\).
-
-\TODO{explain what the above actually means, \textit{what} is the semantics of a
-CFG}
-
+interpreting a control-flow graph \(\lhaslb{\ms{L}}{L}{\ms{K}}\) as a morphism
+from \(\dnt{\ms{L}}\) to \(\dnt{\ms{K}} + \dnt{\ms{L}}\), where the left-hand
+side of the coproduct denotes branching to one of the target labels in
+\(\ms{K}\) (the \textit{output}), while the right-hand side of the coproduct
+denotes a recursive call to a label in \(\ms{L}\) (the \textit{recursive
+input}). In particular, \rle{nil-br} simply treats a call to one of \(\ms{L}\)
+as a call to a \textit{target label}, passing it through the left injection
+unchanged. On the other hand \rle{cons-br} is a little bit more complicated:
+first we execute \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}\),
+which will give us either an output \(\dnt{\ms{K}, \lhyp{\ell}{\Gamma}{A}}\), or
+a recursive input \(\dnt{\ms{L}}\), the latter of which we can pass through
+unchanged as a recursive input. In the output case, we can interpret this as
+either a value of \(\dnt{\ms{K}}\) or \(\dnt{\Gamma} \otimes \dnt{A}\); the
+former we can pass the value through unchanged as output; in the second case, we
+can pass this in as input to \(\dnt{\haslb{\Gamma,
+\thyp{x}{A}{q}}{t}{\ms{L}}}\), which will give us a value of \(\ms{L}\) we can
+pass in as recursive input. Note that, even if \(t\) branches to an output label
+in \(\ms{K}\), we still return a \textit{recursive input}, not an output; in
+this case, the \textit{next} iteration will return it as an output. We can now
+quite easily state the semantics of \rle{where}: we simply precompose the
+semantics of the inner block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
+\textit{iterated} semantics of the associated control-flow graph,
+\(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}^\dagger\).
 
 \subsection{Semantic Metatheory}
 
