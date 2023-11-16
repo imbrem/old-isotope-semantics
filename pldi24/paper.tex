@@ -2070,14 +2070,14 @@ category given choices of \(M_C\), \(M_R\).
 
 As a concrete example, we can now introduce the \textbf{printing monad}, which
 is simply defined as \(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where
-\(\Sigma: (\ms{Bytes}^*)^\omega \to \ms{Bytes}^{\leq \omega}\) denotes
-concatenation of lists of bytestrings. This can be equipped with the structure
-of a substructural effectful category by choosing \(M_C = M_R = \{[]\}\), giving
-us an \isotopessa model supporting the instructions \(\ms{print} \in
-\mc{I}^\varnothing_0(\ms{Bytes}, \mb{1})\) and \(\ms{rand} \in
-\mc{I}^\taff_1(\mb{1}, A)\) for \(A\) nonempty, with standard semantics
-\(\dnt{\ms{print}} = \lambda b.\{\iota_0 ((), [b])\}\), \(\dnt{\ms{rand}} =
-\lambda (). \{\iota_0 (a, p[]) \mid a \in A\}\).
+\(\Sigma: (\ms{Byte}^*)^\omega \to \ms{Byte}^{\leq \omega}\) denotes
+concatenation of bytestrings into a potentially infinite bytestream. This can be
+equipped with the structure of a substructural effectful category by choosing
+\(M_C = M_R = \{[]\}\), giving us an \isotopessa model supporting the
+instructions \(\ms{print} \in \mc{I}^\varnothing_0(\ms{Byte}^*, \mb{1})\) and
+\(\ms{rand} \in \mc{I}^\taff_1(\mb{1}, A)\) for \(A\) nonempty, with standard
+semantics \(\dnt{\ms{print}} = \lambda b.\{\iota_0 ((), b)\}\),
+\(\dnt{\ms{rand}} = \lambda (). \{\iota_0 (a, []) \mid a \in A\}\).
 
 We can make things a little more interesting by adding a heap to the mix,
 defining our monad \(\ms{Comp} = \ms{StateT}\;\ms{Heap}\;\ms{Print}\), where
@@ -2164,7 +2164,7 @@ This implies that \(\ms{Sep}\) is an \isotopessa model supporting the following 
 \begin{itemize}
   \item \(\ms{coe}: \mc{I}^\tint_1((A, \Phi), (A, \Psi))\) where \(\forall a,
   \Phi\;a \implies \Psi\;a\), implemented by the identity morphism
-  \item \(\ms{print}: \mc{I}^\varnothing_0((\ms{Bytes}, \ms{emp}), (\mb{1},
+  \item \(\ms{print}: \mc{I}^\varnothing_0((\ms{Byte}^*, \ms{emp}), (\mb{1},
   \ms{emp}))\)
   \item \(\ms{rand}: \mc{I}^\taff_1((\mb{1}, \ms{emp}), (A, \ms{emp}))\) for \(A\) nonempty
   \item \(\ms{set}: \mc{I}^\varnothing_0((\nats \times \nats, \lambda (\ell,
