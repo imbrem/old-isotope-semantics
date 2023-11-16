@@ -2750,11 +2750,6 @@ each hole in \(H\), would satisfy the corresponding judgement without holes in
   holes}
   \label{fig:ssa-holes-judgements}
 \end{figure}
-The typing rules for terms, blocks, and CFGs with holes are exactly the same as
-the corresponding rules without holes, modulo the additional rules
-\rle{hole-tm}, \rle{hole-blk}, and \rle{hole-cfg} to type the holes themselves;
-they are given in full in Figures \ref{fig:ssa-term-holes-typing} and
-\ref{fig:ssa-block-holes-typing}.
 
 \begin{figure}
   \begin{gather*}    
@@ -2881,8 +2876,13 @@ they are given in full in Figures \ref{fig:ssa-term-holes-typing} and
   \label{fig:rewrite-typing}
 \end{figure}
 
-This formalism allows us to state the \textit{syntactic rewriting} theorem,
-which says, in essence, that filling holes with valid terms yields valid terms.
+The typing rules for terms, blocks, and CFGs with holes are exactly the same as
+the corresponding rules without holes, modulo the additional rules
+\rle{hole-tm}, \rle{hole-blk}, and \rle{hole-cfg} to type the holes themselves;
+they are given in full in Figures \ref{fig:ssa-term-holes-typing} and
+\ref{fig:ssa-block-holes-typing}. This formalism allows us to state the
+\textit{syntactic rewriting} theorem, which says, in essence, that filling holes
+with valid terms yields valid terms.
 \begin{theorem}[Rewriting]
   Given \(\isrw{\mc{H}}{H}{I}\), we have
   \begin{itemize}
