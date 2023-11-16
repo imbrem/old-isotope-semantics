@@ -881,9 +881,9 @@ having (potentially recursively) defined \(\lbl{\ell}\).
     \\
     \prftree[r]{\rle{ite}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\hasty{\Delta}{1}{e}{\mb{2}}{\tint}}
-      {\haslb{\Xi}{s}{\ms{L}}}
-      {\haslb{\Xi}{t}{\ms{L}}}
+      {\hasty{\Xi}{1}{e}{\mb{2}}{\tint}}
+      {\haslb{\Delta}{s}{\ms{L}}}
+      {\haslb{\Delta}{t}{\ms{L}}}
       {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} 
     \\
     \prftree[r]{\rle{let-blk}}
@@ -1717,12 +1717,12 @@ this inner expression is not necessarily central, unlike the bound expression!
       ; \dnt{\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}} \\
     \dnt{\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}}
       = \upg{(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
-      ; \dnt{\hasty{\Delta}{1}{e}{\mb{2}}{\tint}} \otimes \dnt{\Xi})}
-      ; \ms{ite}_{\dnt{\Xi}} ;
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{e}{\mb{2}}{\tint}})}
+      ; \delta ;
       \\ \qquad \qquad \qquad \qquad
       [
-        \dnt{\haslb{\Xi}{s}{\ms{L}}}, 
-        \dnt{\haslb{\Xi}{t}{\ms{L}}} 
+        \dnt{\haslb{\Delta}{s}{\ms{L}}}, 
+        \dnt{\haslb{\Delta}{t}{\ms{L}}} 
       ]
       \\
     \dnt{\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}}
@@ -1755,26 +1755,31 @@ this inner expression is not necessarily central, unlike the bound expression!
   \label{fig:ssa-block-semantics}
 \end{figure}
 
-\TODO{\textit{what} is the semantics of a block}
-
-We can now give a semantics for blocks in Figure \ref{fig:ssa-block-semantics}.
-Our semantics for break statements \(\lbrb{\ell}{a}\) is given by the semantics
-for splitting the context into variables which pass into dominated blocks and
-variables used to compute the argument, \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\),
-with the latter passed into the semantics of the argument (which is pure, and
-therefore must be lifted to \(\mc{C}_0\))
-\(\dnt{\hasty{\Gamma}{1}{a}{A}{\tint}}\), with the result along with the
-preserved variables passed into \(\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}\) to
-obtain the desired target. The semantics of if-statements are given by first
-splitting the context via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\) and then
-calculating the discriminant \(\dnt{\hasty{\Delta}{1}{b}{\mb{2}}{\tint}}\),
-which must be pure and therefore needs to be lifted. This is then passed through
-the distributor \(\delta\), with each branch passed to the semantics of its
-corresponding block \(\dnt{\haslb{\Xi}{s}{\ms{L}}}\),
-\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The semantics of \rle{let-blk} and
-\rle{let2-blk} are analogous to those of \rle{let} and \rle{let2} in the
-expression case, except that now the bound expression \(a\) is allowed to be
-impure (and therefore in particular does not need to be upgraded).
+Similarly to terms, \textit{blocks} \(\haslb{\Gamma}{t}{\ms{L}}\) are
+interpreted as \textit{impure} morphisms from \(\dnt{\Gamma}\) to \(\ms{L}\):
+here \(\Gamma\) represents all the variables live on entry to the block, while
+\(\ms{L}\) represents all the external blocks which \(t\) might branch to, each
+annotated with their live variables and their arguments; our rules are given in
+Figure \ref{fig:ssa-block-semantics}. Our semantics for break statements
+\(\lbrb{\ell}{a}\) is as follows: we begin by splitting the context into live
+variables which pass into dominated blocks and variables used in the argument
+via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\). We then pass the latter into the
+semantics of the argument (which is pure, and therefore must be lifted to
+\(\mc{C}_0\)) \(\dnt{\hasty{\Gamma}{1}{a}{A}{\tint}}\), with the result and live
+variables re-associated and passed into
+\(\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}\) to obtain the desired target. The
+semantics of if-statements are similarly given by first splitting the context
+via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\) into variables live in the branches,
+\(\Delta\), and variables appearing in the discriminant, \(\Xi\); the latter of
+which are passed into the lifted pure morphism
+\(\dnt{\hasty{\Delta}{1}{b}{\mb{2}}{\tint}}\). The "if" statement itself is then
+simply an application of the distributor \(\delta: A \otimes (\mb{1} + \mb{1})
+\to A + A\), with each branch passed to the semantics of its corresponding block
+\(\dnt{\haslb{\Xi}{s}{\ms{L}}}\), \(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The
+semantics of \rle{let-blk} and \rle{let2-blk} are analogous to those of
+\rle{let} and \rle{let2} in the expression case, except that now the bound
+expression \(a\) is allowed to be impure (and therefore in particular does not
+need to be upgraded).
 
 Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
 semantics for control-flow graphs: \rle{nil-br} simply passes the input context
@@ -2797,9 +2802,9 @@ the same}.
       \\
     \prftree[r]{\rle{ite}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\mhasty{H}{\Delta}{1}{\mhole{e}}{\mb{2}}{\tint}}
-      {\mhaslb{H}{\Xi}{\mhole{s}}{\ms{L}}}
-      {\mhaslb{H}{\Xi}{\mhole{t}}{\ms{L}}}
+      {\mhasty{H}{\Xi}{1}{\mhole{e}}{\mb{2}}{\tint}}
+      {\mhaslb{H}{\Delta}{\mhole{s}}{\ms{L}}}
+      {\mhaslb{H}{\Delta}{\mhole{t}}{\ms{L}}}
       {\mhaslb{H}{\Gamma}{\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}}{\ms{L}}} \\
     \prftree[r]{\rle{let-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
