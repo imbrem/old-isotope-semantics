@@ -1822,12 +1822,13 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
 
 Now that we've given a semantics to \isotopessa programs, we can begin to use it
 to develop an equational theory for performing optimizations. Since we're
-approaching things from a type-theoretic perspective...
-
-\TODO{some text about semantic metatheory}
-
-\TODO{some text about semantic weakening}
-
+approaching things from a type-theoretic perspective, we begin by addressing the
+semantic versions of the standard syntactic metatheorems of weakening and
+substitution. In particular, semantic weakening can be stated in the expected
+manner: if we have an expression or block which is well typed in both \(\Gamma\)
+and \(\Delta\), where \(\cwk{\Gamma}{\Delta}\), then evaluating it in \(\Gamma\)
+is the same as first strengthening \(\Gamma\) to \(\Delta\), dropping unused
+affine variables, and then evaluating it in \(\Delta\).
 \begin{lemma}[Semantic Weakening] 
   If \(\cwk{\Gamma}{\Delta}\), then 
   \begin{itemize}
@@ -1910,19 +1911,13 @@ approaching things from a type-theoretic perspective...
         + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
       \]
   \end{itemize}
-  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
-  \begin{itemize} 
-    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-    \[
-      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-    \]
-    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), we have
-    \[
-      \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-      = \dnt{\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{L}}}
-    \]
-  \end{itemize}
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), for all
+  \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+  \[
+    \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+    = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+  \]
+  \TODO{fix broken cfg version}
 \end{theorem}
 
 \subsection{Optimizations}
@@ -2674,19 +2669,12 @@ specification of the actual machine.
         + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
       \]
   \end{itemize}
-  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
-  \begin{itemize} 
-    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-    \[
-      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-    \]
-    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), we have
-    \[
-      \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-      = \dnt{\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{L}}}
-    \]
-  \end{itemize}
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), for all 
+  \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+  \[
+    \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+    = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+  \]
 \end{theorem}
 
 \begin{proof} \
