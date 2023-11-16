@@ -1676,12 +1676,16 @@ injection.
   \label{fig:ssa-term-semantics}
 \end{figure}
 
-\TODO{\textit{what} is the semantics of a term}
-
-We can now give a semantics for terms in Figure \ref{fig:ssa-term-semantics}.
-Our treatment of \rle{var} is quite standard: the expression \(x\) types in
-\(\Gamma\) if all other variables in \(\Gamma\) and can be discarded, in which
-case the semantics is simply doing so, i.e.
+We can now interpret a term \(\hasty{\Gamma}{p}{a}{A}{q}\) as a
+\textit{morphism} taking \(\dnt{\Gamma}\) into \(\dnt{A}\) with
+\textit{centrality} \(p\) and \textit{quantity} \(q\) (i.e., lying in
+\(\mc{C}_p^q\)). This means that, as expected, a central term becomes a central
+morphism in \(\mc{C}_1\), an affine term becomes an affine morphism, and a
+relevant term becomes a relevant morphism, and so, in particular, a pure term
+becomes a pure morphsim. Our rules for doing so are given in Figure
+\ref{fig:ssa-term-semantics}. Our treatment of \rle{var} is quite standard: the
+expression \(x\) types in \(\Gamma\) if all other variables in \(\Gamma\) and
+can be discarded, in which case the semantics is simply doing so, i.e.
 \(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\), lifting to \(\mc{C}_0\) as necessary.
 Similarly, to type a function application \rle{var}, we first take
 \(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which is guarnateed to be central, lift it
