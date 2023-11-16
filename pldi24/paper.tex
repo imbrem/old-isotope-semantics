@@ -1980,22 +1980,21 @@ We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
 \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
 those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\).
 For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq
-\omega}) = Z(A^*) = \{[\,]\}\), while \(\mc{SZ}(\nats, \nats \cup \{\infty\}) =
-\{0\} \subseteq Z(\nats) = \nats\). Generally, \(\mc{SZ}(M, I)\) always contains
-the unit of \(M\).
-
-We can now define the \textit{trace monad} of a stream action as follows:
+\omega}) = \{[\,]\}\). Generally, \(\mc{SZ}(M, I)\) always contains
+the unit of \(M\). We can now define the \textit{trace monad} of a stream action as follows:
 \begin{definition}[Trace Monad]
-  Given a stream action \(\Theta\) of \(M\) on \(I\), we can define the
+  Given a stream action \(\Theta: M^\omega \to I\), we can define the
   \textbf{nondeterministic trace monad} \(\ms{Traces}\;\Theta\;A = \mc{P}^+(A
-  \times M + I)\), with \(\eta_A = \lambda a.\iota_0 (a, 1)\) and 
-  \[
+  \times M + I)\) with unit \(\eta_A = \lambda a.\iota_0 (a, 1)\) and
+  multiplication
+  \(
     \mu_A\;T = \{[\lambda (a, m). m \cdot a, \ms{id}](t) \mid t \in T\}
-  \]
+  \),
   where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') =
-  \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). The iteration operator \(f^\dagger(a) = f^\infty(a) \cup
+  \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). We can
+  equip this monad with an iteration operator \(f^\dagger(a) = f^\infty(a) \cup
   \bigcup_{n \in \nats}\{\iota_0 (\iota_0\;b, m) \in f_n(a)\} \cup \{\iota_1 t
-  \in f_n(a)\}\) yields an Elgot structure, where
+  \in f_n(a)\}\), yielding an Elgot structure, where
   \[
     f_0 = f, \quad f_{n + 1} = f \gg [\upg{\iota_0}{}, f_n], \quad
     f^\infty(a) = \{\Theta (\lambda n. m_n) \mid a_0 = a \land \forall n, \exists a_{n + 1}. \iota_0 (\iota_1\;a_{n + 1}, m_n) \in f(a_n)\}
