@@ -460,8 +460,7 @@ compositional intepretation in any effectful category with an Elgot structure.
 We use this structure to give generic proofs of the soundness of substitution
 and rewriting properties.
 \item Our abstract semantics justifies a variety of powerful optimisation
-techniques, including E-graph rewriting, inlining, loop fusion, hoisting, and
-strength reduction. 
+techniques, inlining, loop fusion, hoisting, and strength reduction. 
 \item We show how Elgot monads give rise to instances of our categorical
 semantics. We use this to derive semantics from a general trace monad, and show
 that various monad transformers such as state transformers preserve the needed
@@ -1824,42 +1823,46 @@ Now that we've given a semantics to \isotopessa programs, we can begin to use it
 to develop an equational theory for performing optimizations. Since we're
 approaching things from a type-theoretic perspective, we begin by addressing the
 semantic versions of the standard syntactic metatheorems of weakening and
-substitution. In particular, semantic weakening can be stated in the expected
-manner: if we have an expression or block which is well typed in both \(\Gamma\)
-and \(\Delta\), where \(\cwk{\Gamma}{\Delta}\), then evaluating it in \(\Gamma\)
-is the same as first strengthening \(\Gamma\) to \(\Delta\), dropping unused
-affine variables, and then evaluating it in \(\Delta\).
-\begin{lemma}[Semantic Weakening] 
-  If \(\cwk{\Gamma}{\Delta}\), then 
-  \begin{itemize}
-    \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
-    \[
-      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
-      ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
-      = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
-    \]
-    \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
-    \[
-      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
-      ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
-      = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
-    \]
-  \end{itemize}
+substitution. 
 
-  Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
-  \[
-    \dnt{\haslb{\Gamma}{t}{\ms{L}}}
-    ; \dnt{\lwk{\ms{L}}{\ms{K}}}
-    = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
-  \]
-\end{lemma}
+\todo{Move weakening and upgrade lemmas to appendix}
 
-\TODO{some text about upgrade}
-
-\begin{lemma}[Semantic Upgrade]
-  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
-  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
-\end{lemma}
+% In particular, semantic weakening can be stated in the expected
+% manner: if we have an expression or block which is well typed in both \(\Gamma\)
+% and \(\Delta\), where \(\cwk{\Gamma}{\Delta}\), then evaluating it in \(\Gamma\)
+% is the same as first strengthening \(\Gamma\) to \(\Delta\), dropping unused
+% affine variables, and then evaluating it in \(\Delta\).
+% \begin{lemma}[Semantic Weakening] 
+%   If \(\cwk{\Gamma}{\Delta}\), then 
+%   \begin{itemize}
+%     \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
+%     \[
+%       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+%       ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
+%       = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+%     \]
+%     \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
+%     \[
+%       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+%       ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
+%       = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
+%     \]
+%   \end{itemize}
+% 
+%   Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
+%   \[
+%     \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+%     ; \dnt{\lwk{\ms{L}}{\ms{K}}}
+%     = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
+%   \]
+% \end{lemma}
+% 
+% \TODO{some text about upgrade}
+% 
+% \begin{lemma}[Semantic Upgrade]
+%   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
+%   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
+% \end{lemma}
 
 \begin{figure}
   \begin{gather*}
@@ -1928,21 +1931,37 @@ affine variables, and then evaluating it in \(\Delta\).
   \end{itemize}
 \end{theorem}
 
-\subsection{Optimizations}
+\subsection{Optimisations}
 
-\TODO{this:}
+Because we have a denotational semantics, it is easy to validate
+equations between terms.
 
-\TODO{substitution \(\implies\): loop hoisting, global value numbering, some dead code elimination}
+Even the basic proof of the soundness of substitution already lets us
+prove the soundness of many fundamental compiler optimisations, such
+as global value numbering (let-introduction for pure expressions),
+some forms of dead code elimination (i.e., eliminating unused affine
+bindings), and strength reduction with loop hoisting (let-introduction
+for relevant expressions). 
 
-\TODO{rewriting \(\implies\) strength reduction, E-graph optimization, see \cite{cranelift}}
+Substitution only applies to central terms, because those are the only
+terms for which substitution is sound. Furthermore, there are many
+other optimisations that follow from the beta-eta theory of the
+language, as well as specific properties of model-dependent operations
+(such as memory operations). In the appendix, we prove a general
+rewriting theorem which lifts equations between terms into a full
+congruence. This lets us justify optimisations such as scalar
+replacement of aggregates, eliminating redundant writes, reordering
+independent memory operations, and memory-to-register transformations.
 
-\TODO{inlining}
+Because we have a type-theoretic presentation of control-flow graphs,
+we also have a substitution principle and equational theory for
+them. This lets us show the soundness of inlining, loop unrolling,
+loop fusion, dead-code elimination, and other optimisations which
+change the structure of the control-flow graph.
 
-\TODO{loop fusion}
-
-\TODO{unreachable code elimination}
-
-\TODO{more dead code elimination}
+Note that we have not yet proved anything about the dataflow analyses
+used to find the rewrites -- we have only shown that the rewrites
+themselves are semantically justified.
 
 \section{Concrete Models}
 
