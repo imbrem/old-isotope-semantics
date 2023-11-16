@@ -2723,6 +2723,9 @@ Figure \ref{fig:ssa-holes-judgements}. In each case, they correspond to the
 judgement that, given a collection \(\mc{H}\) terms, blocks, and CFGs to fill
 each hole in \(H\), would satisfy the corresponding judgement without holes in
 \ref{fig:ssa-judgements}.
+
+\TODO{note on rewrites}
+
 \begin{figure}
   \begin{center}        
     \begingroup
@@ -2730,8 +2733,8 @@ each hole in \(H\), would satisfy the corresponding judgement without holes in
     \setlength{\tabcolsep}{2em}
     \begin{tabular}{rl}
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
-        \(\isrw{\mc{H}}{I}{H}\) & \(\mc{H}\) fills every hole in \(H\), modulo
-        holes \(I\) \\
+        \(\isrw{\mc{H}}{I}{H}\) & \(\mc{H}\) is a rewrite from \(I\) to \(H\),
+        i.e. fills every hole in \(H\) modulo \(I\) \\
         \(\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}\) & Given
         \(\isrw{\mc{H}}{\cdot}{H}\), \(\hasty{\Gamma}{p}{[\mc{H}]\mhole{a}}{A}{q}\) \\
         \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) & Given
@@ -2900,6 +2903,7 @@ tuples of morphisms which would typecheck in place of the holes in the context,
 as specified in Figure \ref{fig:holes-semantics}.
 \begin{figure}
   \begin{align*}
+      \\
     \dnt{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}
       &= \dnt{H} \times \mc{C}_p^q(\dnt{\Gamma}, \dnt{A}) 
       \\
@@ -2916,6 +2920,11 @@ as specified in Figure \ref{fig:holes-semantics}.
   \Description{Semantics for isotope-SSA holes}
   \label{fig:holes-semantics}
 \end{figure}
+We can now quite easily give semantics for terms, blocks, and CFGs with holes
+which simply correspond to "filling in" any holes with the appropriate morphism
+from the hole context, with all other rules interpreted identically to their
+regular variants: this is done in Figures \ref{fig:ssa-term-holes-semantics} and
+\ref{fig:ssa-block-holes-semantics}.
 
 \begin{figure}
   \begin{gather*}
@@ -2925,9 +2934,9 @@ as specified in Figure \ref{fig:holes-semantics}.
       \\
     \sorry
   \end{gather*}
-  \caption{Semantics for \isotopessa expressions with holes}
-  \Description{Semantics for isotope-SSA expressions with holes}
-  \label{fig:terms-with-holes-semantics}
+  \caption{Semantics for \isotopessa terms with holes}
+  \Description{Semantics for isotope-SSA terms with holes}
+  \label{fig:ssa-term-holes-semantics}
 \end{figure}
 
 \begin{figure}
@@ -2946,7 +2955,7 @@ as specified in Figure \ref{fig:holes-semantics}.
   \end{gather*}
   \caption{Semantics for \isotopessa blocks with holes}
   \Description{Semantics for isotope-SSA blocks with holes}
-  \label{fig:blocks-with-holes-semantics}
+  \label{fig:ssa-block-holes-semantics}
 \end{figure}
 
 \begin{figure}
@@ -2971,8 +2980,6 @@ as specified in Figure \ref{fig:holes-semantics}.
   \Description{Semantics for isotope-SSA rewrites}
   \label{fig:rewrite-semantics}
 \end{figure}
-
-\TODO{some text about semantics of rewrites}
 
 % \begin{lemma}[Rewriting Coherence] \
 %   \begin{itemize}
