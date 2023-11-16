@@ -1910,14 +1910,22 @@ affine variables, and then evaluating it in \(\Delta\).
         ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}}
         + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
       \]
+  \end{itemize}  
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
+  \begin{itemize} 
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+    \[
+      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+    \]
+    \item For all \(\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}\), we have
+    \[
+      \dnt{\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      + \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}}
+      = \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}};\dnt{\lhaslb{\ms{W}_{\ms{K}}}{[\mc{L}]L}{\ms{K}}}
+    \]
+    where all variables in \(\ms{W}\) not in \(\ms{L}\) are fresh w.r.t \(\mc{L}\).
   \end{itemize}
-  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), for all
-  \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-  \[
-    \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-    = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-  \]
-  \TODO{fix broken cfg version}
 \end{theorem}
 
 \subsection{Optimizations}
@@ -2669,12 +2677,21 @@ specification of the actual machine.
         + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
       \]
   \end{itemize}
-  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), for all 
-  \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-  \[
-    \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-    = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-  \]
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
+  \begin{itemize} 
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+    \[
+      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+    \]
+    \item For all \(\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}\), we have
+    \[
+      \dnt{\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      + \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}}
+      = \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}};\dnt{\lhaslb{\ms{W}_{\ms{K}}}{[\mc{L}]L}{\ms{K}}}
+    \]
+    where all variables in \(\ms{W}\) not in \(\ms{L}\) are fresh w.r.t \(\mc{L}\).
+  \end{itemize}
 \end{theorem}
 
 \begin{proof} \
