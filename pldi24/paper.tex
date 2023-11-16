@@ -996,25 +996,22 @@ This can be proved by a relatively straightforward mutual induction.
 \end{figure}
 
 Our main metatheoretic results will be \textit{substitution} and
-\textit{label-substitution}, which will require introducing some
-substitution judgements to state properly, which we do in Figure
+\textit{label-substitution}, which will require introducing some substitution
+judgements to state properly, which we do in Figure
 \ref{fig:ssa-meta-judgements}. In particular, the judgement
-\(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which is
-taken to be a map from variable names to expressions, is a valid
-substitution taking \(\Theta\) to \(\Gamma\). What this means is that,
-for each variable \(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can
-be interpreted as a \textit{central} term of type \(A^q\) in a
-subcontext of \(\Theta\), such that when this is done for all
-\(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables in \(\Theta\)
-are used up: this is described formally via the typing rules
-\rle{subst-nil}, which says that any function \(\gamma\) takes the
-empty context to itself, and \rle{subst-cons}, which says that if
-\(\gamma\) takes \(\Theta_\Gamma\) to \(\Gamma\),
-\(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\),
-\(q \subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the
-duplication/discarding of substructural variables), and \(\Theta\)
-splits into \(\Theta_\Gamma\) and \(\Theta_x\), then
-\(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
+\(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which is taken to be
+a map from variable names to expressions, is a valid substitution taking
+\(\Theta\) to \(\Gamma\). What this means is that, for each variable
+\(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted as a
+\textit{central} term of type \(A^q\) in a subcontext of \(\Theta\), such that
+when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables
+in \(\Theta\) are used up: this is described formally via the typing rules
+\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
+to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
+\(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
+\subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/discarding
+of substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
+\(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
 
 Given such a substitution \(\gamma\), there are two ways to use it. The first is
 standard capture-avoiding substitution, which we denote \([\gamma]e\) for
@@ -1028,8 +1025,8 @@ label-sets. In Section \ref{sec:semantics}, we will show that this is
 semantically equivalent to regular capture-avoiding substitution, due to the
 fact that all terms in a substitution are central \textit{and} that only affine
 computations can be used in an expression substituting for an affine variable,
-and only relevant computationbs can be used in an expression substituting
-for a relevant variable.
+and only relevant computationbs can be used in an expression substituting for a
+relevant variable.
 
 We can now state our substitution theorem for terms in a straightforward way: if
 \(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
@@ -1698,8 +1695,6 @@ inner expression \(\dnt{\hasty{\Delta, \thyp{x}{A}{q}}{p}{e}{B}{q}}\) or
 \(\dnt{\hasty{\Delta, \thyp{x}{A}{q}, \thyp{y}{B}{q}}{p}{e}{C}{q}}\). Note that
 this inner expression is not necessarily central, unlike the bound expression!
 
-\TODO{some text about what the semantics actually are...}
-
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\haslb{\Gamma}{t}{\ms{L}}}
@@ -1747,6 +1742,22 @@ this inner expression is not necessarily central, unlike the bound expression!
   \Description{Semantics for isotope-SSA blocks}
   \label{fig:ssa-block-semantics}
 \end{figure}
+
+We can now give a semantics for blocks in Figure \ref{fig:ssa-block-semantics}.
+Our semantics for break statements \(\lbrb{\ell}{a}\) is given by the semantics
+for splitting the context into variables which pass into dominated blocks and
+variables used to compute the argument, \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\),
+with the latter passed into the semantics of the argument (which is pure, and
+therefore must be lifted to \(\mc{C}_0\))
+\(\dnt{\hasty{\Gamma}{1}{a}{A}{\tint}}\), with the result along with the
+preserved variables passed into \(\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}\) to
+obtain the desired target. The semantics of if-statements are given by first
+splitting the context via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\) and then
+calculating the discriminant \(\dnt{\hasty{\Delta}{1}{b}{\mb{2}}{\tint}}\),
+which must be pure and therefore needs to be lifted. This is then passed through
+the distributor \(\delta\), with each branch passed to the semantics of its
+corresponding block \(\dnt{\haslb{\Xi}{s}{\ms{L}}}\),
+\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\).Tap
 
 \TODO{some text about block semantics}
 
