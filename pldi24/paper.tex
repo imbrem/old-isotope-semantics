@@ -1360,27 +1360,21 @@ In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
 substructural premonoidal category, with \(\mc{C}^\varnothing = \mc{C}\) and
 \(\mc{C}^{\{\ms{a}, \ms{r}\}}, \mc{C}^{\{\ms{a}\}}, \mc{C}^{\{\ms{r}\}}\) the
 subcategory consisting only of the associators, unitors, and symmetry, and only
-the identity object considered affine and relevant. On the other extreme, every
+the identity object considered affine and relevant. Similarly, every
 \textit{Cartesian} category \(\mc{C}\) can be viewed as a substructural
 Cartesian category with all morphisms both relevant and affine; in fact, this is
 the case \textit{if and only if} a category is Cartesian, hence the term
-"substructural Cartesian category."
-
-We can also deduce the following:
+"substructural Cartesian category." We also note the following:
 \begin{proposition}
-  If \(\mc{C}\) is a substructural monoidal category then the Kleisli category
-  \(\mc{C}_{\mb{T}}\) is a substructural premonoidal category with:
-  \begin{itemize}
-    \item \(\ms{Aff}(\mc{C}_{\mb{T}}) = \ms{Aff}(\mc{C})\), \(\ms{Rel}(\mc{C}_{\mb{T}}) = \ms{Rel}(\mc{C})\)
-    \item \(\mc{C}_{\mb{T}}^q(A, B) = \upg{\mc{C}^q(A, B)}{}\), where
-    \(\upg{f}{} = f;\eta\)
-    \item Drops \(\upg{\ms{drop}(A)}{}\) and splits \(\upg{\ms{split}(A)}{}\)
-  \end{itemize} 
-  In particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a
-  substructural effectful category.
+  If \(\mc{C}\) is a substructural monoidal category then we can equip the
+  Kleisli category \(\mc{C}_{\mb{T}}\) with the structure of a substructural
+  effectful category by taking \(\ms{Aff}(\mc{C}_{\mb{T}}) = \ms{Aff}(\mc{C})\),
+  \(\ms{Rel}(\mc{C}_{\mb{T}}) = \ms{Rel}(\mc{C})\), and \(\mc{C}_{\mb{T}}^q(A,
+  B) = \upg{\mc{C}^q(A, B)}{}\), where \(\upg{f}{} = f;\eta\), and defining
+  drops \(\upg{\ms{drop}(A)}{}\) and splits \(\upg{\ms{split}(A)}{}\). In
+  particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a substructural
+  effectful category.
 \end{proposition}
-
-\TODO{work into text?}
 
 \subsection{Distributivity}
 
@@ -1973,23 +1967,22 @@ Some basic examples include:
 \begin{enumerate}
   \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\)
   forms a stream action on the one element set \(\mathbf{1}\).
+  % \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action
+  % \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta =
+  % \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to
+  % \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i
+  % \cdot_i l_i)_i\).
+  \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream
+  action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\),
+  the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell
+  \cdot s\) prepends the \(\ell\) to \(s\).
+  % \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a
+  % stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts
+  % on \(\nats \cup \{\infty\}\) by addition.
   \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and
   stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta =
   \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action
   compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
-  \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action
-  \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta =
-  \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to
-  \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i
-  \cdot_i l_i)_i\).
-  \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream
-  action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\),
-  the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell
-  \cdot s\) prepends the (finite) list \(\ell\) to the (potentially infinite)
-  sequence \(s\).
-  \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a
-  stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts
-  on \(\nats \cup \{\infty\}\) by addition.
 \end{enumerate}
 We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
 \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
@@ -2008,17 +2001,13 @@ We can now define the \textit{trace monad} of a stream action as follows:
     \mu_A\;T = \{[\lambda (a, m). m \cdot a, \ms{id}](t) \mid t \in T\}
   \]
   where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') =
-  \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). This is an
-  Elgot monad, with iteration operator \(f^\dagger(a) = f^\infty(a) \cup
+  \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). The iteration operator \(f^\dagger(a) = f^\infty(a) \cup
   \bigcup_{n \in \nats}\{\iota_0 (\iota_0\;b, m) \in f_n(a)\} \cup \{\iota_1 t
-  \in f_n(a)\}\), where
+  \in f_n(a)\}\) yields an Elgot structure, where
   \[
-    f_0 = f, \qquad f_{n + 1} = f \gg [\upg{\iota_0}{}, f_n]
-  \]
-  \[
+    f_0 = f, \quad f_{n + 1} = f \gg [\upg{\iota_0}{}, f_n], \quad
     f^\infty(a) = \{\Theta (\lambda n. m_n) \mid a_0 = a \land \forall n, \exists a_{n + 1}. \iota_0 (\iota_1\;a_{n + 1}, m_n) \in f(a_n)\}
   \]
-  \TODO{clean this up}
 \end{definition}
 
 We now give a few basic definitions relevant to monads over \(\mb{Set}\):
@@ -2175,7 +2164,8 @@ equips \(\ms{Sep}\) with the structure of a premonoidal category. We can give \(
   this case those for which \(\Phi\) does not depend on the heap.
   \item Central morphisms to be those which do not print, diverge, \textit{or} modify the
   heap. We will consider how to relax this condition later.
-  \item Relevant and affine morphisms to be the lifts of relevant/affine morphisms in \(\ms{Print}\)
+  \item Relevant and affine morphisms to be the lifts of relevant/affine
+  morphisms in \(\ms{Print}\)
 \end{itemize}
 \(\ms{Sep}\) also has coproducts given by \((A, \Phi) + (B, \Psi) = (A + B, [\Phi, \Psi])\), which allow us to equip it with an Elgot structure by taking advantage of the fact that
 \begin{equation}
