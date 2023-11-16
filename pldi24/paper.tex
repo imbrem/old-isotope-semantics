@@ -55,7 +55,7 @@
 }}
 \newcommand{\sorry}{\textcolor{red}{\textbf{sorry}}}
 
-\newcommand{\todo}[1]{\stepcounter{todos} \textcolor{red}{TODO \arabic{todos}:} #1}
+\newcommand{\todo}[1]{\stepcounter{todos} \textcolor{red}{TODO \arabic{todos}: #1}}
 
 % Math fonts
 \newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
@@ -1819,14 +1819,16 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
 
 \subsection{Semantic Metatheory}
 
-Now that we've given a semantics to \isotopessa programs, we can begin to use it
-to develop an equational theory for performing optimizations. Since we're
-approaching things from a type-theoretic perspective, we begin by addressing the
-semantic versions of the standard syntactic metatheorems of weakening and
-substitution. 
+Now that we have a semantics for \isotopessa programs, we can show
+that it matches the syntax by showing that the syntactic and semantic
+notions of substitution coincide. 
 
 \todo{Move weakening and upgrade lemmas to appendix}
-
+% Since we're
+% approaching things from a type-theoretic perspective, we begin by addressing the
+% semantic versions of the standard syntactic metatheorems of weakening and
+% substitution. 
+% 
 % In particular, semantic weakening can be stated in the expected
 % manner: if we have an expression or block which is well typed in both \(\Gamma\)
 % and \(\Delta\), where \(\cwk{\Gamma}{\Delta}\), then evaluating it in \(\Gamma\)
@@ -1864,6 +1866,7 @@ substitution.
 %   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
 % \end{lemma}
 
+
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1^\varnothing(\dnt{\Theta}, \dnt{\Gamma})} 
@@ -1879,9 +1882,8 @@ substitution.
   \label{fig:ssa-subst-semantics}
 \end{figure}
 
-\TODO{some text about substitution semantics}
-
-\TODO{some text about semantic substitution}
+\TODO{some text about substitution semantics -- substitution = composition of env semantics with therm semantics}
+\TODO{some text about semantic substitution -- it's a function that does the obvious thing}
 
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
