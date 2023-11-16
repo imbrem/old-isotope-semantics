@@ -1759,10 +1759,16 @@ calculating the discriminant \(\dnt{\hasty{\Delta}{1}{b}{\mb{2}}{\tint}}\),
 which must be pure and therefore needs to be lifted. This is then passed through
 the distributor \(\delta\), with each branch passed to the semantics of its
 corresponding block \(\dnt{\haslb{\Xi}{s}{\ms{L}}}\),
-\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The semantics of \rle{let-blk} and \rle{let2-blk}
-are analogous to those of \rle{let} and \rle{let2} in the expression case, with the
+\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The semantics of \rle{let-blk} and
+\rle{let2-blk} are analogous to those of \rle{let} and \rle{let2} in the
+expression case, except that now the bound expression \(a\) is allowed to be
+impure (and therefore in particular does not need to be upgraded).
 
-\TODO{some text about block semantics}
+Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
+semantics for control-flow graphs: \todo{this}. We can now quite easily state
+the semantics of \rle{where}: we simply precompose the semantics of the inner
+block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the semantics of the associated
+control-flow graph \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}\); \todo{explain}
 
 \subsection{Semantic Metatheory}
 
