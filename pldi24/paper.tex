@@ -1207,11 +1207,17 @@ do that, we introduce the notion of an \textit{effectful category} as follows:
   symmetry. A \textbf{Freyd category} is an effectful category where \(\mc{V}\)
   is Cartesian.
 \end{definition}
+Unfortunately, the notion of "purity" given by an effectful category only allows
+us to perform relatively weak optimizations in the presence of effects. To
+remedy this, we want to be able to make a finer distinction between morphisms
+which are merely \textit{central} and those which are also \textit{relevant}
+(i.e., copying the input and applying them twice is the same as applying them
+once and copying the output) and/or \textit{affine} (i.e., applying them and
+discarding the result is the same as never doing them at all). Doing so also
+allows us to add the capability of \textit{distinguishing} between objects which
+are affine, relevant, neither or both, enabling us to reason about substructural type systems categorically.
 
-\TODO{confusion with notion of pure in truly "pure" above}
-
-\TODO{text on Freyd categories}
-
+To do this, we begin by introducing the notion of a \textit{symmetric premonoidal subcategory}, as follows:
 \begin{definition}[(Symmetric) Premonoidal Subcategory]
   Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory
   \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is
@@ -1231,13 +1237,9 @@ largest central subcategory is the center of \(\mc{C}\), \(Z(\mb{C})\); the
 existence of a top-element means that in these cases we may induce the structure
 of a complete lattice in the usual manner.
 
-% Should we go down this road?
-% \begin{definition}[Strictly Effectful Category] \
-%   \TODO{this}
-% \end{definition}
-
-\TODO{text}
-
+We can now define a \textit{substructural premonoidal category}, which is simply
+a premonoidal category equipped with a distinguished set of relevant and affine
+morphisms
 \begin{definition}[Substructural (Pre)monoidal Category]
   A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A},
   \mc{R})\) where:
@@ -1323,8 +1325,14 @@ To get a substructural premonoidal category, we can apply the state monad
 transformer to the power set monad to obtain the Kleisli category with morphisms
 of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times
 S)\). Once again, it is clear that all objects have split and drop morphisms
-inherited from \(\ms{Set}\), and therefore are affine and relevant
+inherited from \(\ms{Set}\), and therefore are affine and relevant.
 
+One issue with the above definition is that, just like for regular premonoidal
+categories, it is difficult to distinguish between those morphisms that are
+"truly" central versus those which are just central "by accident", as we only
+want to require any notion of functor we develop subsequently to preserve the
+former. We can solve this the same way, by simply extending the notion of
+effectful category appropriately as follows:
 \begin{definition}[Susbtructural Effectful Category]
   A \textbf{substructural effectful category} \(\mc{C}\) consists of
   \begin{itemize}
@@ -1349,17 +1357,14 @@ inherited from \(\ms{Set}\), and therefore are affine and relevant
   \ms{r}\}}\) specifically are called \textbf{affine}, \textbf{relevant}, and
   \textbf{intuitionistic} or \textbf{pure} respectively.
 \end{definition}
-
 We can obtain an example of a substructural effectful category quite easily by,
 considering the power-set monad above, applying the state transformer to yield
 the Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to S \to
 \mc{P}(A \times S)\). Letting \(\mc{C}_1^q = \ms{Rel}^q\) and defining
-\(
-  \upg{R}{} = \lambda a, s. R(a) \times \{s\}
-\), we can verify that this satisfies the axioms of a substructural effectful category.
-Note that here the \textit{central} morphisms are precisely those which do not
-read from or write to the state, and therefore which commute with all other
-morphisms.
+\(\upg{R}{} = \lambda a, s. R(a) \times \{s\}\), we can verify that this
+satisfies the axioms of a substructural effectful category. Note that here the
+\textit{central} morphisms are precisely those which do not read from or write
+to the state, and therefore which commute with all other morphisms.
 
 In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
 substructural premonoidal category, with \(\mc{C}^\varnothing = \mc{C}\) and
@@ -1430,9 +1435,13 @@ from the following proposition:
     \item Central: this follows immediately from being the image of a pure morphism
     \item Affine: \(\upg{\delta}{} \gg \upg{\ms{drop}}{} = \upg{(\delta;\ms{drop})}{} = \upg{\ms{drop}}{}\)
     \item Relevant: \(\upg{\delta}{} \gg \upg{\ms{split}}{} = \upg{(\delta;\ms{split})}{} = \upg{(\ms{split};\delta \otimes \delta)}{} = \upg{\ms{split}}{} \gg \upg{\delta}{} \otimes \upg{\delta}{}\)
-    \item Left inverse: \(\upg{\delta}{} \gg \upg{[\iota_0 \otimes C, \iota_1 \otimes C]}{} = \upg{\delta;[\iota_0 \otimes C, \iota_1 \otimes C]}{} = \ms{id}\)
+    \item Left inverse: \(\upg{\delta}{} \gg \upg{[\iota_0 \otimes C, \iota_1
+    \otimes C]}{} = \upg{\delta;[\iota_0 \otimes C, \iota_1 \otimes C]}{} =
+    \ms{id}\)
     \item Right inverse: \(\upg{[\iota_0 \otimes C, \iota_1 \otimes C]}{} \gg \upg{\delta}{} = \upg{[\iota_0 \otimes C, \iota_1 \otimes C];\delta}{} = \ms{id}\)
-    \item Symmetric: \(\upg{\sigma^+}{} \otimes C \gg \upg{\delta}{} = \upg{\sigma^+ \otimes C;\delta}{} = \upg{\delta;\sigma^+}{} = \upg{\delta}{} \gg \upg{\sigma^+}{}\)
+    \item Symmetric: \(\upg{\sigma^+}{} \otimes C \gg \upg{\delta}{} =
+    \upg{\sigma^+ \otimes C;\delta}{} = \upg{\delta;\sigma^+}{} = \upg{\delta}{}
+    \gg \upg{\sigma^+}{}\)
   \end{itemize}
 \end{proof}
 
@@ -1500,9 +1509,6 @@ types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
   \item A function \(\ms{inst}(f)\) from instructions \(f \in \mc{I}_p^q(A, B)\)
   to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
 \end{itemize}
-
-\TODO{We know \textit{what} these semantics are, unlike below, but maybe clarify
-\textit{why}} 
 
 We begin by giving a semantics for types and contexts in terms of objects in
 \(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}: we map tensor products to
@@ -1819,28 +1825,55 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
 
 \subsection{Semantic Metatheory}
 
-Now that we have a semantics for \isotopessa programs, we can show
-that it matches the syntax by showing that the syntactic and semantic
-notions of substitution coincide. 
+Now that we have a semantics for \isotopessa programs, we can show that it
+matches the syntax by showing that the syntactic and semantic notions of
+substitution coincide. We begin by giving a semantics for the judgement
+\(\issubst{\gamma}{\Theta}{\Gamma}\), which we will interpret as a pure morphism
+taking \(\dnt{\Theta}\) to \(\dnt{\Gamma}\), defined via the rules in Figure
+\ref{fig:ssa-subst-semantics}, which can simply be viewed as computing all
+\(\gamma(x)\) for \(\thyp{x}{A}{q}\) in \(\Gamma\). In particular, we interpret
+\rle{subst-nil} as the identity function, and \rle{subst-cons} by splitting the
+context via \(\dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}\), and then
+passing \(\dnt{\Theta_\Gamma}\) to the remainder of the substitution
+\(\dnt{\issubst{\gamma}{\Gamma}{\Theta_\Gamma}}\) and \(\dnt{\Theta_x}\) through
+\(\dnt{\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}}\) to yield \(\dnt{A}\). We give a
+similar semantics for label-substitutions: \rle{lb-subst-nil} is interpreted as
+the zero morphism \(0_{\dnt{\ms{K}}}: \mc{C}_0^\varnothing(\mb{0},
+\dnt{\ms{K}})\), while \rle{lb-subst-cons} takes in the coproduct \(\dnt{\ms{L}}
++ \dnt{\Gamma} \otimes \dnt{A}\), sending the former to
+\(\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{A}}}\) and the latter to the denotation of
+\(\mc{L}(\lbl{\ell}, x)\).
 
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1^\varnothing(\dnt{\Theta}, \dnt{\Gamma})} 
     \\
-    \dnt{\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
-      = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{1}{a}{A}{q}} \\
     \dnt{\issubst{\cdot}{\cdot}{\cdot}} = \ms{id}
+    \qquad
+    \dnt{\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+      = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{1}{a}{A}{q}}
     \\
     \boxed{\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}: \mc{C}_0^\varnothing(\dnt{\ms{L}}, \dnt{\ms{K}})} 
+    \\
+    \dnt{\lbsubst{\mc{L}}{\cdot}{\ms{K}}} = 0_{\ms{K}}
+    \qquad
+    \dnt{\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+    = [\dnt{\lbsubst{\ms{L}}{\ms{L}}{\ms{K}}}, \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}]
   \end{gather*}
   \caption{Semantics for \isotopessa substitutions}
   \Description{Semantics for isotope-SSA substitutions}
   \label{fig:ssa-subst-semantics}
 \end{figure}
 
-\TODO{some text about substitution semantics -- substitution = composition of env semantics with therm semantics}
-\TODO{some text about semantic substitution -- it's a function that does the obvious thing}
-
+Given this, we can now state the theorem of semantic substitution, which
+essentially states that the semantics of a substituted expression or block is
+the same as the semantics of that expression or block preceded by let-bindings
+corresponding to the variables in the substitution, which is itself the same as
+the semantics of the original expression or block precomposed with the semantics
+of the substitution as given in Figure \ref{fig:ssa-subst-semantics}. Similarly,
+the semantics of a \textit{label-substituted} block is the same as the semantics
+of the original block \textit{postcomposed} with the semantics of that
+label-substitution. Stated formally, this becomes:
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
