@@ -1823,50 +1823,6 @@ Now that we have a semantics for \isotopessa programs, we can show
 that it matches the syntax by showing that the syntactic and semantic
 notions of substitution coincide. 
 
-\todo{Move weakening and upgrade lemmas to appendix}
-% Since we're
-% approaching things from a type-theoretic perspective, we begin by addressing the
-% semantic versions of the standard syntactic metatheorems of weakening and
-% substitution. 
-% 
-% In particular, semantic weakening can be stated in the expected
-% manner: if we have an expression or block which is well typed in both \(\Gamma\)
-% and \(\Delta\), where \(\cwk{\Gamma}{\Delta}\), then evaluating it in \(\Gamma\)
-% is the same as first strengthening \(\Gamma\) to \(\Delta\), dropping unused
-% affine variables, and then evaluating it in \(\Delta\).
-% \begin{lemma}[Semantic Weakening] 
-%   If \(\cwk{\Gamma}{\Delta}\), then 
-%   \begin{itemize}
-%     \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
-%     \[
-%       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
-%       ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
-%       = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
-%     \]
-%     \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
-%     \[
-%       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
-%       ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
-%       = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
-%     \]
-%   \end{itemize}
-% 
-%   Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
-%   \[
-%     \dnt{\haslb{\Gamma}{t}{\ms{L}}}
-%     ; \dnt{\lwk{\ms{L}}{\ms{K}}}
-%     = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
-%   \]
-% \end{lemma}
-% 
-% \TODO{some text about upgrade}
-% 
-% \begin{lemma}[Semantic Upgrade]
-%   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
-%   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
-% \end{lemma}
-
-
 \begin{figure}
   \begin{gather*}
     \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1^\varnothing(\dnt{\Theta}, \dnt{\Gamma})} 
@@ -1892,6 +1848,7 @@ notions of substitution coincide.
     \[
       \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
       ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+      = \dnt{\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}}
       = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
     \]
     \item For all 
@@ -1901,6 +1858,8 @@ notions of substitution coincide.
     \[
       \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
       ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      = \dnt{\haslb{\Theta}{\exprletsubst{\substctx{\gamma}{\Gamma}}}{\ms{K}}} 
+      ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
       = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
       ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
     \]
