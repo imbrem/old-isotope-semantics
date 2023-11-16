@@ -1683,9 +1683,21 @@ We can now interpret a term \(\hasty{\Gamma}{p}{a}{A}{q}\) as a
 morphism in \(\mc{C}_1\), an affine term becomes an affine morphism, and a
 relevant term becomes a relevant morphism, and so, in particular, a pure term
 becomes a pure morphsim. Our rules for doing so are given in Figure
-\ref{fig:ssa-term-semantics}. Our treatment of \rle{var} is quite standard: the
-expression \(x\) types in \(\Gamma\) if all other variables in \(\Gamma\) and
-can be discarded, in which case the semantics is simply doing so, i.e.
+\ref{fig:ssa-term-semantics}; we will abuse syntax slightly and write
+\(\dnt{\text{"judgement"}}\) for \(\dnt{D}\), where \(D\) is a derivation of
+"judgement"; this is justified by the coherence lemma:
+\begin{lemma}[Coherence] \
+  \begin{itemize}
+    \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \csplits{\Gamma}{\Delta}{\Xi}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \cwk{\Gamma}{\Delta}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{lemma}
+Our treatment of \rle{var} is quite standard: the expression \(x\) types in
+\(\Gamma\) if all other variables in \(\Gamma\) and can be discarded, in which
+case the semantics is simply doing so, i.e.
 \(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\), lifting to \(\mc{C}_0\) as necessary.
 Similarly, to type a function application \rle{var}, we first take
 \(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which is guarnateed to be central, lift it
@@ -1808,26 +1820,13 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
 
 \subsection{Semantic Metatheory}
 
+Now that we've given a semantics to \isotopessa programs, we can begin to use it
+to develop an equational theory for performing optimizations. Since we're
+approaching things from a type-theoretic perspective...
+
 \TODO{some text about semantic metatheory}
 
-\begin{lemma}[Coherence] \
-  \begin{itemize}
-    \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \csplits{\Gamma}{\Delta}{\Xi}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \cwk{\Gamma}{\Delta}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
-  \end{itemize}
-\end{lemma}
-
-\TODO{some text about coherence, implicit use above}
-
-\begin{lemma}[Semantic Upgrade]
-  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
-  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
-\end{lemma}
-
-\TODO{some text about upgrade}
+\TODO{some text about semantic weakening}
 
 \begin{lemma}[Semantic Weakening] 
   If \(\cwk{\Gamma}{\Delta}\), then 
@@ -1854,7 +1853,12 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
   \]
 \end{lemma}
 
-\TODO{some text about semantic weakening}
+\TODO{some text about upgrade}
+
+\begin{lemma}[Semantic Upgrade]
+  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
+  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
+\end{lemma}
 
 \begin{figure}
   \begin{gather*}
@@ -1872,6 +1876,8 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
 \end{figure}
 
 \TODO{some text about substitution semantics}
+
+\TODO{some text about semantic substitution}
 
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
@@ -1918,14 +1924,6 @@ semantics of the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the
     \]
   \end{itemize}
 \end{theorem}
-
-\TODO{some text about semantic substitution}
-
-% \subsection{Normalization}
-
-% \label{ssec:ssa-norm}
-
-% \TODO{this}
 
 \subsection{Optimizations}
 
