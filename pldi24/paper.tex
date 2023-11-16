@@ -389,7 +389,7 @@ return y == z
 \end{equation}
 F\"{u}hrmann called such operations \emph{copyable}. In this paper, we use his
 terminology, and also call such effects \emph{relevant}. With these distinction
-in place, we can \emph{define} a pure expression as one which is all three of
+in place, we can \emph{define} a pure term as one which is all three of
 central, copyable, and discardable.
 
 In addition to working with effects, compiler intermediate representations also
@@ -476,10 +476,6 @@ formalised in the Lean theorem prover.
 \end{itemize}
 
 \section{SSA Syntax}
-
-\TODO{terms vs expression/blocks/control-flow-graphs}
-
-\TODO{standardize "branching to" wordmark? Is wordmark the word here?}
 
 In a standard SSA-based compiler, to represent a function, we begin by
 decomposing it into basic blocks, which can be viewed as \textit{label},
@@ -596,19 +592,19 @@ the intersection of the linearity of its variables, where the linearity of a
 variable is the intersection of the linearity of its type and its quantity
 annotation.
 
-Our grammar proper is split into three main syntactic categories:
+Our grammar proper splits program fragments into three main syntactic categories:
 \begin{itemize}
   \item \textit{Expressions} \(a, b, c, d, e\), which are typed via the
-  judgement \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the expression \(a\)
+  judgement \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the term \(a\)
   is of type \(A\) with \textit{centrality} \(p = 1\) if \textit{central}, or
   \(p = 0\) otherwise, and \textit{quantity} \(q \subseteq \{\ms{a}, \ms{r}\}\).
   So the centrality \(p\) indicates whether it is safe to substitute this
-  expression for a variable, and \(q\), plus the linearity of \(A\), control how
+  term for a variable, and \(q\), plus the linearity of \(A\), control how
   many times that variable can occur: if \(\taff \subseteq q\) then the variable
   is called \textit{affine} or \textit{discardable} and it is permissible to
   leave it unused, whereas if \(\trel \subseteq q\) it is called
   \textit{relevant} or \textit{duplicable} and it is permissible to use multiple
-  times. An expression which is central, relevant, and affine is called
+  times. An term which is central, relevant, and affine is called
   \textit{pure}. The rules for this judgement are given in Figure
   \ref{fig:ssa-term-typing}.
   
@@ -790,12 +786,12 @@ and CFGs in Section \ref{sec:semantics}.
 We can now get to the typing judgement for expressions in Figure
 \ref{fig:ssa-term-typing}. The rule \rle{var} is essentially the standard rule
 for variables, with the requirement that, other than \(x\), all variables in
-\(\Gamma\) are affine. Note that the quantity \(q\) of the \textit{expression}
+\(\Gamma\) are affine. Note that the quantity \(q\) of the \textit{term}
 \(x\) is must satisfy \(q \subseteq q'\), where \(x: A^{q'} \in \Gamma\); this
 reflects that we're allowed to \textit{forget} capabilities, but not
 \textit{add} them. The \rle{app} rule is also mostly standard: given an
 instruction \(f\) which takes in an argument \(A\) and has a return type of
-\(B\) and a \textit{central} expression \(\hasty{\Gamma}{1}{a}{A}{q}\), we
+\(B\) and a \textit{central} term \(\hasty{\Gamma}{1}{a}{A}{q}\), we
 conclude that \(\hasty{\Gamma}{p}{f\;a}{B}{q}\). We, of course, require that
 \(f\) itself have centrality \(p\) and quantity \(q\), i.e. that \(f \in
 \mc{I}_p^q(A, B)\). The \rle{pair} rule says that we can type a pair \((a, b)\)
@@ -863,8 +859,8 @@ typechecks if-then-else statements by stating that, if \(\Gamma\) splits into
 discriminant \(e: \mb{2}\) and \(\Delta\) typechecks both \(s, t\) to branch
 into \(\ms{L}\), then the whole if-statement \(\ite{e}{s}{t}\) also typechecks
 as branching into \(\ms{L}\) in constext \(\Gamma\). \rle{let-blk} and
-\rle{let2-blk} are quite similar to their expression analogues, except that the
-bound expression \(e\) is allowed to be impure (otherwise, programs could only
+\rle{let2-blk} are quite similar to their term analogues, except that the
+bound term \(e\) is allowed to be impure (otherwise, programs could only
 make use of pure functions!), and the remainder of the context plus the bound
 variable is used to type a block rather than a term. Finally, probably the most
 interesting rule is \rle{where}, which says that, given a block \(t\) which
@@ -1033,9 +1029,8 @@ let-bindings for a context \(\Gamma\), written
 CFGs. In Section \ref{sec:semantics}, we will show that this is semantically
 equivalent to regular capture-avoiding substitution, due to the fact that all
 terms in a substitution are central \textit{and} that only affine computations
-can be used in an expression substituting for an affine variable, and only
-relevant computationbs can be used in an expression substituting for a relevant
-variable.
+can be used in a term substituting for an affine variable, and only relevant
+computationbs can be used in a term substituting for a relevant variable.
 
 We can now state our substitution theorem for terms in a straightforward way: if
 \(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
@@ -1693,29 +1688,29 @@ becomes a pure morphsim. Our rules for doing so are given in Figure
     \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
   \end{itemize}
 \end{lemma}
-Our treatment of \rle{var} is quite standard: the expression \(x\) types in
-\(\Gamma\) if all other variables in \(\Gamma\) and can be discarded, in which
-case the semantics is simply doing so, i.e.
-\(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\), lifting to \(\mc{C}_0\) as necessary.
-Similarly, to type a function application \rle{var}, we first take
-\(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which is guarnateed to be central, lift it
-to the appropriate category \(\mc{C}_p\), and then simply postcompose it with
-the denotation of \(f\). \rle{pair} is handled by composing the context split
-\(\csplits{\Gamma}{\Delta}{\Xi}\) taking the tensor product of the components
-\(\dnt{\hasty{\Delta}{1}{a}{A}{q}}\), \(\dnt{\hasty{\Xi}{1}{b}{B}{q}}\); this is
-well-defined since both components are central and \(\mc{C}_1\) is monoidal. We
-then lift the result to the appropriate \(\mc{C}_p\). The semantics of
-\rle{unit} is simply dropping the entire context; \(\dnt{\cwk{\Gamma}{\cdot}}\),
-while \rle{true}, and \rle{false} are each handled by first dropping the context
-and then postcomposing with the appropriate constant; in all cases, this is
-followed by lifting to \(\mc{C}_p\). Finally, \rle{let} and \rle{let2} are
-handled by first splitting the context, then passing the right hand component to
-the semantics of the bound expression \(\dnt{\hasty{\Xi}{1}{a}{A}{q}}\) or
-\(\dnt{\hasty{\Xi}{1}{a}{A \otimes B}{q}}\), and then, lifting to \(\mc{C}_p\)
-as necessary, after reassociating with \(\alpha\), passing everything to the
-inner expression \(\dnt{\hasty{\Delta, \thyp{x}{A}{q}}{p}{e}{B}{q}}\) or
-\(\dnt{\hasty{\Delta, \thyp{x}{A}{q}, \thyp{y}{B}{q}}{p}{e}{C}{q}}\). Note that
-this inner expression is not necessarily central, unlike the bound expression!
+Our treatment of \rle{var} is quite standard: the term \(x\) types in \(\Gamma\)
+if all other variables in \(\Gamma\) and can be discarded, in which case the
+semantics is simply doing so, i.e. \(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\),
+lifting to \(\mc{C}_0\) as necessary. Similarly, to type a function application
+\rle{var}, we first take \(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which is
+guarnateed to be central, lift it to the appropriate category \(\mc{C}_p\), and
+then simply postcompose it with the denotation of \(f\). \rle{pair} is handled
+by composing the context split \(\csplits{\Gamma}{\Delta}{\Xi}\) taking the
+tensor product of the components \(\dnt{\hasty{\Delta}{1}{a}{A}{q}}\),
+\(\dnt{\hasty{\Xi}{1}{b}{B}{q}}\); this is well-defined since both components
+are central and \(\mc{C}_1\) is monoidal. We then lift the result to the
+appropriate \(\mc{C}_p\). The semantics of \rle{unit} is simply dropping the
+entire context; \(\dnt{\cwk{\Gamma}{\cdot}}\), while \rle{true}, and \rle{false}
+are each handled by first dropping the context and then postcomposing with the
+appropriate constant; in all cases, this is followed by lifting to \(\mc{C}_p\).
+Finally, \rle{let} and \rle{let2} are handled by first splitting the context,
+then passing the right hand component to the semantics of the bound term
+\(\dnt{\hasty{\Xi}{1}{a}{A}{q}}\) or \(\dnt{\hasty{\Xi}{1}{a}{A \otimes
+B}{q}}\), and then, lifting to \(\mc{C}_p\) as necessary, after reassociating
+with \(\alpha\), passing everything to the inner term \(\dnt{\hasty{\Delta,
+\thyp{x}{A}{q}}{p}{e}{B}{q}}\) or \(\dnt{\hasty{\Delta, \thyp{x}{A}{q},
+\thyp{y}{B}{q}}{p}{e}{C}{q}}\). Note that this inner term is not necessarily
+central, unlike the bound term!
 
 \begin{figure}
   \begin{gather*}
@@ -1787,9 +1782,9 @@ simply an application of the distributor \(\delta: A \otimes (\mb{1} + \mb{1})
 \to A + A\), with each branch passed to the semantics of its corresponding block
 \(\dnt{\haslb{\Xi}{s}{\ms{L}}}\), \(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The
 semantics of \rle{let-blk} and \rle{let2-blk} are analogous to those of
-\rle{let} and \rle{let2} in the expression case, except that now the bound
-expression \(a\) is allowed to be impure (and therefore in particular does not
-need to be upgraded).
+\rle{let} and \rle{let2} in the term case, except that now the bound term \(a\)
+is allowed to be impure (and therefore in particular does not need to be
+upgraded).
 
 Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
 interpreting a control-flow graph \(\lhaslb{\ms{L}}{L}{\ms{K}}\) as a morphism
@@ -1859,14 +1854,14 @@ the zero morphism \(0_{\dnt{\ms{K}}}: \mc{C}_0^\varnothing(\mb{0},
 \end{figure}
 
 Given this, we can now state the theorem of semantic substitution, which
-essentially states that the semantics of a substituted expression or block is
-the same as the semantics of that expression or block preceded by let-bindings
-corresponding to the variables in the substitution, which is itself the same as
-the semantics of the original expression or block precomposed with the semantics
-of the substitution as given in Figure \ref{fig:ssa-subst-semantics}. Similarly,
-the semantics of a \textit{label-substituted} block is the same as the semantics
-of the original block \textit{postcomposed} with the semantics of that
-label-substitution. Stated formally, this becomes:
+essentially states that the semantics of a substituted term or block is the same
+as the semantics of that term or block preceded by let-bindings corresponding to
+the variables in the substitution, which is itself the same as the semantics of
+the original term or block precomposed with the semantics of the substitution as
+given in Figure \ref{fig:ssa-subst-semantics}. Similarly, the semantics of a
+\textit{label-substituted} block is the same as the semantics of the original
+block \textit{postcomposed} with the semantics of that label-substitution.
+Stated formally, this becomes:
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
@@ -1920,35 +1915,32 @@ label-substitution. Stated formally, this becomes:
 
 \subsection{Optimisations}
 
-Because we have a denotational semantics, it is easy to validate
-equations between terms.
+Because we have a denotational semantics, it is easy to validate equations
+between terms, blocks, and CFGs.
 
-Even the basic proof of the soundness of substitution already lets us
-prove the soundness of many fundamental compiler optimisations, such
-as global value numbering (let-introduction for pure expressions),
-some forms of dead code elimination (i.e., eliminating unused affine
-bindings), and strength reduction with loop hoisting (let-introduction
-for relevant expressions). 
+Even the basic proof of the soundness of substitution already lets us prove the
+soundness of many fundamental compiler optimisations, such as global value
+numbering (let-introduction for pure expressions), some forms of dead code
+elimination (i.e., eliminating unused affine bindings), and strength reduction
+with loop hoisting (let-introduction for relevant expressions). 
 
-Substitution only applies to central terms, because those are the only
-terms for which substitution is sound. Furthermore, there are many
-other optimisations that follow from the beta-eta theory of the
-language, as well as specific properties of model-dependent operations
-(such as memory operations). In the appendix, we prove a general
-rewriting theorem which lifts equations between terms into a full
-congruence. This lets us justify optimisations such as scalar
-replacement of aggregates, eliminating redundant writes, reordering
-independent memory operations, and memory-to-register transformations.
+Substitution only applies to central terms, because those are the only terms for
+which substitution is sound. Furthermore, there are many other optimisations
+that follow from the beta-eta theory of the language, as well as specific
+properties of model-dependent operations (such as memory operations). In the
+appendix, we prove a general rewriting theorem which lifts equations between
+terms into a full congruence. This lets us justify optimisations such as scalar
+replacement of aggregates, eliminating redundant writes, reordering independent
+memory operations, and memory-to-register transformations.
 
-Because we have a type-theoretic presentation of control-flow graphs,
-we also have a substitution principle and equational theory for
-them. This lets us show the soundness of inlining, loop unrolling,
-loop fusion, dead-code elimination, and other optimisations which
-change the structure of the control-flow graph.
+Because we have a type-theoretic presentation of control-flow graphs, we also
+have a substitution principle and equational theory for them. This lets us show
+the soundness of inlining, loop unrolling, loop fusion, dead-code elimination,
+and other optimisations which change the structure of the control-flow graph.
 
-Note that we have not yet proved anything about the dataflow analyses
-used to find the rewrites -- we have only shown that the rewrites
-themselves are semantically justified.
+Note that we have not yet proved anything about the dataflow analyses used to
+find the rewrites -- we have only shown that the rewrites themselves are
+semantically justified.
 
 \section{Concrete Models}
 
@@ -2373,98 +2365,88 @@ joined buffer is also empty, giving us the following:
 
 \section{Related Work and Discussion}
 
-For space reasons we, restrict our discussion to the most closely
-related work on SSA. 
+For space reasons we, restrict our discussion to the most closely related work
+on SSA. 
 
 Originally, \citet{kelsey-ssa-cps} showed how to embed SSA into a CPS
-representation, and \citet{appel-ssa} showed informally how SSA can be
-seen as a collection of mutually-tail-recursive
-procedures. \citet{chakravarty-functional-ssa-2003} made Appel's
-observation formal, by showing how to translate SSA into A-normal
-form~\cite{anf}, and used it to prove the correctness of a constant
-propagation analysis. These translations were for an untyped source
-and target language, and
-\citet{typed-effect-ssa-rigon-torrens-vasconcellos-20} give a typed
-translation from SSA into the lambda calculus, into a type-and-effect
-system. In contrast, we directly track the centrality and duplicability of
-terms, without tracking specific effects.
+representation, and \citet{appel-ssa} showed informally how SSA can be seen as a
+collection of mutually-tail-recursive procedures.
+\citet{chakravarty-functional-ssa-2003} made Appel's observation formal, by
+showing how to translate SSA into A-normal form~\cite{anf}, and used it to prove
+the correctness of a constant propagation analysis. These translations were for
+an untyped source and target language, and
+\citet{typed-effect-ssa-rigon-torrens-vasconcellos-20} give a typed translation
+from SSA into the lambda calculus, into a type-and-effect system. In contrast,
+we directly track the centrality and duplicability of terms, without tracking
+specific effects.
 
-All of these papers give SSA semantics by translation -- that is, they
-defined the semantics of an SSA program to be the semantics of the
-image of the translation, with the idea that the simpler semantics of
-the functional language can make proofs easier. The Grail language of
-\citet{beringer-imp-fun} makes this idea explicit by giving both a
-functional and imperative semantics to a low-level language, and
-showing the conditions under which they coincide. \citet{schneider-imp-fun} prove
-a similar result, and further mechanise the proof in Coq.
+All of these papers give SSA semantics by translation -- that is, they defined
+the semantics of an SSA program to be the semantics of the image of the
+translation, with the idea that the simpler semantics of the functional language
+can make proofs easier. The Grail language of \citet{beringer-imp-fun} makes
+this idea explicit by giving both a functional and imperative semantics to a
+low-level language, and showing the conditions under which they coincide.
+\citet{schneider-imp-fun} prove a similar result, and further mechanise the
+proof in Coq.
 
-There have also been a number of papers which have studied the
-semantics of SSA directly.
+There have also been a number of papers which have studied the semantics of SSA
+directly.
 
-\citet{ssa-types-matsuno-ohori-06} give a type theory for what appear
-to be ordinary three-address code programs. However, every well-typed
-program can be placed into SSA-form by inserting $\phi$-nodes in a
-fully type-directed way. This lets them model SSA without any $\phi$-nodes, lets
-them use the standard
+\citet{ssa-types-matsuno-ohori-06} give a type theory for what appear to be
+ordinary three-address code programs. However, every well-typed program can be
+placed into SSA-form by inserting $\phi$-nodes in a fully type-directed way.
+This lets them model SSA without any $\phi$-nodes, lets them use the standard
 semantics for three-address code.
 %
-\citet{hua-explicit-ssa-2010} give another type system and
-direct operational semantics for SSA, and prove type safety
-for it. 
+\citet{hua-explicit-ssa-2010} give another type system and direct operational
+semantics for SSA, and prove type safety for it. 
 
-Many operational semantics for SSA have arisen from compiler
-verification efforts. \citet{barthe-compcert-ssa-2014} give an
-operational semantics as part of the CompCertSSA project, and give a
-semantics-preserving translation from three-address code into
-SSA. \citet{herklotz-gsa-2023} formalise "gated SSA" and give
-semantics-preserving translations between it and ordinary SSA. Going
-beyond CompCertSSA, \citet{vellum} have studied the semantics of the
-LLVM IR itself.
+Many operational semantics for SSA have arisen from compiler verification
+efforts. \citet{barthe-compcert-ssa-2014} give an operational semantics as part
+of the CompCertSSA project, and give a semantics-preserving translation from
+three-address code into SSA. \citet{herklotz-gsa-2023} formalise "gated SSA" and
+give semantics-preserving translations between it and ordinary SSA. Going beyond
+CompCertSSA, \citet{vellum} have studied the semantics of the LLVM IR itself.
 
-There has been much less work on denotational semantics for SSA, or
-directly on its equational theory. \citet{pop-ssa-inout-2009} give an
-unusual denotational model of SSA in terms of the iteration structure
-of a program, which they use to better understand the loop-closing
-$\phi$-nodes found both in the gated SSA representation as well as
-practical compilers such as GCC.  \citet{garbuzov-structural-cfg-2018}
-exhibit a correspondence between an operational semantics for SSA, and
-an operational semantics for call-by-push-value~\cite{cbpv}. They use
-the normal-form bisimulations of \citet{lassen-bisim} to derive an
-equational theory for use in justifying optimisations. Their
-operational semantics is effect-free, which means that it cannot
-justify optimisations such as eliminating redundant
-writes.
+There has been much less work on denotational semantics for SSA, or directly on
+its equational theory. \citet{pop-ssa-inout-2009} give an unusual denotational
+model of SSA in terms of the iteration structure of a program, which they use to
+better understand the loop-closing $\phi$-nodes found both in the gated SSA
+representation as well as practical compilers such as GCC.
+\citet{garbuzov-structural-cfg-2018} exhibit a correspondence between an
+operational semantics for SSA, and an operational semantics for
+call-by-push-value~\cite{cbpv}. They use the normal-form bisimulations of
+\citet{lassen-bisim} to derive an equational theory for use in justifying
+optimisations. Their operational semantics is effect-free, which means that it
+cannot justify optimisations such as eliminating redundant writes.
 
-Our work is the first to validate the equational theory of SSA against
-a weak memory semantics. We focused on denotational models of weak
-memory, since they make it easier to establish equational
-properties. However, we need a number of features of the semantics
-which are sometimes difficult to establish in the weak memory
-world. First, sequencing must be associative (i.e.,
-$(t_1; t_2); t_3 \equiv t_1; (t_2; t_3)$).  Second, the semantics must
-support loops, including the equation that a while-loop is equal to
-its unrolling. Finally, sums need to be distributive (e.g., in the
-boolean case, $(A \otimes \mb{2}) \simeq (A + A)$).
+Our work is the first to validate the equational theory of SSA against a weak
+memory semantics. We focused on denotational models of weak memory, since they
+make it easier to establish equational properties. However, we need a number of
+features of the semantics which are sometimes difficult to establish in the weak
+memory world. First, sequencing must be associative (i.e., $(t_1; t_2); t_3
+\equiv t_1; (t_2; t_3)$).  Second, the semantics must support loops, including
+the equation that a while-loop is equal to its unrolling. Finally, sums need to
+be distributive (e.g., in the boolean case, $(A \otimes \mb{2}) \simeq (A +
+A)$).
 
-As a result, we focused on the TSO semantics of \citet{sparky}, which
-validates the properties we need. For ARM-style concurrency, which
-admits load buffering, we only found models which are "near misses":
-they have a subset of the properties we need. The event
-structure model of \citet{paviotti-modular-relaxed-dep-20} is
-formulated in terms of step-indexing, so satisfies all of our needed
-properties except the loop unrolling property -- step-indexing means
-it is a refinement rather than an equation. The pomsets with
-preconditions model of \citet{jagadeesan-pwp-20} does not exactly
-satisfy the associativity of semicolon, and while the pomsets with
-predicate transformers model of \citet{leaky-semicolon} does satisfy
-associativity, it does not yet support loops.
+As a result, we focused on the TSO semantics of \citet{sparky}, which validates
+the properties we need. For ARM-style concurrency, which admits load buffering,
+we only found models which are "near misses": they have a subset of the
+properties we need. The event structure model of
+\citet{paviotti-modular-relaxed-dep-20} is formulated in terms of step-indexing,
+so satisfies all of our needed properties except the loop unrolling property --
+step-indexing means it is a refinement rather than an equation. The pomsets with
+preconditions model of \citet{jagadeesan-pwp-20} does not exactly satisfy the
+associativity of semicolon, and while the pomsets with predicate transformers
+model of \citet{leaky-semicolon} does satisfy associativity, it does not yet
+support loops.
 
-We do not think it would be prohibitively difficult to extend these
-models to support the required features, and we believe our results
-suggest that it would be have a high payoff: those features would
-suffice to build a model of our IR, giving us tight results
-validating the transformations compilers want against the low-level
-specification of the actual machine. 
+We do not think it would be prohibitively difficult to extend these models to
+support the required features, and we believe our results suggest that it would
+be have a high payoff: those features would suffice to build a model of our IR,
+giving us tight results validating the transformations compilers want against
+the low-level specification of the actual machine. 
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
@@ -2712,7 +2694,7 @@ syntactic categories with \textit{holes} of the form \(\lhole{X}\),
 introduce the concept of a \textit{hole-context} \(H\), which types a hole as being
 one of:
 \begin{itemize}
-  \item \todo{expression}
+  \item \todo{term}
   \item \todo{block}
   \item \todo{control flow graph}
 \end{itemize}
