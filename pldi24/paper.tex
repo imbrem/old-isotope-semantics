@@ -479,8 +479,9 @@ manner being in "SSA form" simply means that every variable name is defined
 exactly once. For example, the program in Figure \ref{fig:3-addr} has 3 basic
 blocks, one of which is a distinguished \textit{entry block}, but is
 \textit{not} in SSA form, since the variables \(m, n\) and \(i\) are each
-modified through subsequent assignments (\(t\) is recomputed on every iteration
-of the loop, but since it only has one definition, it \textit{is} in SSA form).
+modified through subsequent assignments .
+% (\(t\) is recomputed on every iteration of the loop, but since it only has one
+% definition, it \textit{is} in SSA form).
 To convert this program to SSA form, we would traditionally use
 \(\phi\)-functions, or, equivalently, annotate each basic block with arguments,
 as in Figure \ref{fig:bb-arg}.
@@ -562,45 +563,21 @@ will support \textit{nested scopes} and, in particular, \textit{if-statements}.
 The program in Figure \ref{fig:bb-arg} translated to our syntax is given in
 Figure \ref{fig:our-syn}. These do not introduce any new expressivity: an
 if-statement can be viewed as syntactic sugar for a conditional branch to one of
-two anonymous basic blocks, while nested scopes simply \textit{restrict} where
-we can branch to. 
-% In particular, in Section \ref{ssec:ssa-norm}, we will formalize
-% interconversion with traditional SSA and show how it is semantically sound to
-% simply merge all nested scopes. The point of the slightly modified syntax is
-% simply to make some of our metatheoretic results more practical to state.
-
-The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
-the appendix, while the typing judgements themselves are given in
-\ref{fig:ssa-judgements}. We begin by giving a grammar for \textit{types} \(A,
-B, C\), parametrized by a set of \textit{base types} \(X\); all syntactically
-well-formed types are also semantically valid. We postulate the existence of a
-\textit{unit type} \(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all
-tensor products \(A \otimes B\); we write \(\otimes\) to underscore the fact
-that types are allowed to be substructural, assigning every type a linearity
-\(\ms{lin}(A)\) satisfying the constraints in Figure \ref{fig:ssa-structural}.
-In particular, the rules \rle{unit-lin} and \rle{bool-lin} state that both the
-unit and boolean types must be intuitionistic; the rule \rle{pair-lin} says that
-the linearity of a pair is simply the intersection of the linearity of its
-components. The rules \rle{nil-lin} and \rle{cons-lin} together say that the
-linearity of a context is the intersection of the linearity of its variables,
-where the linearity of a variable is the intersection of the linearity of its
-type and its quantity annotation.
-
-Our grammar proper splits program fragments into three main syntactic categories:
+two anonymous basic blocks, while nested scopes simply \textit{restrict}
+branching. Our syntax is composed of three main syntactic categories:
 \begin{itemize}
-  \item \textit{Expressions} \(a, b, c, d, e\), which are typed via the
-  judgement \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the term \(a\)
-  is of type \(A\) with \textit{centrality} \(p = 1\) if \textit{central}, or
-  \(p = 0\) otherwise, and \textit{quantity} \(q \subseteq \{\ms{a}, \ms{r}\}\).
-  So the centrality \(p\) indicates whether it is safe to substitute this
-  term for a variable, and \(q\), plus the linearity of \(A\), control how
-  many times that variable can occur: if \(\taff \subseteq q\) then the variable
-  is called \textit{affine} or \textit{discardable} and it is permissible to
-  leave it unused, whereas if \(\trel \subseteq q\) it is called
-  \textit{relevant} or \textit{duplicable} and it is permissible to use multiple
-  times. An term which is central, relevant, and affine is called
-  \textit{pure}. The rules for this judgement are given in Figure
-  \ref{fig:ssa-term-typing}.
+  \item \textit{Terms} \(a, b, c, d, e\), which are typed via the judgement
+  \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the term \(a\) is of type
+  \(A\) with \textit{centrality} \(p = 1\) if \textit{central}, or \(p = 0\)
+  otherwise, and \textit{quantity} \(q \subseteq \{\ms{a}, \ms{r}\}\). So the
+  centrality \(p\) indicates whether it is safe to substitute this term for a
+  variable, and \(q\), plus the linearity of \(A\), control how many times that
+  variable can occur: if \(\taff \subseteq q\) then the variable is called
+  \textit{affine} or \textit{discardable} and it is permissible to leave it
+  unused, whereas if \(\trel \subseteq q\) it is called \textit{relevant} or
+  \textit{duplicable} and it is permissible to use multiple times. A term which
+  is central, relevant, and affine is called \textit{pure}. The rules for this
+  judgement are given in Figure \ref{fig:ssa-term-typing}.
   
   \item \textit{Blocks} \(s, t\), which are typed via the judgement
   \(\haslb{\ms{L}}{t}{\Gamma}\), which says that the block \(t\) is well-formed
@@ -614,6 +591,24 @@ Our grammar proper splits program fragments into three main syntactic categories
   recursive control flow is allowed. The rules for this judgement are given in
   Figure \ref{fig:ssa-block-typing}.
 \end{itemize}
+The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
+the appendix, while the typing judgements themselves are given in
+\ref{fig:ssa-judgements}. 
+
+We postulate the existence of a set of \textit{base types} \(X\), as well as a
+\textit{unit type} \(\mb{1}\) and \textit{boolean type} \(\mb{2}\). We define
+the tensor product of types \(A \otimes B\); we write \(\otimes\) to underscore
+the fact that types are allowed to be substructural, assigning every type a
+linearity \(\ms{lin}(A)\) satisfying the constraints in Figure
+\ref{fig:ssa-structural}. In particular, the rules \rle{unit-lin} and
+\rle{bool-lin} state that both the unit and boolean types must be
+intuitionistic; the rule \rle{pair-lin} says that the linearity of a pair is
+simply the intersection of the linearity of its components. The rules
+\rle{nil-lin} and \rle{cons-lin} together say that the linearity of a context is
+the intersection of the linearity of its variables, where the linearity of a
+variable is the intersection of the linearity of its type and its quantity
+annotation.
+
 Here \textit{contexts} \(\Gamma\), consist of a list of variables \(x\) given a
 type \(A\) annotated with a \textit{quantity} \(q \subseteq \tint\). A variable
 \(x: A^q\) is called \textit{affine} if its type \(A\) is affine (i.e.
@@ -734,27 +729,26 @@ and CFGs in Section \ref{sec:semantics}.
 \end{figure}
 
 We can now get to the typing judgement for expressions in Figure
-\ref{fig:ssa-term-typing}. The rule \rle{var} is essentially the standard rule
-for variables, with the requirement that, other than \(x\), all variables in
-\(\Gamma\) are affine. Note that the quantity \(q\) of the \textit{term}
-\(x\) is must satisfy \(q \subseteq q'\), where \(x: A^{q'} \in \Gamma\); this
-reflects that we're allowed to \textit{forget} capabilities, but not
-\textit{add} them. The \rle{app} rule is also mostly standard: given an
-instruction \(f\) which takes in an argument \(A\) and has a return type of
-\(B\) and a \textit{central} term \(\hasty{\Gamma}{1}{a}{A}{q}\), we
-conclude that \(\hasty{\Gamma}{p}{f\;a}{B}{q}\). We, of course, require that
-\(f\) itself have centrality \(p\) and quantity \(q\), i.e. that \(f \in
-\mc{I}_p^q(A, B)\). The \rle{pair} rule says that we can type a pair \((a, b)\)
-in \(\Gamma\) if \(\csplits{\Gamma}{\Delta}{\Xi}\) where \(\Delta\) types \(a\)
-and \(\Xi\) types \(b\); the quantity of a pair is simply the intersection of
-the quantity of its components (this is expressed in the rule by allowing any
-quantity which types \textit{both} components), and both components must be
-central. Finally, we have the rules \rle{let} and \rle{let2}, corresponding to
-let-bindings and destructuring let-bindings respectively. In both cases, we
-split the context \(\Gamma\) into subcontext \(\Delta, \Xi\), one of which is
-used to type a central subterm \(a\), which is bound to variables \(x\) or
-destructured to variables \(x, y\) respectively, in a potentially non-central
-term \(e\) which is otherwise typed in \(\Delta\).
+\ref{fig:ssa-term-typing}. The rule \rle{var} states that \(x: A^q\) is
+well-typed in \(\Gamma\) if all other variables are affine (i.e., can be
+dropped) and \(q \subseteq q'\), where \(x: A^{q'} \in \Gamma\); this reflects
+that we're allowed to \textit{forget} capabilities, but not \textit{add} them.
+The \rle{app} rule states that, given an instruction \(f\) which takes in an
+argument \(A\) and has a return type of \(B\) and a \textit{central} term
+\(\hasty{\Gamma}{1}{a}{A}{q}\), we can conclude that
+\(\hasty{\Gamma}{p}{f\;a}{B}{q}\). We, of course, require that \(f\) itself have
+centrality \(p\) and quantity \(q\), i.e. that \(f \in \mc{I}_p^q(A, B)\). The
+\rle{pair} rule says that we can type a pair \((a, b)\) in \(\Gamma\) if
+\(\csplits{\Gamma}{\Delta}{\Xi}\) where \(\Delta\) types \(a\) and \(\Xi\) types
+\(b\); the quantity of a pair is simply the intersection of the quantity of its
+components (this is expressed in the rule by allowing any quantity which types
+\textit{both} components), and both components must be central. Finally, we have
+the rules \rle{let} and \rle{let2}, correspond to let-bindings and destructuring
+let-bindings respectively. In both cases, we split the context \(\Gamma\) into
+subcontext \(\Delta, \Xi\), one of which is used to type a central subterm
+\(a\), which is bound to variables \(x\) or destructured to variables \(x, y\)
+respectively, in a potentially non-central term \(e\) which is otherwise typed
+in \(\Delta\).
 
 \begin{figure}
   \begin{gather*}    
