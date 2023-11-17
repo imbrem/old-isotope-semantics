@@ -1876,34 +1876,37 @@ We begin with some definitions:
   \),
   where \(m \colon \ell\) denotes the stream formed by prefixing \(m\) to the
   stream \(\ell\).
+  Some basic examples include:
+  \begin{enumerate}
+    \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\)
+    forms a stream action on the one element set \(\mathbf{1}\).
+    % \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action
+    % \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta =
+    % \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to
+    % \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i
+    % \cdot_i l_i)_i\).
+    \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a
+    stream action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq
+    \omega}\), the set of (\textit{potentially} infinite) sequences of \(A\),
+    where \(\ell \cdot s\) prepends the \(\ell\) to \(s\).
+    % \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a
+    % stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts
+    % on \(\nats \cup \{\infty\}\) by addition.
+    \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and
+    stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta =
+    \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action
+    compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
+  \end{enumerate}
 \end{definition}
-Some basic examples include:
-\begin{enumerate}
-  \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\)
-  forms a stream action on the one element set \(\mathbf{1}\).
-  % \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action
-  % \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta =
-  % \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to
-  % \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i
-  % \cdot_i l_i)_i\).
-  \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a stream
-  action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq \omega}\),
-  the set of (\textit{potentially} infinite) sequences of \(A\), where \(\ell
-  \cdot s\) prepends the \(\ell\) to \(s\).
-  % \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a
-  % stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts
-  % on \(\nats \cup \{\infty\}\) by addition.
-  \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and
-  stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta =
-  \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action
-  compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
-\end{enumerate}
-We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
-\(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
-those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\).
-For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq
-\omega}) = \{[\,]\}\). Generally, \(\mc{SZ}(M, I)\) always contains
-the unit of \(M\). We can now define the \textit{trace monad} of a stream action as follows:
+% We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
+% \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
+% those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\).
+% For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq
+% \omega}) = \{[\,]\}\). Generally, \(\mc{SZ}(M, I)\) always contains
+% the unit of \(M\). 
+Using stream actions to determine what it means to perform a monoidal action
+"infinitely many times," we can now define the \textit{trace monad} of a stream
+action as follows:
 \begin{definition}[Trace Monad]
   Given a stream action \(\Theta: M^\omega \to I\), we can define the
   \textbf{nondeterministic trace monad} \(\ms{Traces}\;\Theta\;A = \mc{P}^+(A
@@ -1941,25 +1944,20 @@ We now give a few basic definitions relevant to monads over \(\mb{Set}\):
   for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where
   \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an
   (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\)
-  from \(\mb{T}\).
-\end{definition}
-Some important examples of submonads include:
-\begin{enumerate}
-  \item The \textbf{unit submonad} \(\eta\) of every monad \(\mb{T}\) with
-  \(\eta(A) = \{\eta_A\;a \mid a \in A\}\).
-  %; similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\). 
-  \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise
-  intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are
-  submonads, forming a complete meet-semilattice with bottom element \(\eta\)
-  and top element \(\mb{T}\),
-  % ; this induces a complete lattice in the standard manner.
-  \item In particular, the intersection of a relevant/affine/commutative
-  submonad and another submonad is relevant/affine/commutative respectively.
-  Since every commutative submonad induces a central subcategory of the Kleisli
-  category of the parent monad, it follows that a triple of a relevant, affine,
-  and commutative submonad make the Kleisli category of a monad \(\mb{T}\) into
-  a substructural effectful category with all objects both affine and relevant.
-\end{enumerate}
+  from \(\mb{T}\). Some important examples of submonads include:
+  \begin{enumerate}
+    \item The \textbf{unit submonad} \(\eta\) of every monad \(\mb{T}\) with
+    \(\eta(A) = \{\eta_A\;a \mid a \in A\}\).
+    %; similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\). 
+    \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise
+    intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are
+    submonads, forming a complete meet-semilattice with bottom element \(\eta\)
+    and top element \(\mb{T}\),
+    % ; this induces a complete lattice in the standard manner.
+    \item In particular, the intersection of a relevant/affine/commutative
+    submonad and another submonad is relevant/affine/commutative respectively.
+  \end{enumerate}
+\end{definition} 
 We can use the trace monad described above to derive some interesting examples
 of submonads:
 \begin{enumerate}
@@ -1982,7 +1980,11 @@ of submonads:
   \ms{Traces}\;\Theta\;A\) is an \textit{affine} submonad.
   \label{item:affine-submonad}
 \end{enumerate}
-In particular, \ref{item:central-submonad}, \ref{item:relevant-submonad},
+Since every commutative submonad induces a central subcategory of the Kleisli
+category of the parent monad, it follows that a triple of a relevant, affine,
+and commutative submonad make the Kleisli category of a monad \(\mb{T}\) into a
+substructural effectful category with all objects both affine and relevant. In
+particular, \ref{item:central-submonad}, \ref{item:relevant-submonad},
 \ref{item:affine-submonad} equip the Kleisli category of
 \(\ms{Traces}\;\Theta\;A\) with the structure of a substructural effectful
 category given choices of \(M_C\), \(M_R\).
@@ -2118,9 +2120,11 @@ computation.
 
 \subsection{Weak Memory}
 
-Another interesting use of the trace monad to build a sophisticated \isotopessa model is to build a model of TSO-style weak memory based on \citet{sparky}. For simplicity, we will consider an infinite set of named, fixed locations \(x, y, z \in \ms{Loc}\) which are subject to concurrent modification by all processors via TSO reads, writes, and fences.
-
-We begin with the following definitions:
+Another interesting use of the trace monad to build a sophisticated \isotopessa
+model is to build a model of TSO-style weak memory based on \citet{sparky}. For
+simplicity, we will consider an infinite set of named locations \(x, y, z \in
+\ms{Loc}\) which are subject to concurrent modification by all threads via TSO
+reads, writes, and fences. We begin with the following definitions:
 \begin{definition}[Pomset] 
   A \textbf{pomset} \(\alpha\) over a set of actions \(\mc{A}\) with a
   distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
