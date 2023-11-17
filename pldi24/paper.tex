@@ -1815,6 +1815,37 @@ models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially
 infinite) nondeterministic trace of monoidal "events". These will later come in
 handy for reasoning about output behaviour and weak memory. We start with some
 definitions:
+\begin{definition}[Relevant, Affine Monad]
+  A monad \(\mb{T}\) on \(\ms{Set}\) is \textbf{relevant} if its Kleisli
+  category satisfies \(f;\ms{split} = \ms{split};f \ltimes f = \ms{split};f
+  \rtimes f\), where \(\ms{split} = \upg{\lambda a. (a, a)}{}\). \(\mb{T}\) is
+  \textbf{affine} if its Kleisli category satisfies \(f;\ms{drop} = \ms{drop}\),
+  where \(\ms{drop} = \upg{\lambda a.()}{}\). A monad is \textbf{intuitionistic}
+  if it is both relevant and affine.
+\end{definition}
+\begin{definition}[Submonad] 
+  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a
+  collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq
+  \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in
+  \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say
+  that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and,
+  for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where
+  \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an
+  (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\)
+  from \(\mb{T}\). Some important examples of submonads include:
+  \begin{enumerate}
+    \item The \textbf{unit submonad} \(\eta\) of every monad \(\mb{T}\) with
+    \(\eta(A) = \{\eta_A\;a \mid a \in A\}\).
+    %; similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\). 
+    \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise
+    intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are
+    submonads, forming a complete meet-semilattice with bottom \(\eta\) and top
+    \(\mb{T}\),
+    % ; this induces a complete lattice in the standard manner.
+    \item In particular, the intersection of a relevant/affine/commutative
+    submonad and another submonad is relevant/affine/commutative respectively.
+  \end{enumerate}
+\end{definition}
 \begin{definition}[Stream Action]
   A \textbf{stream action} of a monoid \(M\) on a set \(I\) equipped with a
   monoid action \(\cdot: M \times I \to I\) is a function \(\Theta: M^\omega \to
@@ -1873,39 +1904,6 @@ action as follows:
     f^\infty(a) = \{\Theta (\lambda n. m_n) \mid a_0 = a \land \forall n, \exists a_{n + 1}. \iota_0 (\iota_1\;a_{n + 1}, m_n) \in f(a_n)\}
   \]
 \end{definition}
-
-We now give a few basic definitions relevant to monads over \(\mb{Set}\):
-\begin{definition}[Relevant, Affine Monad]
-  A monad \(\mb{T}\) on \(\ms{Set}\) is \textbf{relevant} if its Kleisli
-  category satisfies \(f;\ms{split} = \ms{split};f \ltimes f = \ms{split};f
-  \rtimes f\), where \(\ms{split} = \upg{\lambda a. (a, a)}{}\). \(\mb{T}\) is
-  \textbf{affine} if its Kleisli category satisfies \(f;\ms{drop} = \ms{drop}\),
-  where \(\ms{drop} = \upg{\lambda a.()}{}\). A monad is \textbf{intuitionistic}
-  if it is both relevant and affine.
-\end{definition}
-\begin{definition}[Submonad] 
-  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a
-  collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq
-  \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in
-  \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\mb{bind}\;s\;f \in \mb{S}\;A\). We say
-  that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and,
-  for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where
-  \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an
-  (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\)
-  from \(\mb{T}\). Some important examples of submonads include:
-  \begin{enumerate}
-    \item The \textbf{unit submonad} \(\eta\) of every monad \(\mb{T}\) with
-    \(\eta(A) = \{\eta_A\;a \mid a \in A\}\).
-    %; similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\). 
-    \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise
-    intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are
-    submonads, forming a complete meet-semilattice with bottom element \(\eta\)
-    and top element \(\mb{T}\),
-    % ; this induces a complete lattice in the standard manner.
-    \item In particular, the intersection of a relevant/affine/commutative
-    submonad and another submonad is relevant/affine/commutative respectively.
-  \end{enumerate}
-\end{definition} 
 We can use the trace monad described above to derive some interesting examples
 of submonads:
 \begin{enumerate}
@@ -1941,25 +1939,23 @@ category given choices of \(M_C\), \(M_R\).
 
 \label{ssec:separation}
 
-As a concrete example, we can now introduce the \textbf{printing monad}, which
-is simply defined as \(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where
-\(\Sigma: (\ms{Byte}^*)^\omega \to \ms{Byte}^{\leq \omega}\) denotes
-concatenation of bytestrings into a potentially infinite bytestream. This can be
-equipped with the structure of a substructural effectful category by choosing
-\(M_C = M_R = \{[]\}\), giving us an \isotopessa model supporting the
-instructions \(\ms{print} \in \mc{I}^\varnothing_0(\ms{Byte}^*, \mb{1})\) and
-\(\ms{nondet} \in \mc{I}^\taff_1(\mb{1}, A)\) for \(A\) nonempty, with standard
-semantics \(\dnt{\ms{print}} = \lambda b.\{\iota_0 ((), b)\}\),
-\(\dnt{\ms{nondet}} = \lambda (). \{\iota_0 (a, []) \mid a \in A\}\).
+We can now introduce the \textbf{printing monad}, which is simply defined as
+\(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where \(\Sigma:
+(\ms{Byte}^*)^\omega \to \ms{Byte}^{\leq \omega}\) denotes concatenation of
+bytestrings into a potentially infinite bytestream. This can be made into a
+substructural effectful category by choosing \(M_C = M_R = \{[]\}\), giving us
+an \isotopessa model supporting instructions \(\ms{print} \in
+\mc{I}^\varnothing_0(\ms{Byte}^*, \mb{1})\) and \(\ms{nondet} \in
+\mc{I}^\taff_1(\mb{1}, A)\) (for \(A\) nonempty), with semantics
+\(\dnt{\ms{print}} = \lambda b.\{\iota_0 ((), b)\}\), \(\dnt{\ms{nondet}} =
+\lambda (). \{\iota_0 (a, []) \mid a \in A\}\).
 
 We can make things a little more interesting by adding a heap to the mix,
 defining our monad \(\ms{Comp} = \ms{StateT}\;\ms{Heap}\;\ms{Print}\), where
-\(\ms{Heap} = \nats \rightharpoonup \nats\) is simply a partial function. The
-Kleisli category of this monad can be equipped with the structure of a
-substructural effectful category by simply taking the affine/relevant morphisms
-to be the lifts of the affine/relevant morphisms in \(\ms{Set}_{\ms{Print}}\);
-as it inherits an Elgot structure from that on \(\ms{Set}_{\ms{Print}}\), we
-therefore have an \isotopessa model supporting the instructions \(\ms{set}:
+\(\ms{Heap} = \nats \rightharpoonup \nats\) is simply a partial function with
+finite support. The Kleisli category of this monad is a substructural effectful
+category and inherits an Elgot structure from that on \(\ms{Set}_{\ms{Print}}\);
+we therefore have an \isotopessa model supporting the instructions \(\ms{set}:
 \mc{I}^\varnothing_0(\nats \times \nats, \mb{1})\), \(\ms{get}:
 \mc{I}^\varnothing_0(\nats, \nats)\), \(\ms{alloc}: \mc{I}^\varnothing_0(\nats,
 \nats)\), and \(\ms{free}: \mc{I}^\varnothing_0(\nats, \mb{1})\). We can assign
@@ -1967,21 +1963,19 @@ semantics to \(\ms{set}\) in the standard fashion, with \(\dnt{\ms{set}} =
 \lambda (p, v)\;h. \{\iota_0((), [p \mapsto v]h, [])\}\). \(\ms{get}\) is a bit
 more tricky, since it is unclear what to do when we try to access uninitialized
 memory: one option is simply to return an arbitrary value, with \(\dnt{\ms{get}}
-= \lambda p\;h. \{\iota_0(v, h, []) \mid v = h\;p \lor p \notin h\}\); for now,
-this will do. Finally, \(\dnt{\ms{alloc}} = \lambda v\;h.\{\iota_0\;(p, h', [])
-\mid h' = h \sqcup p \mapsto v\}\) simply fills a random empty heap cell with
-the provided value, returning a pointer to the cell, while \(\dnt{\ms{free}} =
-\lambda p\;h. \{\iota_0\;((), h \setminus p, [])\}\)
+= \lambda p\;h. \{\iota_0(v, h, []) \mid v = h\;p \lor p \notin h\}\). Finally,
+\(\dnt{\ms{alloc}} = \lambda v\;h.\{\iota_0\;(p, h', []) \mid h' = h \sqcup p
+\mapsto v\}\) simply fills a random empty heap cell with the provided value,
+returning a pointer to the cell, while \(\dnt{\ms{free}} = \lambda p\;h.
+\{\iota_0\;((), h \setminus p, [])\}\).
 
-We can use this construction to, building on the ideas in \cite{mellies-ftrs},
-show how a simple separation logic based on \cite{reynolds-separation-2002}
-slightly adapted to the categorical setting gives us a very rich \isotopessa
-model supporting a basic notion of refinement types, while at the same time
-giving us a nontrivial notion of nonlinear types.
-
-Given a set \(A\), we can define a heap-predicate \(\Phi\) over \(A\) to be of
-type \(A \to \ms{Heap} \to \ms{Prop}\). Taking as objects pairs \((A, \Phi)\),
-we can define the category \(\ms{Sep}\) to have morphisms
+Building on the ideas in \citet{mellies-ftrs}, we show how a simple separation
+logic based on \citet{reynolds-separation-2002} slightly adapted to the
+categorical setting gives us a very rich \isotopessa model supporting a basic
+notion of refinement types, while at the same time giving us a nontrivial notion
+of nonlinear types. Taking as objects pairs \((A, \Phi)\), where \(\Phi: A \to
+\ms{Heap} \to \ms{Prop}\), we can define the category \(\ms{Sep}\) to have
+morphisms
 \begin{equation}
   \ms{Sep}((A, \Phi), (B, \Psi)) = \{f: A \to \ms{Comp}\;B 
     \mid \forall \phi: \ms{Heap} \to \ms{Prop}, \ms{hoare}\;f\;(\Phi \ast \phi)\;(\Psi \ast \phi)\}
@@ -1990,8 +1984,8 @@ where
 \(
   \ms{hoare}\;f\;\Phi\;\Psi = \forall a\;h. \Phi\;a\;h \implies \forall \iota_0\;(b, h') \in f\;a\;h. \Psi\;b\;h'
 \)
-is the usual partial correctness triple definition and the separating
-conjunction of heap-predicates is defined as usual to be 
+corresponds to the usual notion of a partial correctness triple, and the
+separating conjunction of heap-predicates is defined as
 \begin{equation}
   \begin{gathered}
   \varphi \ast \psi = \lambda h. \exists h_1, h_2. h = h_1 \sqcup h_2 \land \varphi h_1 \land \psi h_2 
@@ -2003,7 +1997,8 @@ conjunction of heap-predicates is defined as usual to be
   \end{gathered}
 \end{equation}
 We can naturally define a tensor product on objects \((A, \Phi) \otimes (B,
-\Psi) = (A \times B, \Phi \ast \Psi)\), verifying that, taking
+\Psi) = (A \times B, \Phi \ast \Psi)\), making \(\ms{Sep}\) into a substructural
+effectful category with:
 \begin{itemize}
   \item Monoidal unit \((\mb{1}, \ms{emp})\), where \(\ms{emp}\) is the
   predicate which holds only for the empty heap
@@ -2016,14 +2011,11 @@ We can naturally define a tensor product on objects \((A, \Phi) \otimes (B,
   is the unit of \(\ast\)
   \item \((C, \Theta) \otimes f = C \times f\) and \(f \otimes (C, \Theta) = f
   \times C\), which are valid definitions by the frame rule
-\end{itemize}
-equips \(\ms{Sep}\) with the structure of a premonoidal category. We can give \(\ms{Sep}\) the structure of a substructural effectful category by taking:
-\begin{itemize}
-  \item Affine objects to be precisely those for which \(\ms{drop} =
-  \upg{\lambda a. ()}{} \in \ms{Sep}((A, \Phi), (\mb{1}, \ms{emp}))\), and
-  relevant objects to be precisely those for which \(\ms{split} = \upg{\lambda
-  a. (a, a)} \in \ms{Sep}((A, \Phi), (A, \Phi * \Phi))\), which for this logic
-  corresponds to pairs \((A, \Phi)\) where \(\Phi\) does not depend on the heap.
+  \item Affine objects those for which \(\ms{drop} = \upg{\lambda a. ()}{} \in
+  \ms{Sep}((A, \Phi), (\mb{1}, \ms{emp}))\), and relevant objects those for
+  which \(\ms{split} = \upg{\lambda a. (a, a)} \in \ms{Sep}((A, \Phi), (A, \Phi
+  * \Phi))\), which for this logic means pairs \((A, \Phi)\) where \(\Phi\) does
+  not depend on the heap.
   \item Central morphisms to be those which do not print, diverge, \textit{or}
   modify the heap. % We will consider how to relax this condition later.
   \item Relevant and affine morphisms to be the lifts of relevant/affine
@@ -2078,28 +2070,23 @@ reads, writes, and fences. We begin with the following definitions:
   distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
   \textit{nonempty} partially-ordered \textbf{carrier set} \(P\) such that every
   \(p \in P\) has finitely many predecessors equipped with a mapping \(\alpha: P
-  \to \mc{A}\) quotiented under the equivalence relation \(\alpha: P \to \mc{A}
-  \simeq \alpha': Q \to \mc{A}\) if, after removing finitely many \(\delta\)
-  from \(P\) and \(Q\), there exists a partial order isomorphism between them
-  which respects the values of \(\alpha, \alpha'\). A pomset is \textbf{finite}
-  if its carrier set is. We will write unordered pomsets using multiset
-  notation, e.g. \(\{a, a, b\}\), and linearly ordered pomsets using list
-  notation, e.g. \([a, a, b]\).
+  \to \mc{A}\) quotiented over the removal of finitely many \(\delta\). A pomset
+  is \textbf{finite} if its carrier set is. We will write unordered pomsets
+  using multiset notation, e.g. \(\{a, a, b\}\), and linearly ordered pomsets
+  using list notation, e.g. \([a, a, b]\).
 \end{definition}
 (Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\),
 which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to
 \mc{A}\), where \(P + Q\) is given the lexicographic ordering and
 \(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many
-predecessors. They also form a monoid under parallel composition \(\alpha ||
-\beta\), which is defined by the function \([\alpha, \beta]: P + Q \to \mc{A}\)
-where \(P + Q\) is given the standard partial ordering (with elements of \(P\)
-and \(Q\) incomparable). Note in both cases the monoidal unit is \(\{\delta\}\),
-since we only consider nonempty pomsets but allow the removal of finitely many
-ticks.
-
-Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n
-\in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by
-the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\),
+predecessors. They also form a monoid under parallel composition, defining
+\(\alpha || \beta = [\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given
+the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
+Note in both cases the monoidal unit is \(\{\delta\}\), since we only consider
+nonempty pomsets but allow the removal of finitely many ticks. Given any
+partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in
+N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the
+function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\),
 where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In
 particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega
 \to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on
@@ -2115,24 +2102,22 @@ program order pomsets given by sequential composition for \(\mc{A}\). This
 yields an \isotopessa model with support for concurrent read and write
 operations \(\ms{read}_x: \mc{I}^\varnothing_0(\mb{1}, \ms{Word})\),
 \(\ms{write}_x: \mc{I}^\varnothing_0(\ms{Word}, \mb{1})\) with semantics
-\begin{equation}
+\(
   \dnt{\ms{read}_x} = R_x^{\ms{PO}} = \lambda (). \{(v, \{x = v\}) | v \in \ms{Word}\}
-  \qquad
+\),
+\(
   \dnt{\ms{write}_x} = W_x^{\ms{PO}} =  \lambda v. \{((), \{x := v\})\}
-\end{equation}
+\).
 The semantics of \(\ms{read}\) in particular give a hint as to how this model
 works: rather than tracking the state of the heap, we simply \textit{emit} a
-pomset of the events that would have to happen for a given execution (in the
+pomset of the events that would have be generated by a given execution (in the
 case of a read, a read event \(x = v\) whenever the read returns \(v\), and in
 the case of a write, the single write event \(x := v\) for a write of \(v\)),
-and later post-filter on the pomset of an entire program to get a sequentially
-consistent execution. Hence, our semantics remains compositional, allowing us to
-reason about each program fragment individually, while still allowing us to add
-arbitrary external state (e.g. another program concurrently modifying the heap)
-before finally considering the execution of an entire program.
-
-On that note, we can define the \textit{parallel execution} of two morphisms as
-follows:
+and later post-filter to obtain a set of valid executions. By doing so, our
+semantics remains compositional, allowing us to reason about each program
+fragment individually, while still allowing other program fragments to perform
+concurrent operations affecting our potential executions. On that note, we can
+define the \textit{parallel execution} of two morphisms as follows:
 \begin{equation}
   \begin{aligned}
   f_0 || f_1 = \lambda (a_0, a_1). 
@@ -2151,25 +2136,24 @@ pomset \([x := a, y := b]\), while \(\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}}
 % sophisticated model of composition which effectively takes nontermination into
 % account, which we will leave to future work.
 
-To graduate from SC concurrency to a genuine, if maximally simple, weak memory
-model, we will to introduce a \textit{buffer} of write actions. We will
+To graduate from sequential consistency to a genuine, if maximally simple, weak
+memory model, we introduce \textit{load buffering} of write actions. We will
 implement TSO ordering by buffering all our writes, in which case they are only
 visible to the local thread. On the other hand, read events will first attempt
 to read from the buffer, and, if there is no corresponding write in the buffer,
 will read an arbitrary value, in both cases pushing an event to the global
 pomset. At any point, we may choose to \textit{flush} some of the writes in
-buffer to the global pomset of events. In particular, we will introduce the set
-\(\mc{A}_b = \{(\bufloc{x} := v)\}\) of \textit{buffer write actions}, where an
-action \(\bufloc{x} := v\) by a thread denotes adding a write \(x := v\) to the
-thread's write buffer. We may then define the set of TSO actions
-\(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup \mc{A}_b\); a pomset over this set
-of actions is called a \textbf{TSO pomset}. A buffer will be defined to be a
-list of write actions \(\ms{Buf} = \mc{A}_b^*\), which we will interpret as
-linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index (with the empty list
-corresponding to \(\{\delta\}\)). In particular, we define the monad \(\ms{TSO}
-= \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\), where \(\Sigma\) is taken as a
-the stream action of finite TSO pomsets on TSO pomsets. We can view
-\(\ms{PO}\) as a submonad of this monad.
+buffer. We introduce the set \(\mc{A}_b = \{(\bufloc{x} := v)\}\) of
+\textit{buffer write actions}, where an action \(\bufloc{x} := v\) by a thread
+denotes adding a write \(x := v\) to the thread's write buffer. We may then
+define the set of TSO actions \(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup
+\mc{A}_b\); a pomset over this set is called a \textbf{TSO pomset}. A
+buffer will be defined to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\),
+which we will interpret as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by
+index (with the empty list corresponding to \(\{\delta\}\)). In particular, we
+define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\),
+where \(\Sigma\) is taken as a the stream action of finite TSO pomsets on TSO
+pomsets. We can view \(\ms{PO}\) as a submonad of this monad.
 
 Given a buffer \(\ms{Buf}\), we can define the result of reads \([\cdot]_x:
 \ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the buffer by induction to be:
