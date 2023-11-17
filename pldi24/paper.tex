@@ -869,16 +869,12 @@ begin with weakening, which states that we can add unused \textit{affine} variab
 \textit{reduce} the quantity of an term's type, add arbitrary unused labels, and
 remove \textit{affine} variables from existing labels and still keep our typing
 judgements valid, i.e.
-\begin{lemma}[Weakening] \
-  \begin{itemize}
-    \item If \(\cwk{\Gamma}{\Delta}\), \(q \subseteq r\), and
-    \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
-    \item If \(\cwk{\Gamma}{\Delta}\) and \(\haslb{\Delta}{t}{\ms{L}}\), then
-    \(\haslb{\Gamma}{t}{\ms{L}}\)
-    \item If \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{K}}\)
-    % \item If \(\lwk{\ms{L}}{\ms{K}}\) and \(\lhaslb{\ms{W}}{L}{\ms{L}}\) then
-    % \(\lhaslb{\ms{W}}{L}{\ms{K}}\)
-  \end{itemize}
+\begin{lemma}[Weakening] 
+  Given \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
+  \(\hasty{\Delta}{p}{a}{A}{r} \implies \hasty{\Gamma}{p}{a}{A}{q}\) and
+  \(\haslb{\Delta}{t}{\ms{L}} \implies \haslb{\Gamma}{t}{\ms{L}}\). Similarly,
+  if \(\lwk{\ms{L}}{\ms{K}}\) then \(\haslb{\Gamma}{t}{\ms{L}} \implies
+  \haslb{\Gamma}{t}{\ms{K}}\).
 \end{lemma}
 
 \begin{figure}
@@ -937,23 +933,22 @@ judgements valid, i.e.
   \label{fig:ssa-subst-typing}
 \end{figure}
 
-Our main metatheoretic results will be \textit{substitution} and
-\textit{label-substitution}, which will require introducing some substitution
-judgements to state properly, which we do in Figure
-\ref{fig:ssa-meta-judgements}. In particular, the judgement
-\(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which is taken to be
-a map from variable names to expressions, is a valid substitution taking
-\(\Theta\) to \(\Gamma\). What this means is that, for each variable
-\(\thyp{x}{A}{q}\) in \(\Gamma\), \(\gamma(x)\) can be interpreted as a
-\textit{central} term of type \(A^q\) in a subcontext of \(\Theta\), such that
-when this is done for all \(\thyp{x}{A}{q} \in \Gamma\) any non-affine variables
-in \(\Theta\) are used up: this is described formally via the typing rules
-\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
-to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
-\(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
-\subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/discarding
-of substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
-\(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
+To state our primary syntactic metatheorems, \textit{substitution} and
+\textit{label-substitution}, we will need to introduce some new metatheoretic
+judgements, which we do in Figure \ref{fig:ssa-meta-judgements}. In particular,
+the judgement \(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which
+is taken to be a map from variable names to expressions, takes each variable
+\(\thyp{x}{A}{q}\) in \(\Gamma\) to a \textit{central} term \(\gamma(x)\) which
+can be interpreted as having type \(A\) and quantity \(q\) in a subcontext of
+\(\Theta\) with linearity \(q\), such that computing all \(\gamma(x)\) uses up
+all non-affine variables in \(\Theta\). This is described formally via the
+typing rules \rle{subst-nil}, which says that any function \(\gamma\) takes the
+empty context to itself, and \rle{subst-cons}, which says that if \(\gamma\)
+takes \(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\),
+\(q \subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the
+duplication/dropping of substructural variables), and \(\Theta\) splits into
+\(\Theta_\Gamma\) and \(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma,
+\thyp{x}{A}{q}}\).
 
 Given such a substitution \(\gamma\), there are two ways to use it. The first is
 standard capture-avoiding substitution, which we denote \([\gamma]e\) for
@@ -971,16 +966,11 @@ let-bindings for a context \(\Gamma\), written
 % terms in a substitution are central \textit{and} that only affine computations
 % can be used in a term substituting for an affine variable, and only relevant
 % computationbs can be used in a term substituting for a relevant variable.
-
-We can now state our substitution theorem for terms in a straightforward way: if
-\(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
-\(\hasty{\Theta}{p}{[\gamma]e}{A}{q}\) and
+%
+With these definitions, we can now state substitution for terms in a
+straightforward way: if \(\issubst{\gamma}{\Theta}{\Gamma}\) and
+\(\hasty{\Gamma}{p}{e}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]e}{A}{q}\) and
 \(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{e}}{A}{q}\).
-Unfortunately, the substitution theorem for blocks is a little more complicated:
-the naive choice of attempting to show \(\haslb{\Gamma}{t}{\ms{L}} \implies
-\haslb{\Theta}{[\gamma]t}{\ms{L}}\) does not work, since \(\ms{L}\) may contain
-captured variables from \(\Gamma\) that are no longer available if we are typing
-\([\gamma]t\) in the context of \(\Theta\). 
 
 \begin{figure}
   \begin{gather*}
@@ -1028,21 +1018,23 @@ captured variables from \(\Gamma\) that are no longer available if we are typing
   \label{fig:ssa-subst-ops}
 \end{figure}
 
-To solve this problem, we need to introduce the concept of a
+Unfortunately, substitution for blocks is a little more complicated: the naive
+choice of attempting to show \(\haslb{\Gamma}{t}{\ms{L}} \implies
+\haslb{\Theta}{[\gamma]t}{\ms{L}}\) does not work, since \(\ms{L}\) may require
+variables from \(\Gamma\) to be live which simply do not exist in \(\Theta\). To
+solve this problem, we need to introduce the concept of a
 \textit{label-substitution} \(\mc{L}\), which we define as a function that takes
 labels \(\lbl{\ell}\) and variables \(x\) to blocks \(t\) such that, for any
 fresh variable \(x\), \([a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)\). We
-introduce the judgement \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) to state that the
-label-substitution \(\mc{L}\) takes the label-set \(\ms{L}\) to the label-set
-\(\ms{K}\); that is, for each \(\lbl{\ell}[\Gamma](x: A) \in \ms{L}\), we have
-that \(\mc{L}(\lbl{\ell}, x)\) is a block that targets \(\ms{K}\). This is
-formally defined via the rules \rle{lb-subst-nil}, which states that this is
-vacuously true for \(\ms{L} = \cdot\), and \rle{lb-subst-cons}, which says that
-if \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma,
+introduce the judgement \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) to mean that for
+each \(\lbl{\ell}[\Gamma](x: A) \in \ms{L}\), we have that \(\mc{L}(\lbl{\ell},
+x)\) targets \(\ms{K}\). Formally, \rle{lb-subst-nil} states that this is
+vacuously true for \(\ms{L} = \cdot\), while \rle{lb-subst-cons} says that if
+\(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma,
 \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}\) then \(\lbsubst{\mc{L}}{\ms{L},
-\lhyp{\lbl{\ell}}{\Gamma}{A}}{\ms{K}}\), in Figure \ref{fig:ssa-subst-typing}.
-Given a context \(\gamma\) and a label-set \(\ms{L}\), we can convert it to a
-label-substitution \(\substlbs{\gamma}{\ms{L}}\) using the definition in Figure
+\lhyp{\lbl{\ell}}{\Gamma}{A}}{\ms{K}}\). Given a context \(\gamma\) and a
+label-set \(\ms{L}\), we can define an associated label-substitution
+\(\substlbs{\gamma}{\ms{L}}\) using the definition in Figure
 \ref{fig:ssa-subst-ops}: using this, we can state the full substitution lemma as
 follows:
 \begin{lemma}[Substitution] 
