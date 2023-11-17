@@ -1065,22 +1065,22 @@ with Freyd categories, we will generalize to \textit{substructural effectful
 categories} to support substructurality. We will then require our substructural
 effectful category to have \textit{distributive coproducts} to implement
 branching. Finally, we will require an \textit{Elgot structure} to implement
-general, potentially nonterminating control flow.
+potentially nonterminating control flow.
 
 \subsection{Substructural Categories}
 
-We begin with some standard definitions:
+We begin with some standard definitions from the literature:
 \begin{definition}[Binoidal Category] 
   A \textbf{binoidal category} \(\mc{C}\) is a category equipped with a binary
   operation on objects \(\otimes: \mc{C} \times \mc{C} \to \mc{C}\) which is
   independently functorial in each argument (i.e., for each object \(A\), \(A
-  \otimes -\) and \(- \otimes A\) are functors).
+  \otimes -\) and \(- \otimes A\) are functors). 
+  Given \(f: \mc{C}(A, B)\), \(g: \mc{C}(A', B')\) in a binoidal category, we
+  write \(f \ltimes g = f \otimes A';B \otimes g\) and \(f \rtimes g = A \otimes
+  g;f \otimes B'\); we say \(f\) is \textbf{central} if, for all \(g\), \(f
+  \ltimes g = f \rtimes g\) and \(g \ltimes f = g \rtimes f\), in which case we
+  simply write \(f \otimes g\), \(g \otimes f\) respectively.
 \end{definition}
-Given \(f: \mc{C}(A, B)\), \(g: \mc{C}(A', B')\) in a binoidal category, we
-write \(f \ltimes g = f \otimes A';B \otimes g\) and \(f \rtimes g = A \otimes
-g;f \otimes B'\); we say \(f\) is \textbf{central} if, for all \(g\), \(f
-\ltimes g = f \rtimes g\) and \(g \ltimes f = g \rtimes f\), in which case we
-simply write \(f \otimes g\), \(g \otimes f\) respectively.
 \begin{definition}[Premonoidal Category] 
   A \textbf{premonoidal category} is a binoidal category with an identity object
   \(I: \mc{C}\) such that there exist central natural isomorphisms \(\lambda_A:
@@ -1095,11 +1095,12 @@ simply write \(f \otimes g\), \(g \otimes f\) respectively.
   \textbf{monoidal} if every morphism is central.
 \end{definition}
 One issue with the notion of a premonoidal category is that it is unclear what
-exactly a premonoidal functor should be: if we want them to compose, we would
-like to preserve central morphisms, but trying to preserve \textit{all} central
-morphisms is too strict a notion. We want, in essence, to be able to distinguish
-morphisms that are truly "pure" from those which simply happen to be central. To
-do that, we introduce the notion of an \textit{effectful category} as follows:
+exactly a premonoidal functor should be: if we want them to compose, we need to
+preserve central morphisms, but trying to preserve \textit{all} central
+morphisms rules out many important examples. We therefore would to be able to
+distinguish morphisms that are truly "pure" from those which are simply
+"accidentally" central. To do that, we introduce the notion of an
+\textit{effectful category} as follows:
 \begin{definition}[Effectful Category] 
   An \textbf{effectful category} \(\mc{V} \to \mc{C}\) is an identity on objects
   functor \(\upg{\cdot}{}: \mc{V} \to \mc{C}\) from a monoidal category
@@ -1110,16 +1111,15 @@ do that, we introduce the notion of an \textit{effectful category} as follows:
   symmetry. A \textbf{Freyd category} is an effectful category where \(\mc{V}\)
   is Cartesian.
 \end{definition}
-Unfortunately, the notion of "purity" given by an effectful category only allows
-us to perform relatively weak optimistions in the presence of effects. To remedy
-this, we want to be able to make a finer distinction between morphisms which are
-merely \textit{central} and those which are also \textit{relevant} (i.e.,
-copying the input and applying them twice is the same as applying them once and
-copying the output) and/or \textit{affine} (i.e., applying them and discarding
-the result is the same as never doing them at all). Doing so also allows us to
-add the capability of \textit{distinguishing} between objects which are affine,
-relevant, neither or both, enabling us to reason about substructural type
-systems categorically. To do this, we begin by introducing the notion of a \textit{symmetric
+As is, this definition presents us with two extreme options: we can either
+assume \(\mc{V}\) is simply monoidal, and hence that "pure" morphisms are merely
+central, or that \(\mc{V}\) is Cartesian, and hence that all pure morphisms are
+truly \textit{pure}. We would like, however, to make a finer distinction between
+morphisms which are merely \textit{central} and those which are also
+\textit{relevant} and/or \textit{affine}, as defined in the introduction. Doing
+so also allows us to add the capability of define what it means for an
+\textit{object}, which we can interpret as a type, is affine or relevant as
+well. With this aim in mind, we introduce the notion of a \textit{symmetric
 premonoidal subcategory}, as follows:
 \begin{definition}[(Symmetric) Premonoidal Subcategory]
   Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory
@@ -1130,10 +1130,9 @@ premonoidal subcategory}, as follows:
   \textbf{central} if this generalizes to the case where only one of \(f, g\) is
   in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
 \end{definition} 
-
 Note that the set of symmetric premonoidal subcategories, monoidal
 subcategories, and central subcategories of a category \(\mc{C}\) are all closed
-under intersections.
+under intersections, forming a complete meet-semilattice.
 %
 % and therefore, in particular, form a complete meet-semilattice with shared
 % bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the
@@ -1145,25 +1144,25 @@ under intersections.
 % structure of a complete lattice in the usual manner.
 %
 We can now define a \textit{substructural premonoidal category}, which is simply
-a premonoidal category equipped with a distinguished set of relevant and affine
-morphisms
+a premonoidal category equipped with premonoidal subcategories of relevant and
+affine morphisms:
 \begin{definition}[Substructural (Pre)monoidal Category]
-  A \textbf{substructural (pre)monoidal category} is a tuple \((\mc{C}, \mc{A},
-  \mc{R})\) where:
+  A \textbf{substructural (pre)monoidal category} is a symmetric premonoidal
+  category \(\mc{C}\) equipped with
   \begin{itemize}
-    \item \(\mc{C}\) is a symmetric premonoidal category equipped with wide
-    symmetric premonoidal subcategories \(\mc{C}^{\ms{a}}, \mc{C}^{\ms{r}}\). We
-    define, for \(q \subseteq \{\ms{a}, \ms{r}\}\), \(\mc{C}^q = \bigcap_{\ell
-    \in q}\mc{C}^\ell\), where \(\mc{C}^\varnothing = \mc{C}\)
-    \item \(\mc{A} \subseteq |\mc{C}|\) is a set of \textbf{affine} objects
-    closed under tensor products, such that \(\mb{1} \in \mc{A}\) and
+    \item Wide symmetric premonoidal subcategories \(\mc{C}^{\ms{a}},
+    \mc{C}^{\ms{r}}\). We define \(\mc{C}^q = \bigcap_{\ell \in q}\mc{C}^\ell\),
+    where \(\mc{C}^\varnothing = \mc{C}\)
+    \item A set of \textbf{affine} objects \(\ms{Aff}(\mc{C}) = \mc{A} \subseteq
+    |\mc{C}|\) closed under tensors, such that \(\mb{1} \in \mc{A}\) and
     \begin{itemize}
       \item Every \(A\) in \(\mc{A}\) is equipped with a central morphism
       \(\ms{drop}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, \mb{1})\) satisfying
       \item \(\forall A, B \in \mc{A}. \ms{drop}(A \otimes B) = \ms{drop}(A) \otimes \ms{drop}(B);\lambda_I\), \(\forall f: \mc{C}^{\ms{a}}(A, B). f;\ms{drop}(B) = \ms{drop}(A)\)
     \end{itemize}
-    \item \(\mc{R} \subseteq |\mc{C}|\) is a set of \textbf{relevant} objects
-    closed under tensor products, such that \(\mb{1} \in \mc{R}\) and
+    \item A set of \textbf{relevant} objects \(\ms{Rel}(\mc{C}) = \mc{R}
+    \subseteq |\mc{C}|\) closed under tensors, such that \(\mb{1} \in \mc{R}\)
+    and
     \begin{itemize}
       \item Every \(A\) in \(\mc{R}\) is equipped with a central morphism
       \(\ms{split}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, A \otimes A)\) satisfying
@@ -1174,13 +1173,14 @@ morphisms
       \item \(\forall A, B \in \mc{R}, \forall f: \mc{C}^{\ms{r}}(A, B), f;\ms{split}(B) = \ms{split}(A);f \ltimes f = \ms{split}(A);f\rtimes f\)
     \end{itemize}
   \end{itemize}
-  We call the morphisms in \(\mc{C}^{\ms{a}}\) \textbf{affine}, the
-  morphisms in \(\mc{C}^{\ms{r}}\) \textbf{relevant}, and the morphisms in
-  \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) \textbf{pure} or \textbf{intuitionistic}. We
-  call the morphisms in \(\mc{C}^\varnothing\) but not necessarily in any of the
-  other \(\mc{C}^q\) \textbf{linear}. We call a substructural \textit{monoidal}
-  category a \textbf{substructural Cartesian category} if \(\mc{A} = \mc{R} =
-  |\mc{C}|\), in which case \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) is Cartesian.
+  We call the morphisms in \(\mc{C}^{\ms{a}}\) \textbf{affine}, the morphisms in
+  \(\mc{C}^{\ms{r}}\) \textbf{relevant}, and the morphisms in
+  \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) \textbf{intuitionistic}. 
+  % We call the morphisms in \(\mc{C}^\varnothing\) but not necessarily in any
+  % of the other \(\mc{C}^q\) \textbf{linear}. 
+  We call a substructural \textit{monoidal} category a \textbf{substructural
+  Cartesian category} if \(\mc{A} = \mc{R} = |\mc{C}|\), in which case
+  \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) is Cartesian.
 \end{definition}
 A simple example of a substructural Cartesian category is the category of
 relations \(\ms{Rel}\), viewed as the Kleisli category of the power-set monad
@@ -1206,52 +1206,50 @@ that they satisfy the axioms of a commutative comonoid, as desired.
 
 Note that we cannot simply have \(\ms{Rel}^{\ms{a}} = \ms{Rel}\), since, for any
 morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, R(a) =
-\varnothing\), we have \( (R;\ms{drop}(B))(a) = \varnothing \neq \ms{drop}(A)(a)
-= \{()\} \). We will see that this corresponds to the fact that \( \ms{let}\;x =
-\ms{loop}(); e \) is not semantically equal to \(e\) even where \(x \notin
+\varnothing\), we have \((R;\ms{drop}(B))(a) = \varnothing \neq \ms{drop}(A)(a)
+= \{()\} \). We will see that this corresponds to the fact that "\(\ms{let}\;x =
+\ms{loop}(); e\)" is not semantically equal to "\(e\)" even where \(x \notin
 \ms{fv}(e)\). Similarly, we cannot simply have \(\ms{Rel}^{\ms{r}} = \ms{Rel}\),
-since, for any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A,
-|R(a)| \supseteq \{b_0, b_1\}\) where \(b_0 \neq b_1\), we have that
-\begin{equation}
+since, for any \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, |R(a)| > 1\),
+\(
   (R;\ms{split}(B))(a) = \{(b, b) \mid b \in R(a)\} \neq (\ms{split}(A);R)(a) = R(a) \times R(a) 
-\end{equation}
-since only the left-hand side contains the pair \((b_0, b_1)\), this
-corresponding to the fact that the program \(\ms{let}\;x = \ms{nondet}(); (x, x)\) is
-not semantically equal to \((\ms{nondet}(), \ms{nondet}())\).
+\). This corresponds
+to the fact that the program "\(\ms{let}\;x = \ms{nondet}(); (x, x)\)" is not
+semantically equal to "\((\ms{nondet}(), \ms{nondet}())\)".
 
-To get a substructural premonoidal category, we can apply the state monad
-transformer to the power set monad to obtain the Kleisli category with morphisms
-of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times
-S)\). Once again, it is clear that all objects have split and drop morphisms
-inherited from \(\ms{Set}\), and therefore are affine and relevant.
+% To get a substructural premonoidal category, we can apply the state monad
+% transformer to the power set monad to obtain the Kleisli category with morphisms
+% of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times
+% S)\). It is clear that all objects have split and drop morphisms inherited from
+% \(\ms{Set}\), and therefore are affine and relevant.
 
-One issue with the above definition is that, just like for regular premonoidal
-categories, it is difficult to distinguish between those morphisms that are
-"truly" central versus those which are just central "by accident", as we only
-want to require any notion of functor we develop subsequently to preserve the
-former. We can solve this the same way, by simply extending the notion of
-effectful category appropriately as follows:
+Just like for regular premonoidal categories, we would like to distinguish
+between those morphisms that are "truly" central versus those which are just
+central "by accident". We can solve this the same way, by simply extending the
+notion of effectful category appropriately as follows:
 \begin{definition}[Susbtructural Effectful Category]
-  An effectful category \(\mc{C}_0 \to \mc{C}_1\) is said to be
+  An effectful category \(\mc{C}_1 \to \mc{C}_0\) is said to be
   \textbf{substructural} if \(\mc{C}_0, \mc{C}_1\) are substructural and
-  \(\upg{\cdot}{}: \mc{C}_1^\varnothing \to \mc{C}_0^\varnothing\) preserves all
-  symmetries, associators, unitors, drops, and splits and sends \(\mc{C}_1^q\)
-  to \(\mc{C}_0^q\). In particular, restricting \(\upg{\cdot}{}\) appropriately
-  makes all \(\mc{C}_1^q \to \mc{C}_0^q\) into effectful categories. Morphisms
-  in \(\mc{C}_p^{\ms{r}}\) are called \textbf{copyable}, morphisms in
-  \(\mc{C}_p^{\ms{a}}\) are called \textbf{discardable}, while morphisms in
-  \(\mc{C}_1^{\ms{a}}, \mc{C}_1^{\ms{r}}, \mc{C}_1^{\{\ms{a}, \ms{r}\}}\)
-  specifically are called \textbf{affine}, \textbf{relevant}, and
-  \textbf{intuitionistic} or \textbf{pure} respectively.
+  \(\upg{\cdot}{}: \mc{C}_1 \to \mc{C}_0\) preserves all drops and splits and
+  sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\). In particular, restricting
+  \(\upg{\cdot}{}\) appropriately makes all \(\mc{C}_1^q \to \mc{C}_0^q\) into
+  effectful categories.  We call a morphism in \(\mc{C}_1\) \textbf{central},
+  and a central intuitionistic morphism \textbf{pure}.
+  % Morphisms in \(\mc{C}_p^{\ms{r}}\) are called \textbf{copyable}, morphisms
+  % in \(\mc{C}_p^{\ms{a}}\) are called \textbf{discardable}, while morphisms in
+  % \(\mc{C}_1^{\ms{a}}, \mc{C}_1^{\ms{r}}, \mc{C}_1^{\{\ms{a}, \ms{r}\}}\)
+  % specifically are called \textbf{affine}, \textbf{relevant}, and
+  % \textbf{intuitionistic} or \textbf{pure} respectively.
 \end{definition}
 We can obtain an example of a substructural effectful category quite easily by,
 considering the power-set monad above, applying the state transformer to yield
 the Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to S \to
 \mc{P}(A \times S)\). Letting \(\mc{C}_1^q = \ms{Rel}^q\) and defining
-\(\upg{R}{} = \lambda a, s. R(a) \times \{s\}\), we can verify that this
-satisfies the axioms of a substructural effectful category. Note that here the
-\textit{central} morphisms are precisely those which do not read from or write
-to the state, and therefore which commute with all other morphisms.
+\(\upg{R}{} = \lambda a, s. R(a) \times \{s\}\) to be the standard lifting
+operator, we can verify that this satisfies the axioms of a substructural
+effectful category. Note that here the \textit{central} morphisms are precisely
+those which do not read from or write to the state, and therefore which commute
+with all other morphisms.
 
 In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
 substructural premonoidal category, taking \(\mc{C}^{\ms{a}}\) and
@@ -1260,7 +1258,7 @@ unitors, and symmetry, and only the identity object to be affine and relevant.
 Similarly, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a
 substructural Cartesian category with all morphisms and both relevant and
 affine; in fact, this is the case \textit{if and only if} a category is
-Cartesian. We also note the following:
+Cartesian. We also have that:
 \begin{proposition}
   If \(\mc{C}\) is a substructural monoidal category then we can equip the
   Kleisli category \(\mc{C}_{\mb{T}}\) with the structure of a substructural
@@ -1274,8 +1272,7 @@ Cartesian. We also note the following:
 
 \subsection{Distributivity}
 
-To add support for branching, we need to equip our category with a
-\textit{distributive coproduct structure}, as follows:
+To support branching, we need to add a bit more structure:
 \begin{definition}[Distributive (pre)monoidal category] 
   A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category
   with all finite coproducts equipped with a natural family of central
@@ -1305,7 +1302,7 @@ from the following proposition:
   If \(\mc{C}\) is a distributive substructural monoidal category and \(\mb{T}\)
   is a strong monad on \(\mc{C}\), then the Kleisli category \(\mc{C}_{\mb{T}}\)
   is a distributive substructural effectful category (with affine and relevant
-  objects and morphisms inherited from \(\mc{C}\))
+  objects and morphisms lifted from \(\mc{C}\))
 \end{proposition}
 % \begin{proof}
 %   Let \(\delta_{A, B, C}: \mc{C}((A + B) \otimes C, A \otimes C + B \otimes C)\) denote \(\mc{C}\)'s distributor. We will write composition in \(\mc{C}\) as "\(;\)" and composition in the Kleisli category \(\mb{T}\) as "\(\gg\)".
@@ -1354,15 +1351,13 @@ way to reason about iteration. To do so, we introduce the notion of an
 %   \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\)
 % \end{itemize}
 % Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
-
-One important way of generating Elgot categories is through monads: a monad
-\(\mb{T}\) whose Kliesli category \(\mb{C}_{\mb{T}}\) is Elgot is called an
-\textbf{Elgot monad}. Examples of Elgot monads include \(\ms{Option}\) (where
+A monad \(\mb{T}\) whose Kliesli category \(\mb{C}_{\mb{T}}\) is Elgot is called
+an \textbf{Elgot monad}. Examples of Elgot monads include \(\ms{Option}\) (where
 nontermination is \(\ms{None}\)), the powerset monad (where nontermination is
 the empty set), which can both be viewed as special cases of the trace monads we
 will explore in Section \ref{ssec:trace-monads}. It turns out that various monad
 transformers preserve Elgot structure, allowing us to build up Elgot monads in a
-composable fashion. In particular,
+composable fashion via a monad stack. In particular,
 \begin{proposition}
   If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;S\;\mb{T}
   = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda
@@ -1377,8 +1372,7 @@ We can now give a semantics for an \isotopessa dialect with types
 \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
 \begin{itemize}
   \item A \textit{substructural effectful category} \(\mc{C} = \mc{C}_1 \to
-  \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot},
-  equipped with
+  \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot}
   \item A function \(\ms{base}(X)\) from base types \(X \in \mc{T}\) to objects
   in \(|\mc{C}|\), such that \(\ms{a} \in \ms{lin}(X) \implies \ms{base}(X) \in
   \ms{Aff}(\mc{C})\) and \(\ms{r} \in \ms{lin}(X) \implies \ms{base}(X) \in
