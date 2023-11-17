@@ -1647,28 +1647,25 @@ distributor \(\delta: \dnt{\Delta} \otimes (\mb{1} + \mb{1}) \to \dnt{\Delta} +
 \rle{let2-blk} are analogous to those of \rle{let} and \rle{let2}, except that
 now the bound term \(a\) is allowed to be impure.
 
-Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
-interpreting a control-flow graph \(\lhaslb{\ms{L}}{L}{\ms{K}}\) as a morphism
-from \(\dnt{\ms{L}}\) to \(\dnt{\ms{K}} + \dnt{\ms{L}}\), where the left-hand
-side of the coproduct denotes branching to one of the target labels in
-\(\ms{K}\) (the \textit{output}), while the right-hand side of the coproduct
-denotes a recursive call to a label in \(\ms{L}\) (the \textit{recursive
-input}). In particular, \rle{nil-br} simply treats a call to one of \(\ms{L}\)
-as a call to a \textit{target label}, passing it through the left injection
-unchanged. On the other hand \rle{cons-br} is a little bit more complicated:
-first we execute \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}\),
-which will give us either an output \(\dnt{\ms{K}, \lhyp{\ell}{\Gamma}{A}}\), or
-a recursive input \(\dnt{\ms{L}}\), the latter of which we can pass through
-unchanged as a recursive input. In the output case, we can interpret this as
-either a value of \(\dnt{\ms{K}}\) or \(\dnt{\Gamma} \otimes \dnt{A}\); the
-former we can pass the value through unchanged as output; in the second case, we
-can pass this in as input to \(\dnt{\haslb{\Gamma,
-\thyp{x}{A}{q}}{t}{\ms{L}}}\), which will give us a value of \(\ms{L}\) we can
-pass in as recursive input. Note that, even if \(t\) targets an output label in
-\(\ms{K}\), we still return a \textit{recursive input}, not an output; in this
-case, the \textit{next} iteration will return it as an output. We can now quite
-easily state the semantics of \rle{where}: we simply precompose the semantics of
-the entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the \textit{iterated}
+Finally, we must give semantics for \rle{where}. To do so, we interpret a
+control-flow graph \(\lhaslb{\ms{L}}{L}{\ms{K}}\) as a morphism from
+\(\dnt{\ms{L}}\) to \(\dnt{\ms{K}} + \dnt{\ms{L}}\), where the left of the
+coproduct denotes branching to one of the labels in \(\ms{K}\) (the
+\textit{output}), while the right of the coproduct denotes a recursive call to a
+label in \(\ms{L}\) (the \textit{recursive input}). In particular, \rle{nil-br}
+simply forwards all calls to one of \(\ms{L}\) to the output unchanged.
+\rle{cons-br} is a little bit more complicated: first we execute
+\(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}\), which yields
+either a recursive input \(\dnt{\ms{L}}\), which we pass through unchanged as a
+recursive input. In the former case, we can interpret this as either a value of
+\(\dnt{\ms{K}}\), which we pass through unchanged as output, or \(\dnt{\Gamma}
+\otimes \dnt{A}\); which we can pass as input to \(\dnt{\haslb{\Gamma,
+\thyp{x}{A}{q}}{t}{\ms{L}}}\), giving us a value of \(\ms{L}\) we can use as
+recursive input. Note that, even if \(t\) yields an output label in \(\ms{K}\),
+we still return a \textit{recursive input}, not an output; in this case, the
+\textit{next} iteration will return it as an output. We can now quite easily
+state the semantics of \rle{where}: we simply precompose the semantics of the
+entry block \(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the \textit{iterated}
 semantics of the associated control-flow graph,
 \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}^\dagger\).
 
