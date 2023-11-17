@@ -770,15 +770,12 @@ potentially non-central term \(e\) which may also depend on variables in
       {\hasty{\Delta}{1}{a}{A}{q}}
       {\hasty{\Xi}{1}{b}{B}{q}}
       {\hasty{\Gamma}{p}{(a, b)}{A \otimes B}{q}} \\
-    \prftree[r]{\rle{unit}}
-      {\cwk{\Gamma}{\cdot}}
-      {\hasty{\Gamma}{p}{()}{\mb{1}}{q}} \qquad
     \prftree[r]{\rle{true}}
       {\cwk{\Gamma}{\cdot}}
       {\hasty{\Gamma}{p}{\ctt}{\mb{2}}{q}} \qquad
     \prftree[r]{\rle{false}}
       {\cwk{\Gamma}{\cdot}}
-      {\hasty{\Gamma}{p}{\cff}{\mb{2}}{q}} \\
+      {\hasty{\Gamma}{p}{\cff}{\mb{2}}{q}} \qquad
     \prftree[r]{\rle{let}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\hasty{\Delta, \thyp{x}{A}{}}{p}{e}{B}{q}}
@@ -788,6 +785,9 @@ potentially non-central term \(e\) which may also depend on variables in
     %   {\haslb{\Gamma}{t}{\llhyp{\ell}{\cdot}{A}}}
     %   {\hasty{\Gamma}{0}{\lbsplice{\ell}{A}{t}}{A}{\varnothing}} 
       \\
+    \prftree[r]{\rle{unit}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{p}{()}{\mb{1}}{q}} \qquad
     \prftree[r]{\rle{let2}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
       {\hasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{e}{C}{q}}
