@@ -1268,28 +1268,21 @@ Here, \(\ms{split}(A)\) is just the copy operator \(a \mapsto (a, a)\) and
 prove that these lie in \(\ms{Rel}^{\{\ms{a}, \ms{r}\}}\), being functions, and
 that they satisfy the axioms of a commutative comonoid, as desired. 
 
-Note that we cannot simply have \(\ms{Rel}^{\ms{a}} = \ms{Rel}\), since, for
-any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, R(a) =
-\varnothing\), we have
-\begin{equation}
-  (R;\ms{drop}(B))(a) = \varnothing \neq \ms{drop}(A)(a) = \{()\}
-\end{equation}
-We will see that this corresponds to the fact that the following programs are
-not semantically equal
-\begin{equation}
-  \ms{let}\;x = \ms{loop}(); e \not\simeq e \qquad \text{where} \qquad x \notin \ms{fv}(e)
-\end{equation}
-Similarly, we cannot simply have \(\ms{Rel}^{\ms{r}} = \ms{Rel}\), since,
-for any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, |R(a)|
-\supseteq \{b_0, b_1\}\) where \(b_0 \neq b_1\), we have that
+Note that we cannot simply have \(\ms{Rel}^{\ms{a}} = \ms{Rel}\), since, for any
+morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, R(a) =
+\varnothing\), we have \( (R;\ms{drop}(B))(a) = \varnothing \neq \ms{drop}(A)(a)
+= \{()\} \). We will see that this corresponds to the fact that \( \ms{let}\;x =
+\ms{loop}(); e \) is not semantically equal to \(e\) even where \(x \notin
+\ms{fv}(e)\). Similarly, we cannot simply have \(\ms{Rel}^{\ms{r}} = \ms{Rel}\),
+since, for any morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A,
+|R(a)| \supseteq \{b_0, b_1\}\) where \(b_0 \neq b_1\), we have that
 \begin{equation}
   (R;\ms{split}(B))(a) = \{(b, b) \mid b \in R(a)\} \neq (\ms{split}(A);R)(a) = R(a) \times R(a) 
 \end{equation}
 since only the left-hand side contains the pair \((b_0, b_1)\), this
-corresponding to the fact that the following programs are not semantically equal
-\begin{equation}
-  \ms{let}\;x = \ms{rand}(); (x, x) \not\simeq (\ms{rand}(), \ms{rand}())
-\end{equation}
+corresponding to the fact that the program \(\ms{let}\;x = \ms{rand}(); (x, x)\) is
+not semantically equal to \((\ms{rand}(), \ms{rand}())\).
+
 To get a substructural premonoidal category, we can apply the state monad
 transformer to the power set monad to obtain the Kleisli category with morphisms
 of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times
@@ -1336,14 +1329,13 @@ satisfies the axioms of a substructural effectful category. Note that here the
 to the state, and therefore which commute with all other morphisms.
 
 In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
-substructural premonoidal category, with \(\mc{C}^\varnothing = \mc{C}\) and
-\(\mc{C}^{\{\ms{a}, \ms{r}\}}, \mc{C}^{\{\ms{a}\}}, \mc{C}^{\{\ms{r}\}}\) the
-subcategory consisting only of the associators, unitors, and symmetry, and only
-the identity object considered affine and relevant. Similarly, every
-\textit{Cartesian} category \(\mc{C}\) can be viewed as a substructural
-Cartesian category with all morphisms both relevant and affine; in fact, this is
-the case \textit{if and only if} a category is Cartesian, hence the term
-"substructural Cartesian category." We also note the following:
+substructural premonoidal category, taking \(\mc{C}^{\ms{a}}\) and
+\(\mc{C}^{\ms{r}}\) to be the subcategory consisting only of the associators,
+unitors, and symmetry, and only the identity object to be affine and relevant.
+Similarly, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a
+substructural Cartesian category with all morphisms and both relevant and
+affine; in fact, this is the case \textit{if and only if} a category is
+Cartesian. We also note the following:
 \begin{proposition}
   If \(\mc{C}\) is a substructural monoidal category then we can equip the
   Kleisli category \(\mc{C}_{\mb{T}}\) with the structure of a substructural
@@ -1427,26 +1419,25 @@ way to reason about iteration. To do so, we introduce the notion of an
       h;f = g;\ms{id} + h \implies h;f^\dagger = g^\dagger
     \)
   \end{itemize}
-  A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry
-  \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
+  % A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry
+  % \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
 \end{definition}
-Some important properties which hold for all Elgot categories include:
-\begin{itemize}
-  \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id},
-  (h;[\iota_0, g])^\dagger]\)
-  \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\)
-\end{itemize}
-Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
+% Some important properties which hold for all Elgot categories include:
+% \begin{itemize}
+%   \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id},
+%   (h;[\iota_0, g])^\dagger]\)
+%   \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\)
+% \end{itemize}
+% Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
 
 One important way of generating Elgot categories is through monads: a monad
-whose Kliesli category is Elgot is called an \textbf{Elgot monad}. Examples of
-Elgot monads include \(\ms{Option}\) (where \(\ms{None}\) is interpreted as
-nontermination), the powerset monad (where the empty set is interpreted as
-nontermination), and the trace monads we will explore in Section
-\ref{ssec:trace-monads}.
-
-It turns out that various monad transformers preserve Elgot structure, allowing
-us to build up Elgot monads in a composable fashion. In particular,
+\(\mb{T}\) whose Kliesli category \(\mb{C}_{\mb{T}}\) is Elgot is called an
+\textbf{Elgot monad}. Examples of Elgot monads include \(\ms{Option}\) (where
+nontermination is \(\ms{None}\)), the powerset monad (where nontermination is
+the empty set), which can both be viewed as special cases of the trace monads we
+will explore in Section \ref{ssec:trace-monads}. It turns out that various monad
+transformers preserve Elgot structure, allowing us to build up Elgot monads in a
+composable fashion. In particular,
 \begin{proposition}
   If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;S\;\mb{T}
   = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda
@@ -1457,8 +1448,8 @@ us to build up Elgot monads in a composable fashion. In particular,
 
 \subsection{Denotational Semantics}
 
-We're now ready to give a semantics for an \isotopessa dialect with a set of
-types \(\mc{T}\) and instructions \(\mc{I}\). We'll need:
+We can now give a semantics for an \isotopessa dialect with types
+\(\mc{T}\) and instructions \(\mc{I}\). We'll need:
 \begin{itemize}
   \item A \textit{substructural effectful category} \(\mc{C} = \mc{C}_1 \to
   \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot},
@@ -1487,12 +1478,11 @@ pure morphism \(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\)
 which partitions the variables as appropriate, splitting and dropping as
 necessary. We interpret a context weakening \(\cwk{\Gamma}{\Delta}\) as the
 associated split \(\csplits{\Gamma}{\Delta}{\cdot}\) postcomposed with a unitor.
-Finally, we interpret a label-set weakening \(\lwk{\ms{L}}{\ms{K}}\) as a
-pure morphism \(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where
-\rle{join-nil} is the identity, \rle{join-cons} is the sum of
-\(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and \(\dnt{\cwk{\Gamma}{\Delta}}\), and
-\rle{join-zero} is \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left
-injection.
+Finally, we interpret a label-set weakening \(\lwk{\ms{L}}{\ms{K}}\) as a pure
+morphism \(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where \rle{join-nil} is
+the identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
+\(\dnt{\cwk{\Gamma}{\Delta}}\), and \rle{join-zero} is
+\(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left injection.
 
 \begin{figure}
   \begin{gather*}
