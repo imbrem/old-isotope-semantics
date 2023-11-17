@@ -2072,8 +2072,8 @@ interesting operations:
   \item \(\ms{alloc}: \mc{I}^\varnothing_0((\nats, \ms{emp}), (\nats, \lambda
   \ell. \exists v. \ell \mapsto v))\) and \(\ms{free}: \mc{I}^\varnothing_0((\nats, \lambda \ell. \exists v. \ell \mapsto v), (\mb{1}, \ms{emp}))\)
 \end{itemize}
-We can clearly see that this is a refinement type system in the sence of
-\cite{mellies-ftrs}: in particular, there is a forgetful functor \((A, \Phi)
+We can clearly see that this is a refinement type system in the sense of
+\citet{mellies-ftrs}: in particular, there is a forgetful functor \((A, \Phi)
 \mapsto A\) which is simply the identity on morphisms. Unfortunately, this means
 that our notion of equality is a little too stringent, since we need to consider
 equality on inputs which do not match our preconditions. Thankfully, we can fix
@@ -2109,7 +2109,7 @@ reads, writes, and fences. We begin with the following definitions:
 (Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\),
 which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to
 \mc{A}\), where \(P + Q\) is given the lexicographic ordering and
-\(\ms{trim}(P)\) removes all elements of \(P\) with infinitely many
+\(\ms{trim}(R)\) removes all elements of \(R\) with infinitely many
 predecessors. They also form a monoid under parallel composition, defining
 \(\alpha || \beta = [\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given
 the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
@@ -2162,7 +2162,7 @@ We can define the \textit{parallel execution} of two morphisms as follows:
 It's tempting to try to use this as a tensor product of morphisms to obtain a
 monoidal (rather than preomonoidal) category, but unfortunately, sliding still
 fails: \((W_x^{\ms{PO}} || \ms{id}) ; (\ms{id} || W_y^{\ms{PO}})\) emits the
-pomset \([x := a, y := b]\), while \(\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}}
+pomset \([x := a, y := b]\), while \((\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}}
 || \ms{id})\) emits the pomset \([y := b, x := a]\). 
 % If we did want this behaviour, we'd need to have a significantly more
 % sophisticated model of composition which effectively takes nontermination into
@@ -2174,18 +2174,18 @@ implement TSO ordering by buffering all our writes, in which case they are only
 visible to the local thread. On the other hand, read events will first attempt
 to read from the buffer, and, if there is no corresponding write in the buffer,
 will read an arbitrary value, in both cases pushing an event to the global
-pomset. At any point, we may choose to \textit{flush} some of the writes in
-buffer. We introduce the set \(\mc{A}_b = \{(\bufloc{x} := v)\}\) of
+pomset. At any point, we may choose to \textit{flush} some of the buffered
+writes. We introduce the set \(\mc{A}_b = \{(\bufloc{x} := v)\}\) of
 \textit{buffer write actions}, where an action \(\bufloc{x} := v\) by a thread
 denotes adding a write \(x := v\) to the thread's write buffer. We may then
 define the set of TSO actions \(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup
-\mc{A}_b\); a pomset over this set is called a \textbf{TSO pomset}. A
-buffer will be defined to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\),
-which we will interpret as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by
-index (with the empty list corresponding to \(\{\delta\}\)). In particular, we
-define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\),
-where \(\Sigma\) is taken as a the stream action of finite TSO pomsets on TSO
-pomsets. We can view \(\ms{PO}\) as a submonad of this monad.
+\mc{A}_b\); a pomset over this set is called a \textbf{TSO pomset}. A buffer
+will be defined to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\), which
+we will interpret as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index
+(with the empty list corresponding to \(\{\delta\}\)). In particular, we define
+the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\), where
+\(\Sigma\) is taken as a the stream action of finite TSO pomsets on TSO pomsets.
+We can view \(\ms{PO}\) as a submonad of this monad.
 
 Given a buffer \(\ms{Buf}\), we can define the result of reads \([\cdot]_x:
 \ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the buffer by induction to be:
