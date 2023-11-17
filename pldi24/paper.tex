@@ -232,9 +232,9 @@
 \section{Introduction}
 
 Static Single Assignment, or SSA, has been a cornerstone of compiler design ever
-since its introduction by \cite{ssa-original,rosen-gvn-1988} in the late 1980s.
+since its introduction by \citet{ssa-original,rosen-gvn-1988} in the late 1980s.
 Older compiler intermediate representations permitted the same local variable to
-be assigned multiple times, whereas SSA requires each variable bindings to be
+be assigned multiple times, whereas SSA requires each variable binding to be
 immutable -- they cannot be modified after initialisation. This makes many
 dataflow analyses easier to compute, and (just as in functional languages) makes
 it much easier to justify compiler optimisations in terms of equational
@@ -248,17 +248,16 @@ functions which tail-call one another. This makes the equivalence of the
 functional view to the traditional $\phi$-node presentation very easy to see. In
 the functional style, each tail call lists its arguments. In contrast, a
 $\phi$-node collects together the arguments from every callsite, which lets the
-tail-calls/jumps to omit their arguments. Thus, the main difference between SSA
-and a functional program is where in the program text the arguments to a tail
-call are listed.
+tail-calls/jumps omit their arguments. Thus, the main difference between SSA and
+a functional program is where in the program text the arguments to a tail call
+are listed.
 
 This "basic blocks with arguments" presentation of SSA has become very popular
 in industry, with compiler backends such as Cranelift~\cite{cranelift},
 MLIR~\cite{mlir}, and SIL~\cite{SIL} all using this representation. This tight
 connection might suggest that the semantics of SSA representations is trivial:
 we can just interpret an SSA program as a corresponding functional program, and
-then rewrite the SSA programs using the equational theory of functional
-programs.
+then rewrite SSA programs using the equational theory of functional programs.
 
 While this is a perfectly sound thing to do, it is not strong enough to write a
 good compiler. Compiler IRs like SSA are fundamentally about effectful programs,
@@ -279,8 +278,8 @@ effectful term from the program altogether.
 These examples illustrate that many optimisations require taking
 \emph{effectful} terms and moving them around and substituting them for
 variables. Since this is not a generally valid program transformation, we need a
-finer classification of programs than merely pure and effectful to judge when a
-substitution is allowed.
+finer classification of programs than merely value and expression to judge when
+a substitution is allowed.
 
 A useful taxonomy was introduced by \citet{fuhrmann-direct-1999}, classifying
 effects based on (1) whether or not the order of effects mattered, (2) whether
@@ -297,14 +296,14 @@ let z = x;
 \qquad \qquad \centernot\implies \qquad \qquad
 \begin{BVerbatim}[baseline=c]
 let y = print("world");
-let x = print("hello");
+let z = print("hello");
 ...
 \end{BVerbatim}
 \end{equation}
-In this case, substituting a term for a variable changes the order the I/O
-actions are performed, which changes the program's observable behaviour. On the
-other hand, suppose we have an effect which increments a counter. Then the same
-transformation is sound, since \(x\) is used exactly once:
+In this case, substituting a term for a variable changes the order of I/O
+actions, which changes the program's observable behaviour. On the other hand,
+suppose we have an effect which increments a counter. Then in the following
+program the same transformation is sound, since \(x\) is used exactly once:
 \begin{equation}
 \begin{BVerbatim}[baseline=c]
 let x = increment(a);
@@ -364,9 +363,9 @@ return y == z
 \end{BVerbatim}
 \end{equation}
 In this case, substituting for $x$ duplicates the call to \texttt{nondet()}, and
-can change this from a program which always returns true to one which can return
-either true or false. On the other hand, if the effect is the possibility of
-nontermination, then the substitution is sound. 
+can change this from a program which always returns \texttt{true} to one which
+can return either \texttt{true} or \texttt{false}. On the other hand, if the
+effect is the possibility of nontermination, then the substitution is sound. 
 \begin{equation}
 \begin{BVerbatim}[baseline=c]
 let x = may_loop();
@@ -383,16 +382,16 @@ return y == z
 \end{equation}
 F\"{u}hrmann called such operations \emph{copyable}. In this paper, we use his
 terminology, and also call such effects \emph{relevant}. With these distinction
-in place, we can \emph{define} a pure term as one which is all three of
-central, copyable, and discardable.
+in place, we can \emph{define} a pure term as one which is all three of central,
+copyable, and discardable.
 
 In addition to working with effects, compiler intermediate representations also
 have to track accesses to memory. This information is typically gathered via
 ad-hoc alias analyses, but a compositional alternative to these analyses is to
 track this information via substructural type systems such as linear and affine
 types, which associate aliasing and ownership information with individual
-substructural values. Having aliasing information justifies important
-optimisations such as loop hoisting: 
+values. Having aliasing information justifies important optimisations such as
+loop hoisting: 
 \begin{equation}
 \begin{BVerbatim}[baseline=c]
 while (e) {
@@ -426,10 +425,10 @@ sound with respect to the actual weak memory models supported by hardware.
 As a result, it is now much harder to judge whether a particular optimisation is
 sound or not. Moreover, different kinds of hardware such as x86, GPUs, and ARM
 all offer different memory models. This means that we need an abstract semantics
-for compiler IRs, which can permit a separation of concerns. This will let
-compiler writers validate their optimisations against the abstract semantics,
-and will let us separately show that a particular machine model faithfully
-implements the semantics.
+for compiler IRs, which can permit a separation of concerns. Compiler writers
+can validate their optimisations against the abstract semantics, and we can
+separately show that a particular machine model faithfully implements the
+semantics.
 
 In this paper, we show that this is possible. We give a type system for SSA
 which uses substructural types to both track effects at a fine-grained level,
@@ -444,14 +443,14 @@ optimisations are sound with respect to the x86 memory model.
 
 \begin{itemize}
 \item We give a type system for SSA-style programs, which has a full
-substitution theorem and equational theory. This language includes substructural
-types, both for controlling effects and tracking ownership in values, and our
-strong substitution principle makes formulating inlining and rewriting
-optimisations easier than in the traditional CFG-based formulations. 
+substitution theorem and equational theory for both expressions and control-flow
+graphs. This language includes substructural types, both for controlling effects
+and tracking ownership in values. 
 \item We give an axiomatic semantics for our language, by showing that it has a
-compositional intepretation in any effectful category with an Elgot structure.
-We use this structure to give generic proofs of the soundness of substitution
-and rewriting properties.
+compositional intepretation in any distributive effectful category (a
+substructural variant of a Freyd category) with an Elgot structure. We use this
+structure to give generic proofs of the soundness of substitution and rewriting
+properties.
 \item Our abstract semantics justifies a variety of powerful optimisation
 techniques, including inlining, loop fusion, hoisting, and strength reduction. 
 \item We show how Elgot monads give rise to instances of our categorical
@@ -459,7 +458,7 @@ semantics. We use this to derive semantics from a general trace monad, and show
 that various monad transformers such as state transformers preserve the needed
 Elgot structure. 
 \item We use these tools to demonstrate the existence of a variety of concrete
-models satisfying these categorical axioms. Starting first from simple languges
+models satisfying these categorical axioms. Starting first from simple languages
 such as state plus printing, we also show how more challenging semantics such as
 the TSO semantics for weak memory also fit into our framework. This thus gives
 rise to an SSA-based IR with support for weak memory operations, which is fully
@@ -471,7 +470,7 @@ semantically-justified.
 \section{SSA Syntax}
 
 In a standard SSA-based compiler, to represent a function, we begin by
-decomposing it into basic blocks, which can be viewed as \textit{label},
+decomposing it into basic blocks, which can be viewed as \textit{labels},
 followed by a sequence of \textit{instructions}, each defining a
 \textit{variable}, followed by a \textit{terminator}. A program written in this
 manner being in "SSA form" simply means that every variable name is defined
@@ -560,50 +559,50 @@ For our type theoretic presentation of SSA, we will treat a very slight
 generalization of the standard basic blocks with arguments syntax, in that we
 will support \textit{nested scopes} and, in particular, \textit{if-statements}.
 The program in Figure \ref{fig:bb-arg} translated to our syntax is given in
-Figure \ref{fig:our-syn}. These do not introduce any new expressivity: an
+Figure \ref{fig:our-syn}. This does not introduce any new expressivity: an
 if-statement can be viewed as syntactic sugar for a conditional branch to one of
 two anonymous basic blocks, while nested scopes simply \textit{restrict}
-branching. 
+branching.
 
 We parametrize our syntax by a set of \textit{base types} \(X \in \mc{T}\) and,
 for each pair of types \(A, B\), a set of \textit{instructions} \(f \in
 \mc{I}^q_p(A, B)\) with \textit{centrality} \(p = 1\) if \textit{central} or \(p
 = 0\) otherwise and \textit{quantity} \(q \subseteq \tint\). As discussed above,
 an instruction is considered \textit{central} if execution order does not
-matter, while the quantity \(q\) indicates whether it is safe to delete an
-instruction if its result is unused (in which case the instruction is
-\textit{affine}, and \(\taff \subseteq q\)) or duplicate an instruction used
-multiple times (in which case the instruction is \textit{relevant}, and \(\trel
-\subseteq q\)). An instruction which is, central, relevant, and affine is called
-\textit{pure}. Note that we assume that \(p \leq p' \and q \subseteq r \implies
-\mc{I}_p^q(A, B) \supseteq \mc{I}_{p'}^{r}(A, B)\). The set of types is
-generated by base types \(X\), the \textit{unit type} \(\mb{1}\), the
-\textit{boolean type} \(\mb{2}\), and tensor products of types \(A \otimes B\).
-We write \(\otimes\) (rather than \(\times\)) to underscore the fact that types
-are allowed to be substructural: given a linearity \(\ms{lin}(X) \subseteq
-\tint\), we can assign every type a \textit{linearity} \(\ms{lin}(A) \subseteq
-\tint\) by taking \(\ms{lin}(A \otimes B) = \ms{lin}(A) \cap \ms{lin}(B)\) and
-\(\ms{lin}(\mb{1}) = \ms{lin}(\mb{2}) = \tint\). We say a type with \(\taff
-\subseteq \ms{lin}(A)\) is \textit{affine}, while a type with \(\trel \subseteq
-\ms{lin}(A)\) is \textit{relevant}; a type which is both affine and relevant is
-called \textit{intuitionistic}. Our syntax is composed of three main syntactic
-categories:
+matter. The quantity \(q\) indicates whether it is safe to duplicate an
+instruction, or to delete it an if its result is unused. The instruction is
+\textit{affine} if \(\ms{a} \in q\), \textit{relevant}, and \(\ms{r} \in q\),
+and, if both affine and relevant, \textit{intuitionistic}. An instruction which
+is, central, relevant, and affine is called \textit{pure}. We assume that \(p
+\leq p'\) and \(q \subseteq r\) then \(\mc{I}_p^q(A, B) \supseteq
+\mc{I}_{p'}^{r}(A, B)\). The set of types is generated by base types \(X\), the
+\textit{unit type} \(\mb{1}\), the \textit{boolean type} \(\mb{2}\), and tensor
+products of types \(A \otimes B\). We write \(\otimes\) (rather than \(\times\))
+to underscore the fact that types are allowed to be substructural. For each base
+type \(X\), if we are given a linearity \(\ms{lin}(X) \subseteq \tint\), we can
+lift this to all types by taking \(\ms{lin}(A \otimes B) = \ms{lin}(A) \cap
+\ms{lin}(B)\) and \(\ms{lin}(\mb{1}) = \ms{lin}(\mb{2}) = \tint\). We say a type
+with \(\ms{a} \in \ms{lin}(A)\) is \textit{affine}, while a type with \(\ms{r}
+\in \ms{lin}(A)\) is \textit{relevant}; a type which is both affine and relevant
+is called \textit{intuitionistic}. Our syntax is composed of three main
+syntactic categories:
 \begin{itemize}
   \item \textit{Terms} \(a, b, c, d, e\), which are typed via the judgement
   \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the term \(a\) is of type
   \(A\) with \textit{centrality} \(p\) and \textit{quantity} \(q \subseteq
   \{\ms{a}, \ms{r}\}\). Here, the centrality \(p\) indicates whether it is safe
   to substitute this term for a variable, and \(q\), plus the linearity of
-  \(A\), control how many times that variable can occur: if \(\taff \subseteq
-  q\) then the variable is called \textit{affine} or \textit{discardable} and it
-  is permissible to leave it unused, whereas if \(\trel \subseteq q\) it is
-  called \textit{relevant} or \textit{duplicable} and it is permissible to use
-  multiple times. As for instructions, a term which is central, relevant, and
-  affine is called \textit{pure}. The rules for this judgement are given in
-  Figure \ref{fig:ssa-term-typing}.
+  \(A\), control how many times that variable can occur: if \(\ms{a} \in q \cap
+  \ms{lin}(A)\) then the variable is called \textit{affine} or
+  \textit{discardable} and it is permissible to leave it unused, whereas if
+  \(\ms{r} \in q \cap \ms{lin}(A)\) it is called \textit{relevant} or
+  \textit{duplicable} and it is permissible to use multiple times. As for
+  instructions, a term which is central, relevant, and affine is called
+  \textit{pure}. The rules for this judgement are given in Figure
+  \ref{fig:ssa-term-typing}.
   
   \item \textit{Blocks} \(s, t\), which are typed via the judgement
-  \(\haslb{\ms{L}}{t}{\Gamma}\), which says that the block \(t\) is well-formed
+  \(\haslb{\Gamma}{t}{\ms{L}}\), which says that the block \(t\) is well-formed
   with respect to the context \(\Gamma\) and only branches to
   ("\textit{targets}") labels in \(\ms{L}\). The rules for this judgement are
   given in Figure \ref{fig:ssa-block-typing}.
@@ -615,25 +614,24 @@ categories:
   Figure \ref{fig:ssa-block-typing}.
 \end{itemize}
 The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
-the appendix, while the typing judgements themselves are given in
+the appendix, while the typing judgements themselves are given in Figure
 \ref{fig:ssa-judgements}. 
 
 Here \textit{contexts} \(\Gamma\), consist of a list of variables \(x\) given a
 type \(A\) annotated with a \textit{quantity} \(q \subseteq \tint\) (if \(q\) is
 omitted, we assume \(q = \tint\)). The \textit{linearity} of a variable
-\(\ms{lin}(\thyp{x}{A}{q})\) is defined to be the intersection of the linearity
-of its type \(\ms{lin}(A)\) and its quantity \(q\). We say a variable \(x: A^q\)
-is \textit{affine} if \(\tlin{\thyp{x}{A}{q}}{\taff}\), in which case it can be
-freely ignored. Similarly, \(x\) is \textit{relevant} if
-\(\tlin{\thyp{x}{A}{q}}{\trel}\), in which case it can be used multiple times.
-This is formalized in the structural judgement
-\(\csplits{\Gamma}{\Delta}{\Xi}\), which says that \(\Gamma\) can be split into
-subcontexts \(\Delta\) and \(\Xi\) (weakening is simply the special case
-\(\cwk{\Gamma}{\Delta} \iff \csplits{\Gamma}{\Delta}{\cdot}\)), as per the
+\(\ms{lin}(\thyp{x}{A}{q})\) is defined to be \(\ms{lin}(A) \cap q\). We say a
+variable \(x: A^q\) is \textit{affine} if \(\ms{a} \in
+\ms{lin}(\thyp{x}{A}{q})\), in which case it can be freely ignored. Similarly,
+\(x\) is \textit{relevant} if \(\ms{r} \in \ms{lin}(\thyp{x}{A}{q})\), in which
+case it can be used multiple times. This is formalized in the structural
+judgement \(\csplits{\Gamma}{\Delta}{\Xi}\), which says that \(\Gamma\) can be
+split into subcontexts \(\Delta\) and \(\Xi\) (weakening is simply the special
+case \(\cwk{\Gamma}{\Delta} \iff \csplits{\Gamma}{\Delta}{\cdot}\)), as per the
 typing rules in Figure \ref{fig:ssa-structural}. In particular, the rule
 \rle{split-nil} states that the empty context can be split into two empty
 contexts, while the rules \rle{split-left} and \rle{split-right} send \(x: A^q\)
-to the left or right subcontext repsectively; both these rules also allow us to
+to the left or right subcontext respectively; both these rules also allow us to
 reduce the quantity \(q\) to a quantity \(r \subseteq q\), "forgetting" some of
 our capabilities. The rule \rle{split-dup} allows the duplication of a relevant
 variable, with the option to weaken the quantity to \textit{different}
@@ -649,12 +647,12 @@ variables, and hence that every program which targets \(\ms{L}\) can also be
 viewed as targeting \(\ms{K}\). The conditions for this are formalized in Figure
 \ref{fig:ssa-structural} as follows: the rule \rle{join-nil} states that the
 empty label-set is a subcontext of itself. The rule \rle{join-cons} says that if
-\(\ms{L}\) is a subcontext of \(\ms{K}\) and \(\Delta\) weakens into \(\Gamma\),
-then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}\),
-allowing us to "forget" any extra (affine) variables dropped by
-\(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply says that if
-\(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) is also a subcontext of any extension
-of \(\ms{K}\). 
+\(\ms{L}\) is a subcontext of \(\ms{K}\) and \(\Gamma\) is a weakening of
+\(\Delta\), then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K},
+\llhyp{\ell}{\Delta}{A}}\), allowing us to "forget" any extra (affine) variables
+dropped by \(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply
+says that if \(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) is also a subcontext of
+any extension of \(\ms{K}\).
 % Note that this judgement is "backwards," in that the "larger" context is on
 % the \textit{right}; this corresponds to the placement of the label context on
 % the right-hand side of the typing judgement for blocks, and is by analogy to
@@ -714,13 +712,13 @@ of \(\ms{K}\).
       {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta}{\Xi, \thyp{x}{A}{r}}} \\
     \prftree[r]{\rle{split-dup}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\ltlin{A}{q}{\trel}}
+      {\ms{r} \in \ms{lin}(\thyp{x}{A}{q})}
       {r, s \subseteq q}
       {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta, \thyp{x}{A}{r}}{\Xi, \thyp{x}{A}{s}}}
       \qquad
     \prftree[r]{\rle{split-drop}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\ltlin{A}{q}{\taff}}
+      {\ms{a} \in \ms{lin}(\thyp{x}{A}{q})}
       {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta}{\Xi}}
       \\
     \prftree[r]{\rle{join-nil}}{\lwk{\cdot}{\cdot}} \qquad
