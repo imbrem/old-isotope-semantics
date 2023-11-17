@@ -569,22 +569,22 @@ we can branch to.
 % simply merge all nested scopes. The point of the slightly modified syntax is
 % simply to make some of our metatheoretic results more practical to state.
 
-The grammar for our syntax is given in Figure \ref{fig:ssa-grammar}, while the
-typing judgements themselves are given in \ref{fig:ssa-judgements}. We begin by
-giving a grammar for \textit{types} \(A, B, C\), parametrized by a set of
-\textit{base types} \(X\); all syntactically well-formed types are also
-semantically valid. We postulate the existence of a \textit{unit type}
-\(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all tensor products \(A
-\otimes B\); we write \(\otimes\) to underscore the fact that types are allowed
-to be substructural, assigning every type a linearity \(\ms{lin}(A)\) satisfying
-the constraints in Figure \ref{fig:ssa-structural}. In particular, the rules
-\rle{unit-lin} and \rle{bool-lin} state that both the unit and boolean types
-must be intuitionistic; the rule \rle{pair-lin} says that the linearity of a
-pair is simply the intersection of the linearity of its components. The rules
-\rle{nil-lin} and \rle{cons-lin} together say that the linearity of a context is
-the intersection of the linearity of its variables, where the linearity of a
-variable is the intersection of the linearity of its type and its quantity
-annotation.
+The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
+the appendix, while the typing judgements themselves are given in
+\ref{fig:ssa-judgements}. We begin by giving a grammar for \textit{types} \(A,
+B, C\), parametrized by a set of \textit{base types} \(X\); all syntactically
+well-formed types are also semantically valid. We postulate the existence of a
+\textit{unit type} \(\mb{1}\), a \textit{boolean type} \(\mb{2}\), and all
+tensor products \(A \otimes B\); we write \(\otimes\) to underscore the fact
+that types are allowed to be substructural, assigning every type a linearity
+\(\ms{lin}(A)\) satisfying the constraints in Figure \ref{fig:ssa-structural}.
+In particular, the rules \rle{unit-lin} and \rle{bool-lin} state that both the
+unit and boolean types must be intuitionistic; the rule \rle{pair-lin} says that
+the linearity of a pair is simply the intersection of the linearity of its
+components. The rules \rle{nil-lin} and \rle{cons-lin} together say that the
+linearity of a context is the intersection of the linearity of its variables,
+where the linearity of a variable is the intersection of the linearity of its
+type and its quantity annotation.
 
 Our grammar proper splits program fragments into three main syntactic categories:
 \begin{itemize}
@@ -655,50 +655,6 @@ judgement is "backwards," in that the "larger" context is on the \textit{right};
 this corresponds to the placement of the label context on the right-hand side of
 the typing judgement for blocks, and is by analogy to our semantics for blocks
 and CFGs in Section \ref{sec:semantics}.
-
-\begin{figure}
-  \begin{center}
-    \begin{grammar}
-      <\(A, B, C\)> ::= 
-      \(X\)
-      \;|\; \(\mathbf{1}\)
-      \;|\; \(\mathbf{2}\)
-      \;|\; \(A \otimes B\)
-
-      <\(a, b, c, e\)> ::= \(x\) 
-      \;|\; \(f\;a\)
-      \;|\; \((a, b)\) 
-      \;|\; \(()\) 
-      \;|\; \(\ctt\) 
-      \;|\; \(\cff\)
-      \;|\; \(\letexpr{x}{a}{e}\)
-      \;|\; \(\letexpr{(x, y)}{a}{e}\)
-      % \;|\; \(\lbsplice{\ell}{x: A}{t}\)
-      
-      <\(s, t\)> ::= \(\lbrb{\ell}{a}\) 
-      \;|\; \(\ite{e}{s}{t}\)
-      \;|\; \(\letstmt{x}{a}{t}\)
-      \;|\; \(\letstmt{(x, y)}{a}{t}\)
-      \;|\; \(\ewhere{t}{L}\)
-
-      <\(L\)> ::= \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{t}, L\)
-
-      <\(\Gamma\)> ::= \(\cdot\) \;|\; \(\Gamma, \thyp{x}{A}{q}\)
-
-      <\(\ms{L}\)> ::= \(\cdot\) \;|\; \(\ms{L}, \lbl{\ell}[\Gamma](x: A)\)
-
-      <\(p\)> ::= 0 \;|\; 1
-
-      <\(q\)> ::= \(\varnothing\) 
-      \;|\; \(\taff\) 
-      \;|\; \(\trel\) 
-      \;|\; \(\tint\)
-    \end{grammar}
-  \end{center}
-  \caption{Grammar for \isotopessa, parametrized over a set of instructions \(f \in \mc{I}\)}
-  \Description{Grammar for isotope-SSA}
-  \label{fig:ssa-grammar}
-\end{figure}
 
 \begin{figure}
   \begin{center}        
@@ -2419,6 +2375,50 @@ the low-level specification of the actual machine.
 \clearpage 
 
 \appendix
+
+\begin{figure}
+  \begin{center}
+    \begin{grammar}
+      <\(A, B, C\)> ::= 
+      \(X\)
+      \;|\; \(\mathbf{1}\)
+      \;|\; \(\mathbf{2}\)
+      \;|\; \(A \otimes B\)
+
+      <\(a, b, c, e\)> ::= \(x\) 
+      \;|\; \(f\;a\)
+      \;|\; \((a, b)\) 
+      \;|\; \(()\) 
+      \;|\; \(\ctt\) 
+      \;|\; \(\cff\)
+      \;|\; \(\letexpr{x}{a}{e}\)
+      \;|\; \(\letexpr{(x, y)}{a}{e}\)
+      % \;|\; \(\lbsplice{\ell}{x: A}{t}\)
+      
+      <\(s, t\)> ::= \(\lbrb{\ell}{a}\) 
+      \;|\; \(\ite{e}{s}{t}\)
+      \;|\; \(\letstmt{x}{a}{t}\)
+      \;|\; \(\letstmt{(x, y)}{a}{t}\)
+      \;|\; \(\ewhere{t}{L}\)
+
+      <\(L\)> ::= \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{t}, L\)
+
+      <\(\Gamma\)> ::= \(\cdot\) \;|\; \(\Gamma, \thyp{x}{A}{q}\)
+
+      <\(\ms{L}\)> ::= \(\cdot\) \;|\; \(\ms{L}, \lbl{\ell}[\Gamma](x: A)\)
+
+      <\(p\)> ::= 0 \;|\; 1
+
+      <\(q\)> ::= \(\varnothing\) 
+      \;|\; \(\taff\) 
+      \;|\; \(\trel\) 
+      \;|\; \(\tint\)
+    \end{grammar}
+  \end{center}
+  \caption{Grammar for \isotopessa, parametrized over a set of instructions \(f \in \mc{I}\)}
+  \Description{Grammar for isotope-SSA}
+  \label{fig:ssa-grammar}
+\end{figure}
 
 % \section{Proofs}
 
