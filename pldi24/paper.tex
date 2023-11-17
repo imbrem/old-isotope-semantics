@@ -826,6 +826,12 @@ labels, and \rle{cons-br}, which says that if \(L\) maps \(\ms{L}\) to either
       {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
       {\hasty{\Xi}{1}{a}{A}{\tint}}
       {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} 
+    \quad
+    \prftree[r]{\rle{let-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
+      {\hasty{\Xi}{0}{a}{A}{q}}
+      {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} 
     \\
     \prftree[r]{\rle{ite}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
@@ -833,12 +839,6 @@ labels, and \rle{cons-br}, which says that if \(L\) maps \(\ms{L}\) to either
       {\haslb{\Delta}{s}{\ms{L}}}
       {\haslb{\Delta}{t}{\ms{L}}}
       {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} 
-    \\
-    \prftree[r]{\rle{let-blk}}
-      {\csplits{\Gamma}{\Delta}{\Xi}}
-      {\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
-      {\hasty{\Xi}{0}{a}{A}{q}}
-      {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} 
     \\
     \prftree[r]{\rle{let2-blk}}
       {\csplits{\Gamma}{\Delta}{\Xi}}
@@ -885,9 +885,9 @@ judgements valid, i.e.
     \begin{tabular}{rl}
         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
         \(\issubst{\gamma}{\Theta}{\Gamma}\) &
-        \(\gamma\) is a substitution taking \(\Theta\) to \(\Gamma\) \\
+        \(\gamma: \ms{Var} \to \ms{Expr}\) is a substitution taking \(\Theta\) to \(\Gamma\) \\
         \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) &
-        \(\mc{L}\) is a label substitution taking \(\ms{L}\) to \(\ms{K}\)
+        \(\mc{L}: \ms{Label} \to \ms{Expr} \to \ms{Block}\) is a label substitution taking \(\ms{L}\) to \(\ms{K}\)
     \end{tabular}
     \endgroup
   \end{center}
@@ -898,8 +898,8 @@ judgements valid, i.e.
 
 \begin{figure}
   \begin{gather*}
-    \boxed{\gamma: \ms{Var} \to \ms{Expr}}
-    \\
+    % \boxed{\gamma: \ms{Var} \to \ms{Expr}}
+    % \\
     \prftree[r]{\rle{subst-nil}}
       {\issubst{\gamma}{\cdot}{\cdot}}
       \qquad
@@ -910,8 +910,8 @@ judgements valid, i.e.
       {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
       {\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
     \\
-    \boxed{\mc{L}: \ms{Label} \to \ms{Expr} \to \ms{Block} \text{ s.t. for fresh } x, [a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)}
-    \\
+    % \boxed{\mc{L}: \ms{Label} \to \ms{Expr} \to \ms{Block} \text{ s.t. for fresh } x, [a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)}
+    % \\
     \prftree[r]{\rle{lb-subst-nil}}
     {\lbsubst{\mc{L}}{\cdot}{\ms{K}}}
       \qquad
@@ -924,11 +924,12 @@ judgements valid, i.e.
     context is defined recursively to be the intersection of the linearities and
     quantities of its variables: \(\ms{lin}(\cdot) = \tint\),
     \(\ms{lin}(\Gamma, \thyp{x}{A}{q}) = \ms{lin}(\Gamma) \cap \ms{lin}(A) \cap
-    q\). 
+    q\). We assume that a substitution \(\ms{L}\) satisfies, for fresh \(x\),
+    \([a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)\).
     % We generally assume that for all but finitely many variables \(x\) and
     % labels \(\lbl{\ell}\), \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) =
     % \lbrb{\ell}{x}\). 
-  } 
+  }
   \Description{Typing rules for isotope-SSA substitutions}
   \label{fig:ssa-subst-typing}
 \end{figure}
@@ -1130,9 +1131,9 @@ premonoidal subcategory}, as follows:
   \textbf{central} if this generalizes to the case where only one of \(f, g\) is
   in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
 \end{definition} 
-Note that the set of symmetric premonoidal subcategories, monoidal
-subcategories, and central subcategories of a category \(\mc{C}\) are all closed
-under intersections, forming a complete meet-semilattice.
+% Note that the symmetric premonoidal subcategories, monoidal subcategories, and
+% central subcategories of a category \(\mc{C}\) are all closed under
+% intersections, forming a complete meet-semilattice.
 %
 % and therefore, in particular, form a complete meet-semilattice with shared
 % bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the
@@ -1225,7 +1226,7 @@ semantically equal to "\((\ms{nondet}(), \ms{nondet}())\)".
 
 Just like for regular premonoidal categories, we would like to distinguish
 between those morphisms that are "truly" central versus those which are just
-central "by accident". We can solve this the same way, by simply extending the
+central "by accident". We can do this the same way, by simply extending the
 notion of effectful category appropriately as follows:
 \begin{definition}[Susbtructural Effectful Category]
   An effectful category \(\mc{C}_1 \to \mc{C}_0\) is said to be
@@ -1241,24 +1242,15 @@ notion of effectful category appropriately as follows:
   % specifically are called \textbf{affine}, \textbf{relevant}, and
   % \textbf{intuitionistic} or \textbf{pure} respectively.
 \end{definition}
-We can obtain an example of a substructural effectful category quite easily by,
-considering the power-set monad above, applying the state transformer to yield
-the Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to S \to
-\mc{P}(A \times S)\). Letting \(\mc{C}_1^q = \ms{Rel}^q\) and defining
-\(\upg{R}{} = \lambda a, s. R(a) \times \{s\}\) to be the standard lifting
-operator, we can verify that this satisfies the axioms of a substructural
-effectful category. Note that here the \textit{central} morphisms are precisely
-those which do not read from or write to the state, and therefore which commute
-with all other morphisms.
-
-In general, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
-substructural premonoidal category, taking \(\mc{C}^{\ms{a}}\) and
-\(\mc{C}^{\ms{r}}\) to be the subcategory consisting only of the associators,
-unitors, and symmetry, and only the identity object to be affine and relevant.
-Similarly, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a
-substructural Cartesian category with all morphisms and both relevant and
-affine; in fact, this is the case \textit{if and only if} a category is
-Cartesian. We also have that:
+Applying the state transformer to the power-set monad of the previous discussion
+yields the Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to
+S \to \mc{P}(A \times S)\). Taking \(\mc{C}_1\) to be the original category
+\(\ms{Rel}\), where \(\upg{R}{} = \lambda a, s. R(a) \times \{s\}\) is the
+standard lifting operator, and taking \(\mc{C}_1^q = \ms{Rel}^q\), we can verify
+that this gives us the axioms of a substructural effectful category. Note that
+here the \textit{central} morphisms are precisely those which do not read from
+or write to the state, and therefore which commute with all other morphisms. In
+general,
 \begin{proposition}
   If \(\mc{C}\) is a substructural monoidal category then we can equip the
   Kleisli category \(\mc{C}_{\mb{T}}\) with the structure of a substructural
@@ -1269,6 +1261,15 @@ Cartesian. We also have that:
   particular, \(\upg{\cdot}{}: \mc{C} \to \mc{C}_{\mb{T}}\) is a substructural
   effectful category.
 \end{proposition}
+Moreover, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
+substructural premonoidal category, taking \(\mc{C}^{\ms{a}}\) and
+\(\mc{C}^{\ms{r}}\) to be the subcategory consisting only of the associators,
+unitors, and symmetry, and only the identity object to be affine and relevant.
+Similarly, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a
+substructural Cartesian category with all morphisms and objects both relevant
+and affine; in fact, this is the case \textit{if and only if} a category is
+Cartesian.
+
 
 \subsection{Distributivity}
 
