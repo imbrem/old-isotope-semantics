@@ -1673,22 +1673,24 @@ semantics of the associated control-flow graph,
 
 Now that we have a semantics for \isotopessa programs, we can show that it
 matches the syntax by showing that the syntactic and semantic notions of
-substitution coincide. We begin by giving a semantics for the judgement
-\(\issubst{\gamma}{\Theta}{\Gamma}\), which we will interpret as a pure morphism
-taking \(\dnt{\Theta}\) to \(\dnt{\Gamma}\), defined via the rules in Figure
-\ref{fig:ssa-subst-semantics}, which can simply be viewed as computing all
-\(\gamma(x)\) for \(\thyp{x}{A}{q}\) in \(\Gamma\). In particular, we interpret
-\rle{subst-nil} as the identity function, and \rle{subst-cons} by splitting the
-context via \(\dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}\), and then
-passing \(\dnt{\Theta_\Gamma}\) to the remainder of the substitution
-\(\dnt{\issubst{\gamma}{\Gamma}{\Theta_\Gamma}}\) and \(\dnt{\Theta_x}\) through
-\(\dnt{\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}}\) to yield \(\dnt{A}\). We give a
-similar semantics for label-substitutions: \rle{lb-subst-nil} is interpreted as
-the zero morphism \(0_{\dnt{\ms{K}}}: \mc{C}_0^\varnothing(\mb{0},
-\dnt{\ms{K}})\), while \rle{lb-subst-cons} takes in the coproduct \(\dnt{\ms{L}}
-+ \dnt{\Gamma} \otimes \dnt{A}\), sending the former to
-\(\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{A}}}\) and the latter to the denotation of
-\(\mc{L}(\lbl{\ell}, x)\).
+substitution coincide. We begin by giving a semantics for
+\(\issubst{\gamma}{\Theta}{\Gamma}\) in Figure \ref{fig:ssa-subst-semantics},
+which we will interpret as a pure morphism taking \(\dnt{\Theta}\) to
+\(\dnt{\Gamma}\). This morphism can simply be viewed as computing all
+\(\gamma(x)\) for \(\thyp{x}{A}{q}\) in \(\Gamma\); in particular, we interpret
+\rle{subst-cons} by splitting the context via
+\(\dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}\), passing
+\(\dnt{\Theta_\Gamma}\) to the remainder of the substitution
+\(\dnt{\issubst{\gamma}{\Gamma}{\Theta_\Gamma}}\) to compute the rest of the
+\(\gamma(y)\) in \(\Gamma\) recursively, and using \(\dnt{\Theta_x}\) to compute
+\(\gamma(x)\). Similarly, we interpret label-substitutions as morphisms from \(\dnt{\ms{L}}\) to
+\(\dnt{\ms{K}}\) which, for each input label in \(\ms{L}\), performs a
+computation targeting \(\ms{K}\). In particular, \rle{lb-subst-nil} is
+interpreted as the zero morphism \(0_{\dnt{\ms{K}}}:
+\mc{C}_0^\varnothing(\mb{0}, \dnt{\ms{K}})\), while \rle{lb-subst-cons} takes in
+the coproduct \(\dnt{\ms{L}} + \dnt{\Gamma} \otimes \dnt{A}\), sending the
+former to \(\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{A}}}\) and the latter to the
+denotation of \(\mc{L}(\lbl{\ell}, x)\).
 
 \begin{figure}
   \begin{gather*}
@@ -1711,25 +1713,24 @@ the zero morphism \(0_{\dnt{\ms{K}}}: \mc{C}_0^\varnothing(\mb{0},
   \label{fig:ssa-subst-semantics}
 \end{figure}
 
-Given this, we can now state the theorem of semantic substitution, which
-essentially states that the semantics of a substituted term or block is the same
-as the semantics of that term or block preceded by let-bindings corresponding to
-the variables in the substitution, which is itself the same as the semantics of
-the original term or block precomposed with the semantics of the substitution as
-given in Figure \ref{fig:ssa-subst-semantics}. Similarly, the semantics of a
-\textit{label-substituted} block is the same as the semantics of the original
-block \textit{postcomposed} with the semantics of that label-substitution.
-Stated formally, this becomes:
+We can now state the theorem of semantic substitution, which essentially states
+that the semantics of a substituted term or block is the same as the semantics
+of that term or block preceded by let-bindings corresponding to the variables in
+the substitution, which is the same as the semantics of the original term or
+block precomposed with the semantics of the substitution. Similarly, the
+semantics of a \textit{label-substituted} block is the same as the semantics of
+the original block \textit{postcomposed} with the semantics of that
+label-substitution. Stated formally, we obtain:
 \begin{theorem}[Semantic Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
   \begin{itemize}
     \item For all \(\hasty{\Gamma}{p}{a}{A}{q}\), 
-    \[
+    \(
       \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
       ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
       = \dnt{\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}}
       = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
-    \]
+    \)
     \item For all 
       \(\haslb{\Gamma}{t}{\ms{L}}\), 
       \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\), 
@@ -1757,10 +1758,10 @@ Stated formally, this becomes:
   Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
   \begin{itemize} 
     \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-    \[
+    \(
       \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
       = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-    \]
+    \)
     \item For all \(\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}\), we have
     \[
       \dnt{\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
