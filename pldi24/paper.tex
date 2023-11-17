@@ -1381,24 +1381,20 @@ We can now give a semantics for an \isotopessa dialect with types
   to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
 \end{itemize}
 We begin by giving a semantics for types and contexts in terms of objects in
-\(|\mc{C}|\) in Figure \ref{fig:ssa-type-semantics}: we map tensor products to
-tensor products, the unit type to the monoidal unit, and booleans to \(\mb{1} +
-\mb{1}\). Contexts are simply interpreted as the tensor products of the variable
-types which appear in them; in particular, the quantity annotations have
-\textit{no} effect on a context's semantics. We then give a semantics for
-structural judgements in Figure \ref{fig:ssa-structural-semantics}. In
-particular, we begin by interpreting the judgements that a type is affine (i.e.
-\(\tlin{A}{\taff}\)) or relevant (i.e. \(\tlin{A}{\trel}\)) as the drop morphism
-\(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, I)\) and split morphism
-\(\ms{drop}(\dnt{A}): \mc{C}(\dnt{A}, \dnt{A} \otimes \dnt{A})\) respectively.
-We can then interpret a context split \(\csplits{\Gamma}{\Delta}{\Xi}\) as a
-pure morphism \(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\)
-which partitions the variables as appropriate, splitting and dropping as
-necessary. We interpret a context weakening \(\cwk{\Gamma}{\Delta}\) as the
-associated split \(\csplits{\Gamma}{\Delta}{\cdot}\) postcomposed with a unitor.
-Finally, we interpret a label-set weakening \(\lwk{\ms{L}}{\ms{K}}\) as a pure
-morphism \(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where \rle{join-nil} is
-the identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
+Figure \ref{fig:ssa-type-semantics}: we map tensor products to tensor products,
+the unit type to the monoidal unit, and booleans to \(\mb{1} + \mb{1}\).
+Contexts are simply interpreted as the tensor products of the variable types
+which appear in them; in particular, quantity annotations have \textit{no}
+effect on a context's semantics. We proceed to give semantics for structural
+judgements in Figure \ref{fig:ssa-structural-semantics}. In particular, we
+interpret a context split \(\csplits{\Gamma}{\Delta}{\Xi}\) as a pure morphism
+\(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\) which
+partitions the variables as appropriate, splitting and dropping as necessary; a
+weakening \(\cwk{\Gamma}{\Delta}\) is interpreted as the associated split
+\(\dnt{\csplits{\Gamma}{\Delta}{\cdot}}\) postcomposed with a unitor. Finally, a
+label-set weakening \(\lwk{\ms{L}}{\ms{K}}\) is interpreted as a pure morphism
+\(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where \rle{join-nil} is the
+identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
 \(\dnt{\cwk{\Gamma}{\Delta}}\), and \rle{join-zero} is
 \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left injection.
 
@@ -1479,7 +1475,7 @@ the identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
       \\
     \boxed{\dnt{\cwk{\Gamma}{\Delta}}
       : \mc{C}_1^\tint(\dnt{\Gamma}, \dnt{\Delta})} 
-      \\
+      \qquad \qquad
       \dnt{\cwk{\Gamma}{\Delta}} 
       = \dnt{\csplits{\Gamma}{\Delta}{\cdot}};\rho 
       \\
@@ -1521,12 +1517,12 @@ the identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
       \\
     \dnt{\hasty{\Gamma}{p}{()}{\mb{1}}{q}}
       = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p} 
-      \\
+      \quad
     \dnt{\hasty{\Gamma}{p}{\ctt}{\mb{2}}{q}}
-      = \upg{(\dnt{\cwk{\Gamma}{\cdot}};\ctt)}{p}
-      \qquad
+      = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p};\iota_0
+      \quad
     \dnt{\hasty{\Gamma}{p}{\cff}{\mb{2}}{q}}
-      = \upg{(\dnt{\cwk{\Gamma}{\cdot}};\cff)}{p} 
+      = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p};\iota_1 
       \\
     \dnt{\hasty{\Gamma}{p}{\letexpr{x}{a}{e}}{B}{q}}
       = \upg{(
@@ -1554,11 +1550,8 @@ the identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
 We can now interpret a term \(\hasty{\Gamma}{p}{a}{A}{q}\) as a
 \textit{morphism} taking \(\dnt{\Gamma}\) into \(\dnt{A}\) with
 \textit{centrality} \(p\) and \textit{quantity} \(q\) (i.e., lying in
-\(\mc{C}_p^q\)). This means that, as expected, a central term becomes a central
-morphism in \(\mc{C}_1\), an affine term becomes an affine morphism, and a
-relevant term becomes a relevant morphism, and so, in particular, a pure term
-becomes a pure morphsim. Our rules for doing so are given in Figure
-\ref{fig:ssa-term-semantics}; we will abuse syntax slightly and write
+\(\mc{C}_p^q\)); our rules for doing so are given in Figure
+\ref{fig:ssa-term-semantics}. We will abuse syntax slightly and write
 \(\dnt{\text{"judgement"}}\) for \(\dnt{D}\), where \(D\) is a derivation of
 "judgement"; in general, it can be proven that the semantics of any two such
 derivations are equal. We also define the syntax sugar \(\upg{f}{p}\), where
@@ -1566,29 +1559,26 @@ derivations are equal. We also define the syntax sugar \(\upg{f}{p}\), where
 for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) is the identity functor on
 \(\mc{C}_1\).
 
-Our treatment of \rle{var} is quite standard: the term \(x\) types in \(\Gamma\)
-if all other variables in \(\Gamma\) and can be discarded, in which case the
-semantics is simply doing so, i.e. \(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\),
-lifting to \(\mc{C}_0\) as necessary. Similarly, to type a function application
-\rle{var}, we first take \(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which is
-guarnateed to be central, lift it to the appropriate category \(\mc{C}_p\), and
-then simply postcompose it with the denotation of \(f\). \rle{pair} is handled
-by composing the context split \(\csplits{\Gamma}{\Delta}{\Xi}\) taking the
-tensor product of the components \(\dnt{\hasty{\Delta}{1}{a}{A}{q}}\),
-\(\dnt{\hasty{\Xi}{1}{b}{B}{q}}\); this is well-defined since both components
-are central and \(\mc{C}_1\) is monoidal. We then lift the result to the
-appropriate \(\mc{C}_p\). The semantics of \rle{unit} is simply dropping the
-entire context; \(\dnt{\cwk{\Gamma}{\cdot}}\), while \rle{true}, and \rle{false}
-are each handled by first dropping the context and then postcomposing with the
-appropriate constant; in all cases, this is followed by lifting to \(\mc{C}_p\).
-Finally, \rle{let} and \rle{let2} are handled by first splitting the context,
-then passing the right hand component to the semantics of the bound term
+Our treatment of \rle{var} is quite standard: semantics of \(x\) is simply
+discarding all other variables in \(\Gamma\), i.e.
+\(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\). Similarly, to type a function
+application \rle{var}, we first take \(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which
+is guaranteed to be central, lift to \(\mc{C}_p\), and then simply postcompose
+with \(f\). \rle{pair} is handled by precomposing the context split
+\(\csplits{\Gamma}{\Delta}{\Xi}\) with the tensor product of the components
+\(\dnt{\hasty{\Delta}{1}{a}{A}{q}}\), \(\dnt{\hasty{\Xi}{1}{b}{B}{q}}\); this is
+well-defined since both components are central and \(\mc{C}_1\) is monoidal. The
+semantics of \rle{unit} is simply dropping the entire context, while \rle{true}
+and \rle{false} are interpreted as first dropping the context and then injecting
+into the appropriate branch of the boolean type. Finally, \rle{let} and
+\rle{let2} are handled by first splitting the context, then passing the right
+hand component to the semantics of the bound term
 \(\dnt{\hasty{\Xi}{1}{a}{A}{q}}\) or \(\dnt{\hasty{\Xi}{1}{a}{A \otimes
 B}{q}}\), and then, lifting to \(\mc{C}_p\) as necessary, after reassociating
 with \(\alpha\), passing everything to the inner term \(\dnt{\hasty{\Delta,
 \thyp{x}{A}{q}}{p}{e}{B}{q}}\) or \(\dnt{\hasty{\Delta, \thyp{x}{A}{q},
-\thyp{y}{B}{q}}{p}{e}{C}{q}}\). Note that this inner term is not necessarily
-central, unlike the bound term!
+\thyp{y}{B}{q}}{p}{e}{C}{q}}\). \
+% Note that this inner term is not necessarily central, unlike the bound term!
 
 \begin{figure}
   \begin{gather*}
@@ -1638,31 +1628,24 @@ central, unlike the bound term!
   \label{fig:ssa-block-semantics}
 \end{figure}
 
-Similarly to terms, \textit{blocks} \(\haslb{\Gamma}{t}{\ms{L}}\) are
-interpreted as \textit{impure} morphisms from \(\dnt{\Gamma}\) to \(\ms{L}\):
-here \(\Gamma\) represents all the variables live on entry to the block, while
-\(\ms{L}\) represents all the external blocks which \(t\) might branch to, each
-annotated with their live variables and their arguments; our rules are given in
-Figure \ref{fig:ssa-block-semantics}. Our semantics for break statements
-\(\lbrb{\ell}{a}\) is as follows: we begin by splitting the context into live
-variables which pass into dominated blocks and variables used in the argument
-via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\). We then pass the latter into the
-semantics of the argument (which is pure, and therefore must be lifted to
-\(\mc{C}_0\)) \(\dnt{\hasty{\Gamma}{1}{a}{A}{\tint}}\), with the result and live
-variables re-associated and passed into
-\(\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}\) to obtain the desired target. The
-semantics of if-statements are similarly given by first splitting the context
-via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\) into variables live in the branches,
-\(\Delta\), and variables appearing in the discriminant, \(\Xi\); the latter of
-which are passed into the lifted pure morphism
-\(\dnt{\hasty{\Delta}{1}{b}{\mb{2}}{\tint}}\). The "if" statement itself is then
-simply an application of the distributor \(\delta: A \otimes (\mb{1} + \mb{1})
-\to A + A\), with each branch passed to the semantics of its corresponding block
-\(\dnt{\haslb{\Xi}{s}{\ms{L}}}\), \(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The
-semantics of \rle{let-blk} and \rle{let2-blk} are analogous to those of
-\rle{let} and \rle{let2} in the term case, except that now the bound term \(a\)
-is allowed to be impure (and therefore in particular does not need to be
-upgraded).
+We intrpret \textit{blocks} \(\haslb{\Gamma}{t}{\ms{L}}\) as \textit{impure}
+morphisms from \(\dnt{\Gamma}\) to \(\ms{L}\): \(\Gamma\) represents all the
+variables live on entry to the block, while \(\ms{L}\) represents all valid
+targets, each annotated with live variables and an argument type; our rules are
+given in Figure \ref{fig:ssa-block-semantics}. \rle{br} is interpreted by first
+splitting the context via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\), and then
+using \(\Xi\) to compute the target's argument. The result, along the unchanged
+live variables \(\Delta\), is then passed to
+\(\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}\) to obtain the desired target.
+Similarly, we interpret \rle{ite} by first splitting the context via
+\(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\) and using \(\Xi\) to compute the
+discriminant. The "if" statement itself is then simply an application of the
+distributor \(\delta: \dnt{\Delta} \otimes (\mb{1} + \mb{1}) \to \dnt{\Delta} +
+\dnt{\Delta}\); we pass the left of the coproduct to the true branch
+\(\dnt{\haslb{\Xi}{s}{\ms{L}}}\) and the right to the false branch
+\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The semantics of \rle{let-blk} and
+\rle{let2-blk} are analogous to those of \rle{let} and \rle{let2}, except that
+now the bound term \(a\) is allowed to be impure.
 
 Finally, we must give semantics for \rle{where}. To do so, we begin by giving a
 interpreting a control-flow graph \(\lhaslb{\ms{L}}{L}{\ms{K}}\) as a morphism
