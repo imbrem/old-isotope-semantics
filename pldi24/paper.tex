@@ -167,30 +167,24 @@
 \orcid{0000-0002-6905-1303}
 
 \begin{abstract}
-  Static single-assignment form (SSA) is one of the most widely used
-  compiler intermediate representations. In this paper, we build on
-  the observation that SSA can be seen as a language of basic blocks
-  with arguments (or first-order procedures tail-calling one another)
-  to give a type theory for SSA programs. Notably, the type system and
-  equational theory of our language is designed to support
-  substituting impure terms for variables, which makes it easy to
-  validate compiler optimisations such as hoisting assignments out of
-  loops.
+  Static single-assignment form (SSA) is one of the most widely used compiler
+  intermediate representations. In this paper, we build on the observation that
+  SSA can be seen as a language of basic blocks with arguments (or first-order
+  procedures tail-calling one another) to give a type theory for SSA programs.
+  Notably, the type system and equational theory of our language is designed to
+  support substituting impure terms for variables, which makes it easy to
+  validate compiler optimisations such as hoisting assignments out of loops.
 
-  We give a categorical axiomatisation of our type theory and show
-  that our equational theory is sound with respect to it. Our
-  categorical semantics generalises the notions of premonoidal
-  category and Freyd category to support substructural features,
-  including both support for substructural types, as well as
-  F\"{u}hrmann's notion of central, copyable and discardable
-  morphisms.
-
+  We give a categorical axiomatisation of our type theory and show that our
+  equational theory is sound with respect to it. Our categorical semantics
+  generalises the notions of premonoidal category and Freyd category to support
+  substructural features, including both support for substructural types, as
+  well as F\"{u}hrmann's notion of central, copyable and discardable morphisms.
   Finally, we exhibit a number of concrete models of our categorical
-  axiomatisation, including in particular a model of TSO-style weak
-  memory based on the semantics of \citet{sparky}. This demonstrates
-  that our approach is strong enough to connect machine models of
-  concurrency to compiler IRs supporting a rich collection of sound
-  rewrites.
+  axiomatisation, including in particular a model of TSO-style weak memory based
+  on the semantics of \citet{sparky}. This demonstrates that our approach is
+  strong enough to connect machine models of concurrency to compiler IRs
+  supporting a rich collection of sound rewrites.
 \end{abstract}
 
 \begin{CCSXML}
@@ -471,8 +465,8 @@ such as state plus printing, we also show how more challenging semantics such as
 the TSO semantics for weak memory also fit into our framework. This thus gives
 rise to an SSA-based IR with support for weak memory operations, which is fully
 semantically-justified.
-\item Our weak memory semantics and our results about Elgot monads are
-formalised in the Lean theorem prover.
+% \item Our weak memory semantics and our results about Elgot monads are
+% formalised in the Lean theorem prover.
 \end{itemize}
 
 \section{SSA Syntax}
