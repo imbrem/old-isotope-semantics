@@ -1775,13 +1775,12 @@ label-substitution. Stated formally, we obtain:
 \subsection{Optimisations}
 
 Because we have a denotational semantics, it is easy to validate equations
-between terms, blocks, and CFGs.
-
-Even the basic proof of the soundness of substitution already lets us prove the
-soundness of many fundamental compiler optimisations, such as global value
-numbering (let-introduction for pure expressions), some forms of dead code
-elimination (i.e., eliminating unused affine bindings), and strength reduction
-with loop hoisting (let-introduction for relevant expressions). 
+between terms, blocks, and CFGs. Even the basic proof of the soundness of
+substitution already lets us prove the soundness of many fundamental compiler
+optimisations, such as global value numbering (let-introduction for pure
+expressions), some forms of dead code elimination (i.e., eliminating unused
+affine bindings), and strength reduction with loop hoisting (let-introduction
+for relevant expressions). 
 
 Substitution only applies to central terms, because those are the only terms for
 which substitution is sound. Furthermore, there are many other optimisations
