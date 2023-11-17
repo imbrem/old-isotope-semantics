@@ -923,24 +923,20 @@ We can now state some of the basic metatheoretic properties of \isotopessa. We
 begin with weakening, which we state in our setting as follows:
 \begin{lemma}[Weakening] \
   \begin{itemize}
-    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
+    \item If \(\cwk{\Gamma}{\Delta}\), \(q \subseteq r\), and
     \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
-    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{L}}\)
-    \item If \(\lwk{\ms{L}}{\ms{K}}\), then:
-    \begin{itemize}
-      \item If \(\haslb{\Gamma}{t}{\ms{L}}\) then \(\haslb{\Gamma}{t}{\ms{K}}\)
-      \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\) then \(\lhaslb{\ms{W}}{L}{\ms{L}}\)
-    \end{itemize}
+    \item If \(\cwk{\Gamma}{\Delta}\) and \(\haslb{\Delta}{t}{\ms{L}}\), then
+    \(\haslb{\Gamma}{t}{\ms{L}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then \(\haslb{\Gamma}{t}{\ms{K}}\)
+    % \item If \(\lwk{\ms{L}}{\ms{K}}\) and \(\lhaslb{\ms{W}}{L}{\ms{L}}\) then
+    % \(\lhaslb{\ms{W}}{L}{\ms{K}}\)
   \end{itemize}
 \end{lemma}
-That is, we can do the following and still keep our typing judgements valid
-\begin{itemize}
-  \item Add unused \textit{affine} variables
-  \item \textit{Reduce} the quantity of an expressions type
-  \item Add arbitrary unused labels, and remove unused \textit{affine} variables
-  from existing labels
-\end{itemize}
-This can be proved by a relatively straightforward mutual induction.
+That is, we can add unused \textit{affine} variables to a context,
+\textit{reduce} the quantity of an term's type, add arbitrary unused labels, and
+remove \textit{affine} variables from existing labels and still keep our typing
+judgements valid. This can be proved by a relatively straightforward mutual
+induction.
 
 \begin{figure}
   \begin{center}        
@@ -1143,7 +1139,7 @@ general, potentially nonterminating control flow.
 
 \subsection{Substructural Categories}
 
-We begin with some basic definitions:
+We begin with some standard definitions:
 \begin{definition}[Binoidal Category] 
   A \textbf{binoidal category} \(\mc{C}\) is a category equipped with a binary
   operation on objects \(\otimes: \mc{C} \times \mc{C} \to \mc{C}\) which is
@@ -1157,21 +1153,16 @@ g;f \otimes B'\); we say \(f\) is \textbf{central} if, for all \(g\), \(f
 simply write \(f \otimes g\), \(g \otimes f\) respectively.
 \begin{definition}[Premonoidal Category] 
   A \textbf{premonoidal category} is a binoidal category with an identity object
-  \(I: \mc{C}\) such that
-  \begin{itemize}
-    \item There exist central natural isomorphisms \(\lambda_A: I \otimes A
-    \simeq A\) (the \textbf{left unitor}), \(\rho_A: A \otimes I \simeq A\) (the
-    \textbf{right unitor})
-    \item There exists a central isomorphism \(\alpha_{A, B, C}: (A \otimes B)
-    \otimes C \simeq A \otimes (B \otimes C)\) (the \textbf{associator})
-    \item Satisfying the \textbf{pentagon} and \textbf{triangle laws}; see e.g.
-    \citet{maclane:71}.
-  \end{itemize}
-  We say a premonoidal category is \textbf{symmetric} if it is equipped with a
-  central natural isomorphism \(\sigma_{A, B}: A \otimes B \simeq B \otimes A\)
-  (the \textbf{symmetry}) satisfying the \textbf{hexagon law} (see
-  \cite{maclane:71}). We say a premonoidal category is \textbf{monoidal} if
-  every morphism is central.
+  \(I: \mc{C}\) such that there exist central natural isomorphisms \(\lambda_A:
+  I \otimes A \simeq A\) (the \textbf{left unitor}), \(\rho_A: A \otimes I
+  \simeq A\) (the \textbf{right unitor}), and \(\alpha_{A, B, C}: (A \otimes B)
+  \otimes C \simeq A \otimes (B \otimes C)\) (the \textbf{associator})
+  satisfying the \textit{pentagon} and \textit{triangle laws} (see e.g.
+  \citet{maclane:71}). We say a premonoidal category is \textbf{symmetric} if it
+  is equipped with a central natural isomorphism \(\sigma_{A, B}: A \otimes B
+  \simeq B \otimes A\) (the \textbf{symmetry}) satisfying the \textit{hexagon
+  law} (see \cite{maclane:71}). We say a premonoidal category is
+  \textbf{monoidal} if every morphism is central.
 \end{definition}
 One issue with the notion of a premonoidal category is that it is unclear what
 exactly a premonoidal functor should be: if we want them to compose, we would
@@ -1190,16 +1181,18 @@ do that, we introduce the notion of an \textit{effectful category} as follows:
   is Cartesian.
 \end{definition}
 Unfortunately, the notion of "purity" given by an effectful category only allows
-us to perform relatively weak optimistions in the presence of effects. To
-remedy this, we want to be able to make a finer distinction between morphisms
-which are merely \textit{central} and those which are also \textit{relevant}
-(i.e., copying the input and applying them twice is the same as applying them
-once and copying the output) and/or \textit{affine} (i.e., applying them and
-discarding the result is the same as never doing them at all). Doing so also
-allows us to add the capability of \textit{distinguishing} between objects which
-are affine, relevant, neither or both, enabling us to reason about substructural type systems categorically.
+us to perform relatively weak optimistions in the presence of effects. To remedy
+this, we want to be able to make a finer distinction between morphisms which are
+merely \textit{central} and those which are also \textit{relevant} (i.e.,
+copying the input and applying them twice is the same as applying them once and
+copying the output) and/or \textit{affine} (i.e., applying them and discarding
+the result is the same as never doing them at all). Doing so also allows us to
+add the capability of \textit{distinguishing} between objects which are affine,
+relevant, neither or both, enabling us to reason about substructural type
+systems categorically.
 
-To do this, we begin by introducing the notion of a \textit{symmetric premonoidal subcategory}, as follows:
+To do this, we begin by introducing the notion of a \textit{symmetric
+premonoidal subcategory}, as follows:
 \begin{definition}[(Symmetric) Premonoidal Subcategory]
   Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory
   \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is
@@ -1664,16 +1657,17 @@ relevant term becomes a relevant morphism, and so, in particular, a pure term
 becomes a pure morphsim. Our rules for doing so are given in Figure
 \ref{fig:ssa-term-semantics}; we will abuse syntax slightly and write
 \(\dnt{\text{"judgement"}}\) for \(\dnt{D}\), where \(D\) is a derivation of
-"judgement"; this is justified by the coherence lemma:
-\begin{lemma}[Coherence] \
-  \begin{itemize}
-    \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \csplits{\Gamma}{\Delta}{\Xi}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \cwk{\Gamma}{\Delta}\), \(\dnt{D_1} = \dnt{D_2}\)
-    \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
-  \end{itemize}
-\end{lemma}
+"judgement"; in general, it can be proven that the semantics of any two such
+derivations are equal.
+% \begin{lemma}[Coherence] \
+%   \begin{itemize}
+%     \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
+%     \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
+%     \item Given any two derivations \(D_1, D_2: \csplits{\Gamma}{\Delta}{\Xi}\), \(\dnt{D_1} = \dnt{D_2}\)
+%     \item Given any two derivations \(D_1, D_2: \cwk{\Gamma}{\Delta}\), \(\dnt{D_1} = \dnt{D_2}\)
+%     \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
+%   \end{itemize}
+% \end{lemma}
 Our treatment of \rle{var} is quite standard: the term \(x\) types in \(\Gamma\)
 if all other variables in \(\Gamma\) and can be discarded, in which case the
 semantics is simply doing so, i.e. \(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\),
@@ -2023,14 +2017,14 @@ We now give a few basic definitions relevant to monads over \(\mb{Set}\):
 \end{definition}
 Some important examples of submonads include:
 \begin{enumerate}
-  \item The \textbf{unit submonad} \(\ms{pure}(\mb{T})\) of every monad
-  \(\mb{T}\) with \(\ms{pure}(\mb{T})\;A = \{\eta_A\;a \mid a \in A\}\);
-  similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\).
+  \item The \textbf{unit submonad} \(\eta\) of every monad \(\mb{T}\) with
+  \(\eta(A) = \{\eta_A\;a \mid a \in A\}\).
+  %; similarly, \(\mb{T}\) is itself a submonad of \(\mb{T}\). 
   \item Given submonads \(\mb{S}_i\) of \(\mb{T}\), their elementwise
   intersections \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are
-  submonads, forming a complete meet-semilattice with bottom element
-  \(\ms{pure}(\mb{T})\) and top element \(\mb{T}\); this induces a complete
-  lattice in the standard manner.
+  submonads, forming a complete meet-semilattice with bottom element \(\eta\)
+  and top element \(\mb{T}\),
+  % ; this induces a complete lattice in the standard manner.
   \item In particular, the intersection of a relevant/affine/commutative
   submonad and another submonad is relevant/affine/commutative respectively.
   Since every commutative submonad induces a central subcategory of the Kleisli
@@ -2115,9 +2109,9 @@ we can define the category \(\ms{Sep}\) to have morphisms
     \mid \forall \phi: \ms{Heap} \to \ms{Prop}, \ms{hoare}\;f\;(\Phi \ast \phi)\;(\Psi \ast \phi)\}
 \end{equation}
 where
-\begin{equation}
+\(
   \ms{hoare}\;f\;\Phi\;\Psi = \forall a\;h. \Phi\;a\;h \implies \forall \iota_0\;(b, h') \in f\;a\;h. \Psi\;b\;h'
-\end{equation}
+\)
 is the usual partial correctness triple definition and the separating
 conjunction of heap-predicates is defined as usual to be 
 \begin{equation}
@@ -2136,10 +2130,11 @@ We can naturally define a tensor product on objects \((A, \Phi) \otimes (B,
   \item Monoidal unit \((\mb{1}, \ms{emp})\), where \(\ms{emp}\) is the
   predicate which holds only for the empty heap
   \item Associators and inverse associators given by \(\alpha_{(A, \Phi), (B,
-  \Psi), (C, \Theta)} = \alpha_{A, B, C}\), which are valid since \(\ast\) is
-  associative
+  \Psi), (C, \Theta)} = \alpha_{A, B, C}\)
+  %, which are valid since \(\ast\) is associative
   \item Unitors and inverse unitors given by \(\lambda_{(A, \Phi)} =
-  \lambda_A\), \(\rho_{(A, \Phi)} = \rho_A\), which are valid since \(\ms{emp}\)
+  \lambda_A\), \(\rho_{(A, \Phi)} = \rho_A\)
+  %, which are valid since \(\ms{emp}\)
   is the unit of \(\ast\)
   \item \((C, \Theta) \otimes f = C \times f\) and \(f \otimes (C, \Theta) = f
   \times C\), which are valid definitions by the frame rule
@@ -2147,14 +2142,12 @@ We can naturally define a tensor product on objects \((A, \Phi) \otimes (B,
 equips \(\ms{Sep}\) with the structure of a premonoidal category. We can give \(\ms{Sep}\) the structure of a substructural effectful category by taking:
 \begin{itemize}
   \item Affine objects to be precisely those for which \(\ms{drop} =
-  \upg{\lambda a. ()}{} \in \ms{Sep}((A, \Phi), (\mb{1}, \ms{emp}))\), which for
-  this logic corresponds to pairs \((A, \Phi)\) where \(\Phi\) does not depend
-  on the heap.
-  \item Relevant objects to be precisely those for which \(\ms{split} =
-  \upg{\lambda a. (a, a)} \in \ms{Sep}((A, \Phi), (A, \Phi * \Phi))\), again in
-  this case those for which \(\Phi\) does not depend on the heap.
-  \item Central morphisms to be those which do not print, diverge, \textit{or} modify the
-  heap. We will consider how to relax this condition later.
+  \upg{\lambda a. ()}{} \in \ms{Sep}((A, \Phi), (\mb{1}, \ms{emp}))\), and
+  relevant objects to be precisely those for which \(\ms{split} = \upg{\lambda
+  a. (a, a)} \in \ms{Sep}((A, \Phi), (A, \Phi * \Phi))\), which for this logic
+  corresponds to pairs \((A, \Phi)\) where \(\Phi\) does not depend on the heap.
+  \item Central morphisms to be those which do not print, diverge, \textit{or}
+  modify the heap. % We will consider how to relax this condition later.
   \item Relevant and affine morphisms to be the lifts of relevant/affine
   morphisms in \(\ms{Print}\)
 \end{itemize}
@@ -2162,22 +2155,21 @@ equips \(\ms{Sep}\) with the structure of a premonoidal category. We can give \(
 \begin{equation}
   f \in \ms{Sep}((A, \Phi), (B + A, [\Psi, \Phi])) \implies f^\dagger \in \ms{Sep}((A, \Phi), (B, \Psi))
 \end{equation}
-This implies that \(\ms{Sep}\) is an \isotopessa model supporting the following interesting operations
+This implies that \(\ms{Sep}\) is an \isotopessa model supporting the following
+interesting operations:
 \begin{itemize}
   \item \(\ms{coe}: \mc{I}^\tint_1((A, \Phi), (A, \Psi))\) where \(\forall a,
   \Phi\;a \implies \Psi\;a\), implemented by the identity morphism
   \item \(\ms{print}: \mc{I}^\varnothing_0((\ms{Byte}^*, \ms{emp}), (\mb{1},
-  \ms{emp}))\)
-  \item \(\ms{rand}: \mc{I}^\taff_1((\mb{1}, \ms{emp}), (A, \ms{emp}))\) for \(A\) nonempty
+  \ms{emp}))\) and \(\ms{rand}: \mc{I}^\taff_1((\mb{1}, \ms{emp}), (A, \ms{emp}))\) for
+  \(A\) nonempty
   \item \(\ms{set}: \mc{I}^\varnothing_0((\nats \times \nats, \lambda (\ell,
   \cdot). \exists v. \ell \mapsto v), (\nats, \lambda \ell. \exists v. \ell
-  \mapsto v))\), where \(\ms{set}\) is modified slightly to return the address
-  at which the value passed in was stored to overcome a lack of dependency
-  between the source and target objects.
-  \item \(\ms{get}: \mc{I}^\varnothing_0((\nats, \lambda \ell. \exists v. \ell \mapsto v), (\nats, \lambda \ell. \exists v. \ell \mapsto v))\)
+  \mapsto v))\) and \(\ms{get}: \mc{I}^\varnothing_0((\nats \times \nats,
+  \lambda (-, \ell). \exists v. \ell \mapsto v), (\nats, \lambda \ell. \exists
+  v. \ell \mapsto v))\), which are modified slightly to return the input address.
   \item \(\ms{alloc}: \mc{I}^\varnothing_0((\nats, \ms{emp}), (\nats, \lambda
-  \ell. \exists v. \ell \mapsto v))\)
-  \item \(\ms{free}: \mc{I}^\varnothing_0((\nats, \lambda \ell. \exists v. \ell \mapsto v), (\mb{1}, \ms{emp}))\)
+  \ell. \exists v. \ell \mapsto v))\) and \(\ms{free}: \mc{I}^\varnothing_0((\nats, \lambda \ell. \exists v. \ell \mapsto v), (\mb{1}, \ms{emp}))\)
 \end{itemize}
 We can clearly see that this is a refinement type system in the sence of
 \cite{mellies-ftrs}: in particular, there is a forgetful functor \((A, \Phi)
@@ -2225,19 +2217,24 @@ and \(Q\) incomparable). Note in both cases the monoidal unit is \(\{\delta\}\),
 since we only consider nonempty pomsets but allow the removal of finitely many
 ticks.
 
-Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\), where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega \to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on finite pomsets. 
+Given a partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n
+\in N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by
+the function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\),
+where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In
+particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega
+\to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on
+finite pomsets. 
 
-We define a \textbf{program order pomset} to be a pomset with \(\mc{A}_{\ms{PO}} =
-\mc{A}_w \cup \mc{A}_r \cup \{\delta\}\), where \(\mc{A}_r\) consists of
+We define a \textbf{program order pomset} to be a pomset with \(\mc{A}_{\ms{PO}}
+= \mc{A}_w \cup \mc{A}_r \cup \{\delta\}\), where \(\mc{A}_r\) consists of
 \textit{reads} of the form \(x = v\) and \(\mc{A}_w\) consists of
 \textit{writes} of the form \(x := v\) for locations \(x\) and values \(v \in
 \ms{Word}\). We define the \textbf{program order monad} \(\ms{PO}\;A =
-\ms{Traces}\;\Sigma\;A\), where \(\Sigma\) is the stream action on finite
+\ms{Traces}\;\Sigma\;A\), where \(\Sigma\) is taken as a stream action on finite
 program order pomsets given by sequential composition for \(\mc{A}\). This
 yields an \isotopessa model with support for concurrent read and write
 operations \(\ms{read}_x: \mc{I}^\varnothing_0(\mb{1}, \ms{Word})\),
-\(\ms{write}_x: \mc{I}^\varnothing_0(\ms{Word}, \mb{1})\) with
-semantics
+\(\ms{write}_x: \mc{I}^\varnothing_0(\ms{Word}, \mb{1})\) with semantics
 \begin{equation}
   \dnt{\ms{read}_x} = R_x^{\ms{PO}} = \lambda (). \{(v, \{x = v\}) | v \in \ms{Word}\}
   \qquad
@@ -2254,8 +2251,8 @@ reason about each program fragment individually, while still allowing us to add
 arbitrary external state (e.g. another program concurrently modifying the heap)
 before finally considering the execution of an entire program.
 
-On that note, we support the parallel execution of multiple (potentially
-nonterminating) morphisms as follows:
+On that note, we can define the \textit{parallel execution} of two morphisms as
+follows:
 \begin{equation}
   \begin{aligned}
   f_0 || f_1 = \lambda (a_0, a_1). 
@@ -2265,24 +2262,19 @@ nonterminating) morphisms as follows:
   \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid \iota_1\;\alpha_0 \in f_0\;a_0 \land \iota_0 (a_1, \alpha_1) \in f_1\;a_1\}: \ms{Set}_{\ms{PO}}(A \otimes A', B \otimes B')
   \end{aligned}
 \end{equation}
-It's tempting to try to use this as a tensor product of morphisms and so
-graduate to a bona fide monoidal category rather than our current premonoidal
-setting, since spatial concurrency is one of the headline use-cases of the
-former, but unfortunately, sliding still fails:
-\(
-  (W_x^{\ms{PO}} || \ms{id}) ; (\ms{id} || W_y^{\ms{PO}})
-  \neq (\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}} || \ms{id})
-\),
-since the left-hand side will emit the pomset \([x := a, y := b]\) while the
-right-hand side will emit the pomset \([y := b, x := a]\). If we did want this
-behaviour, we'd need to have a significantly more sophisticated model of
-composition which effectively takes nontermination into account, which we will
-leave to future work.
+It's tempting to try to use this as a tensor product of morphisms to obtain a
+monoidal (rather than preomonoidal) category, but unfortunately, sliding still
+fails: \((W_x^{\ms{PO}} || \ms{id}) ; (\ms{id} || W_y^{\ms{PO}})\) emits the
+pomset \([x := a, y := b]\), while \(\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}}
+|| \ms{id})\) emits the pomset \([y := b, x := a]\). 
+% If we did want this behaviour, we'd need to have a significantly more
+% sophisticated model of composition which effectively takes nontermination into
+% account, which we will leave to future work.
 
 To graduate from SC concurrency to a genuine, if maximally simple, weak memory
 model, we will to introduce a \textit{buffer} of write actions. We will
 implement TSO ordering by buffering all our writes, in which case they are only
-visible to the local thread. On the other hand, reads events will first attempt
+visible to the local thread. On the other hand, read events will first attempt
 to read from the buffer, and, if there is no corresponding write in the buffer,
 will read an arbitrary value, in both cases pushing an event to the global
 pomset. At any point, we may choose to \textit{flush} some of the writes in
@@ -2290,26 +2282,29 @@ buffer to the global pomset of events. In particular, we will introduce the set
 \(\mc{A}_b = \{(\bufloc{x} := v)\}\) of \textit{buffer write actions}, where an
 action \(\bufloc{x} := v\) by a thread denotes adding a write \(x := v\) to the
 thread's write buffer. We may then define the set of TSO actions
-\(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup \mc{A}_b\). A buffer will be defined
-to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\), which we will interpret
-as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index (with the empty list corresponding to \(\{\delta\}\)). In particular, we
-define the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\),
-where \(\Sigma\) is the stream action of finite pomsets over
-\(\mc{A}_{\ms{TSO}}\) on pomsets over \(\mc{A}_{\ms{TSO}}\); we can view
-\(\ms{PO}\) as a submonad of this monad in the standard manner.
+\(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup \mc{A}_b\); a pomset over this set
+of actions is called a \textbf{TSO pomset}. A buffer will be defined to be a
+list of write actions \(\ms{Buf} = \mc{A}_b^*\), which we will interpret as
+linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index (with the empty list
+corresponding to \(\{\delta\}\)). In particular, we define the monad \(\ms{TSO}
+= \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\), where \(\Sigma\) is taken as a
+the stream action of finite TSO pomsets on TSO pomsets. We can view
+\(\ms{PO}\) as a submonad of this monad.
 
 Given a buffer \(\ms{Buf}\), we can define the result of reads \([\cdot]_x:
-\ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the buffer as follows:
-\begin{equation}
-  (L;\{\bufloc{x} := v\})[x] = v
-  \qquad
+\ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the buffer by induction to be:
+\(
+  (L;\{\bufloc{x} := v\})[x] = v,
+\),
+\(
   (L;\{\bufloc{y} := v\})[x] = L[x]
-  \qquad
+\),
+\(
   [][x] = \bot
-\end{equation}
+\).
 Note that writes at the \textit{end} of the buffer are prioritized, since later
-writes overwrite earlier ones! The semantics of reads and writes are then given
-by
+writes overwrite earlier ones! The semantics of reads and writes can then be
+given by
 \begin{equation}
   \begin{aligned}
   \dnt{\ms{read}_x} = R_x^{\ms{TSO}} 
@@ -2324,10 +2319,15 @@ where buffer flushing is implemented via the morphism (called \(\ms{split}\) in
   \ms{pflush} = \lambda ()\;L. \{((), R, \alpha) | L = \alpha;R\}
   : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
 \end{equation}
-To be able to perform synchronization, we will also need to introduce a \(\ms{fence}: \mc{I}^\varnothing_0(\mb{1}, \mb{1})\) instruction, which simply causes all actions before the fence to be observed before any actions after the fence. For \(\ms{TSO}\), implementing this is as simple as flushing the buffer, giving
-\begin{equation}
+To be able to perform synchronization, we will also need to introduce a
+\(\ms{fence}: \mc{I}^\varnothing_0(\mb{1}, \mb{1})\) instruction, which simply
+causes all actions before the fence to be observed before any actions after the
+fence. For \(\ms{TSO}\), implementing this is as simple as flushing the buffer,
+i.e., we define
+\(
   \dnt{\ms{fence}} = \lambda ()\;L. \{((), [], L;\{\delta\})\}
-\end{equation}
+\).
+
 We can now define the parallel composition of morphisms in a "fork-join" style
 as follows: we first flush the buffer completely (i.e., taking it and sticking
 it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel
