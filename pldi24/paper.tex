@@ -2177,27 +2177,25 @@ given by
     &= \ms{pflush};(\lambda v\;L. \{(v, (L;\{\bufloc{x} := v\}), \{x := v\})\});\ms{pflush}
   \end{aligned}
 \end{equation}
-where buffer flushing is implemented via the morphism (called \(\ms{split}\) in
-\cite{sparky})
-\begin{equation}
-  \ms{pflush} = \lambda ()\;L. \{((), R, \alpha) | L = \alpha;R\}
-  : \ms{Set}_{\ms{TSO}}(\mb{1}, \mb{1})
-\end{equation}
-To be able to perform synchronization, we will also need to introduce a
-\(\ms{fence}: \mc{I}^\varnothing_0(\mb{1}, \mb{1})\) instruction, which simply
-causes all actions before the fence to be observed before any actions after the
-fence. For \(\ms{TSO}\), implementing this is as simple as flushing the buffer,
-i.e., we define
+where buffer flushing is implemented via the morphism 
+\(
+  \ms{pflush}_A = \lambda a\;L. \{(a, R, \alpha) | L = \alpha;R\}
+  : \ms{Set}_{\ms{TSO}}(A, A)
+\)
+(called \(\ms{split}\) in \cite{sparky}). To be able to perform synchronization,
+we will also need to introduce a \(\ms{fence}: \mc{I}^\varnothing_0(\mb{1},
+\mb{1})\) instruction, which simply causes all actions before the fence to be
+observed before any actions after the fence. For \(\ms{TSO}\), implementing this
+is as simple as flushing the buffer, i.e., we define
 \(
   \dnt{\ms{fence}} = \lambda ()\;L. \{((), [], L;\{\delta\})\}
 \).
-
 We can now define the parallel composition of morphisms in a "fork-join" style
 as follows: we first flush the buffer completely (i.e., taking it and sticking
 it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel
 with separate buffers, \textit{filtering out executions which completely flush
 the buffer}. Since both threads end up with an empty buffer, the resulting
-joined buffer is also empty, giving us the following:
+joined buffer is also empty, giving us the following definition:
 \begin{equation}
   \begin{aligned}
     f_0 || f_1 = \lambda (a_0, a_1)\;L. 
