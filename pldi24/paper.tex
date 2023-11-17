@@ -1256,27 +1256,16 @@ want to require any notion of functor we develop subsequently to preserve the
 former. We can solve this the same way, by simply extending the notion of
 effectful category appropriately as follows:
 \begin{definition}[Susbtructural Effectful Category]
-  A \textbf{substructural effectful category} \(\mc{C}\) consists of
-  \begin{itemize}
-    \item A substructural monoidal category \(\mc{C}_1\); we call the morphisms
-    in this category \textbf{central} or \textbf{linear}
-    \item A substructural premonoidal category \(\mc{C}_0\) sharing the same
-    affine and relevant objects as \(\mc{C}_1\)
-    \item An identity-on-objects functor \(\upg{\cdot}{}: \mc{C}_1^\varnothing
-    \to \mc{C}_0^\varnothing\) preserving all substructural premonoidal
-    structure, i.e., preserves all symmetries, associators, unitors, drops, and
-    splits and sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\). In particular,
-    restricting \(\upg{\cdot}{}\) appropriately makes all \(\mc{C}_1^q \to
-    \mc{C}_0^q\) into effectful categories.
-  \end{itemize}
-  We define \(\upg{f}{0}\) to be \(\upg{f}{}\) for morphisms in \(\mc{C}_1^q\)
-  and simply \(f\) for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) to simply
-  be the identity functor on \(\mc{C}_1^q\).
- 
-  Morphisms in \(\mc{C}_p^{\ms{r}}\) are called \textbf{copyable}, morphisms
-  in \(\mc{C}_p^{\ms{a}}\) are called \textbf{discardable}, while morphisms
-  in \(\mc{C}_1^{\ms{a}}, \mc{C}_1^{\ms{r}}, \mc{C}_1^{\{\ms{a},
-  \ms{r}\}}\) specifically are called \textbf{affine}, \textbf{relevant}, and
+  An effectful category \(\mc{C}_0 \to \mc{C}_1\) is said to be
+  \textbf{substructural} if \(\mc{C}_0, \mc{C}_1\) are substructural and
+  \(\upg{\cdot}{}: \mc{C}_1^\varnothing \to \mc{C}_0^\varnothing\) preserves all
+  symmetries, associators, unitors, drops, and splits and sends \(\mc{C}_1^q\)
+  to \(\mc{C}_0^q\). In particular, restricting \(\upg{\cdot}{}\) appropriately
+  makes all \(\mc{C}_1^q \to \mc{C}_0^q\) into effectful categories. Morphisms
+  in \(\mc{C}_p^{\ms{r}}\) are called \textbf{copyable}, morphisms in
+  \(\mc{C}_p^{\ms{a}}\) are called \textbf{discardable}, while morphisms in
+  \(\mc{C}_1^{\ms{a}}, \mc{C}_1^{\ms{r}}, \mc{C}_1^{\{\ms{a}, \ms{r}\}}\)
+  specifically are called \textbf{affine}, \textbf{relevant}, and
   \textbf{intuitionistic} or \textbf{pure} respectively.
 \end{definition}
 We can obtain an example of a substructural effectful category quite easily by,
@@ -1602,16 +1591,11 @@ becomes a pure morphsim. Our rules for doing so are given in Figure
 \ref{fig:ssa-term-semantics}; we will abuse syntax slightly and write
 \(\dnt{\text{"judgement"}}\) for \(\dnt{D}\), where \(D\) is a derivation of
 "judgement"; in general, it can be proven that the semantics of any two such
-derivations are equal.
-% \begin{lemma}[Coherence] \
-%   \begin{itemize}
-%     \item Given any two derivations \(D_1: \hasty{\Gamma}{p}{a}{A}{q}\), \(D_2: \hasty{\Gamma}{p}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
-%     \item Given any two derivations \(D_1, D_2: \haslb{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
-%     \item Given any two derivations \(D_1, D_2: \csplits{\Gamma}{\Delta}{\Xi}\), \(\dnt{D_1} = \dnt{D_2}\)
-%     \item Given any two derivations \(D_1, D_2: \cwk{\Gamma}{\Delta}\), \(\dnt{D_1} = \dnt{D_2}\)
-%     \item Given any two derivations \(D_1, D_2: \lwk{\ms{L}}{\ms{K}}\), \(\dnt{D_1} = \dnt{D_2}\)
-%   \end{itemize}
-% \end{lemma}
+derivations are equal. We also define the syntax sugar \(\upg{f}{p}\), where
+\(\upg{f}{0}\) is \(\upg{f}{}\) for morphisms in \(\mc{C}_1\) and simply \(f\)
+for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) is the identity functor on
+\(\mc{C}_1\).
+
 Our treatment of \rle{var} is quite standard: the term \(x\) types in \(\Gamma\)
 if all other variables in \(\Gamma\) and can be discarded, in which case the
 semantics is simply doing so, i.e. \(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\),
