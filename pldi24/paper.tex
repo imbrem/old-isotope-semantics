@@ -963,12 +963,15 @@ standard. The second is to use the substitution to generate a set of
 let-bindings for a context \(\Gamma\), written
 \(\exprletsubst{\substctx{\gamma}{\Gamma}}{e}\) for expressions and
 \(\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}\) for blocks, as defined in Figure
-\ref{fig:ssa-subst-ops}. Note that this operation cannot be easily defined for
-CFGs. In Section \ref{sec:semantics}, we will show that this is semantically
-equivalent to regular capture-avoiding substitution, due to the fact that all
-terms in a substitution are central \textit{and} that only affine computations
-can be used in a term substituting for an affine variable, and only relevant
-computationbs can be used in a term substituting for a relevant variable.
+\ref{fig:ssa-subst-ops}. 
+%
+% Note that this operation cannot be easily defined for CFGs. 
+%
+% In Section \ref{sec:semantics}, we will show that this is semantically
+% equivalent to regular capture-avoiding substitution, due to the fact that all
+% terms in a substitution are central \textit{and} that only affine computations
+% can be used in a term substituting for an affine variable, and only relevant
+% computationbs can be used in a term substituting for a relevant variable.
 
 We can now state our substitution theorem for terms in a straightforward way: if
 \(\issubst{\gamma}{\Theta}{\Gamma}\) and \(\hasty{\Gamma}{p}{e}{A}{q}\), then
@@ -1152,16 +1155,20 @@ premonoidal subcategory}, as follows:
   \textbf{central} if this generalizes to the case where only one of \(f, g\) is
   in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
 \end{definition} 
+
 Note that the set of symmetric premonoidal subcategories, monoidal
 subcategories, and central subcategories of a category \(\mc{C}\) are all closed
-under intersections and therefore, in particular, form a complete
-meet-semilattice with shared bottom element \(\ms{Skeleton}(\mc{C})\), where
-\(\ms{Skeleton}(C)\) is the smallest possible symmetric premonodial subcategory.
-The largest symmetric premonoidal subcategory is of course \(\mc{C}\), while the
-largest central subcategory is the center of \(\mc{C}\), \(Z(\mb{C})\); the
-existence of a top-element means that in these cases we may induce the structure
-of a complete lattice in the usual manner.
-
+under intersections.
+%
+% and therefore, in particular, form a complete meet-semilattice with shared
+% bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the
+% smallest possible symmetric premonodial subcategory. The largest symmetric
+% premonoidal subcategory is of course \(\mc{C}\), while the largest central
+% subcategory is the center of \(\mc{C}\), \(Z(\mb{C})\).
+%
+% ; the existence of a top-element means that in these cases we may induce the
+% structure of a complete lattice in the usual manner.
+%
 We can now define a \textit{substructural premonoidal category}, which is simply
 a premonoidal category equipped with a distinguished set of relevant and affine
 morphisms
@@ -1173,18 +1180,16 @@ morphisms
     symmetric premonoidal subcategories \(\mc{C}^{\ms{a}}, \mc{C}^{\ms{r}}\).
     We define, for \(q \subseteq \{\ms{a}, \ms{r}\}\), \(\mc{C}^q = \bigcap_{\ell \in q}\mc{C}^\ell\), where \(\mc{C}^\varnothing = \mc{C}\)
     \item \(\mc{A} \subseteq |\mc{C}|\) is a set of \textbf{affine} objects
-    closed under tensor products, such that
+    closed under tensor products, such that \(\mb{1} \in \mc{A}\) and
     \begin{itemize}
-      \item \(\mb{1} \in \mc{A}\)
       \item Every \(A\) in \(\mc{A}\) is equipped with a central morphism
       \(\ms{drop}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, \mb{1})\)
       \item \(\forall A, B \in \mc{A}, \ms{drop}(A \otimes B) = \ms{drop}(A) \otimes \ms{drop}(B);\lambda_I\)
       \item \(\forall A, B \in \mc{A}, \forall f: \mc{C}^{\ms{a}}(A, B), f;\ms{drop}(B) = \ms{drop}(A)\)
     \end{itemize}
     \item \(\mc{R} \subseteq |\mc{C}|\) is a set of \textbf{relevant} objects
-    closed under tensor products, such that
+    closed under tensor products, such that \(\mb{1} \in \mc{R}\) and
     \begin{itemize}
-      \item \(\mb{1} \in \mc{R}\)
       \item Every \(A\) in \(\mc{R}\) is equipped with a central morphism
       \(\ms{split}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, A \otimes A)\)
       \item \(\forall A, B \in \mc{R}, \ms{split}(A \otimes B) = \ms{split}(A) \otimes \ms{split}(B);\alpha;A \otimes \sigma_{A, B} \otimes B;\alpha\)
