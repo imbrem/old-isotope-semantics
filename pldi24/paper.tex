@@ -2101,10 +2101,10 @@ reads, writes, and fences. We begin with the following definitions:
   distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
   \textit{nonempty} partially-ordered \textbf{carrier set} \(P\) such that every
   \(p \in P\) has finitely many predecessors equipped with a mapping \(\alpha: P
-  \to \mc{A}\) quotiented over the removal of finitely many \(\delta\). A pomset
-  is \textbf{finite} if its carrier set is. We will write unordered pomsets
-  using multiset notation, e.g. \(\{a, a, b\}\), and linearly ordered pomsets
-  using list notation, e.g. \([a, a, b]\).
+  \to \mc{A}\) quotiented over the removal of \(\delta\) such that cardinality
+  is preserved. A pomset is \textbf{finite} if its carrier set is. We will write
+  unordered pomsets using multiset notation, e.g. \(\{a, a, b\}\), and linearly
+  ordered pomsets using list notation, e.g. \([a, a, b]\).
 \end{definition}
 (Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\),
 which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to
