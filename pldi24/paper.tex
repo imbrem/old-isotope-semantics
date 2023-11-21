@@ -2596,360 +2596,361 @@ the low-level specification of the actual machine.
 %   \TODO{this}
 % \end{proof}
 
-% \section{Rewriting}
+\section{Rewriting}
 
-% \label{apx:rewriting}
+\label{apx:rewriting}
 
-% \subsection{Syntax}
+\subsection{Syntax}
 
-% To properly be able to reason about congruence and congruence-based
-% optimistion, we need to introduce the concept of \textit{terms with holes},
-% which are defined using the grammar in Figure
-% \ref{fig:blocks-with-holes-grammar}. This simply extends the three main
-% syntactic categories with \textit{holes} of the form \(\lhole{X}\),
-% \(\lhole{T}\), \(\lhole{W}\). To \textit{type} terms with holes, we need to
-% introduce the concept of a \textit{hole-context} \(H\), which is a list of holes
-% annotated as corresponding to one of:
-% \begin{itemize}
-%   \item A term \(\tyhole{\lhole{X}}{\Delta}{p}{A}{q}\) of type \(A\), quantity
-%   \(q\), and purity \(p\) using the variables in \(\Delta\). Such a hole can be
-%   filled by any term \(a\) satisfying \(\hasty{\Delta}{p}{a}{A}{q}\)
-%   \item A block \(\blkhole{\lhole{T}}{\Delta}{\ms{L}}\) targeting \(\ms{L}\)
-%   using the variables in \(\Delta\). Such a hole can be filled by any block
-%   \(t\) satisfying \(\haslb{\Delta}{t}{\ms{L}}\).
-%   \item A control-flow graph \(\cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\) with input
-%   labels \(\ms{L}\) and output labels \(\ms{K}\). Such a hole can be filled by
-%   any CFG satisfying \(\lhaslb{\ms{L}}{L}{\ms{K}}\).
-% \end{itemize}
+To properly be able to reason about congruence and congruence-based
+optimistion, we need to introduce the concept of \textit{terms with holes},
+which are defined using the grammar in Figure
+\ref{fig:blocks-with-holes-grammar}. This simply extends the three main
+syntactic categories with \textit{holes} of the form \(\lhole{X}\),
+\(\lhole{T}\), \(\lhole{W}\). To \textit{type} terms with holes, we need to
+introduce the concept of a \textit{hole-context} \(H\), which is a list of holes
+annotated as corresponding to one of:
+\begin{itemize}
+  \item A term \(\tyhole{\lhole{X}}{\Delta}{p}{A}{q}\) of type \(A\), quantity
+  \(q\), and purity \(p\) using the variables in \(\Delta\). Such a hole can be
+  filled by any term \(a\) satisfying \(\hasty{\Delta}{p}{a}{A}{q}\)
+  \item A block \(\blkhole{\lhole{T}}{\Delta}{\ms{L}}\) targeting \(\ms{L}\)
+  using the variables in \(\Delta\). Such a hole can be filled by any block
+  \(t\) satisfying \(\haslb{\Delta}{t}{\ms{L}}\).
+  \item A control-flow graph \(\cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\) with input
+  labels \(\ms{L}\) and output labels \(\ms{K}\). Such a hole can be filled by
+  any CFG satisfying \(\lhaslb{\ms{L}}{L}{\ms{K}}\).
+\end{itemize}
 
+\begin{figure}
+  \begin{grammar}
+    <\(\mhole{a}, \mhole{b}, \mhole{c}, \mhole{e}\)> ::= \(\lhole{X}\)
+    \;|\; \(x\) 
+    \;|\; \(f\;\mhole{a}\)
+    \;|\; \((\mhole{a}, \mhole{b})\) 
+    \;|\; \(()\) 
+    \;|\; \(\ctt\) 
+    \;|\; \(\cff\)
+    \;|\; \(\letexpr{x}{\mhole{a}}{\mhole{e}}\)
+    \;|\; \(\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}\)
+    % \alt \(\lbsplice{\ell}{x: A}{\mhole{t}}\)
 
-% \begin{figure}
-%   \begin{grammar}
-%     <\(\mhole{a}, \mhole{b}, \mhole{c}, \mhole{e}\)> ::= \(\lhole{X}\)
-%     \;|\; \(x\) 
-%     \;|\; \(f\;\mhole{a}\)
-%     \;|\; \((\mhole{a}, \mhole{b})\) 
-%     \;|\; \(()\) 
-%     \;|\; \(\ctt\) 
-%     \;|\; \(\cff\)
-%     \;|\; \(\letexpr{x}{\mhole{a}}{\mhole{e}}\)
-%     \;|\; \(\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}\)
-%     % \alt \(\lbsplice{\ell}{x: A}{\mhole{t}}\)
+    <\(\mhole{s}, \mhole{t}\)> ::= \(\lhole{T}\) 
+    \;|\; \(\lbrb{\ell}{\mhole{a}}\) 
+    \;|\; \(\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}\)
+    \;|\; \(\letstmt{x}{\mhole{a}}{\mhole{t}}\)
+    \;|\; \(\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}\)
+    \;|\; \(\ewhere{\mhole{t}}{\mhole{L}}\)
 
-%     <\(\mhole{s}, \mhole{t}\)> ::= \(\lhole{T}\) 
-%     \;|\; \(\lbrb{\ell}{\mhole{a}}\) 
-%     \;|\; \(\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}\)
-%     \;|\; \(\letstmt{x}{\mhole{a}}{\mhole{t}}\)
-%     \;|\; \(\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}\)
-%     \;|\; \(\ewhere{\mhole{t}}{\mhole{L}}\)
+    <\(\mhole{L}\)> ::= \(\lhole{W}\) \;|\; \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{\mhole{t}}, \mhole{L}\)
 
-%     <\(\mhole{L}\)> ::= \(\lhole{W}\) \;|\; \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{\mhole{t}}, \mhole{L}\)
+    <\(H\)> ::= \(\cdot\) 
+    \;|\; \(H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}\)
+    \;|\; \(H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}\)
+    \;|\; \(H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\)
+  \end{grammar}
+  \caption{Grammar for \isotopessa expressions and blocks with holes}
+  \Description{Grammar for isotope-SSA blocks with holes}
+  \label{fig:blocks-with-holes-grammar}
+\end{figure}
+We introduce a typing judgement \(\isrw{\mc{H}}{I}{H}\), which says that
+\(\mc{H}\) assigns to each hole in \(H\) a term satisfying the corresponding
+typing judgement within the hole context \(I\). We also introduce new typing
+judgements for terms, blocks, and CFGs with holes in Figure
+\ref{fig:ssa-holes-judgements}. In each case, they correspond to the judgement
+that, given a collection \(\mc{H}\) terms, blocks, and CFGs to fill each hole in
+\(H\), would satisfy the corresponding judgement without holes in
+\ref{fig:ssa-judgements}.
 
-%     <\(H\)> ::= \(\cdot\) 
-%     \;|\; \(H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}\)
-%     \;|\; \(H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}\)
-%     \;|\; \(H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\)
-%   \end{grammar}
-%   \caption{Grammar for \isotopessa expressions and blocks with holes}
-%   \Description{Grammar for isotope-SSA blocks with holes}
-%   \label{fig:blocks-with-holes-grammar}
-% \end{figure}
+\begin{figure}
+  \begin{center}        
+    \begingroup
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{2em}
+    \begin{tabular}{rl}
+        \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
+        \(\isrw{\mc{H}}{I}{H}\) & \(\mc{H}\) is a rewrite from \(I\) to \(H\),
+        i.e. fills every hole in \(H\) modulo \(I\) \\
+        \(\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}\) & Given
+        \(\isrw{\mc{H}}{\cdot}{H}\), \(\hasty{\Gamma}{p}{[\mc{H}]\mhole{a}}{A}{q}\) \\
+        \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) & Given
+        \(\isrw{\mc{H}}{\cdot}{H}\), \(\haslb{\Gamma}{[\mc{H}]\mhole{t}}{\ms{L}}\) \\
+        \(\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}\) & Given
+        \(\isrw{\mc{H}}{\cdot}{H}\),
+        \(\haslb{\Gamma}{[\mc{H}]\mhole{t}}{\ms{L}}\) \\
+    \end{tabular}
+    \endgroup
+  \end{center}
+  \caption{Typing judgements for \isotopessa terms, blocks, and CFGs with holes}
+  \Description{Typing judgements for isotope-SSA terms, blocks, and CFGs with
+  holes}
+  \label{fig:ssa-holes-judgements}
+\end{figure}
 
+\begin{figure}
+  \begin{gather*}    
+    \prftree[r]{\rle{hole-tm}}
+      {\tyhole{\lhole{X}}{\Delta}{p}{A}{q}}
+      {\cwk{\Gamma}{\Delta}}
+      {\mhasty{H}{\Gamma}{p}{\lhole{X}}{A}{q}} \qquad
+    \prftree[r]{\rle{var}}
+      {\cwk{\Gamma}{\thyp{x}{A}{q}}}
+      {\mhasty{H}{\Gamma}{p}{x}{A}{q}} \qquad
+    \prftree[r]{\rle{app}}
+      {f \in \mc{I}_p^q(A, B)}
+      {\mhasty{H}{\Gamma}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{H}{\Gamma}{p}{f\;\mhole{a}}{B}{q}} \\
+    \prftree[r]{\rle{pair}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{H}{\Delta}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{H}{\Xi}{1}{\mhole{b}}{B}{q}}
+      {\mhasty{H}{\Gamma}{p}{(\mhole{a}, \mhole{b})}{A \otimes B}{q}} \\
+    \prftree[r]{\rle{unit}}
+      {\cwk{\Gamma}{\cdot}}
+      {\mhasty{H}{\Gamma}{p}{()}{\mb{1}}{q}} \qquad
+    \prftree[r]{\rle{true}}
+      {\cwk{\Gamma}{\cdot}}
+      {\mhasty{H}{\Gamma}{p}{\ctt}{\mb{2}}{q}} \qquad
+    \prftree[r]{\rle{false}}
+      {\cwk{\Gamma}{\cdot}}
+      {\mhasty{H}{\Gamma}{p}{\cff}{\mb{2}}{q}} \\
+    \prftree[r]{\rle{let}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{H}{\Delta, \thyp{x}{A}{}}{p}{\mhole{e}}{B}{q}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A}{q}}
+      {\mhasty{H}{\Gamma}{p}{\letexpr{x}{\mhole{a}}{\mhole{e}}}{B}{q}} \qquad
+    % \prftree[r]{\rle{blk}}
+    %   {\mhaslb{H}{\Gamma}{\mhole{t}}{\llhyp{\ell}{\cdot}{A}}}
+    %   {\mhasty{H}{\Gamma}{0}{\lbsplice{\ell}{A}{\mhole{t}}}{A}{\varnothing}} 
+      \\
+    \prftree[r]{\rle{let2}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{H}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{\mhole{e}}{C}{q}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A \otimes B}{q}}
+      {\mhasty{H}{\Gamma}{p}{\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}}{C}{q}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa terms with holes}
+  \Description{Typing rules for isotope-SSA terms with holes}
+  \label{fig:ssa-term-holes-typing}
+\end{figure}
 
-% We introduce new typing judgements for terms, blocks, and CFGs with holes in
-% Figure \ref{fig:ssa-holes-judgements}. In each case, they correspond to the
-% judgement that, given a collection \(\mc{H}\) terms, blocks, and CFGs to fill
-% each hole in \(H\), would satisfy the corresponding judgement without holes in
-% \ref{fig:ssa-judgements}.
+\begin{figure}
+  \begin{gather*}    
+    \prftree[r]{\rle{hole-blk}}
+      {\blkhole{\lhole{T}}{\Delta}{\ms{L}} \in H}
+      {\cwk{\Gamma}{\Delta}}
+      {\mhaslb{H}{\Gamma}{\lhole{T}}{\ms{L}}} 
+      \qquad
+    \prftree[r]{\rle{br}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
+      {\mhasty{H}{\Xi}{1}{\mhole{a}}{A}{\tint}}
+      {\mhaslb{H}{\Gamma}{\lbrb{\ell}{\mhole{a}}}{\ms{L}}} 
+      \\
+    \prftree[r]{\rle{ite}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhasty{H}{\Xi}{1}{\mhole{e}}{\mb{2}}{\tint}}
+      {\mhaslb{H}{\Delta}{\mhole{s}}{\ms{L}}}
+      {\mhaslb{H}{\Delta}{\mhole{t}}{\ms{L}}}
+      {\mhaslb{H}{\Gamma}{\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}}{\ms{L}}} \\
+    \prftree[r]{\rle{let-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhaslb{H}{\Delta, \thyp{x}{A}{}}{\mhole{t}}{\ms{L}}}
+      {\mhasty{H}{\Xi}{0}{\mhole{a}}{A}{q}}
+      {\mhaslb{H}{\Gamma}{\letstmt{x}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
+    \prftree[r]{\rle{let2-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\mhaslb{H}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{\mhole{t}}{\ms{L}}}
+      {\mhasty{H}{\Xi}{0}{\mhole{a}}{A \otimes B}{q}}
+      {\mhaslb{H}{\Gamma}{\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
+    \prftree[r]{\rle{where}}
+      {\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}}
+      {\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}}
+      {\mhaslb{H}{\Gamma}{\ewhere{\mhole{t}}{\mhole{L}}}{\ms{K}}} 
+      \qquad
+    \prftree[r]{\rle{hole-cfg}}
+      {\cfghole{\lhole{W}}{\ms{L}}{\ms{K}} \in H}
+      {\lwk{\ms{M}}{\ms{K}}}
+      {\mlhaslb{\ms{L}}{H}{\lhole{W}}{\ms{K}}}
+      \\
+    \prftree[r]{\rle{nil-br}}
+      {\mlhaslb{H}{\ms{L}}{\cdot}{\ms{L}}} \qquad
+    \prftree[r]{\rle{cons-br}}
+      {\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      {\mhaslb{H}{\Gamma, \thyp{x}{A}{}}{\mhole{t}}{\ms{L}}}
+      {\mlhaslb{H}{\ms{L}}{\mhole{L}, \lwbranch{\ell}{x: A}{\mhole{t}}}{\ms{K}}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa blocks with holes}
+  \Description{Typing rules for isotope-SSA blocks with holes}
+  \label{fig:ssa-block-holes-typing}
+\end{figure}
 
-% \TODO{note on rewrites}
+\begin{figure}
+  \begin{gather*}
+    \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock} \sqcup \ms{MCfg}}
+    \\
+    \prftree[r]{\rle{rw-nil}}
+      {\isrw{\mc{H}}{H}{\cdot}}
+    \qquad
+    \prftree[r]{\rle{rw-tm}}
+      {\isrw{\mc{H}}{I}{H}}
+      {\mhasty{I}{\Gamma}{p}{\mc{H}(\lhole{X})}{A}{q}}
+      {\isrw{\mc{H}}{I}{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}}
+    \\
+    \prftree[r]{\rle{rw-blk}}
+      {\isrw{\mc{H}}{I}{H}}
+      {\mhaslb{I}{\Gamma}{\mc{H}(\lhole{T})}{\ms{L}}}
+      {\isrw{\mc{H}}{I}{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}}
+    \qquad
+    \prftree[r]{\rle{rw-cfg}}
+      {\isrw{\mc{H}}{I}{H}}
+      {\mlhaslb{I}{\ms{L}}{\mc{H}(\lhole{W})}{\ms{K}}}
+      {\isrw{\mc{H}}{I}{H, \cfghole{\lhole{L}}{\ms{L}}{\ms{K}}}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa rewrites}
+  \Description{Typing rules for isotope-SSA rewrites}
+  \label{fig:rewrite-typing}
+\end{figure}
 
-% \begin{figure}
-%   \begin{center}        
-%     \begingroup
-%     \renewcommand{\arraystretch}{1.5}
-%     \setlength{\tabcolsep}{2em}
-%     \begin{tabular}{rl}
-%         \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
-%         \(\isrw{\mc{H}}{I}{H}\) & \(\mc{H}\) is a rewrite from \(I\) to \(H\),
-%         i.e. fills every hole in \(H\) modulo \(I\) \\
-%         \(\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}\) & Given
-%         \(\isrw{\mc{H}}{\cdot}{H}\), \(\hasty{\Gamma}{p}{[\mc{H}]\mhole{a}}{A}{q}\) \\
-%         \(\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}\) & Given
-%         \(\isrw{\mc{H}}{\cdot}{H}\), \(\haslb{\Gamma}{[\mc{H}]\mhole{t}}{\ms{L}}\) \\
-%         \(\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}\) & Given
-%         \(\isrw{\mc{H}}{\cdot}{H}\),
-%         \(\haslb{\Gamma}{[\mc{H}]\mhole{t}}{\ms{L}}\) \\
-%     \end{tabular}
-%     \endgroup
-%   \end{center}
-%   \caption{Typing judgements for \isotopessa terms, blocks, and CFGs with holes}
-%   \Description{Typing judgements for isotope-SSA terms, blocks, and CFGs with
-%   holes}
-%   \label{fig:ssa-holes-judgements}
-% \end{figure}
+The typing rules for terms, blocks, and CFGs with holes are exactly the same as
+the corresponding rules without holes, modulo the additional rules
+\rle{hole-tm}, \rle{hole-blk}, and \rle{hole-cfg} to type the holes themselves;
+they are given in full in Figures \ref{fig:ssa-term-holes-typing} and
+\ref{fig:ssa-block-holes-typing}. This formalism allows us to state the
+\textit{syntactic rewriting} theorem, which says, in essence, that filling holes
+with valid terms yields valid terms.
+\begin{theorem}[Rewriting]
+  Given \(\isrw{\mc{H}}{H}{I}\), we have
+  \begin{itemize}
+    \item If \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), then \(\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}\)
+    \item If \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), then \(\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}\)
+  \end{itemize}
+  Furthermore, we have that 
+  \begin{itemize}
+    \item \(\mhasty{\cdot}{\Gamma}{p}{a}{A}{q} \iff \hasty{\Gamma}{p}{a}{A}{q}\)
+    \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
+  \end{itemize}
+\end{theorem}
 
-% \begin{figure}
-%   \begin{gather*}    
-%     \prftree[r]{\rle{hole-tm}}
-%       {\tyhole{\lhole{X}}{\Delta}{p}{A}{q}}
-%       {\cwk{\Gamma}{\Delta}}
-%       {\mhasty{H}{\Gamma}{p}{\lhole{X}}{A}{q}} \qquad
-%     \prftree[r]{\rle{var}}
-%       {\cwk{\Gamma}{\thyp{x}{A}{q}}}
-%       {\mhasty{H}{\Gamma}{p}{x}{A}{q}} \qquad
-%     \prftree[r]{\rle{app}}
-%       {f \in \mc{I}_p^q(A, B)}
-%       {\mhasty{H}{\Gamma}{1}{\mhole{a}}{A}{q}}
-%       {\mhasty{H}{\Gamma}{p}{f\;\mhole{a}}{B}{q}} \\
-%     \prftree[r]{\rle{pair}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\mhasty{H}{\Delta}{1}{\mhole{a}}{A}{q}}
-%       {\mhasty{H}{\Xi}{1}{\mhole{b}}{B}{q}}
-%       {\mhasty{H}{\Gamma}{p}{(\mhole{a}, \mhole{b})}{A \otimes B}{q}} \\
-%     \prftree[r]{\rle{unit}}
-%       {\cwk{\Gamma}{\cdot}}
-%       {\mhasty{H}{\Gamma}{p}{()}{\mb{1}}{q}} \qquad
-%     \prftree[r]{\rle{true}}
-%       {\cwk{\Gamma}{\cdot}}
-%       {\mhasty{H}{\Gamma}{p}{\ctt}{\mb{2}}{q}} \qquad
-%     \prftree[r]{\rle{false}}
-%       {\cwk{\Gamma}{\cdot}}
-%       {\mhasty{H}{\Gamma}{p}{\cff}{\mb{2}}{q}} \\
-%     \prftree[r]{\rle{let}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\mhasty{H}{\Delta, \thyp{x}{A}{}}{p}{\mhole{e}}{B}{q}}
-%       {\mhasty{H}{\Xi}{1}{\mhole{a}}{A}{q}}
-%       {\mhasty{H}{\Gamma}{p}{\letexpr{x}{\mhole{a}}{\mhole{e}}}{B}{q}} \qquad
-%     % \prftree[r]{\rle{blk}}
-%     %   {\mhaslb{H}{\Gamma}{\mhole{t}}{\llhyp{\ell}{\cdot}{A}}}
-%     %   {\mhasty{H}{\Gamma}{0}{\lbsplice{\ell}{A}{\mhole{t}}}{A}{\varnothing}} 
-%       \\
-%     \prftree[r]{\rle{let2}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\mhasty{H}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{\mhole{e}}{C}{q}}
-%       {\mhasty{H}{\Xi}{1}{\mhole{a}}{A \otimes B}{q}}
-%       {\mhasty{H}{\Gamma}{p}{\letexpr{(x, y)}{\mhole{a}}{\mhole{e}}}{C}{q}}
-%   \end{gather*}
-%   \caption{Typing rules for \isotopessa terms with holes}
-%   \Description{Typing rules for isotope-SSA terms with holes}
-%   \label{fig:ssa-term-holes-typing}
-% \end{figure}
+\subsection{Semantics}
 
-% \begin{figure}
-%   \begin{gather*}    
-%     \prftree[r]{\rle{hole-blk}}
-%       {\blkhole{\lhole{T}}{\Delta}{\ms{L}} \in H}
-%       {\cwk{\Gamma}{\Delta}}
-%       {\mhaslb{H}{\Gamma}{\lhole{T}}{\ms{L}}} 
-%       \qquad
-%     \prftree[r]{\rle{br}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
-%       {\mhasty{H}{\Xi}{1}{\mhole{a}}{A}{\tint}}
-%       {\mhaslb{H}{\Gamma}{\lbrb{\ell}{\mhole{a}}}{\ms{L}}} 
-%       \\
-%     \prftree[r]{\rle{ite}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\mhasty{H}{\Xi}{1}{\mhole{e}}{\mb{2}}{\tint}}
-%       {\mhaslb{H}{\Delta}{\mhole{s}}{\ms{L}}}
-%       {\mhaslb{H}{\Delta}{\mhole{t}}{\ms{L}}}
-%       {\mhaslb{H}{\Gamma}{\ite{\mhole{e}}{\mhole{s}}{\mhole{t}}}{\ms{L}}} \\
-%     \prftree[r]{\rle{let-blk}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\mhaslb{H}{\Delta, \thyp{x}{A}{}}{\mhole{t}}{\ms{L}}}
-%       {\mhasty{H}{\Xi}{0}{\mhole{a}}{A}{q}}
-%       {\mhaslb{H}{\Gamma}{\letstmt{x}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
-%     \prftree[r]{\rle{let2-blk}}
-%       {\csplits{\Gamma}{\Delta}{\Xi}}
-%       {\mhaslb{H}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{\mhole{t}}{\ms{L}}}
-%       {\mhasty{H}{\Xi}{0}{\mhole{a}}{A \otimes B}{q}}
-%       {\mhaslb{H}{\Gamma}{\letstmt{(x, y)}{\mhole{a}}{\mhole{t}}}{\ms{L}}} \\
-%     \prftree[r]{\rle{where}}
-%       {\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}}
-%       {\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}}
-%       {\mhaslb{H}{\Gamma}{\ewhere{\mhole{t}}{\mhole{L}}}{\ms{K}}} 
-%       \qquad
-%     \prftree[r]{\rle{hole-cfg}}
-%       {\cfghole{\lhole{W}}{\ms{L}}{\ms{K}} \in H}
-%       {\lwk{\ms{M}}{\ms{K}}}
-%       {\mlhaslb{\ms{L}}{H}{\lhole{W}}{\ms{K}}}
-%       \\
-%     \prftree[r]{\rle{nil-br}}
-%       {\mlhaslb{H}{\ms{L}}{\cdot}{\ms{L}}} \qquad
-%     \prftree[r]{\rle{cons-br}}
-%       {\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
-%       {\mhaslb{H}{\Gamma, \thyp{x}{A}{}}{\mhole{t}}{\ms{L}}}
-%       {\mlhaslb{H}{\ms{L}}{\mhole{L}, \lwbranch{\ell}{x: A}{\mhole{t}}}{\ms{K}}}
-%   \end{gather*}
-%   \caption{Typing rules for \isotopessa blocks with holes}
-%   \Description{Typing rules for isotope-SSA blocks with holes}
-%   \label{fig:ssa-block-holes-typing}
-% \end{figure}
+We can interpret a hole context semantically as the \textit{set} of all possible
+tuples of morphisms which would typecheck in place of the holes in the context,
+as specified in Figure \ref{fig:holes-semantics}.
+\begin{figure}
+  \begin{align*}
+      \\
+    \dnt{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}
+      &= \dnt{H} \times \mc{C}_p^q(\dnt{\Gamma}, \dnt{A}) 
+      \\
+    \dnt{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}
+      &= \dnt{H} \times \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}}) 
+      \\
+    \dnt{H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}}
+      &= \dnt{H} \times \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}}) 
+      \\
+    \dnt{\cdot} 
+      &= \mb{1}
+  \end{align*}
+  \caption{Semantics for \isotopessa holes}
+  \Description{Semantics for isotope-SSA holes}
+  \label{fig:holes-semantics}
+\end{figure}
+We can now quite easily give semantics for terms, blocks, and CFGs with holes
+which simply correspond to "filling in" any holes with the appropriate morphism
+from the hole context, with all other rules interpreted identically to their
+regular variants: this is done in Figures \ref{fig:ssa-term-holes-semantics} and
+\ref{fig:ssa-block-holes-semantics}.
 
-% \begin{figure}
-%   \begin{gather*}
-%     \boxed{H: \ms{Hole} \to \ms{MExpr} \sqcup \ms{MBlock} \sqcup \ms{MCfg}}
-%     \\
-%     \prftree[r]{\rle{rw-nil}}
-%       {\isrw{\mc{H}}{H}{\cdot}}
-%     \qquad
-%     \prftree[r]{\rle{rw-tm}}
-%       {\isrw{\mc{H}}{I}{H}}
-%       {\mhasty{I}{\Gamma}{p}{\mc{H}(\lhole{X})}{A}{q}}
-%       {\isrw{\mc{H}}{I}{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}}
-%     \\
-%     \prftree[r]{\rle{rw-blk}}
-%       {\isrw{\mc{H}}{I}{H}}
-%       {\mhaslb{I}{\Gamma}{\mc{H}(\lhole{T})}{\ms{L}}}
-%       {\isrw{\mc{H}}{I}{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}}
-%     \qquad
-%     \prftree[r]{\rle{rw-cfg}}
-%       {\isrw{\mc{H}}{I}{H}}
-%       {\mlhaslb{I}{\ms{L}}{\mc{H}(\lhole{W})}{\ms{K}}}
-%       {\isrw{\mc{H}}{I}{H, \cfghole{\lhole{L}}{\ms{L}}{\ms{K}}}}
-%   \end{gather*}
-%   \caption{Typing rules for \isotopessa rewrites}
-%   \Description{Typing rules for isotope-SSA rewrites}
-%   \label{fig:rewrite-typing}
-% \end{figure}
+\begin{figure}
+  \begin{gather*}
+    \boxed{
+      \dnt{\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}}
+      : \dnt{H} \to \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})}
+      \\
+    \sorry
+  \end{gather*}
+  \caption{Semantics for \isotopessa terms with holes}
+  \Description{Semantics for isotope-SSA terms with holes}
+  \label{fig:ssa-term-holes-semantics}
+\end{figure}
 
-% The typing rules for terms, blocks, and CFGs with holes are exactly the same as
-% the corresponding rules without holes, modulo the additional rules
-% \rle{hole-tm}, \rle{hole-blk}, and \rle{hole-cfg} to type the holes themselves;
-% they are given in full in Figures \ref{fig:ssa-term-holes-typing} and
-% \ref{fig:ssa-block-holes-typing}. This formalism allows us to state the
-% \textit{syntactic rewriting} theorem, which says, in essence, that filling holes
-% with valid terms yields valid terms.
-% \begin{theorem}[Rewriting]
-%   Given \(\isrw{\mc{H}}{H}{I}\), we have
-%   \begin{itemize}
-%     \item If \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), then \(\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}\)
-%     \item If \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), then \(\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}\)
-%   \end{itemize}
-%   Furthermore, we have that 
-%   \begin{itemize}
-%     \item \(\mhasty{\cdot}{\Gamma}{p}{a}{A}{q} \iff \hasty{\Gamma}{p}{a}{A}{q}\)
-%     \item \(\mhaslb{\cdot}{\Gamma}{t}{\ms{L}} \iff \haslb{\Gamma}{t}{\ms{L}}\)
-%   \end{itemize}
-% \end{theorem}
+\begin{figure}
+  \begin{gather*}
+    \boxed{
+      \dnt{\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}}
+      : \dnt{H} \to \mc{C}_0^\varnothing(\dnt{\Gamma}, \dnt{\ms{L}})}
+      \\
+    \sorry
+      \\  
+    \boxed{
+      \dnt{\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}}
+      : \dnt{H} \to \mc{C}_0^\varnothing(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
+      \\
+    \sorry
+  \end{gather*}
+  \caption{Semantics for \isotopessa blocks with holes}
+  \Description{Semantics for isotope-SSA blocks with holes}
+  \label{fig:ssa-block-holes-semantics}
+\end{figure}
 
-% \subsection{Semantics}
+\begin{figure}
+  \begin{gather*}
+    \boxed{
+      \dnt{\isrw{\mc{H}}{I}{H}}
+      : \dnt{I} \to \dnt{H} 
+    }
+    \\
+    \dnt{\isrw{\mc{H}}{I}{\cdot}}\;i = ()
+    \qquad
+    \dnt{\isrw{\mc{H}}{I}{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}}\;i
+    = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mhasty{I}{\Gamma}{p}{\mc{H}(\lhole{X})}{A}{q}}\;i)
+    \\
+    \dnt{\isrw{\mc{H}}{I}{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}}
+    = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mhaslb{I}{\Gamma}{\mc{H}(\lhole{T})}{\ms{L}}}\;i)
+    \\
+    \dnt{\isrw{\mc{H}}{I}{H, \cfghole{\lhole{L}}{\ms{L}}{\ms{K}}}}
+    = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mlhaslb{I}{\ms{L}}{\mc{H}(\lhole{W})}{\ms{K}}}\;i)
+  \end{gather*}
+  \caption{Semantics for \isotopessa rewrites}
+  \Description{Semantics for isotope-SSA rewrites}
+  \label{fig:rewrite-semantics}
+\end{figure}
+Of course, as for terms without holes, we have a coherence lemma:
+\begin{lemma}[Rewriting Coherence] \
+  \begin{itemize}
+    \item Given any two derivations \(D_1: \mhasty{H}{\Gamma}{p}{a}{A}{q}\), \(D_2: \mhasty{\Gamma}{p}{H}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \mhaslb{H}{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1, D_2: \isrw{\mc{H}}{I}{H}\), \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{lemma}
+We may finally state the semantic rewriting theorem as follows:
+\begin{theorem}[Semantic Rewriting]
+  Given \(\isrw{\mc{H}}{I}{H}\), we have that
+  \begin{itemize}
+    \item For all \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), \(m \in \dnt{I}\), we have
+    \[
+      \dnt{\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}}(m)
+      = \dnt{\mhasty{H}{\Gamma}{p}{a}{A}{q}}(\dnt{\isrw{\mc{H}}{I}{H}}(m))
+    \]
+    \item For all \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), \(m \in \dnt{I}\), we have
+    \[
+      \dnt{\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}}(m)
+      = \dnt{\mhaslb{H}{\Gamma}{t}{\ms{L}}}(\dnt{\isrw{\mc{H}}{I}{H}}(m))
+    \]
+  \end{itemize}
 
-% We can interpret a hole context semantically as the \textit{set} of all possible
-% tuples of morphisms which would typecheck in place of the holes in the context,
-% as specified in Figure \ref{fig:holes-semantics}.
-% \begin{figure}
-%   \begin{align*}
-%       \\
-%     \dnt{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}
-%       &= \dnt{H} \times \mc{C}_p^q(\dnt{\Gamma}, \dnt{A}) 
-%       \\
-%     \dnt{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}
-%       &= \dnt{H} \times \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}}) 
-%       \\
-%     \dnt{H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}}
-%       &= \dnt{H} \times \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}}) 
-%       \\
-%     \dnt{\cdot} 
-%       &= \mb{1}
-%   \end{align*}
-%   \caption{Semantics for \isotopessa holes}
-%   \Description{Semantics for isotope-SSA holes}
-%   \label{fig:holes-semantics}
-% \end{figure}
-% We can now quite easily give semantics for terms, blocks, and CFGs with holes
-% which simply correspond to "filling in" any holes with the appropriate morphism
-% from the hole context, with all other rules interpreted identically to their
-% regular variants: this is done in Figures \ref{fig:ssa-term-holes-semantics} and
-% \ref{fig:ssa-block-holes-semantics}.
+  Furthermore, we have that
+  \[
+    \dnt{\mhasty{\cdot}{\Gamma}{p}{a}{A}{q}}() = \dnt{\hasty{\Gamma}{p}{a}{A}{q}}
+    \qquad
+    \dnt{\mhaslb{\cdot}{\Gamma}{t}{\ms{L}}}() = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+  \]
+\end{theorem}
+This justifies congruence based optimizations, and in particular E-graph rewriting.
 
-% \begin{figure}
-%   \begin{gather*}
-%     \boxed{
-%       \dnt{\mhasty{H}{\Gamma}{p}{\mhole{a}}{A}{q}}
-%       : \dnt{H} \to \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})}
-%       \\
-%     \sorry
-%   \end{gather*}
-%   \caption{Semantics for \isotopessa terms with holes}
-%   \Description{Semantics for isotope-SSA terms with holes}
-%   \label{fig:ssa-term-holes-semantics}
-% \end{figure}
-
-% \begin{figure}
-%   \begin{gather*}
-%     \boxed{
-%       \dnt{\mhaslb{H}{\Gamma}{\mhole{t}}{\ms{L}}}
-%       : \dnt{H} \to \mc{C}_0^\varnothing(\dnt{\Gamma}, \dnt{\ms{L}})}
-%       \\
-%     \sorry
-%       \\  
-%     \boxed{
-%       \dnt{\mlhaslb{H}{\ms{L}}{\mhole{L}}{\ms{K}}}
-%       : \dnt{H} \to \mc{C}_0^\varnothing(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
-%       \\
-%     \sorry
-%   \end{gather*}
-%   \caption{Semantics for \isotopessa blocks with holes}
-%   \Description{Semantics for isotope-SSA blocks with holes}
-%   \label{fig:ssa-block-holes-semantics}
-% \end{figure}
-
-% \begin{figure}
-%   \begin{gather*}
-%     \boxed{
-%       \dnt{\isrw{\mc{H}}{I}{H}}
-%       : \dnt{I} \to \dnt{H} 
-%     }
-%     \\
-%     \dnt{\isrw{\mc{H}}{I}{\cdot}}\;i = ()
-%     \qquad
-%     \dnt{\isrw{\mc{H}}{I}{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}}\;i
-%     = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mhasty{I}{\Gamma}{p}{\mc{H}(\lhole{X})}{A}{q}}\;i)
-%     \\
-%     \dnt{\isrw{\mc{H}}{I}{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}}
-%     = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mhaslb{I}{\Gamma}{\mc{H}(\lhole{T})}{\ms{L}}}\;i)
-%     \\
-%     \dnt{\isrw{\mc{H}}{I}{H, \cfghole{\lhole{L}}{\ms{L}}{\ms{K}}}}
-%     = (\dnt{\isrw{\mc{H}}{I}{H}}\;i, \dnt{\mlhaslb{I}{\ms{L}}{\mc{H}(\lhole{W})}{\ms{K}}}\;i)
-%   \end{gather*}
-%   \caption{Semantics for \isotopessa rewrites}
-%   \Description{Semantics for isotope-SSA rewrites}
-%   \label{fig:rewrite-semantics}
-% \end{figure}
-
-% % \begin{lemma}[Rewriting Coherence] \
-% %   \begin{itemize}
-% %     \item Given any two derivations \(D_1: \mhasty{H}{\Gamma}{p}{a}{A}{q}\), \(D_2: \mhasty{\Gamma}{p}{H}{a}{A}{r}\), \(\dnt{D_1} = \dnt{D_2}\)
-% %     \item Given any two derivations \(D_1, D_2: \mhaslb{H}{\Gamma}{t}{\ms{L}}\), \(\dnt{D_1} = \dnt{D_2}\)
-% %     \item Given any two derivations \(D_1, D_2: \isrw{\mc{H}}{I}{H}\), \(\dnt{D_1} = \dnt{D_2}\)
-% %   \end{itemize}
-% % \end{lemma}
-
-% \begin{theorem}[Semantic Rewriting]
-%   Given \(\isrw{\mc{H}}{I}{H}\), we have that
-%   \begin{itemize}
-%     \item For all \(\mhasty{H}{\Gamma}{p}{a}{A}{q}\), \(m \in \dnt{I}\), we have
-%     \[
-%       \dnt{\mhasty{I}{\Gamma}{p}{[\mc{H}]a}{A}{q}}(m)
-%       = \dnt{\mhasty{H}{\Gamma}{p}{a}{A}{q}}(\dnt{\isrw{\mc{H}}{I}{H}}(m))
-%     \]
-%     \item For all \(\mhaslb{H}{\Gamma}{t}{\ms{L}}\), \(m \in \dnt{I}\), we have
-%     \[
-%       \dnt{\mhaslb{I}{\Gamma}{[\mc{H}]t}{\ms{L}}}(m)
-%       = \dnt{\mhaslb{H}{\Gamma}{t}{\ms{L}}}(\dnt{\isrw{\mc{H}}{I}{H}}(m))
-%     \]
-%   \end{itemize}
-
-%   Furthermore, we have that
-%   \[
-%     \dnt{\mhasty{\cdot}{\Gamma}{p}{a}{A}{q}}() = \dnt{\hasty{\Gamma}{p}{a}{A}{q}}
-%     \qquad
-%     \dnt{\mhaslb{\cdot}{\Gamma}{t}{\ms{L}}}() = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
-%   \]
-% \end{theorem}
-
+% \subsection{State-Passing Category}
+%
 % We can further use this example to get a substructural \textit{monoidal} category by considering a primitive form of separation logic: let's introduce a grammar of predicates \(\varphi, \psi ::= \top, \ms{S}, \bot\) for programs which cannot access state, can access state, and are invalid, respectively. The separating conjunction operator on these predicates is then given by
 % \begin{equation}
 %   \top * \varphi = \varphi * \top = \varphi
