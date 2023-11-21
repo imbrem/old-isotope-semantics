@@ -2374,227 +2374,232 @@ the low-level specification of the actual machine.
   \label{fig:ssa-grammar}
 \end{figure}
 
-% \section{Proofs}
+\section{Proofs}
 
-% \subsection{Weakening and Substitution}
+\subsection{Weakening and Substitution}
 
-% \begin{theorem}[Weakening] \
-%   \begin{itemize}
-%     \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
-%     \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
-%     \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then
-%     \(\haslb{\Gamma}{t}{\ms{L}}\)
-%     \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then
-%     \(\haslb{\Gamma}{t}{\ms{K}}\)
-%   \end{itemize}
-% \end{theorem}
+\begin{theorem}[Weakening] \
+  \begin{enumerate}
+    \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
+    \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
+    \item If \(\cwk{\Gamma}{\Delta}\), \(\haslb{\Delta}{t}{\ms{L}}\), then
+    \(\haslb{\Gamma}{t}{\ms{L}}\)
+    \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then
+    \(\haslb{\Gamma}{t}{\ms{K}}\)
+  \end{enumerate}
+\end{theorem}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof}
+  By induction: 
+  \begin{enumerate}
+    \item
+    \item
+    \item 
+  \end{enumerate}
+\end{proof}
 
-% \begin{lemma}[Substitution Splitting] 
-%   If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
-%   then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
-%   \begin{itemize}
-%     \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
-%     \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
-%     \item \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\)
-%   \end{itemize}
-% \end{lemma}
+\begin{lemma}[Substitution Splitting] 
+  If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
+  \begin{itemize}
+    \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
+    \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
+    \item \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\)
+  \end{itemize}
+\end{lemma}
 
-% \begin{proof} 
-%   We proceed by induction on derivations \(\csplits{\Gamma}{\Delta}{\Xi}\). In
-%   the \rle{split-nil} case, we have that \(\issubst{\gamma}{\cdot}{\cdot}\) by
-%   \rle{subst-nil}. For all other cases, since \(\issubst{\gamma}{\Theta}{\Gamma,
-%   \thyp{x}{A}{q}}\), we have by \rle{subst-cons} that
-%   \(\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}\),
-%   \(\issubst{\gamma}{\Theta_\Gamma}{\Gamma}\),
-%   \(\hasty{\Theta_\Gamma}{1}{\gamma(x)}{A}{q}\). Since
-%   \(\csplits{\Gamma}{\Delta}{\Xi}\), by induction, we have that
-%   \(\csplits{\Theta_\Gamma}{\Theta_\Delta}{\Theta_\Xi}\) where \(\Theta_\Delta\)
-%   and \(\Theta_\Xi\) have the desired properties above.
-%   \begin{itemize}
-%     \item \rle{split-left}: by left split association, we have that there exists
-%     \(\Theta_{\Delta, \thyp{x}{A}{q}}\), \(\csplits{\Theta}{\Theta_{\Delta,
-%     \thyp{x}{A}{q}}}{\Theta_\Xi}\), \(\csplits{\Theta_{\Delta,
-%     \thyp{x}{A}{q}}}{\Theta_\Delta}{\Theta_x}\). Using the fact that
-%     \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), we can conclude by
-%     \rle{subst-cons} that \(\issubst{\gamma}{\Theta_{\Delta,
-%     \thyp{x}{A}{q}}}{\Delta, \thyp{x}{A}{q}}\); the desired result hence
-%     follows.
-%     \item \rle{split-right}: by right split association, we have that there
-%     exists \(\Theta_{\Xi, \thyp{x}{A}{q}}\),
-%     \(\csplits{\Theta}{\Theta_\Delta}{\Theta_{\Xi, \thyp{x}{A}{q}}}\),
-%     \(\csplits{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Theta_\Xi}{\Theta_x}\). Using the
-%     fact that \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), we can conclude by
-%     \rle{subst-cons} that \(\issubst{\gamma}{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Xi,
-%     \thyp{x}{A}{q}}\); the desired result hence follows.
-%     \item \rle{split-dup}: since \(\tlin{A}{\trel}\), it follows by
-%     \rle{subst-cons} that \(\tlin{\Theta_x}{\trel}\), and hence that
-%     \(\csplits{\Theta_x}{\Theta_x}{\Theta_x}\). Therefore, by split association,
-%     we have that there exist \(\Theta_{\Delta, \thyp{x}{A}{q}}\), \(\Theta_{\Xi,
-%     \thyp{x}{A}{q}}\) such that \(\csplits{\Theta}{\Theta_{\Delta,
-%     \thyp{x}{A}{q}}}{\Theta_{\Xi, \thyp{x}{A}{q}}}\). Using the facts that
-%     \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\),
-%     \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), we can conclude by \rle{subst-cons}
-%     that \(\issubst{\gamma}{\Theta_{\Delta, \thyp{x}{A}{q}}}{\Delta,
-%     \thyp{x}{A}{q}}\), \(\issubst{\gamma}{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Xi,
-%     \thyp{x}{A}{q}}\); the desired result hence follows.
-%     \item \rle{split-drop}: since \(\tlin{A}{\taff}\), it follows by
-%     \rle{subst-cons} that \(\tlin{\Theta_x}{\taff}\), and hence that
-%     \(\cwk{\Theta_x}{\cdot}\). Therefore, by split association,
-%     \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\), giving the desired result.
-%   \end{itemize}
-% \end{proof}
+\begin{proof} 
+  We proceed by induction on derivations \(\csplits{\Gamma}{\Delta}{\Xi}\). In
+  the \rle{split-nil} case, we have that \(\issubst{\gamma}{\cdot}{\cdot}\) by
+  \rle{subst-nil}. For all other cases, since \(\issubst{\gamma}{\Theta}{\Gamma,
+  \thyp{x}{A}{q}}\), we have by \rle{subst-cons} that
+  \(\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}\),
+  \(\issubst{\gamma}{\Theta_\Gamma}{\Gamma}\),
+  \(\hasty{\Theta_\Gamma}{1}{\gamma(x)}{A}{q}\). Since
+  \(\csplits{\Gamma}{\Delta}{\Xi}\), by induction, we have that
+  \(\csplits{\Theta_\Gamma}{\Theta_\Delta}{\Theta_\Xi}\) where \(\Theta_\Delta\)
+  and \(\Theta_\Xi\) have the desired properties above.
+  \begin{itemize}
+    \item \rle{split-left}: by left split association, we have that there exists
+    \(\Theta_{\Delta, \thyp{x}{A}{q}}\), \(\csplits{\Theta}{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Theta_\Xi}\), \(\csplits{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Theta_\Delta}{\Theta_x}\). Using the fact that
+    \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), we can conclude by
+    \rle{subst-cons} that \(\issubst{\gamma}{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Delta, \thyp{x}{A}{q}}\); the desired result hence
+    follows.
+    \item \rle{split-right}: by right split association, we have that there
+    exists \(\Theta_{\Xi, \thyp{x}{A}{q}}\),
+    \(\csplits{\Theta}{\Theta_\Delta}{\Theta_{\Xi, \thyp{x}{A}{q}}}\),
+    \(\csplits{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Theta_\Xi}{\Theta_x}\). Using the
+    fact that \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), we can conclude by
+    \rle{subst-cons} that \(\issubst{\gamma}{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Xi,
+    \thyp{x}{A}{q}}\); the desired result hence follows.
+    \item \rle{split-dup}: since \(\tlin{A}{\trel}\), it follows by
+    \rle{subst-cons} that \(\tlin{\Theta_x}{\trel}\), and hence that
+    \(\csplits{\Theta_x}{\Theta_x}{\Theta_x}\). Therefore, by split association,
+    we have that there exist \(\Theta_{\Delta, \thyp{x}{A}{q}}\), \(\Theta_{\Xi,
+    \thyp{x}{A}{q}}\) such that \(\csplits{\Theta}{\Theta_{\Delta,
+    \thyp{x}{A}{q}}}{\Theta_{\Xi, \thyp{x}{A}{q}}}\). Using the facts that
+    \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\),
+    \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), we can conclude by \rle{subst-cons}
+    that \(\issubst{\gamma}{\Theta_{\Delta, \thyp{x}{A}{q}}}{\Delta,
+    \thyp{x}{A}{q}}\), \(\issubst{\gamma}{\Theta_{\Xi, \thyp{x}{A}{q}}}{\Xi,
+    \thyp{x}{A}{q}}\); the desired result hence follows.
+    \item \rle{split-drop}: since \(\tlin{A}{\taff}\), it follows by
+    \rle{subst-cons} that \(\tlin{\Theta_x}{\taff}\), and hence that
+    \(\cwk{\Theta_x}{\cdot}\). Therefore, by split association,
+    \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\), giving the desired result.
+  \end{itemize}
+\end{proof}
 
-% \begin{lemma}[Substitution] 
-%   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
-%   \begin{itemize}
-%     \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
-%     \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
-%     \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K}, \ms{W}'\) such that 
-%     \begin{itemize}
-%       \item \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) 
-%       \item \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\) 
-%       \item \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
-%     \end{itemize}
-%   \end{itemize}
-% \end{lemma}
+\begin{lemma}[Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
+    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K}, \ms{W}'\) such that 
+    \begin{itemize}
+      \item \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) 
+      \item \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\) 
+      \item \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
+    \end{itemize}
+  \end{itemize}
+\end{lemma}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
-% \begin{lemma}[Label Substitution] 
-%   Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
-%   \begin{itemize}
-%     \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
-%     \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
-%   \end{itemize}
-% \end{lemma}
+\begin{lemma}[Label Substitution] 
+  Given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), 
+  \begin{itemize}
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
+    \item For all \(\lhaslb{\ms{W}}{L}{\ms{L}}\), \(\lhaslb{\ms{W}}{[\mc{L}]L}{\ms{K}}\)
+  \end{itemize}
+\end{lemma}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
-% \subsection{Semantic Metatheory}
+\subsection{Semantic Metatheory}
 
-% \begin{lemma}[Semantic Upgrade]
-%   For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
-%   \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
-% \end{lemma}
+\begin{lemma}[Semantic Upgrade]
+  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
+  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
+\end{lemma}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
-% \begin{lemma}[Semantic Weakening] 
-%   If \(\cwk{\Gamma}{\Delta}\), then 
-%   \begin{itemize}
-%     \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
-%     \[
-%       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
-%       ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
-%       = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
-%     \]
-%     \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
-%     \[
-%       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
-%       ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
-%       = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
-%     \]
-%   \end{itemize}
+\begin{lemma}[Semantic Weakening] 
+  If \(\cwk{\Gamma}{\Delta}\), then 
+  \begin{itemize}
+    \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
+    \[
+      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+      ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
+      = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+    \]
+    \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
+    \[
+      \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
+      ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
+      = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
+    \]
+  \end{itemize}
 
-%   Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
-%   \[
-%     \dnt{\haslb{\Gamma}{t}{\ms{L}}}
-%     ; \dnt{\lwk{\ms{L}}{\ms{K}}}
-%     = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
-%   \]
-% \end{lemma}
+  Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
+  \[
+    \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+    ; \dnt{\lwk{\ms{L}}{\ms{K}}}
+    = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
+  \]
+\end{lemma}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
-% \begin{lemma}[Substitution Coherence] \
-%   \begin{itemize}
-%     \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
-%     \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
-%   \end{itemize}
-% \end{lemma}
+\begin{lemma}[Substitution Coherence] \
+  \begin{itemize}
+    \item Given any two derivations \(D_1: \issubst{\gamma}{\Theta}{\Gamma}\), \(D_2: \issubst{\gamma'}{\Theta}{\Gamma}\) such that \(\forall x \in \Theta, \gamma(x) = \gamma'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+    \item Given any two derivations \(D_1: \lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), \(D_2: \lbsubst{\mc{L}'}{\ms{L}}{\ms{K}}\) such that \(\forall \lbl{\ell} \in \ms{L}, \mc{L}(x) = \mc{L}'(x)\), we have \(\dnt{D_1} = \dnt{D_2}\)
+  \end{itemize}
+\end{lemma}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
-% \begin{lemma}[Semantic Substitution Splitting] 
-%   Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
-%   if \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\) and \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), then
-%   \[
-%     \dnt{\issubst{\gamma}{\Theta}{\Gamma}};\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
-%     = \dnt{\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}};
-%       \dnt{\issubst{\gamma}{\Theta_\Delta}{\Delta}}
-%       \otimes \dnt{\issubst{\gamma}{\Theta_\Xi}{\Xi}}
-%   \]
-% \end{lemma}
+\begin{lemma}[Semantic Substitution Splitting] 
+  Given \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Delta}{\Xi}\),
+  if \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\) and \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\), then
+  \[
+    \dnt{\issubst{\gamma}{\Theta}{\Gamma}};\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+    = \dnt{\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}};
+      \dnt{\issubst{\gamma}{\Theta_\Delta}{\Delta}}
+      \otimes \dnt{\issubst{\gamma}{\Theta_\Xi}{\Xi}}
+  \]
+\end{lemma}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
-% \begin{theorem}[Semantic Substitution] 
-%   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
-%   \begin{itemize}
-%     \item For all \(\hasty{\Gamma}{p}{a}{A}{q}\), 
-%     \[
-%       \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
-%       ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
-%       = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
-%     \]
-%     \item For all 
-%       \(\haslb{\Gamma}{t}{\ms{L}}\), 
-%       \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\), 
-%       \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
-%     \[
-%       \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
-%       ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
-%       = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
-%       ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
-%     \]
-%     \item For all 
-%       \(\lhaslb{\ms{W}}{L}{\ms{L}}\), 
-%       \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
-%       \(\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}\),
-%       \[
-%         \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
-%         ; \dnt{\lhaslb{\ms{W'}}{[\gamma]L}{\ms{K}}}
-%         = \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}}
-%         ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}}
-%         + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
-%       \]
-%   \end{itemize}
-%   Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
-%   \begin{itemize} 
-%     \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
-%     \[
-%       \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-%       = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
-%     \]
-%     \item For all \(\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}\), we have
-%     \[
-%       \dnt{\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
-%       + \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}}
-%       = \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}};\dnt{\lhaslb{\ms{W}_{\ms{K}}}{[\mc{L}]L}{\ms{K}}}
-%     \]
-%     where all variables in \(\ms{W}\) not in \(\ms{L}\) are fresh w.r.t \(\mc{L}\).
-%   \end{itemize}
-% \end{theorem}
+\begin{theorem}[Semantic Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item For all \(\hasty{\Gamma}{p}{a}{A}{q}\), 
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
+      ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+      = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
+    \]
+    \item For all 
+      \(\haslb{\Gamma}{t}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\), 
+      \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
+      ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
+      ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
+    \]
+    \item For all 
+      \(\lhaslb{\ms{W}}{L}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
+      \(\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}\),
+      \[
+        \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+        ; \dnt{\lhaslb{\ms{W'}}{[\gamma]L}{\ms{K}}}
+        = \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}}
+        ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}}
+        + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+      \]
+  \end{itemize}
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
+  \begin{itemize} 
+    \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+    \[
+      \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+    \]
+    \item For all \(\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}\), we have
+    \[
+      \dnt{\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      + \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}}
+      = \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}};\dnt{\lhaslb{\ms{W}_{\ms{K}}}{[\mc{L}]L}{\ms{K}}}
+    \]
+    where all variables in \(\ms{W}\) not in \(\ms{L}\) are fresh w.r.t \(\mc{L}\).
+  \end{itemize}
+\end{theorem}
 
-% \begin{proof} \
-%   \TODO{this}
-% \end{proof}
+\begin{proof} \
+  \TODO{this}
+\end{proof}
 
 \section{Rewriting}
 
