@@ -2650,9 +2650,11 @@ annotated as corresponding to one of:
     <\(\mhole{L}\)> ::= \(\lhole{W}\) \;|\; \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{\mhole{t}}, \mhole{L}\)
 
     <\(H\)> ::= \(\cdot\) 
-    \;|\; \(H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}\)
-    \;|\; \(H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}\)
-    \;|\; \(H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\)
+    \;|\; \(M\)
+
+    <\(M\)> ::= \(\tyhole{\lhole{X}}{\Gamma}{p}{A}{q}\)
+    \;|\; \(\blkhole{\lhole{T}}{\Gamma}{\ms{L}}\)
+    \;|\; \(\cfghole{\lhole{W}}{\ms{L}}{\ms{K}}\)
   \end{grammar}
   \caption{Grammar for \isotopessa expressions and blocks with holes}
   \Description{Grammar for isotope-SSA blocks with holes}
@@ -2695,7 +2697,7 @@ that, given a collection \(\mc{H}\) terms, blocks, and CFGs to fill each hole in
 \begin{figure}
   \begin{gather*}    
     \prftree[r]{\rle{hole-tm}}
-      {\tyhole{\lhole{X}}{\Delta}{p}{A}{q}}
+      {\tyhole{\lhole{X}}{\Delta}{p}{A}{q} \in H}
       {\cwk{\Gamma}{\Delta}}
       {\mhasty{H}{\Gamma}{p}{\lhole{X}}{A}{q}} \qquad
     \prftree[r]{\rle{var}}
@@ -2843,20 +2845,27 @@ We can interpret a hole context semantically as the \textit{set} of all possible
 tuples of morphisms which would typecheck in place of the holes in the context,
 as specified in Figure \ref{fig:holes-semantics}.
 \begin{figure}
-  \begin{align*}
+  \begin{gather*}
+    \dnt{\tyhole{\lhole{X}}{\Gamma}{p}{A}{q}} 
+      = \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})
+    \qquad
+    \dnt{\blkhole{\lhole{T}}{\Gamma}{\ms{L}}} 
+      = \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}})
       \\
-    \dnt{H, \tyhole{\lhole{X}}{\Gamma}{p}{A}{q}}
-      &= \dnt{H} \times \mc{C}_p^q(\dnt{\Gamma}, \dnt{A}) 
+    \dnt{\cfghole{\lhole{W}}{\ms{L}}{\ms{K}}}
+      = \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}}) 
       \\
-    \dnt{H, \blkhole{\lhole{T}}{\Gamma}{\ms{L}}}
-      &= \dnt{H} \times \mc{C}_0(\dnt{\Gamma}, \dnt{\ms{L}}) 
+    \dnt{H, M} = \dnt{H} \times \dnt{M}
+    \qquad
+    \dnt{\cdot} = \mb{1}
       \\
-    \dnt{H, \cfghole{\lhole{W}}{\ms{L}}{\ms{K}}}
-      &= \dnt{H} \times \mc{C}_0(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}}) 
-      \\
-    \dnt{\cdot} 
-      &= \mb{1}
-  \end{align*}
+    \boxed{\dnt{M \in H}: \dnt{H} \to \dnt{M}}
+      \qquad
+    \dnt{M \in H, M \in H} 
+      = \pi_1
+    \qquad
+    \dnt{M \in H, N} = \pi_0;\dnt{M \in H}
+  \end{gather*}
   \caption{Semantics for \isotopessa holes}
   \Description{Semantics for isotope-SSA holes}
   \label{fig:holes-semantics}
@@ -2874,6 +2883,11 @@ regular variants: this is done in Figures \ref{fig:ssa-term-holes-semantics} and
       : \dnt{H} \to \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})}
       \\
     \sorry
+      \\
+    \boxed{
+      \dnt{\tyhole{\mhole{X}}{\Gamma}{a}{A}{q} \in H}
+      : H \to \mc{C}^q_p(\dnt{\Gamma}, \dnt{A})
+    }
   \end{gather*}
   \caption{Semantics for \isotopessa terms with holes}
   \Description{Semantics for isotope-SSA terms with holes}
