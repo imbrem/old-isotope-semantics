@@ -1,0 +1,215 @@
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+
+\documentclass[acmsmall,screen,review]{acmart}
+
+\usepackage{syntax}
+\renewcommand{\syntleft}{\normalfont\itshape}
+\renewcommand{\syntright}{\normalfont\itshape}
+
+\usepackage{prftree}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{fancyvrb}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+%    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcounter{todos}
+\newcommand{\TODO}[1]{{
+  \stepcounter{todos}
+  \begin{center}\large{\textcolor{red}{\textbf{TODO \arabic{todos}:} #1}}\end{center}
+}}
+\newcommand{\sorry}{\textcolor{red}{\textbf{sorry}}}
+
+\newcommand{\todo}[1]{\stepcounter{todos} \textcolor{red}{TODO \arabic{todos}: #1}}
+
+% Math fonts
+\newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\mb}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\ms}[1]{\ensuremath{\mathsf{#1}}}
+
+% Math
+\newcommand{\nats}{\mathbb{N}}
+
+% Syntax atoms
+\newcommand{\lbl}[1]{{`#1}}
+\newcommand{\lto}{\Rightarrow}
+\newcommand{\ctt}{\ms{tt}}
+\newcommand{\cff}{\ms{ff}}
+
+% Syntax
+\newcommand{\letexpr}[3]{\ensuremath{\ms{let}\;#1 = #2\;\ms{in}\;#3}}
+\newcommand{\letstmt}[3]{\ensuremath{\ms{let}\;#1 = #2; #3}}
+\newcommand{\brb}[2]{\ms{br}\;#1\;#2}
+\newcommand{\lbrb}[2]{\brb{\lbl{#1}}{#2}}
+\newcommand{\ite}[3]{\ms{if}\;#1\;\{#2\}\;\ms{else}\;\{#3\}}
+\newcommand{\ewhere}[2]{\ms{then}\;#1\;\ms{where}\;#2}
+\newcommand{\where}[2]{#1\;\ms{where}\;#2}
+\newcommand{\wbranch}[3]{#1(#2) \lto #3}
+\newcommand{\lwbranch}[3]{\wbranch{\lbl{#1}}{#2}{#3}}
+\newcommand{\bsplice}[3]{#1(#2)\;\{#3\}}
+%\newcommand{\lbsplice}[3]{\bsplice{\lbl{#1}}{#2}{#3}}
+\newcommand{\csplits}[3]{#1 \mapsto #2;#3}
+\newcommand{\cwk}[2]{#1 \mapsto #2}
+\newcommand{\lwk}[2]{#1 \rightsquigarrow #2}
+\newcommand{\tlin}[2]{#2 \subseteq \ms{lin}(#1)}
+\newcommand{\ltlin}[3]{#3 \subseteq \ms{lin}(#1) \cap #2}
+\newcommand{\thyp}[3]{#1: {#2}^{#3}}
+\newcommand{\lhyp}[3]{#1[#2](#3)}
+\newcommand{\llhyp}[3]{\lhyp{\lbl{#1}}{#2}{#3}}
+\newcommand{\rle}[1]{{\scriptsize\textsf{#1}}}
+\newcommand{\taff}{{\{\ms{a}\}}}
+\newcommand{\trel}{{\{\ms{r}\}}}
+\newcommand{\tint}{{\{\ms{a}, \ms{r}\}}}
+\newcommand{\hasty}[5]{#1 \vdash_{#2} #3: {#4}^{#5}}
+\newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
+\newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
+\newcommand{\issubst}[3]{#1: #2 \mapsto #3}
+\newcommand{\lbsubst}[3]{#1: #2 \rightsquigarrow #3}
+\newcommand{\exprletsubst}[2]{{#1};{#2}}
+\newcommand{\stmtletsubst}[2]{{#1};{#2}}
+\newcommand{\mhole}[1]{{#1}^?}
+\newcommand{\lhole}[1]{?#1}
+\newcommand{\mhasty}[6]{#1;#2 \vdash_{#3} #4: {#5}^{#6}}
+\newcommand{\mhaslb}[4]{#1;#2 \vdash #3 \rhd #4}
+\newcommand{\mlhaslb}[4]{#1;#2 \vdash #3 \rhd #4}
+\newcommand{\tyhole}[5]{#1: #2 \mapsto_{#3} {#4}^{#5}}
+\newcommand{\blkhole}[3]{#1: #2 \mapsto #3}
+\newcommand{\cfghole}[3]{#1: #2 \mapsto #3}
+\newcommand{\substctx}[2]{{#1}^{#2}}
+\newcommand{\substlbs}[2]{{#1}^{#2}}
+\newcommand{\restrictsubst}[2]{{#1}_{#2}}
+\newcommand{\subsubst}[2]{#1 \subseteq #2}
+\newcommand{\isrw}[3]{#1: #2 \mapsto #3}
+\newcommand{\mbind}{\mathbin{{>}\hspace{-0.1em}{>}\hspace{-0.1em}{=}}}
+% \newcommand{\strictlbsubst}[3]{#1: #2 \rightsquigarrow_= #3}
+
+% Denotational semantics
+\newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
+\newcommand{\ednt}[1]{\left\llbracket{#1}\right\rrbracket}
+\newcommand{\upg}[2]{{#1}^{\uparrow #2}}
+
+% Weak memory
+\newcommand{\bufloc}[1]{\overline{#1}}
+
+% Branding
+\newcommand{\isotopessa}{\ms{isotope_{SSA}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmcopyright}
+\copyrightyear{2023}
+\acmYear{2023}
+\acmDOI{XXXXXXX.XXXXXXX}
+
+%%
+%% These commands are for a JOURNAL article.
+% \acmJournal{JACM}
+% \acmVolume{37}
+% \acmNumber{4}
+% \acmArticle{111}
+% \acmMonth{8}
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+\begin{document}
+
+\title{Isotope With Resources}
+
+\author{Jad Ghalayini}
+\email{jeg74@cl.cam.ac.uk}
+\orcid{0000-0002-6905-1303}
+
+\author{Neel Krishnaswami}
+\email{nk480@cl.cam.ac.uk}
+\orcid{0000-0003-2838-5865}
+
+\maketitle
+
+\TODO{go cite Iris}
+
+A \textbf{resource algebra} \(R\) is a partial commutative ordered (additive)
+monoid equipped with a distinguished element \(1 \in R\) (note that the
+identity here is represented as \(0\)) such that addition is nondecreasing in
+both arguments. \TODO{does it need to be nondecreasing in both arguments?} We
+define the following important resource algebras:
+\begin{itemize}
+    \item The \textbf{unit resource algebra} \(\mb{1}\) simply the unit monoid
+    \item The \textbf{linear resource algebra} \(\mb{2_L}\) is the set \(\{0,
+    1\}\) equipped with the discrete order, where \(1 + 1\) is undefined
+    \item The \textbf{affine resource algebra} \(\mb{2_A}\) is the set \(\{0,
+    1\}\) equipped with the usual order, where \(1 + 1\) is undefined
+    \item The \textbf{relevant resource algebra} \(\mb{2_R}\) is the set \(\{0,
+    1\}\) equipped with the discrete order, where \(1 + 1 = 1\)
+    \item The \textbf{pure} or \textbf{intuitionistic resource algebra}
+    \(\mb{2_P}\) is the set \(\{0, 1\}\) equipped with the usual order, where
+    \(1 + 1\) is undefined
+\end{itemize}
+A resource algebra is \textbf{discrete} if it is equipped with the discrete
+order. A resource algebra is \textbf{usable} if \(1 \neq 0\). A resource algebra
+isomorphism is a monoid isomorphism that is also an order isomorphism. We define
+the \textbf{product} of two resource algebras \(L \times R\) to consist of pairs
+\((l, r)\) where \((l, r) \leq (l', r') \iff l \leq l' \land r \leq r'\) and
+\((l, r) + (l', r') = (l + l', r + r')\); in particular, we note that 
+\begin{itemize}
+    \item The product of discrete resource algebras is discrete
+    \item \((L \times M) \times R \simeq L \times (M \times R)\) and \(R \times
+    \mb{1} \simeq \mb{1} \times R \simeq R\)
+\end{itemize}
+Given an assignment \(R_A\) of a resource algebra to every base type \(A \in
+\mc{T}\), we can assign the algebra \(R_{A \otimes B} = R_A \times R_B\) to the
+tensor product \(A \otimes B\).
+
+\TODO{resource algebra based strict splits, weakening \(\implies\) splits}
+
+\TODO{isotope with resources}
+
+\TODO{substitution + weakening theorems}
+
+\TODO{resource algebra semantics}
+
+\TODO{resource algebra semantic substitution + weakening}
+
+\end{document}
