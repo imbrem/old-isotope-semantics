@@ -2483,19 +2483,40 @@ the low-level specification of the actual machine.
   \begin{itemize}
     \item \rle{var}: we have that \(\cwk{\Gamma}{\thyp{x}{A}{q}}\), and
     therefore that \(\issubst{\gamma}{\Theta}{\thyp{x}{A}{q}}\); by
-    \rle{subst-var}, we obtain the desired result that
+    \rle{subst-cons}, we obtain the desired result that
     \(\hasty{\Theta}{p}{\gamma(x)}{A}{q}\).
-    \item \rle{app}: \todo{this}
-    \item \rle{pair}: \todo{this}
-    \item \rle{true}: \todo{this}
-    \item \rle{false}: \todo{this}
-    \item \rle{let}: \todo{this}
-    \item \rle{unit}: \todo{this}
-    \item \rle{let2}: \todo{this}
+    \item \rle{app}: by induction, we have that
+    \(\hasty{\Theta}{1}{[\gamma]a}{A}{q}\), and therefore we can apply \rle{app}
+    to obtain \(\hasty{\Theta}{p}{[\gamma](f\;a)}{B}{q}\) as desired.
+    \item \rle{pair}: we have that \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\) and
+    \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\). Therefore, by induction, we have that
+    \(\hasty{\Theta_\Delta}{1}{[\gamma]a}{A}{q}\) and
+    \(\hasty{\Theta_\Xi}{1}{[\gamma]b}{B}{q}\); we can simply apply \rle{pair}
+    to obtain our desired result that \(\hasty{\Theta}{p}{[\gamma](a, b)}{A
+    \otimes B}{q}\)
+    \item \rle{true}, \rle{unit}, \rle{false}: these cases hold trivially since
+    \(\cwk{\Theta}{\cdot}\)
+    \item \rle{let}: we have that \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
+    and \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\). Taking \(x\) to be a fresh
+    variable (with \(\gamma(x) = x\)), we can conclude by \rle{subst-cons} that
+    \(\issubst{\gamma}{\Theta_\Delta, \thyp{x}{A}{}}{\Delta, \thyp{x}{A}{}}\).
+    Therefore, by induction, we have that \(\hasty{\Theta_\Delta, \thyp{x}{A}{}}{p}{[\gamma]e}{B}{q}\) and \(\hasty{\Theta_\Xi}{1}{[\gamma]a}{A}{q}\); we
+    can hence simply apply \rle{let} to obtain
+    \(\hasty{\Theta}{p}{[\gamma]\letexpr{x}{a}{e}}{B}{q}\), as desired.
+    \item \rle{let2}: we have that \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
+    and \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\). Taking \(x, y\) to be fresh
+    variables (with \(\gamma(x) = x\), \(\gamma(y) = y\)), we can conclude by
+    \rle{subst-cons} that \(\issubst{\gamma}{\Theta_\Delta, \thyp{x}{A}{},
+    \thyp{y}{B}{}}{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}\). Therefore, by
+    induction, we have that \(\hasty{\Theta_\Delta, \thyp{x}{A}{},
+    \thyp{y}{B}{}}{p}{[\gamma]e}{C}{q}\) and
+    \(\hasty{\Theta_\Xi}{1}{[\gamma]a}{A \otimes B}{q}\); we can hence simply
+    apply \rle{let2} to obtain
+    \(\hasty{\Theta}{p}{[\gamma]\letexpr{(x, y)}{a}{e}}{C}{q}\), as desired.
   \end{itemize}
   Using \ref{lemma:substitution:term}; we can now prove
-  \ref{lemma:substitution:block} and \ref{lemma:substitution:cfg} by
-  mutual induction on derivations as follows:
+  \ref{lemma:substitution:block} and \ref{lemma:substitution:cfg} by mutual
+  induction on derivations as follows:
   \begin{itemize}
     \item \rle{br}: \todo{this}
     \item \rle{let-blk}: \todo{this}
@@ -3012,7 +3033,12 @@ We may finally state the semantic rewriting theorem as follows:
     \dnt{\mhaslb{\cdot}{\Gamma}{t}{\ms{L}}}() = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
   \]
 \end{theorem}
-This justifies congruence based optimizations, and in particular E-graph rewriting.
+This justifies congruence based optimizations, and in particular E-graph
+rewriting.
+
+\subsection{Equational Theory}
+
+\TODO{\(\beta\), \(\eta\), etc}
 
 \section{Refinement}
 
@@ -3037,6 +3063,10 @@ simply rewrite the program to an equivalent one.
 \TODO{refinement for rewrites}
 
 \TODO{semantic refinement theorem}
+
+\subsection{Equational Theory}
+
+\TODO{this}
 
 \section{Normalisation}
 
