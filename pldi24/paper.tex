@@ -3014,7 +3014,75 @@ We may finally state the semantic rewriting theorem as follows:
 \end{theorem}
 This justifies congruence based optimizations, and in particular E-graph rewriting.
 
-% \subsection{State-Passing Category}
+\section{Refinement}
+
+In general, we often want to justify optimizations which \textit{refine} a
+program by, for example, reducing the set of allowable behaviours, rather than
+simply rewrite the program to an equivalent one.
+
+\TODO{freeze example, UB}
+
+\TODO{determinism and local refinement}
+
+\subsection{Poset-Enriched Categories}
+
+\TODO{semantics of refinement via poset-enriched categories}
+
+\TODO{trivial poset-enrichment}
+
+\TODO{powerset-based poset-enrichment}
+
+\subsection{Semantic Refinement}
+
+\TODO{refinement for rewrites}
+
+\TODO{semantic refinement theorem}
+
+\section{Normalisation}
+
+\TODO{this}
+
+\subsection{Strict SSA form}
+
+\TODO{this}
+
+\subsection{Structured Control-Flow}
+
+\TODO{this}
+
+\section{Loop Optimizations}
+
+\TODO{this}
+
+\subsection{Unrolling and Vectorization}
+
+\TODO{this}
+
+\subsection{Dead-code Elimination}
+
+\TODO{this}
+
+\subsection{Loop Hoisting}
+
+\TODO{this}
+
+\subsection{Loop Fusion/Fission}
+
+\TODO{this}
+
+\section{E-Graph Optimizations}
+
+\TODO{this}
+
+\subsection{Floating SSA}
+
+\TODO{this}
+
+\subsection{Whole-program rewriting}
+
+\TODO{this}
+
+% \section{State-Passing Category}
 %
 % We can further use this example to get a substructural \textit{monoidal} category by considering a primitive form of separation logic: let's introduce a grammar of predicates \(\varphi, \psi ::= \top, \ms{S}, \bot\) for programs which cannot access state, can access state, and are invalid, respectively. The separating conjunction operator on these predicates is then given by
 % \begin{equation}
