@@ -2378,7 +2378,23 @@ the low-level specification of the actual machine.
 
 \subsection{Weakening and Substitution}
 
-\begin{theorem}[Weakening] \
+\begin{lemma} We have that
+  \begin{enumerate}
+    \item Splitting commutes: if \(\csplits{\Gamma}{\Delta}{\Xi}\) then \(\csplits{\Gamma}{\Xi}{\Delta}\), and \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}} = \dnt{\csplits{\Gamma}{\Xi}{\Delta}};\sigma\)
+    \item Splitting associates: if \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\csplits{\Xi}{\Theta}{\Phi}\) then there exists \(\Gamma_{\Delta, \Theta}\) such that \(\csplits{\Gamma}{\Gamma_{\Delta, \Theta}}{\Phi}\) and \(\csplits{\Gamma_{\Delta, \Theta}}{\Delta}{\Theta}\), and, for \emph{all} such \(\Gamma_{\Delta, \Theta}\), we have \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}};\dnt{\Delta} \otimes \csplits{\Xi}{\Theta}{\Phi} = \dnt{\csplits{\Gamma}{\Gamma_{\Delta, \Theta}}{\Phi}};\dnt{\csplits{\Gamma_{\Delta, \Theta}}{\Delta}{\Theta}} \otimes \dnt{\Phi};\alpha\)
+    \item Weakening composes: if \(\cwk{\Gamma}{\Delta}\) and \(\cwk{\Delta}{\Xi}\), then \(\cwk{\Gamma}{\Xi}\)
+    \item Splitting and weakening compose on the right: if \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\cwk{\Delta}{\Delta'}\) then \(\csplits{\Gamma}{\Delta'}{\Xi}\), furthermore,
+    \(\dnt{\csplits{\Gamma}{\Delta'}{\Xi}} = \dnt{\csplits{\Gamma}{\Delta}{\Xi}};\dnt{\cwk{\Delta}{\Delta'}} \otimes \dnt{\Xi}\)
+    \item Splitting and weakening compose on the left: if \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\cwk{\Gamma'}{\Gamma}\) then \(\csplits{\Gamma'}{\Delta'}{\Xi}\), furthermore,
+    \(\dnt{\csplits{\Gamma'}{\Delta}{\Xi}} = \dnt{\cwk{\Gamma'}{\Gamma}};\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\)
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  By induction.
+\end{proof}
+
+\begin{lemma}[Weakening] \
   \begin{enumerate}
     \item If \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
     \(\hasty{\Delta}{p}{a}{A}{r}\), then \(\hasty{\Gamma}{p}{a}{A}{q}\)
@@ -2387,25 +2403,20 @@ the low-level specification of the actual machine.
     \item If \(\lwk{\ms{L}}{\ms{K}}\), \(\haslb{\Gamma}{t}{\ms{L}}\) then
     \(\haslb{\Gamma}{t}{\ms{K}}\)
   \end{enumerate}
-\end{theorem}
+\end{lemma}
 
 \begin{proof}
-  By induction: 
-  \begin{enumerate}
-    \item
-    \item
-    \item 
-  \end{enumerate}
+  By induction.
 \end{proof}
 
 \begin{lemma}[Substitution Splitting] 
   If \(\csplits{\Gamma}{\Delta}{\Xi}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\),
-  then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that:
-  \begin{itemize}
-    \item \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\)
-    \item \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\)
-    \item \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\)
-  \end{itemize}
+  then there exist \(\Theta_\Delta\), \(\Theta_\Xi\) such that
+  \(\csplits{\Theta}{\Theta_\Delta}{\Theta_\Xi}\),
+  \(\issubst{\gamma}{\Theta_\Delta}{\Delta}\), and
+  \(\issubst{\gamma}{\Theta_\Xi}{\Xi}\). In particular, if
+  \(\cwk{\Gamma}{\Delta}\) and \(\issubst{\gamma}{\Theta}{\Gamma}\), then
+  \(\issubst{\gamma}{\Theta}{\Delta}\).
 \end{lemma}
 
 \begin{proof} 
@@ -2455,20 +2466,45 @@ the low-level specification of the actual machine.
 
 \begin{lemma}[Substitution] 
   Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
-  \begin{itemize}
-    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\)
+  \begin{enumerate}
+    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\) \label{lemma:substitution:term}
     \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\)
-    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K}, \ms{W}'\) such that 
-    \begin{itemize}
-      \item \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) 
-      \item \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\) 
-      \item \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
-    \end{itemize}
-  \end{itemize}
+    \label{lemma:substitution:block}
+    \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K},
+    \ms{W}'\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
+    \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\), and
+    \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
+    \label{lemma:substitution:cfg}
+  \end{enumerate}
 \end{lemma}
 
-\begin{proof} \
-  \TODO{this}
+\begin{proof} 
+  We begin by proving \ref{lemma:substitution:term} by induction on derivations \(\hasty{\Gamma}{p}{a}{A}{q}\):
+  \begin{itemize}
+    \item \rle{var}: we have that \(\cwk{\Gamma}{\thyp{x}{A}{q}}\), and
+    therefore that \(\issubst{\gamma}{\Theta}{\thyp{x}{A}{q}}\); by
+    \rle{subst-var}, we obtain the desired result that
+    \(\hasty{\Theta}{p}{\gamma(x)}{A}{q}\).
+    \item \rle{app}: \todo{this}
+    \item \rle{pair}: \todo{this}
+    \item \rle{true}: \todo{this}
+    \item \rle{false}: \todo{this}
+    \item \rle{let}: \todo{this}
+    \item \rle{unit}: \todo{this}
+    \item \rle{let2}: \todo{this}
+  \end{itemize}
+  Using \ref{lemma:substitution:term}; we can now prove
+  \ref{lemma:substitution:block} and \ref{lemma:substitution:cfg} by
+  mutual induction on derivations as follows:
+  \begin{itemize}
+    \item \rle{br}: \todo{this}
+    \item \rle{let-blk}: \todo{this}
+    \item \rle{ite}: \todo{this}
+    \item \rle{let2-blk}: \todo{this}
+    \item \rle{where}: \todo{this}
+    \item \rle{nil-br}: \todo{this}
+    \item \rle{cons-br}: \todo{this}
+  \end{itemize}
 \end{proof}
 
 \begin{lemma}[Label Substitution] 
@@ -2479,15 +2515,25 @@ the low-level specification of the actual machine.
   \end{itemize}
 \end{lemma}
 
-\begin{proof} \
-  \TODO{this}
+\begin{proof} 
+  We proceed by mutual induction on derivations as follows:
+  \begin{itemize}
+    \item \rle{br}: \todo{this}
+    \item \rle{let-blk}: \todo{this}
+    \item \rle{ite}: \todo{this}
+    \item \rle{let2-blk}: \todo{this}
+    \item \rle{where}: \todo{this}
+    \item \rle{nil-br}: \todo{this}
+    \item \rle{cons-br}: \todo{this}
+  \end{itemize}
 \end{proof}
 
 \subsection{Semantic Metatheory}
 
 \begin{lemma}[Semantic Upgrade]
-  For all \(\Gamma, a, A\), if \(\hasty{\Gamma}{1}{a}{A}{q}\), then
-  \[\dnt{\hasty{\Gamma}{0}{a}{A}{q}} = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\]
+  If \(\hasty{\Gamma}{1}{a}{A}{q}\), we have that
+  \(\dnt{\hasty{\Gamma}{0}{a}{A}{q}} =
+  \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{}\)
 \end{lemma}
 
 \begin{proof} \
@@ -2498,25 +2544,25 @@ the low-level specification of the actual machine.
   If \(\cwk{\Gamma}{\Delta}\), then 
   \begin{itemize}
     \item For all \(\hasty{\Delta}{p}{a}{A}{q}\),
-    \[
+    \(
       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
       ; \dnt{\hasty{\Delta}{p}{a}{A}{q}}
       = \dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
-    \]
+    \)
     \item For all \(\haslb{\Delta}{t}{\ms{L}}\),
-    \[
+    \(
       \upg{\dnt{\cwk{\Gamma}{\Delta}}}{p}
       ; \dnt{\haslb{\Delta}{t}{\ms{L}}}
       = \dnt{\haslb{\Gamma}{t}{\ms{L}}}  
-    \]
+    \)
   \end{itemize}
 
   Similarly, if \(\lwk{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma}{t}{\ms{L}}\), then
-  \[
+  \(
     \dnt{\haslb{\Gamma}{t}{\ms{L}}}
     ; \dnt{\lwk{\ms{L}}{\ms{K}}}
     = \dnt{\haslb{\Gamma}{t}{\ms{K}}}
-  \]
+  \)
 \end{lemma}
 
 \begin{proof} \
