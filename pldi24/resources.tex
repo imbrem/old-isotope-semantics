@@ -170,6 +170,8 @@
 
 \TODO{go cite Iris}
 
+\TODO{go cite quantiatitive type theory}
+
 A \textbf{resource algebra} \(R\) is a partial commutative ordered (additive)
 monoid equipped with a distinguished element \(1 \in R\) (note that the
 identity here is represented as \(0\)) such that addition is nondecreasing in
@@ -201,6 +203,11 @@ the \textbf{product} of two resource algebras \(L \times R\) to consist of pairs
 Given an assignment \(R_A\) of a resource algebra to every base type \(A \in
 \mc{T}\), we can assign the algebra \(R_{A \otimes B} = R_A \times R_B\) to the
 tensor product \(A \otimes B\).
+
+Given a resource algebra \(R\), we define a \textbf{subalgebra} to be given by
+operations \(+', \leq'\) such that \(+ \subseteq +\), \(\leq \subseteq \leq'\)
+satisfying the resource algebra laws. In particular, every resource algebra has
+the minimal subalgebra \(+_\varnothing\) defining only \(a + 0 = 0 + a = a\)
 
 \TODO{resource algebra based strict splits, weakening \(\implies\) splits}
 
