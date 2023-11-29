@@ -286,123 +286,99 @@ effects based on (1) whether or not the order of effects mattered, (2) whether
 it was sound to discard an effectful operation, and (3) whether it was sound to
 duplicate an effectful operation. Suppose we substitute \texttt{print("hello")}
 for $x$ in the program below:
-\begin{equation}
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{equation*}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let x = print("hello");
 let y = print("world");
 let z = x;   
 ...
 \end{BVerbatim}
-  \end{small}
 \qquad \qquad \centernot\implies \qquad \qquad
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let y = print("world");
 let z = print("hello");
 ...
 \end{BVerbatim}
-  \end{small}
-\end{equation}
+\end{equation*}
 In this case, substituting a term for a variable changes the order of I/O
 actions, which changes the program's observable behaviour. On the other hand,
 suppose we have an effect which increments a counter. Then in the following
 program the same transformation is sound, since \(x\) is used exactly once:
-\begin{equation}
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{equation*}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let x = increment(a);
 let y = increment(b);
 let z = x;
 ...
 \end{BVerbatim}
-  \end{small}
 \qquad \qquad \implies \qquad \qquad
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let y = increment(b);
 let z = increment(a);
 ...
 \end{BVerbatim}
-  \end{small}
-\end{equation}
+\end{equation*}
 F\"{u}hrmann called such commutative effects \emph{central}, which we also call
 \emph{linear}. It can also matter whether an effect is performed at all or not.
 For example, consider:
 \begin{equation}
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let x = may_loop();
 return 5 
 \end{BVerbatim}
-  \end{small}
 \qquad \qquad \centernot\implies \qquad \qquad
-\begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 return 5
 \end{BVerbatim}
-\end{small}
 \end{equation}
 In this example, even though $x$ is not used, the call to \texttt{may_loop()}
 cannot be erased, as the observable behaviour of the program can change if it
 goes into an infinite loop. On the other hand, if the effectful operation is
 merely nondeterministic, then it is safe to discard results:
 \begin{equation}
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let x = nondet();
 return 5 
 \end{BVerbatim}
-  \end{small}
 \qquad \qquad \implies \qquad \qquad
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 return 5
 \end{BVerbatim}
-  \end{small}
 \end{equation}
 F\"{u}hrmann called these operations \emph{discardable}. In this paper, we use
 his terminology, and also call such effects \emph{affine}. Now consider the
 following example: 
 \begin{equation}
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let x = nondet();
 let y = x;
 let z = x;
 return y == z 
 \end{BVerbatim}
-  \end{small}
 \qquad \qquad \centernot\implies \qquad \qquad
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let y = nondet();
 let z = nondet();
 return y == z
 \end{BVerbatim}
-  \end{small}
 \end{equation}
 In this case, substituting for $x$ duplicates the call to \texttt{nondet()}, and
 can change this from a program which always returns \texttt{true} to one which
 can return either \texttt{true} or \texttt{false}. On the other hand, if the
 effect is the possibility of nontermination, then the substitution is sound.
 \begin{equation}
-\begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let x = may_loop();
 let y = x;
 let z = x;
 return y == z 
 \end{BVerbatim}
-\end{small}
 \qquad \qquad \implies \qquad \qquad
-\begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 let y = may_loop();
 let z = may_loop();
 return y == z
 \end{BVerbatim}
-\end{small}
 \end{equation}
 F\"{u}hrmann called such operations \emph{copyable}. In this paper, we use his
 terminology, and also call such effects \emph{relevant}. With these distinction
@@ -417,23 +393,19 @@ types, which associate aliasing and ownership information with individual
 values. Having aliasing information justifies important optimisations such as
 loop hoisting: 
 \begin{equation}
-  \begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 while (e) {
   x = load(a);
   body
 }
 \end{BVerbatim}
-\end{small}
 \qquad \qquad \implies \qquad \qquad
-\begin{small}
-\begin{BVerbatim}[baseline=c]
+\begin{BVerbatim}[baseline=c,fontsize=\small]
 x = load(a);
 while(e) {
   body
 }
 \end{BVerbatim}
-\end{small}
 \label{eqn:hoist}
 \end{equation}
 This transformation is only sound if the body of the loop \texttt{body} does not
@@ -3044,7 +3016,9 @@ rewriting.
 
 In general, we often want to justify optimizations which \textit{refine} a
 program by, for example, reducing the set of allowable behaviours, rather than
-simply rewrite the program to an equivalent one.
+simply rewrite the program to an equivalent one. One place where refinement
+pops up quite often is in the treatment of undefined values and undefined 
+behaviour; for example, in a language where reading a dangling pointer is UB,
 
 \TODO{freeze example, UB}
 
