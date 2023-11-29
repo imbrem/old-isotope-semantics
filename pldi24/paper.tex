@@ -1076,6 +1076,8 @@ potentially nonterminating control flow.
 
 \subsection{Substructural Categories}
 
+\label{ssec:substruct}
+
 We begin with some standard definitions from the literature:
 \begin{definition}[Binoidal Category] 
   A \textbf{binoidal category} \(\mc{C}\) is a category equipped with a binary
@@ -3018,19 +3020,46 @@ In general, we often want to justify optimizations which \textit{refine} a
 program by, for example, reducing the set of allowable behaviours, rather than
 simply rewrite the program to an equivalent one. One place where refinement
 pops up quite often is in the treatment of undefined values and undefined 
-behaviour; for example, in a language where reading a dangling pointer is UB,
-
-\TODO{freeze example, UB}
-
-\TODO{determinism and local refinement}
+behaviour; for example, in a language where reading a dangling pointer is UB, 
+the transformation 
+\begin{equation*}
+\begin{BVerbatim}[baseline=c, fontsize=\small]
+  let x = read(p);
+  ret 5
+\end{BVerbatim}
+  \qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c, fontsize=\small]
+  ret 5
+\end{BVerbatim}
+\end{equation*}
+is valid, but the reverse is \textit{not}, since that would \textit{introduce},
+rather than \textit{remove}, potential UB. These optimizations are particularly
+important when operations are allowed to generate undefined values, in which
+case, even simple rewrites such as \(a \times 0 \to 0\) and \(a - a \to 0\) are
+refinements rather than equalities. In this appendix section, we will generalize
+our semantics for rewriting from section \ref{apx:rewriting} to support
+reasoning about refinements in a compositional manner.
 
 \subsection{Poset-Enriched Categories}
 
-\TODO{semantics of refinement via poset-enriched categories}
-
-\TODO{trivial poset-enrichment}
-
-\TODO{powerset-based poset-enrichment}
+To reason about refinement, we need to introduce the definition of a
+\textit{poset-enriched category}:
+\begin{definition}[Poset-Enriched Category]
+  A category \(\mc{C}\) is \textbf{poset-enriched} if, for all objects \(A, B
+  \in |\mc{C}|\), \(\mc{C}(A, B)\) is equipped with a partial order \(\leq\)
+  compatible with composition, i.e. \(f \leq g \implies f;h \leq g;h, h';f \leq
+  h';g\). A \textbf{poset-enriched premonoidal category} is a poset-enriched
+  category such that the partial order on morphisms is compatible with
+  whiskering, i.e. \(f \leq g \implies f \otimes C \leq g \otimes C, C \otimes f
+  \leq C \otimes g\). A \textbf{poset-enriched substructural category} is a
+  poset-enriched premonoidal category such that the subcategories
+  \(\mc{C}^{\ms{a}}, \mc{C}^{\ms{r}}\) are downward-closed under \(\leq\). 
+\end{definition}
+Note that every (premonoidal/substructural) category \(\mc{C}\) can be
+considered poset-enriched under the discrete partial order \((\leq) = (=)\). One
+useful example of a poset-enriched substructural category is the category of
+relations from section \ref{ssec:substruct}, taking \(f \leq g \iff \forall a
+\in A, f(a) \subseteq g(a)\).
 
 \subsection{Semantic Refinement}
 
