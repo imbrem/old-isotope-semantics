@@ -40,7 +40,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m = 0
       n = 1
@@ -60,7 +60,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m = 0          
       n = 1
@@ -80,7 +80,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m = 0          // ⇐
       n = 1
@@ -100,7 +100,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m = 0          
       n = 1          // ⇐
@@ -120,7 +120,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m = 0
       n = 1
@@ -140,7 +140,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m = 0
       n = 1
@@ -160,7 +160,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m0 = 0
       n0 = 1
@@ -179,7 +179,7 @@
 #slide[
   #align(center + horizon)[
     ```isotope
-    # Compute fibonacci(i)
+    // Compute fibonacci(i)
     'entry:
       m0 = 0
       n0 = 1
