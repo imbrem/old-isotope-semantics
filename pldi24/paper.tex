@@ -509,17 +509,17 @@ as in Figure \ref{fig:bb-arg}.
   \begin{subfigure}[t]{0.32\textwidth}
     \begin{small}
     \begin{BVerbatim}[baseline=t, gobble=3]
-      'entry:
+    'entry:
       m0 = 0
       n0 = 1
-      brz N 
+      brz i
         'exit (m0) 
         'loop (i, m0, n0)
     'loop(i0, m1, n1):
       m2 = n1
       n2 = add m1 n1
       i1 = sub i0 1
-      brz z1 
+      brz i1 
         'exit (m2) 
         'loop (i1, m2, n2)
     'exit(m3):

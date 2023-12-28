@@ -6,6 +6,10 @@
 #let ert = $λ_sans("ert")$;
 #let stlc = $λ_sans("stlc")$;
 
+#import "highline.typ": *
+
+#show raw.where(lang: "isotope"): highline;
+
 #title-slide[
   = SSA is Freyd Categories
   #v(2em)
@@ -30,7 +34,7 @@
 
 #slide[
   #align(center + horizon)[
-    ```
+    ```isotope
     # Compute fibonacci(i)
     'entry:
       m = 0
@@ -44,6 +48,125 @@
       brz i 'exit 'loop
     'exit:
       ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m = 0          
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m = 0          // ⇐
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m = 0          
+      n = 1          // ⇐
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          // ✗
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          // ✗
+      i = sub i 1    // ✗
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n    // ✔
+      m = n          // ✗
+      n = t          // ✗
+      i = sub i 1    // ✗
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m0 = 0
+      n0 = 1
+      brz i 'exit(m0) 'loop(i, m0, n0)
+    'loop(i0, m1, n1):
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz i1 'exit(m2) 'loop(i1, m2, n2)
+    'exit(m3):
+      ret m3
     ```
   ]
 ]
