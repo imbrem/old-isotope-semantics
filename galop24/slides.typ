@@ -20,9 +20,42 @@
   GALOP'24 -- London
 ]
 
-#slide[
+#focus-slide[
   = What is SSA?
-  ...
+]
+
+#focus-slide[
+  = Static Single Assignment
+]
+
+#slide[
+  #align(center + horizon)[
+    ```
+    # Compute fibonacci(i)
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n
+      n = t
+      i = sub i 1
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+
+
+#slide[
+  ... SSAify previous
+]
+
+#slide[
+  Why?
 ]
 
 #slide[
