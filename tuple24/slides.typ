@@ -6,7 +6,12 @@
 #let ert = $λ_sans("ert")$;
 #let stlc = $λ_sans("stlc")$;
 
-#import "highline.typ": *
+#let highline(it) = [
+  #show regex(".*//.*✗") : line => text(red, line)
+  #show regex(".*//.*✔") : line => text(green, line)
+  #show regex(".*//.*‖") : line => text(yellow.darken(50%), line)
+  #it
+]
 
 #show raw.where(lang: "isotope"): highline;
 
@@ -172,11 +177,27 @@
 ]
 
 #slide[
-  ... SSAify previous
+  #align(center + horizon)[
+    ```isotope
+    # Compute fibonacci(i)
+    'entry:
+      m0 = 0
+      n0 = 1
+      brz i 'exit(m0) 'loop(i, m0, n0)   // ‖
+    'loop(i0, m1, n1):                   // ‖
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz i1 'exit(m2) 'loop(i1, m2, n2) // ‖
+    'exit(m3):                           // ‖
+      ret m3
+    ```
+  ]
 ]
 
 #slide[
-  Why?
+  = Why?
+  ...
 ]
 
 #slide[
