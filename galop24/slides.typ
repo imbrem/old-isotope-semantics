@@ -6,6 +6,15 @@
 #let ert = $λ_sans("ert")$;
 #let stlc = $λ_sans("stlc")$;
 
+#let highline(it) = [
+  #show regex(".*//.*✗") : line => text(red, line)
+  #show regex(".*//.*✔") : line => text(green, line)
+  #show regex(".*//.*‖") : line => text(yellow.darken(50%), line)
+  #it
+]
+
+#show raw.where(lang: "isotope"): highline;
+
 #title-slide[
   = SSA is Freyd Categories
   #v(2em)
@@ -15,9 +24,9 @@
 
   University of Cambridge
   
-  January 14
+  February 21
 
-  GALOP'24 -- London
+  TUPLE'24 -- Edinburgh
 ]
 
 #focus-slide[
@@ -30,8 +39,8 @@
 
 #slide[
   #align(center + horizon)[
-    ```
-    # Compute fibonacci(i)
+    ```isotope
+    // Compute fibonacci(i)
     'entry:
       m = 0
       n = 1
@@ -48,26 +57,184 @@
   ]
 ]
 
-
-
 #slide[
-  ... SSAify previous
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m = 0          
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
 ]
 
 #slide[
-  Why?
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m = 0          // ⇐
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m = 0          
+      n = 1          // ⇐
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          // ✗
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n          // ✗
+      n = t          // ✗
+      i = sub i 1    // ✗
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n    // ✔
+      m = n          // ✗
+      n = t          // ✗
+      i = sub i 1    // ✗
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m0 = 0
+      n0 = 1
+      brz i 'exit(m0) 'loop(i, m0, n0)
+    'loop(i0, m1, n1):
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz i1 'exit(m2) 'loop(i1, m2, n2)
+    'exit(m3):
+      ret m3
+    ```
+  ]
+]
+
+#slide[
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m0 = 0
+      n0 = 1
+      brz i 'exit(m0) 'loop(i, m0, n0)   // ‖
+    'loop(i0, m1, n1):                   // ‖
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz i1 'exit(m2) 'loop(i1, m2, n2) // ‖
+    'exit(m3):                           // ‖
+      ret m3
+    ```
+  ]
 ]
 
 #slide[
   = Wide Usage of SSA
+  #line-by-line[
+    - Classical compilers
+    - MLIR observations:
+      #line-by-line(start: 3)[
+      - GPU (SPIR-V)
+      - CPU
+      - FPGA -- CIRCT
+      - Even Quantum
+      ]
+  ]
+  #only("7-")[
+    - Wide usage $==>$ Underlying Categorical Structure?
+      #line-by-line(start: 8)[
+        - STLC $==>$ Cartesian closed categories
+        - Effects $==>$ Monads
+        - *Call-by-value $==>$ Freyd categories*
+      ]
+  ]
+]
+
+#slide[
+  = Call-by-value and Freyd categories
   ...
-  - Classical compilers
-  - MLIR observations:
-    - GPU (SPIR-V)
-    - CPU
-    - FPGA -- CIRCT
-    - Even Quantum
-  - Wide usage $==>$ Universal Property
+  - What is a Freyd category
+  - What is call-by-value
+  - "Monads without slightly higher-order types": see nLab
+    - Make sense for purely first-order languages
+    - If $T X$ exists, has a universal property, decoupling relationship
+]
+
+#slide[
+  = SSA and call-by-value
+  ...
+  - The difference is control flow!
+    - Coproducts to the rescue!
+  - General control flow specifically!
+    - Elgot structure to the rescue!
+  - $==>$ Freyd categories are for _straight-line_ code
 ]
 
 #slide[
@@ -84,7 +251,7 @@
     - Cartesian!
     - Begin drawing dataflow!
   - Of straight-line code
-    - Premonoidal $==>$ Freyd!
+    - Freyd!
   - Of branching control-flow
     - Coproducts
   - Of general control-flow
@@ -110,14 +277,19 @@
 #slide[
   = Linearity
   ...
-  - Mainstream:
-    - Memory allocation
-    - Separation logic
-    - Functional optimization/escape analysis
-  - Speculative:
-    - Quantum
-  - It's called an _Effectful Category_
+]
 
+#slide[
+  = Future work: Regions
+  ...
+  - MLIR
+  - Citations for this?
+]
 
-  Probably no time for more than this...
+#focus-slide[
+  = Questions?
+  
+  ---
+
+  #link("mailto:jeg74@cam.ac.uk")[`jeg74@cam.ac.uk`]
 ]
