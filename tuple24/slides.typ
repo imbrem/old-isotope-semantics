@@ -196,20 +196,45 @@
 ]
 
 #slide[
-  = Why?
-  ...
+  = Wide Usage of SSA
+  #line-by-line[
+    - Classical compilers
+    - MLIR observations:
+      #line-by-line(start: 3)[
+      - GPU (SPIR-V)
+      - CPU
+      - FPGA -- CIRCT
+      - Even Quantum
+      ]
+  ]
+  #only("7-")[
+    - Wide usage $==>$ Underlying Categorical Structure?
+      #line-by-line(start: 8)[
+        - STLC $==>$ Cartesian closed categories
+        - Effects $==>$ Monads
+        - *Call-by-value $==>$ Freyd categories*
+      ]
+  ]
 ]
 
 #slide[
-  = Wide Usage of SSA
+  = Call-by-value and Freyd categories
   ...
-  - Classical compilers
-  - MLIR observations:
-    - GPU (SPIR-V)
-    - CPU
-    - FPGA -- CIRCT
-    - Even Quantum
-  - Wide usage $==>$ Universal Property
+  - What is a Freyd category
+  - What is call-by-value
+  - "Monads without slightly higher-order types": see nLab
+    - Make sense for purely first-order languages
+    - If $T X$ exists, has a universal property, decoupling relationship
+]
+
+#slide[
+  = SSA and call-by-value
+  ...
+  - The difference is control flow!
+    - Coproducts to the rescue!
+  - General control flow specifically!
+    - Elgot structure to the rescue!
+  - $==>$ Freyd categories are for _straight-line_ code
 ]
 
 #slide[
@@ -226,7 +251,7 @@
     - Cartesian!
     - Begin drawing dataflow!
   - Of straight-line code
-    - Premonoidal $==>$ Freyd!
+    - Freyd!
   - Of branching control-flow
     - Coproducts
   - Of general control-flow
@@ -249,17 +274,22 @@
   ...
 ]
 
-// #slide[
-//   = Linearity
-//   ...
-//   - Mainstream:
-//     - Memory allocation
-//     - Separation logic
-//     - Functional optimization/escape analysis
-//   - Speculative:
-//     - Quantum
-//   - It's called an _Effectful Category_
+#slide[
+  = Linearity
+  ...
+]
 
+#slide[
+  = Future work: Regions
+  ...
+  - MLIR
+  - Citations for this?
+]
 
-//   Probably no time for more than this...
-// ]
+#focus-slide[
+  = Questions?
+  
+  ---
+
+  #link("mailto:jeg74@cam.ac.uk")[`jeg74@cam.ac.uk`]
+]
