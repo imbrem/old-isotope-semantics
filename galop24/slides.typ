@@ -24,9 +24,9 @@
 
   University of Cambridge
   
-  February 21
+  January 14
 
-  TUPLE'24 -- Edinburgh
+  GALOP'24 -- London
 ]
 
 #focus-slide[
@@ -38,6 +38,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -58,6 +59,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -78,6 +80,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -98,6 +101,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -118,6 +122,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -138,6 +143,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -158,6 +164,7 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -177,19 +184,43 @@
 ]
 
 #slide[
+  #show raw: r => text(size: 18pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
     'entry:
       m0 = 0
       n0 = 1
-      brz i 'exit(m0) 'loop(i, m0, n0)   // ‖
-    'loop(i0, m1, n1):                   // ‖
+      brz i 'exit(m0) 'loop(i, m0, n0)       // ‖
+    'loop(i0, m1, n1):                       // ‖
       m2 = n1
       n2 = add m1 n1
       i1 = sub i0 1
-      brz i1 'exit(m2) 'loop(i1, m2, n2) // ‖
-    'exit(m3):                           // ‖
+      brz i1 'exit(m2) 'loop(i1, m2, n2)     // ‖
+    'exit(m3):                               // ‖
+      ret m3
+    ```
+  ]
+]
+
+#slide[
+  #show raw: r => text(size: 18pt, r)
+  #align(center + horizon)[
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m0 = 0
+      n0 = 1
+      brz i 'exit 'loop
+    'loop:
+      m1 = phi ('entry => m0) ('loop => m2) // ‖     
+      n1 = phi ('entry => n0) ('loop => n2) // ‖            
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz i1 'exit 'loop                   
+    'exit:                               
+      m3 = phi ('entry => m0) ('loop => m2) // ‖
       ret m3
     ```
   ]
@@ -199,12 +230,12 @@
   = Wide Usage of SSA
   #line-by-line[
     - Classical compilers
-    - MLIR observations:
+    - MLIR:
       #line-by-line(start: 3)[
       - GPU (SPIR-V)
       - CPU
       - FPGA -- CIRCT
-      - Even Quantum
+      - Even quantum computing!
       ]
   ]
   #only("7-")[
@@ -228,41 +259,19 @@
 ]
 
 #slide[
-  = SSA and call-by-value
+  = SSA is Freyd categories?
   ...
-  - The difference is control flow!
-    - Coproducts to the rescue!
-  - General control flow specifically!
-    - Elgot structure to the rescue!
-  - $==>$ Freyd categories are for _straight-line_ code
 ]
 
 #slide[
-  = Type-theoretic Presentation of SSA
-  ...
-  - Basic-block terminator collection view
-  - Generalizing very slightly?
+  = Control flow graphs
+  ... draw a diagram, coproducts
 ]
 
 #slide[
-  = Categorical Semantics
-  ...
-  - Of pure expressions
-    - Cartesian!
-    - Begin drawing dataflow!
-  - Of straight-line code
-    - Freyd!
-  - Of branching control-flow
-    - Coproducts
-  - Of general control-flow
-    - Elgot structure
+  = General control flow
+  ... Elgot structure
 ]
-
-#slide[
-  = Drawing Control-flow
-  ...
-]
-
 
 #slide[
   = Concrete Models: Monads
