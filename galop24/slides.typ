@@ -7,6 +7,9 @@
 #let stlc = $λ_sans("stlc")$;
 
 #let highline(it) = [
+  #show regex("phi|add|sub|brz|ret") : kw => strong(kw)
+  #show regex("'.\w*") : label => text(purple, label)
+  #show regex("//.*") : line => text(gray.darken(50%), line)
   #show regex(".*//.*✗") : line => text(red, line)
   #show regex(".*//.*✔") : line => text(green, line)
   #show regex(".*//.*‖") : line => text(yellow.darken(50%), line)
@@ -226,6 +229,10 @@
   ]
 ]
 
+#focus-slide[
+  = So, why SSA?
+]
+
 #slide[
   = Wide Usage of SSA
   #line-by-line[
@@ -238,14 +245,25 @@
       - Even quantum computing!
       ]
   ]
-  #only("7-")[
-    - Wide usage $==>$ Underlying Categorical Structure?
-      #line-by-line(start: 8)[
-        - STLC $==>$ Cartesian closed categories
-        - Effects $==>$ Monads
-        - *Call-by-value $==>$ Freyd categories*
-      ]
+]
+
+#slide[
+  = Practice
+  #line-by-line[
+    - Easier to reason about variables
+    - $==>$ strength reduction, scalar replacement
+    - $==>$ conditional constant propagation
+    - Easier to compute dependencies
+    - $==>$ easier dataflow analyses (e.g. analysis passes)
+    - $==>$ easier register allocation
   ]
+]
+
+#slide[
+  = Practice: Algebraic Reasoning
+  - Easier to reason about variables:
+  ```isotope
+  ```
 ]
 
 #slide[
@@ -271,28 +289,6 @@
 #slide[
   = General control flow
   ... Elgot structure
-]
-
-#slide[
-  = Concrete Models: Monads
-  ...
-]
-
-#slide[
-  = Cool Models: Weak Memory
-  ...
-]
-
-#slide[
-  = Linearity
-  ...
-]
-
-#slide[
-  = Future work: Regions
-  ...
-  - MLIR
-  - Citations for this?
 ]
 
 #focus-slide[
