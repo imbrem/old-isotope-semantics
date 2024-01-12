@@ -261,13 +261,93 @@
 
 #slide[
   = Practice: Algebraic Reasoning
-  - Easier to reason about variables:
-  ```isotope
-  ```
+  - Easier to reason about variables: #only("6-", [*substitution*])
+  #only("2-", align(center + horizon, stack(dir: ltr, spacing: 3em,
+    ```isotope
+      ...
+      x = add y z
+      brz b 'one 'two
+    'one:
+      w = sub x y
+      t = add w y
+      ...
+    ```,
+    $==>$,
+    [
+      #only("2", 
+        ```isotope      
+          ...
+          x = add y z
+          brz b 'one 'two
+        'one:
+          w = sub (add y z) y
+          t = add w y
+          ...
+        ```
+      )
+      #only("3",
+        ```isotope      
+          ...
+          x = add y z
+          brz b 'one 'two
+        'one:
+          w = z
+          t = add w y
+          ...
+        ```
+      )
+      #only("4",
+        ```isotope      
+          ...
+          x = add y z
+          brz b 'one 'two
+        'one:
+          t = add z y
+          ...
+        ```
+      )
+      #only("5-",
+        ```isotope      
+          ...
+          x = add y z
+          brz b 'one 'two
+        'one:
+          t = x
+          ...
+        ```
+      )
+    ]
+    )))
 ]
 
 #slide[
-  = Call-by-value and Freyd categories
+  = Practice: Dependency Analysis
+
+  ... data-flow diagrams
+
+  ... control-flow diagrams
+]
+
+#slide[
+  = Theory
+
+  #v(2em)
+
+  #align(center)[*Wide usage* $==>$ *Underlying Categorical Structure*]
+
+  #v(2em)
+  
+  #line-by-line(start: 2)[
+    Examples:
+    - String diagrams $==>$ Monoidal categories
+    - STLC $==>$ Cartesian closed categories
+    - Effects $==>$ Monads
+    - *Call-by-value $==>$ Freyd categories*
+  ]
+]
+
+#slide[
+  = Call-by-value is Freyd categories
   ...
   - What is a Freyd category
   - What is call-by-value
@@ -276,8 +356,17 @@
     - If $T X$ exists, has a universal property, decoupling relationship
 ]
 
-#slide[
+#focus-slide[
   = SSA is Freyd categories?
+]
+
+#slide[
+  = What is SSA, Part II
+  ... (Dataflow, type-theoretic stuff)
+]
+
+#slide[
+  = Basic Blocks are Call-by-value
   ...
 ]
 
@@ -289,6 +378,11 @@
 #slide[
   = General control flow
   ... Elgot structure
+]
+
+#slide[
+  = Names and Compositionality
+  ...
 ]
 
 #focus-slide[
