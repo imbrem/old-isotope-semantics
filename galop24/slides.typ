@@ -372,6 +372,47 @@
   ]
 ]
 
+#focus-slide[
+  = What is a Freyd Category?
+]
+
+#slide[
+  = Definitions
+  A *Freyd category* is given by:
+  #line-by-line[
+    - A cartesian category $cal(V)$
+    - A *symmetric premonoidal category* $cal(C)$
+    - An identity-on-objects functor $J: cal(V) -> cal(C)$ strictly preserving symmetric premonoidal structure, whose image lies in the *centre* of $cal(C)$
+  ]
+  #only("4-")[
+    A *symmetric premonoidal category* is a category $cal(C)$ equipped with
+    #only("5-", [- For every object $A ∈ |cal(C)|$, functors $A ⊗ -$ and $- ⊗ A$])
+    #only("6-", [- An object $I$ with *unitors* $λ: I ⊗ A ≃ A$, $ρ: A ⊗ I ≃ A$])
+    #only("7-", [- An *associator* $α: (A ⊗ B) ⊗ C ≃ A ⊗ (B ⊗ C)$])
+    #only("8-", [- A *symmetry* $σ: A ⊗ B ≃ B ⊗ A$])
+  ]
+]
+
+#slide[
+  = Premonoidal Categories
+  //TODO: make diagrammatic
+  #only("1-")[
+    - We require that $λ, ρ, α, σ$ obey the *triangle*, *pentagon*, and *hexagon* laws, just like in a monoidal category
+  ]
+  #only("2-")[
+    - So what's the difference? In a monoidal category, the tensor product is a functor $⊗: cal(C) × cal(C) -> cal(C)$, whereas here we only require that each component $A ⊗ -$/$- ⊗ A$ is an endofunctor $cal(C) -> cal(C)$
+  ]
+  #only("3-")[
+    - This corresponds to *sliding*: $f ⊗ -; - ⊗ g = - ⊗ g; f ⊗ -$
+  ]
+  #only("4-")[
+    - In the premonoidal setting, we say a morphism $g$ is *central* if, for all $f$, $f ⊗ -; - ⊗ g = - ⊗ g; f ⊗ -$
+  ]
+  #only("5-")[
+    - A premonoidal category $cal(C)$ is monoidal if and only if all morphisms are central
+  ]
+]
+
 #slide[
   = Call-by-value is Freyd categories
   ...
