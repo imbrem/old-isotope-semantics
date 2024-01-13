@@ -369,7 +369,7 @@
     Examples:
     - String diagrams $==>$ Monoidal categories
     - STLC $==>$ Cartesian closed categories
-    - Effects $==>$ Monads
+    // - Effects $==>$ Monads
     - *Call-by-value $==>$ Freyd categories*
   ]
 ]
@@ -423,40 +423,51 @@
 
 #slide[
   = Call-by-value is Freyd categories
-  ...
-  - What is a Freyd category
-  - What is call-by-value
-  - "Monads without slightly higher-order types": see nLab
-    - Make sense for purely first-order languages
-    - If $T X$ exists, has a universal property, decoupling relationship
-]
-
-#focus-slide[
-  = SSA is Freyd categories?
+  #align(center + horizon, image("ssa-dfg-1.svg", width: 45%))
 ]
 
 #slide[
-  = What is SSA, Part II
-  ... (Dataflow, type-theoretic stuff)
-]
-
-#slide[
-  = Basic Blocks are Call-by-value
+  = Basic blocks are call-by-value
   ...
 ]
 
 #slide[
-  = Control flow graphs
-  ... draw a diagram, coproducts
+  = Branching control-flow
+  ...
 ]
 
 #slide[
-  = General control flow
-  ... Elgot structure
+  = General control-flow
+  ...
+]
+
+#slide[
+  = Substitution
+  ...
+]
+
+#slide[
+  = Rewriting
+  ...
+]
+
+#slide[
+  = Impure substitutions
+  ...
+]
+
+#slide[
+  = Concrete models
+  ...
 ]
 
 #slide[
   = Names and Compositionality
+  ...
+]
+
+#slide[
+  = Future Work: Regions
   ...
 ]
 
