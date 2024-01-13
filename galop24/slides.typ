@@ -382,11 +382,11 @@
       columns: 5,
       column-gutter: 3em,
       row-gutter: 0.5em,
-      uncover("1-", $cal(C)_0$),
+      uncover("1-", $cal(C)_1$),
       uncover("3-", $-->_#[i.o.o]^((-)^↑)$),
-      uncover("3-", $Z(cal(C)_1)$),
+      uncover("3-", $Z(cal(C)_0)$),
       uncover("3-", $↪$),
-      uncover("2-", $cal(C)_1$),
+      uncover("2-", $cal(C)_0$),
       uncover("1-")[
         (Cartesian)
       ],
@@ -396,8 +396,8 @@
       ],
     ),
     {
-      only("4", $⊗: cal(C) × cal(C)_1 -> cal(C)_1$)
-      only("5", $A ⊗ -, - ⊗ A: cal(C)_1 -> cal(C)_1$)
+      only("4", $⊗: cal(C) × cal(C)_0 -> cal(C)_0$)
+      only("5", $A ⊗ -, - ⊗ A: cal(C)_0 -> cal(C)_0$)
       let forall_stmt = $∀f,$;
       stack(
         dir: ltr,
@@ -480,43 +480,67 @@
 
 #slide[
   = Call-by-value: Expressions
-  #align(center)[
-    $[|Γ tst(p) a: A|]: cal(C)_p ([|Γ|], [|A|])$
-    #align(horizon)[
-        #only("2-", $
+  #align(center + horizon, stack(spacing: 3em,
+        only("2-", $
         #dnt(proof-tree(expr-var($Γ$, $p$, $x$, $A$))) = upg(π_x, p)
-        $)
-        #only("3-", $
+        $),
+        only("3-", $
         ∀f ∈ cal(C)_q (A, B), upg(f, p) = "if" q < p "then" f^↑ "else" f: cal(C)_p (A, B)
-        $)
-        #only("4-", $
+        $),
+        only("4-", $
         #dnt(proof-tree(expr-app($Γ tst(p) f med a: B$, $f: arr(p, A, B)$, $Γ tst(1) a: A$))) 
           = [|f|];upg([|Γ tst(1) a med A|], p)
-        $)
-    ]
-  ]
+        $),
+  ))
 ]
 
 #slide[
   = Call-by-value: Products
-  #align(center)[
-    $[|Γ tst(p) a: A|]: cal(C)_p ([|Γ|], [|A|])$
-    #align(horizon)[
-        #only("2-", $
-        #dnt(proof-tree(expr-pair($Γ tst(1) (a, b): A × B$, $Γ tst(1) a: A$, $Γ tst(1) b: B$)))
-          = ⟨[|Γ tst(1) a: A|], [|Γ tst(1) b: B|]⟩ 
-        $)
-        #only("3-", $
-        #dnt(proof-tree(expr-pi($Γ tst(1) π_i e: A_i$, $Γ tst(1) e: A_0 × A_1$)))
-          = [|Γ tst(1) e: A_0 × A_1|];π_i
-        $)
-    ]
-  ]
+  #align(center + horizon, stack(spacing: 3em,
+      $[|Γ tst(p) a: A|]: cal(C)_p ([|Γ|], [|A|])$,
+      only("2-", $
+      #dnt(proof-tree(expr-pair($Γ tst(1) (a, b): A × B$, $Γ tst(1) a: A$, $Γ tst(1) b: B$)))
+        = ⟨[|Γ tst(1) a: A|], [|Γ tst(1) b: B|]⟩ 
+      $),
+      only("3-", $
+      #dnt(proof-tree(expr-pi($Γ tst(1) π_i e: A_i$, $Γ tst(1) e: A_0 × A_1$)))
+        = [|Γ tst(1) e: A_0 × A_1|];π_i
+      $)
+  ))
 ]
 
 #slide[
-  = Branching control-flow
-  ...
+  = Call-by-value: Upgrade
+  #align(center + horizon, stack(spacing: 3em,
+    $
+    Γ tst(1) a: A ==> Γ tst(0) a: A
+    $,
+    only("2-",
+    $
+    [|Γ tst(1) a: A|]^↑ = [|Γ tst(0) a: A|]
+    $)
+  ))
+]
+
+#let gto = $triangle.stroked.small$
+
+#let bb-nil(ctxin, ctxout) = rule(name: "bb-nil", $ctxin ⊢ dot gto ctxout$, $ctxin ↦ ctxout$)
+#let bb-cons(c, a, b) = rule(name: "bb-cons", c, a, b)
+
+#slide[
+  = Call-by-value: Basic blocks
+  #align(center + horizon, stack(spacing: 3em,
+  $
+  [|Γ ⊢ b gto Δ|]: cal(C)_0 ([|Γ|], [|Δ|])
+  $,
+  $
+  #dnt(proof-tree(bb-nil($Γ$, $Δ$))) = upg([|Γ ↦ Δ|], p)
+  "where"
+  [|Γ ↦ Δ|]: cal(C)_1 ([|Γ|], [|Δ|])
+  $,
+  $
+  #dnt(proof-tree(bb-cons($Γ ⊢ "let" x = a; b gto Δ$, $Γ tst(0) a: A$, $Γ ⊢ b: B$))) = [|Γ ⊢ a: A|];upg([|Γ ⊢ b: B|], p)
+  $))
 ]
 
 #slide[
