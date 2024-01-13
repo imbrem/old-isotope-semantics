@@ -7,7 +7,7 @@
 #let stlc = $λ_sans("stlc")$;
 
 #let highline(it) = [
-  #show regex("phi|add|sub|brz|ret|call") : kw => strong(kw)
+  #show regex("(phi|add|sub|brz|ret|call)\s") : kw => strong(kw)
   #show regex("'.\w*") : label => text(purple, label)
   #show regex("//.*") : line => text(gray.darken(50%), line)
   #show regex(".*//.*✗") : line => text(red, line)
@@ -262,7 +262,7 @@
 
 #slide[
   = Practice: Algebraic Reasoning
-  - Easier to reason about variables: #only("6-", [*substitution*])
+  - Easier to reason about variables: #only("7-", [*substitution*])
   #only("2-", align(center + horizon, stack(dir: ltr, spacing: 3em,
     ```isotope
       ...
@@ -273,26 +273,16 @@
       t = add w y
       ...
     ```,
-    $==>$,
+    only("3-", $==>$),
     [
-      #only("2", 
+      #only("3", 
         ```isotope      
           ...
           x = add y z
           brz b 'one 'two
         'one:
+          // substitute x
           w = sub (add y z) y
-          t = add w y
-          ...
-        ```
-      )
-      #only("3",
-        ```isotope      
-          ...
-          x = add y z
-          brz b 'one 'two
-        'one:
-          w = z
           t = add w y
           ...
         ```
@@ -303,11 +293,23 @@
           x = add y z
           brz b 'one 'two
         'one:
+          // (y + z) - y == z
+          w = z
+          t = add w y
+          ...
+        ```
+      )
+      #only("5",
+        ```isotope      
+          ...
+          x = add y z
+          brz b 'one 'two
+        'one:
           t = add z y
           ...
         ```
       )
-      #only("5-",
+      #only("6-",
         ```isotope      
           ...
           x = add y z
@@ -372,45 +374,51 @@
   ]
 ]
 
-#focus-slide[
-  = What is a Freyd Category?
-]
-
 #slide[
-  = Definitions
-  A *Freyd category* is given by:
-  #line-by-line[
-    - A cartesian category $cal(V)$
-    - A *symmetric premonoidal category* $cal(C)$
-    - An identity-on-objects functor $J: cal(V) -> cal(C)$ strictly preserving symmetric premonoidal structure, whose image lies in the *centre* of $cal(C)$
-  ]
-  #only("4-")[
-    A *symmetric premonoidal category* is a category $cal(C)$ equipped with
-    #only("5-", [- For every object $A ∈ |cal(C)|$, functors $A ⊗ -$ and $- ⊗ A$])
-    #only("6-", [- An object $I$ with *unitors* $λ: I ⊗ A ≃ A$, $ρ: A ⊗ I ≃ A$])
-    #only("7-", [- An *associator* $α: (A ⊗ B) ⊗ C ≃ A ⊗ (B ⊗ C)$])
-    #only("8-", [- A *symmetry* $σ: A ⊗ B ≃ B ⊗ A$])
-  ]
-]
-
-#slide[
-  = Premonoidal Categories
-  //TODO: make diagrammatic
-  #only("1-")[
-    - We require that $λ, ρ, α, σ$ obey the *triangle*, *pentagon*, and *hexagon* laws, just like in a monoidal category
-  ]
-  #only("2-")[
-    - So what's the difference? In a monoidal category, the tensor product is a functor $⊗: cal(C) × cal(C) -> cal(C)$, whereas here we only require that each component $A ⊗ -$/$- ⊗ A$ is an endofunctor $cal(C) -> cal(C)$
-  ]
-  #only("3-")[
-    - This corresponds to *sliding*: $f ⊗ -; - ⊗ g = - ⊗ g; f ⊗ -$
-  ]
-  #only("4-")[
-    - In the premonoidal setting, we say a morphism $g$ is *central* if, for all $f$, $f ⊗ -; - ⊗ g = - ⊗ g; f ⊗ -$
-  ]
-  #only("5-")[
-    - A premonoidal category $cal(C)$ is monoidal if and only if all morphisms are central
-  ]
+  = Freyd Categories
+  #align(center + horizon, stack(dir: ttb, spacing: 2em,
+     grid(
+      columns: 5,
+      column-gutter: 3em,
+      row-gutter: 0.5em,
+      uncover("1-", $cal(V)$),
+      uncover("3-", $-->_#[i.o.o]$),
+      uncover("3-", $Z(cal(C))$),
+      uncover("3-", $↪$),
+      uncover("2-", $cal(C)$),
+      uncover("1-")[
+        (Cartesian)
+      ],
+      [], [], [],
+      uncover("2-")[
+        (Premonoidal)
+      ],
+    ),
+    {
+      only("4", $⊗: cal(C) × cal(C) -> cal(C)$)
+      only("5", $A ⊗ -, - ⊗ A: cal(C) -> cal(C)$)
+      let forall_stmt = $∀f,$;
+      stack(
+        dir: ltr,
+        spacing: 2em,
+        uncover("8-", forall_stmt),
+        {
+          only("6", "MON. DIAGRAM")
+          only("7-", "PM. DIAGRAM")
+        },
+        {
+          only("6-7", $≠$)
+          only("8-", $=$)
+        },
+        {
+          only("6", "MON. DIAGRAM")
+          only("7-", "PM. DIAGRAM")
+        },
+        hide(forall_stmt)
+      )
+    },
+    uncover("8-", $==> g ∈ Z(C)(A, B)$)
+  ))
 ]
 
 #slide[
