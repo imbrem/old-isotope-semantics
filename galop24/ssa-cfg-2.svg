@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg width="134pt" height="188pt" viewBox="0.00 0.00 134.00 188.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<title>G</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-184 130,-184 130,4 -4,4"/>
+<!-- a -->
+<g id="node1" class="node">
+<title>a</title>
+<polygon fill="none" stroke="#000000" points="90,-180 36,-180 36,-144 90,-144 90,-180"/>
+<text text-anchor="middle" x="63" y="-157.8" font-family="Monospace" font-size="14.00" fill="#000000">'entry</text>
+</g>
+<!-- b -->
+<g id="node2" class="node">
+<title>b</title>
+<polygon fill="none" stroke="#000000" points="54,-108 0,-108 0,-72 54,-72 54,-108"/>
+<text text-anchor="middle" x="27" y="-85.8" font-family="Monospace" font-size="14.00" fill="#000000">'left</text>
+</g>
+<!-- a&#45;&gt;b -->
+<g id="edge1" class="edge">
+<title>a-&gt;b</title>
+<path fill="none" stroke="#000000" d="M53.9157,-143.8314C49.9385,-135.8771 45.1845,-126.369 40.7861,-117.5723"/>
+<polygon fill="#000000" stroke="#000000" points="43.8093,-115.7923 36.2066,-108.4133 37.5483,-118.9228 43.8093,-115.7923"/>
+</g>
+<!-- c -->
+<g id="node3" class="node">
+<title>c</title>
+<polygon fill="none" stroke="#000000" points="126,-108 72,-108 72,-72 126,-72 126,-108"/>
+<text text-anchor="middle" x="99" y="-85.8" font-family="Monospace" font-size="14.00" fill="#000000">'right</text>
+</g>
+<!-- a&#45;&gt;c -->
+<g id="edge2" class="edge">
+<title>a-&gt;c</title>
+<path fill="none" stroke="#000000" d="M72.0843,-143.8314C76.0615,-135.8771 80.8155,-126.369 85.2139,-117.5723"/>
+<polygon fill="#000000" stroke="#000000" points="88.4517,-118.9228 89.7934,-108.4133 82.1907,-115.7923 88.4517,-118.9228"/>
+</g>
+<!-- d -->
+<g id="node4" class="node">
+<title>d</title>
+<polygon fill="none" stroke="#000000" points="90,-36 36,-36 36,0 90,0 90,-36"/>
+<text text-anchor="middle" x="63" y="-13.8" font-family="Monospace" font-size="14.00" fill="#000000">'exit</text>
+</g>
+<!-- b&#45;&gt;d -->
+<g id="edge3" class="edge">
+<title>b-&gt;d</title>
+<path fill="none" stroke="#000000" d="M36.0843,-71.8314C40.0615,-63.8771 44.8155,-54.369 49.2139,-45.5723"/>
+<polygon fill="#000000" stroke="#000000" points="52.4517,-46.9228 53.7934,-36.4133 46.1907,-43.7923 52.4517,-46.9228"/>
+</g>
+<!-- c&#45;&gt;d -->
+<g id="edge4" class="edge">
+<title>c-&gt;d</title>
+<path fill="none" stroke="#000000" d="M89.9157,-71.8314C85.9385,-63.8771 81.1845,-54.369 76.7861,-45.5723"/>
+<polygon fill="#000000" stroke="#000000" points="79.8093,-43.7923 72.2066,-36.4133 73.5483,-46.9228 79.8093,-43.7923"/>
+</g>
+</g>
+</svg>

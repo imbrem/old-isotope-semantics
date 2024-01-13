@@ -1,0 +1,17 @@
+digraph G {
+	fontname="Monospace"
+	node [fontname="Monospace", shape="rectangle"]
+
+    g -> a
+	a -> b
+	a -> c
+
+    g [label="Γ", shape="circle"]
+	a [label="t"]
+
+    subgraph cluster_l {
+        label = "L"
+        b [label="'0"]
+        c [label="'1"]
+    }
+}

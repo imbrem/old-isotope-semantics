@@ -544,7 +544,92 @@
 ]
 
 #slide[
+  = Control-flow
+
+  #align(center + horizon, 
+    stack(dir: ltr, spacing: 2em,
+      image("ssa-cfg-2.svg", height: 80%),
+      only("2-", $==>$),
+      only("2-", $[|#[`'entry`]|];(#[`'left`] + #[`'right`]);[|#[`'exit`]|]$)
+    )
+  )
+]
+
+#let lbl(label) = $quote.single label$
+
+#slide[
+  = Block Judgement
+
+    #align(center + horizon, 
+    stack(dir: ltr, spacing: 2em,
+      $Γ ⊢ #[`'entry`] gto #[`'left`], #[`'right`]$,
+      $==>$,
+      image("ssa-cfg-2-tree.svg", height: 60%),
+    )
+  )
+]
+
+#slide[
+  = Label-contexts
+  
+  #align(center + horizon, stack(spacing: 1em,
+    stack(dir: ltr, spacing: 3em, 
+      $L ::= dot | L, lbl(ℓ)[Γ](A)$,
+      uncover("2-", $[|L|] &: |cal(C)_0| \ [|dot|] &= bold(0) \ [|L, lbl(ℓ)[Γ](A)|] &= [|L|] + [|Γ|] × [|A|] $)
+    ),
+    uncover("3-", stack(dir: ltr, spacing: 3em,
+      $[|Γ ⊢ t gto L|]: cal(C)_0 ([|Γ|], [|L|])$,
+      $==>$,
+      image("ssa-cfg-diagram.svg", height: 55%),
+    ))
+  ))
+]
+
+#slide[
+  = Branching
+
+  ...
+]
+
+#slide[
+  = Merging control flow
+
+  ...
+]
+
+#slide[
+  = Where-blocks
+
+  ...
+]
+
+#slide[
+  = Alternative Design: Terminators
+
+  ...
+]
+
+#slide[
   = General control-flow
+  
+  ...
+]
+
+#slide[
+  = Traces
+
+  ...
+]
+
+#slide[
+  = Elgot structure
+
+  ...
+]
+
+#slide[
+  = Adjusted where-blocks
+
   ...
 ]
 
