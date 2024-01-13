@@ -1,0 +1,34 @@
+digraph {
+    fontname = monospace
+    node [fontname = monospace]
+
+    subgraph cluster_inputs {
+        s [color=red, shape=circle]
+        a
+        b
+    }
+
+    subgraph cluster_outputs {
+        s3 [label="s'", color=red, shape=circle]
+        z [shape = circle]
+    }
+
+    s -> s1 [color=red]
+    a -> x
+    a -> zz
+    b -> x
+    b -> y
+    x -> s1
+    x -> y
+    x -> zz
+    s1 -> s2 [color=red]
+    y -> s2
+    s2 -> s3 [color=red]
+    zz -> z
+
+    x [label="x = add a b", shape=box, width=1.5]
+    s1 [label="call print x", shape=box, color=red, width=1.5]
+    y [label="y = add x b", shape=box, width=1.5]
+    zz [label="z = add x a", shape=box, width=1.5]
+    s2 [label="call print y", shape=box, color=red, width=1.5]
+}

@@ -1,0 +1,16 @@
+digraph {
+    fontname = monospace
+    node [shape=box, fontname=monospace]
+
+    entry -> loop
+    loop -> loop
+    loop -> exit
+
+    entry -> loop [color=red]
+    entry -> exit [color=red]
+    loop -> exit [color=red]
+
+    entry [label="'entry"]
+    loop [label="'loop"]
+    exit [label="'exit"]
+}

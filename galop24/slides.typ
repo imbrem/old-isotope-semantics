@@ -7,7 +7,7 @@
 #let stlc = $λ_sans("stlc")$;
 
 #let highline(it) = [
-  #show regex("phi|add|sub|brz|ret") : kw => strong(kw)
+  #show regex("phi|add|sub|brz|ret|call") : kw => strong(kw)
   #show regex("'.\w*") : label => text(purple, label)
   #show regex("//.*") : line => text(gray.darken(50%), line)
   #show regex(".*//.*✗") : line => text(red, line)
@@ -41,7 +41,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -62,7 +62,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -83,7 +83,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -104,7 +104,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -125,7 +125,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -146,7 +146,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -167,7 +167,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -187,7 +187,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -207,7 +207,7 @@
 ]
 
 #slide[
-  #show raw: r => text(size: 18pt, r)
+  #show raw: r => text(size: 17pt, r)
   #align(center + horizon)[
     ```isotope
     // Compute fibonacci(i)
@@ -215,7 +215,8 @@
       m0 = 0
       n0 = 1
       brz i 'exit 'loop
-    'loop:
+    'loop:     
+      i0 = phi ('entry => i) ('loop => i1) // ‖
       m1 = phi ('entry => m0) ('loop => m2) // ‖     
       n1 = phi ('entry => n0) ('loop => n2) // ‖            
       m2 = n1
@@ -322,10 +323,35 @@
 
 #slide[
   = Practice: Dependency Analysis
+  #align(center + horizon, 
+    stack(dir: ltr, spacing: 3em,
+      ```isotope
+      ...
+      x = add a b
+      call print x
+      y = add x b
+      z = add x a
+      call print y
+      ...
+      ```,
+      $==>$,
+      image("ssa-dfg-1.svg", width: 30%)
+    ))
+]
 
-  ... data-flow diagrams
-
-  ... control-flow diagrams
+#slide[
+  = Practice: Control-Flow Analysis
+  #align(center + horizon, 
+    [
+      #only("1", image("ssa-cfg-1.svg", height: 80%))
+      #only("2", image("ssa-cfg-1-dom.svg", height: 80%))
+      #only("3", 
+      stack(dir: ltr, spacing: 3em,
+        image("ssa-cfg-1-dom.svg", height: 80%),
+        image("ssa-dfg-2.svg", height: 80%)
+      ))
+    ]
+  )
 ]
 
 #slide[

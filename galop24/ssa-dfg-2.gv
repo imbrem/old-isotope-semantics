@@ -1,0 +1,45 @@
+digraph {
+    fontname = "Monospace"
+    node [shape = circle, fontname = monospace, width=0.5, fixedsize=true]
+
+    subgraph cluster_input {
+        label="INPUT"
+        i
+    }
+
+    subgraph cluster_entry {
+        label="'entry"
+        m0
+        n0
+    }
+
+    subgraph cluster_loop {
+        label="'loop"
+        i0
+        m1
+        n1
+        m2
+        n2
+        i1
+
+        i -> i0 [style=dashed]
+        i1 -> i0 [style=dashed]
+        m0 -> m1 [style=dashed]
+        m2 -> m1 [style=dashed]
+
+        n1 -> m2
+        m1 -> n2
+        n1 -> n2
+        i0 -> i1
+    }
+
+    subgraph cluster_exit {
+        label="'exit"
+
+        m0 -> m3 [style=dashed]
+        m2 -> m3 [style=dashed]
+
+        m3
+    }
+
+}
