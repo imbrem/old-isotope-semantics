@@ -1,4 +1,5 @@
 #import "@preview/polylux:0.3.1": *
+#import "@preview/curryst:0.1.0": *
 
 #import themes.simple: *
 #show: simple-theme
@@ -365,11 +366,11 @@
 
   #v(2em)
   
-  #line-by-line(start: 2)[
-    Examples:
+  #uncover("2-")[Examples:]
+  #line-by-line(start: 3)[
     - String diagrams $==>$ Monoidal categories
     - STLC $==>$ Cartesian closed categories
-    // - Effects $==>$ Monads
+    - Effects $==>$ Monads
     - *Call-by-value $==>$ Freyd categories*
   ]
 ]
@@ -381,11 +382,11 @@
       columns: 5,
       column-gutter: 3em,
       row-gutter: 0.5em,
-      uncover("1-", $cal(V)$),
-      uncover("3-", $-->_#[i.o.o]$),
-      uncover("3-", $Z(cal(C))$),
+      uncover("1-", $cal(C)_0$),
+      uncover("3-", $-->_#[i.o.o]^((-)^↑)$),
+      uncover("3-", $Z(cal(C)_1)$),
       uncover("3-", $↪$),
-      uncover("2-", $cal(C)$),
+      uncover("2-", $cal(C)_1$),
       uncover("1-")[
         (Cartesian)
       ],
@@ -395,24 +396,24 @@
       ],
     ),
     {
-      only("4", $⊗: cal(C) × cal(C) -> cal(C)$)
-      only("5", $A ⊗ -, - ⊗ A: cal(C) -> cal(C)$)
+      only("4", $⊗: cal(C) × cal(C)_1 -> cal(C)_1$)
+      only("5", $A ⊗ -, - ⊗ A: cal(C)_1 -> cal(C)_1$)
       let forall_stmt = $∀f,$;
       stack(
         dir: ltr,
         spacing: 2em,
         uncover("8-", forall_stmt),
         {
-          only("6", "MON. DIAGRAM")
-          only("7-", "PM. DIAGRAM")
+          only("6", $f ⊗ -;- ⊗ g$)
+          only("7-", $f ⊗ -;- ⊗ g "PRE"$)
         },
         {
           only("6-7", $≠$)
           only("8-", $=$)
         },
         {
-          only("6", "MON. DIAGRAM")
-          only("7-", "PM. DIAGRAM")
+          only("6", $- ⊗ g;f ⊗ -$)
+          only("7-", $- ⊗ g;f ⊗ - "PRE"$)
         },
         hide(forall_stmt)
       )
@@ -426,9 +427,91 @@
   #align(center + horizon, image("ssa-dfg-1.svg", width: 45%))
 ]
 
+#let tst(purity) = $attach(⊢, br: purity)$
+#let upg(e, purity) = $#e^(attach(↑, br: purity))$
+
+#let arr(purity, left, right) = $left attach(->, br: purity) right$
+#let expr-var(ctx, purity, var, ty) = rule(name: "var", $ctx tst(purity) var: ty$, $var: ty ∈ ctx$)
+#let expr-tt(ctx, purity) = rule(name: "tt", $ctx tst(purity) sans("tt"): bold(2)$, $$)
+#let expr-ff(ctx, purity) = rule(name: "ff", $ctx tst(purity) sans("ff"): bold(2)$, $$)
+#let expr-app(c, f, p) = rule(name: "app", c, f, p)
+#let expr-pair(c, l, r) = rule(name: "pair", c, l, r)
+#let expr-pi(c, l) = rule(name: $π$, c, l)
+
+#let dnt(p) = $[|#block(p)|]$
+
 #slide[
-  = Basic blocks are call-by-value
-  ...
+  = Call-by-value: Notation
+
+  #align(center + horizon, stack(dir: ttb, spacing: 3em,
+    stack(dir: ltr, spacing: 3em,
+      $
+      A &::= X | A × B \
+      Γ &::= dot | Γ, x: A
+      $,
+      uncover("2-", $
+      [|A|], [|X|], [|Γ|] &: |cal(C)_0| \
+      [|A × B|] &= [|A|] × [|B|] \
+      [|Γ, x: A|] &= [|Γ|] × [|A|]
+      $)
+    ),
+    uncover("3-", $[|Γ tst(p) a: A|]: cal(C)_p ([|Γ|], [|A|])$),
+    uncover("4-", $f: arr(p, A, B) ==> [|f|] ∈ cal(C)_p (A, B)$),
+  ))
+
+    /*
+    $
+    #dnt(proof-tree(expr-var($Γ$, $p$, $x$, $A$))) = π_x
+    $
+    $
+    #dnt(proof-tree(expr-app($Γ tst(p) f med a: B$, $f: arr(p, A, B)$, $Γ tst(1) a: A$))) 
+      = [|f|];dnt[|Γ tst(1) a med A|]^(↑_p)
+    $
+    $
+    #dnt(proof-tree(expr-pair($Γ tst(1) (a, b): A × B$, $Γ tst(1) a: A$, $Γ tst(1) b: B$)))
+      = ⟨[|Γ tst(1) a: A|], [|Γ tst(1) b: B|]⟩ 
+    $
+    $
+    #dnt(proof-tree(expr-pi($Γ tst(1) π_i e: A_i$, $Γ tst(1) e: A_0 × A_1$)))
+      = [|Γ tst(1) e: A_0 × A_1|];π_i
+    $
+    */
+]
+
+#slide[
+  = Call-by-value: Expressions
+  #align(center)[
+    $[|Γ tst(p) a: A|]: cal(C)_p ([|Γ|], [|A|])$
+    #align(horizon)[
+        #only("2-", $
+        #dnt(proof-tree(expr-var($Γ$, $p$, $x$, $A$))) = upg(π_x, p)
+        $)
+        #only("3-", $
+        ∀f ∈ cal(C)_q (A, B), upg(f, p) = "if" q < p "then" f^↑ "else" f: cal(C)_p (A, B)
+        $)
+        #only("4-", $
+        #dnt(proof-tree(expr-app($Γ tst(p) f med a: B$, $f: arr(p, A, B)$, $Γ tst(1) a: A$))) 
+          = [|f|];upg([|Γ tst(1) a med A|], p)
+        $)
+    ]
+  ]
+]
+
+#slide[
+  = Call-by-value: Products
+  #align(center)[
+    $[|Γ tst(p) a: A|]: cal(C)_p ([|Γ|], [|A|])$
+    #align(horizon)[
+        #only("2-", $
+        #dnt(proof-tree(expr-pair($Γ tst(1) (a, b): A × B$, $Γ tst(1) a: A$, $Γ tst(1) b: B$)))
+          = ⟨[|Γ tst(1) a: A|], [|Γ tst(1) b: B|]⟩ 
+        $)
+        #only("3-", $
+        #dnt(proof-tree(expr-pi($Γ tst(1) π_i e: A_i$, $Γ tst(1) e: A_0 × A_1$)))
+          = [|Γ tst(1) e: A_0 × A_1|];π_i
+        $)
+    ]
+  ]
 ]
 
 #slide[
