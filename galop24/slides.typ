@@ -549,10 +549,18 @@
   = Control-flow
 
   #align(center + horizon, 
-    stack(dir: ltr, spacing: 2em,
       image("ssa-cfg-2.svg", height: 80%),
-      only("2-", $==>$),
-      only("2-", $[|#[`'entry`]|];(#[`'left`] + #[`'right`]);[|#[`'exit`]|]$)
+  )
+]
+
+#slide[
+  = Coproducts
+
+  #align(center + horizon, 
+    stack(dir: ltr, spacing: 1em,
+      image("ssa-cfg-2.svg", height: 80%),
+      $==>$,
+      $[|#[`'entry`]|];([|#[`'left`]|] + [|#[`'right`]|]);[|#[`'exit`]|]$
     )
   )
 ]
@@ -624,23 +632,6 @@
 ]
 
 #slide[
-  = Terminators vs. Generalized SSA
-  #align(center + horizon, stack(dir: ltr, spacing: 1em,
-    $
-    B &::= b;t \
-    P &::= dot | P, lbl(ℓ)(x: A) => B
-    $,
-    {
-      only("2", "vs.")
-      only("3", $≤$)
-    },
-    only("2-", $
-    #proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$))
-    $)
-  ))
-]
-
-#slide[
   = Elgot structure
 
   $
@@ -656,6 +647,23 @@
 ]
 
 //TODO: Elgot diagrams
+
+#slide[
+  = Terminators vs. Generalized SSA
+  #align(center + horizon, stack(dir: ltr, spacing: 1em,
+    $
+    B &::= b;t \
+    P &::= dot | P, lbl(ℓ)(x: A) => B
+    $,
+    {
+      only("2", "vs.")
+      only("3", $≤$)
+    },
+    only("2-", $
+    #proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$))
+    $)
+  ))
+]
 
 #let bl-where(c, t, w) = rule(name: "bl-where", c, t, w)
 #let cfg-nil(L) = rule(name: "cfg-nil", $#L ⊢ dot gto #L$)
@@ -688,18 +696,8 @@
 ]
 
 #slide[
-  = Substitution and Rewriting
-  #only("2-", [- Substitution of pure terms])
-  #only("3-", [- In-place rewriting of impure terms])
-  #only("4-", [- Splicing of control-flow graphs])
-  #only("2", [TODO: Substitution])
-  #only("3", [TODO: Rewriting])
-  #only("4", [TODO: Splicing])
-]
-
-#slide[
-  = Impure Substitution
-  TODO: copy example from paper
+  = Where-gadget, continued
+  TODO: more where-gadget diagrams, to get the point across
 ]
 
 #slide[
@@ -711,8 +709,62 @@
   - The state transformer of an Elgot monad
   - The reader transformer of an Elgot monad
   - The writer transformer of an Elgot monad
-  - In our paper: give an Elgot trace monad; show this can be used to reason about printing, heap access, and TSO-style weak memory!
+  - In our paper: give an Elgot monad for nondeterministic, potentially infinite monoidal traces; show this can be used to reason about printing, heap access, and TSO-style weak memory!
   ]
+]
+
+#slide[
+  = Substitution and Rewriting
+  #only("2-", [- Substitution of pure terms])
+  #only("4-", [- In-place rewriting of impure terms])
+  #align(center + horizon, {
+  only("2", stack(dir: ltr, spacing: 3em,
+    ```isotope
+    '0:
+      x = add y z
+      ...
+    ...
+    'n:
+      t = add x y
+      ...
+    ...
+    ```,
+    $==>$,
+    ```isotope
+    '0:
+      x = add y z
+      ...
+    ...
+    'n:
+      t = add (add y z) y
+      ...
+    ...
+    ```
+  ))
+  only("3", stack(dir: ltr, spacing: 3em,
+    ```isotope
+    x = add y z
+    t = x
+    ```,
+    $==>$,
+    ```isotope
+    t = add y z
+    ```
+  ))
+  only("4", stack(dir: ltr, spacing: 3em,
+    ```isotope
+    ...
+    x = call print_double 5
+    ...
+    ```,
+    $==>$,
+    ```isotope
+    ...
+    x = call print 10
+    ...
+    ```
+  ))
+  })
 ]
 
 #slide[
