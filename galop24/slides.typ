@@ -401,27 +401,28 @@
       stack(
         dir: ltr,
         spacing: 2em,
-        uncover("8-", forall_stmt),
+        uncover("7-", forall_stmt),
         {
           only("6", $f ⊗ -;- ⊗ g$)
-          only("7-", $f ⊗ -;- ⊗ g "PRE"$)
         },
         {
-          only("6-7", $≠$)
-          only("8-", $=$)
+          only("6", $≠$)
+          only("7-", $=$)
         },
         {
           only("6", $- ⊗ g;f ⊗ -$)
-          only("7-", $- ⊗ g;f ⊗ - "PRE"$)
         },
         hide(forall_stmt)
       )
     },
-    uncover("8-", $==> g ∈ Z(C)(A, B)$)
+    uncover("7-", $==> g ∈ Z(C)(A, B)$)
   ))
 ]
 
-//TODO: monoidal, premonoidal diagrams
+#slide(align(center + horizon, image("no-sliding-1.excalidraw.svg")))
+#slide(align(center + horizon, image("no-sliding-2.excalidraw.svg")))
+#slide(align(center + horizon, image("central.excalidraw.svg")))
+#slide(align(center + horizon, image("central-2.excalidraw.svg")))
 
 #slide[
   = Call-by-value is Freyd categories
@@ -646,7 +647,12 @@
   ]
 ]
 
-//TODO: Elgot diagrams
+
+#slide(align(center + horizon, image("fixpoint-trace.excalidraw.svg")))
+#slide(align(center + horizon, image("fixpoint-def.excalidraw.svg")))
+#slide(align(center + horizon, image("fixpoint-naturality.excalidraw.svg")))
+#slide(align(center + horizon, image("fixpoint-codiagonal.excalidraw.svg")))
+#slide(align(center + horizon, image("fixpoint-uniformity.excalidraw.svg")))
 
 #slide[
   = Terminators vs. Generalized SSA
