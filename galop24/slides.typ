@@ -585,10 +585,39 @@
   ))
 ]
 
+#let bl-let(c, a, t) = rule(name: "bl-let", c, a, t)
+#let bl-ite(c, e, s, t) = rule(name: "ite", c, e, s, t)
+#let bl-br(c, a, l) = rule(name: "br", c, a, l)
+#let ite(e, s, t) = $"if" e med { s } "else" { t }$
+
 #slide[
   = Branching
 
-  ...
+  #align(center + horizon, stack(spacing: 3em,
+    $
+    dnt(#proof-tree(bl-br($Γ ⊢ "br" lbl(ℓ) med a gto L$, $Γ tst(1) a: A$, $lbl(ℓ)[Γ](A) ↦ L$)))
+    $,
+    $
+    lbl(ℓ)[Γ](A) ↦ L <==> ∃Δ, Γ ↦ Δ ∧ lbl(ℓ)[Δ](A) ∈ L
+    $,
+    $
+    dnt(#proof-tree(bl-ite($Γ ⊢ ite(e, s, t) gto L$, $Γ tst(1) e: bold(2)$, $Γ ⊢ s gto L$, $Γ ⊢ t gto L$)))
+    $
+  ))
+]
+
+#slide[
+  = Terminators vs. Generalized SSA
+  #align(center + horizon, stack(dir: ltr, spacing: 1em,
+    $
+    B &::= b;t \
+    P &::= dot | P, 'ℓ(x: A) => B
+    $,
+    uncover("2-", "vs."),
+    only("2-", $
+    dnt(#proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$)))
+    $)
+  ))
 ]
 
 #slide[
