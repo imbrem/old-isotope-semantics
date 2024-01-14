@@ -680,26 +680,27 @@
   #align(center + horizon, stack(spacing: 3em,
     $[|L ⊢ W gto K|]: cal(C)_0([|L|], [|K|] + [|L|])$,
     $dnt(#proof-tree(cfg-cons($L ⊢ W, lbl(ℓ)(x: A) => t gto K$, $L ⊢ W gto K, lbl(ℓ)[Γ](A)$, $Γ, x: A ⊢ t gto L$)))
-    \ #h(3em) = 
-    $
+    \ #h(4em) =
+    [|L ⊢ W gto K, lbl(ℓ)[Γ](A)|];[[ι_0, [|Γ, x: A ⊢ t gto L|];ι_1], ι_1]
+    $,
+    [TODO: where-gadget diagram]
   ))
 ]
 
-//TODO: where-gadget, where-gadget diagram
-
 #slide[
   = Substitution and Rewriting
-  ...
+  #only("2-", [- Substitution of pure terms])
+  #only("3-", [- In-place rewriting of impure terms])
+  #only("4-", [- Splicing of control-flow graphs])
+  #only("2", [TODO: Substitution])
+  #only("3", [TODO: Rewriting])
+  #only("4", [TODO: Splicing])
 ]
-
-//TODO: vaguely talk about these...
 
 #slide[
   = Impure Substitution
-  ...
+  TODO: copy example from paper
 ]
-
-//TODO: give an example of what this means, cut if no time
 
 #slide[
   = Concrete models
@@ -718,8 +719,9 @@
   = Future Work
   #line-by-line[
     - Names are not (nicely) compositional
-    - `where` construction is too complex; makes weakening and substitution hard
+    - `where` construction is too complex
     - Want to support _regions_ to be able to reason about MLIR
+    - Want to formalize `isotope` in Lean
   ]
 ]
 
