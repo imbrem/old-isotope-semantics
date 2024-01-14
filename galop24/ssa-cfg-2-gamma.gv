@@ -1,0 +1,16 @@
+digraph G {
+	fontname="Monospace"
+	node [fontname="Monospace", shape="rectangle"]
+
+    g -> a
+	a -> b
+	a -> c
+	b -> d
+	c -> d
+
+    g [label="Γ", shape="circle"]
+	a [label="'entry"]
+	b [label="'left"]
+	c [label="'right"]
+	d [label="'exit"]
+}

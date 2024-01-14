@@ -539,7 +539,8 @@
   [|Γ ↦ Δ|]: cal(C)_1 ([|Γ|], [|Δ|])
   $,
   $
-  #dnt(proof-tree(bb-cons($Γ ⊢ "let" x = a; b gto Δ$, $Γ tst(0) a: A$, $Γ ⊢ b: B$))) = [|Γ ⊢ a: A|];upg([|Γ ⊢ b: B|], p)
+  #dnt(proof-tree(bb-cons($Γ ⊢ "let" x = a; b gto Δ$, $Γ tst(0) a: A$, $Γ, x: A ⊢ b gto Δ$))) = #block($⟨sans("id"), [|Γ ⊢ a: A|]⟩ 
+    \ #h(2em) ;[|Γ, x: A ⊢ b gto Δ|]$)
   $))
 ]
 
@@ -611,55 +612,65 @@
   #align(center + horizon, stack(dir: ltr, spacing: 1em,
     $
     B &::= b;t \
-    P &::= dot | P, 'ℓ(x: A) => B
+    P &::= dot | P, lbl(ℓ)(x: A) => B
     $,
-    uncover("2-", "vs."),
+    {
+      only("2", "vs.")
+      only("3", $≤$)
+    },
     only("2-", $
-    dnt(#proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$)))
+    #proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$))
     $)
   ))
 ]
 
 #slide[
   = Merging control flow
-
-  ...
-]
-
-#slide[
-  = Where-blocks
-
-  ...
-]
-
-#slide[
-  = Alternative Design: Terminators
-
-  ...
-]
-
-#slide[
-  = General control-flow
   
-  ...
+  #align(center + horizon, {
+    only("1", image("ssa-cfg-2-tree.svg", height: 60%))
+    only("2", image("ssa-cfg-2-gamma.svg", height: 80%))
+  })
 ]
 
 #slide[
-  = Traces
-
-  ...
+  = Looping control flow
+  
+  #align(center + horizon, image("ssa-cfg-1.svg", height: 60%))
 ]
 
 #slide[
   = Elgot structure
 
-  ...
+  $
+  (-)^†: cal(C)_0(A, B + A) -> cal(C)_0(A, B)
+  $
+  #line-by-line(start: 2)[
+    - *Fixpoint:* $f;[sans("id");f^†] = f^†$
+    - *Naturality:* $(f;g + sans("id"))^† = f^†;g$
+    - *Codiagonal:* $(f^†)^† = (f;[sans("id"), ι_1])^†$
+    - *Uniformity:* $h;f = g;id + h ==> h;f^† = g^†$
+  ]
 ]
 
-#slide[
-  = Adjusted where-blocks
+#let bl-where(c, t, w) = rule(name: "bl-where", c, t, w)
+#let cfg-nil(L) = rule(name: "cfg-nil", $#L ⊢ dot gto #L$)
+#let cfg-cons(c, w, t) = rule(name: "cfg-cons", c, w, t)
 
-  ...
+#slide[
+  = Where-blocks
+
+  #align(center + horizon, stack(spacing: 3em,
+    stack(dir: ltr, spacing: 3em,
+      $W &::= dot | W, lbl(ℓ)(x: A) => t$,
+      $[|L ⊢ W gto K|]: cal(C)_0([|L|], [|K|] + [|L|])$
+    ),
+    $dnt(#proof-tree(bl-where($Γ ⊢ t "where" W gto K$, $Γ ⊢ t gto L$, $L ⊢ W gto K$)))
+    = [|Γ ⊢ t gto L|];[|L ⊢ W gto K|]^†
+    $,
+    $dnt(#proof-tree(cfg-nil($L$))) = sans("id")$,
+    $dnt(#proof-tree(cfg-cons($L ⊢ W, lbl(ℓ)(x: A) => t gto K$, $L ⊢ W gto K, lbl(ℓ)[Γ](A)$, $Γ, x: A ⊢ t gto L$))) = ...$
+  ))
 ]
 
 #slide[
@@ -673,12 +684,20 @@
 ]
 
 #slide[
-  = Impure substitutions
-  ...
+  = Concrete models
+  #line-by-line[
+  - A monad is *Elgot* if its Kliesli category has an Elgot operator
+  - $A ↦ A + E$
+  - $A ↦ cal(P)(A)$
+  - The state transformer of an Elgot monad
+  - The reader transformer of an Elgot monad
+  - The writer transformer of an Elgot monad
+  - In our paper: give an Elgot trace monad; show this can be used to reason about printing, heap access, and TSO-style weak memory!
+  ]
 ]
 
 #slide[
-  = Concrete models
+  = Impure substitutions
   ...
 ]
 
