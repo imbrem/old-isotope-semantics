@@ -169,42 +169,39 @@
 
 #slide[
   #show raw: r => text(size: 17pt, r)
-  #align(center + horizon)[
+  #align(center + horizon, stack(dir: ltr, spacing: 3em,
+    ```isotope
+    // Compute fibonacci(i)
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n    
+      m = n          
+      n = t          
+      i = sub i 1    
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    ```, $==>$,
     ```isotope
     // Compute fibonacci(i)
     'entry:
       m0 = 0
       n0 = 1
-      brz i 'exit(m0) 'loop(i, m0, n0)
-    'loop(i0, m1, n1):
+      brz i 'exit(m0)          // ‖
+            'loop(i, m0, n0)   // ‖
+    'loop(i0, m1, n1):         // ‖
       m2 = n1
       n2 = add m1 n1
       i1 = sub i0 1
-      brz i1 'exit(m2) 'loop(i1, m2, n2)
-    'exit(m3):
+      brz i1 'exit(m2)         // ‖
+             'loop(i1, m2, n2) // ‖
+    'exit(m3):                 // ‖
       ret m3
     ```
-  ]
-]
-
-#slide[
-  #show raw: r => text(size: 17pt, r)
-  #align(center + horizon)[
-    ```isotope
-    // Compute fibonacci(i)
-    'entry:
-      m0 = 0
-      n0 = 1
-      brz i 'exit(m0) 'loop(i, m0, n0)       // ‖
-    'loop(i0, m1, n1):                       // ‖
-      m2 = n1
-      n2 = add m1 n1
-      i1 = sub i0 1
-      brz i1 'exit(m2) 'loop(i1, m2, n2)     // ‖
-    'exit(m3):                               // ‖
-      ret m3
-    ```
-  ]
+  ))
 ]
 
 #slide[
@@ -217,7 +214,7 @@
       n0 = 1
       brz i 'exit 'loop
     'loop:     
-      i0 = phi ('entry => i) ('loop => i1) // ‖
+      i0 = phi ('entry => i) ('loop => i1)  // ‖
       m1 = phi ('entry => m0) ('loop => m2) // ‖     
       n1 = phi ('entry => n0) ('loop => n2) // ‖            
       m2 = n1
@@ -342,6 +339,7 @@
     ))
 ]
 
+/*
 #slide[
   = Practice: Control-Flow Analysis
   #align(center + horizon, 
@@ -356,6 +354,7 @@
     ]
   )
 ]
+*/
 
 #slide[
   = Theory
@@ -421,6 +420,8 @@
     uncover("8-", $==> g ∈ Z(C)(A, B)$)
   ))
 ]
+
+//TODO: monoidal, premonoidal diagrams
 
 #slide[
   = Call-by-value is Freyd categories
@@ -598,28 +599,11 @@
     $
     dnt(#proof-tree(bl-br($Γ ⊢ "br" lbl(ℓ) med a gto L$, $Γ tst(1) a: A$, $lbl(ℓ)[Γ](A) ↦ L$)))
     $,
-    $
-    lbl(ℓ)[Γ](A) ↦ L <==> ∃Δ, Γ ↦ Δ ∧ lbl(ℓ)[Δ](A) ∈ L
-    $,
-    $
-    dnt(#proof-tree(bl-ite($Γ ⊢ ite(e, s, t) gto L$, $Γ tst(1) e: bold(2)$, $Γ ⊢ s gto L$, $Γ ⊢ t gto L$)))
-    $
-  ))
-]
-
-#slide[
-  = Terminators vs. Generalized SSA
-  #align(center + horizon, stack(dir: ltr, spacing: 1em,
-    $
-    B &::= b;t \
-    P &::= dot | P, lbl(ℓ)(x: A) => B
-    $,
-    {
-      only("2", "vs.")
-      only("3", $≤$)
-    },
     only("2-", $
-    #proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$))
+    lbl(ℓ)[Γ](A) ↦ L <==> ∃Δ, Γ ↦ Δ ∧ lbl(ℓ)[Δ](A) ∈ L
+    $),
+    only("3-", $
+    dnt(#proof-tree(bl-ite($Γ ⊢ ite(e, s, t) gto L$, $Γ tst(1) e: bold(2)$, $Γ ⊢ s gto L$, $Γ ⊢ t gto L$)))
     $)
   ))
 ]
@@ -640,6 +624,23 @@
 ]
 
 #slide[
+  = Terminators vs. Generalized SSA
+  #align(center + horizon, stack(dir: ltr, spacing: 1em,
+    $
+    B &::= b;t \
+    P &::= dot | P, lbl(ℓ)(x: A) => B
+    $,
+    {
+      only("2", "vs.")
+      only("3", $≤$)
+    },
+    only("2-", $
+    #proof-tree(bl-let($Γ ⊢ "let" x = a; t gto L$, $Γ tst(p) a: A$, $Γ, x: A ⊢ t gto L$))
+    $)
+  ))
+]
+
+#slide[
   = Elgot structure
 
   $
@@ -650,8 +651,11 @@
     - *Naturality:* $(f;g + sans("id"))^† = f^†;g$
     - *Codiagonal:* $(f^†)^† = (f;[sans("id"), ι_1])^†$
     - *Uniformity:* $h;f = g;id + h ==> h;f^† = g^†$
+    - *Lemma:* if there is a _unique_ fixpoint operator, it is an Elgot operator
   ]
 ]
+
+//TODO: Elgot diagrams
 
 #let bl-where(c, t, w) = rule(name: "bl-where", c, t, w)
 #let cfg-nil(L) = rule(name: "cfg-nil", $#L ⊢ dot gto #L$)
@@ -669,19 +673,33 @@
     = [|Γ ⊢ t gto L|];[|L ⊢ W gto K|]^†
     $,
     $dnt(#proof-tree(cfg-nil($L$))) = sans("id")$,
-    $dnt(#proof-tree(cfg-cons($L ⊢ W, lbl(ℓ)(x: A) => t gto K$, $L ⊢ W gto K, lbl(ℓ)[Γ](A)$, $Γ, x: A ⊢ t gto L$))) = ...$
   ))
 ]
 
 #slide[
-  = Substitution
+  #align(center + horizon, stack(spacing: 3em,
+    $[|L ⊢ W gto K|]: cal(C)_0([|L|], [|K|] + [|L|])$,
+    $dnt(#proof-tree(cfg-cons($L ⊢ W, lbl(ℓ)(x: A) => t gto K$, $L ⊢ W gto K, lbl(ℓ)[Γ](A)$, $Γ, x: A ⊢ t gto L$)))
+    \ #h(3em) = 
+    $
+  ))
+]
+
+//TODO: where-gadget, where-gadget diagram
+
+#slide[
+  = Substitution and Rewriting
   ...
 ]
 
+//TODO: vaguely talk about these...
+
 #slide[
-  = Rewriting
+  = Impure Substitution
   ...
 ]
+
+//TODO: give an example of what this means, cut if no time
 
 #slide[
   = Concrete models
@@ -697,18 +715,12 @@
 ]
 
 #slide[
-  = Impure substitutions
-  ...
-]
-
-#slide[
-  = Names and Compositionality
-  ...
-]
-
-#slide[
-  = Future Work: Regions
-  ...
+  = Future Work
+  #line-by-line[
+    - Names are not (nicely) compositional
+    - `where` construction is too complex; makes weakening and substitution hard
+    - Want to support _regions_ to be able to reason about MLIR
+  ]
 ]
 
 #focus-slide[
