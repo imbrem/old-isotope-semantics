@@ -697,14 +697,28 @@
     \ #h(4em) =
     [|L ⊢ W gto K, lbl(ℓ)[Γ](A)|];[[ι_0, [|Γ, x: A ⊢ t gto L|];ι_1], ι_1]
     $,
-    [TODO: where-gadget diagram]
   ))
 ]
 
-#slide[
-  = Where-gadget, continued
-  TODO: more where-gadget diagrams, to get the point across
-]
+#slide(align(center + horizon, image("where-gadget.excalidraw.svg")))
+#slide(align(center + horizon,
+  $
+  [|lbl(ℓ)_0[Γ_0](A_0), &lbl(ℓ)_1[Γ_1](A_1), lbl(ℓ)_2[Γ_2](A_2) 
+  \ & ⊢ lbl(ℓ)_1(x: A_1) => t_1, lbl(ℓ)_2(x: A_2) => t_2 
+  \ & gto lbl(ℓ)_0[Γ_0](A_0)|]
+  $
+))
+#slide(align(center + horizon, image("where-gadget-example.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-1.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-2.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-3.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-4.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-5.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-6.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-7.excalidraw.svg")))
+#slide(align(center + horizon, image("where-gadget-example-8.excalidraw.svg")))
+
+
 
 #slide[
   = Concrete models
