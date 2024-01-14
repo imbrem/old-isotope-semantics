@@ -382,7 +382,7 @@
       column-gutter: 3em,
       row-gutter: 0.5em,
       uncover("1-", $cal(C)_1$),
-      uncover("3-", $-->_#[i.o.o]^((-)^↑)$),
+      uncover("3-", $-->_#[i.o.o]^((-)^↓)$),
       uncover("3-", $Z(cal(C)_0)$),
       uncover("3-", $↪$),
       uncover("2-", $cal(C)_0$),
@@ -403,14 +403,14 @@
         spacing: 2em,
         uncover("7-", forall_stmt),
         {
-          only("6", $f ⊗ -;- ⊗ g$)
+          only("6-", $f ⊗ -;- ⊗ g$)
         },
         {
           only("6", $≠$)
           only("7-", $=$)
         },
         {
-          only("6", $- ⊗ g;f ⊗ -$)
+          only("6-", $- ⊗ g;f ⊗ -$)
         },
         hide(forall_stmt)
       )
@@ -430,7 +430,7 @@
 ]
 
 #let tst(purity) = $attach(⊢, br: purity)$
-#let upg(e, purity) = $#e^(attach(↑, br: purity))$
+#let dwng(e, purity) = $#e^(attach(↓, br: purity))$
 
 #let arr(purity, left, right) = $left attach(->, br: purity) right$
 #let expr-var(ctx, purity, var, ty) = rule(name: "var", $ctx tst(purity) var: ty$, $var: ty ∈ ctx$)
@@ -467,7 +467,7 @@
     $
     $
     #dnt(proof-tree(expr-app($Γ tst(p) f med a: B$, $f: arr(p, A, B)$, $Γ tst(1) a: A$))) 
-      = [|f|];dnt[|Γ tst(1) a med A|]^(↑_p)
+      = [|f|];dnt[|Γ tst(1) a med A|]^(↓_p)
     $
     $
     #dnt(proof-tree(expr-pair($Γ tst(1) (a, b): A × B$, $Γ tst(1) a: A$, $Γ tst(1) b: B$)))
@@ -484,14 +484,14 @@
   = Call-by-value: Expressions
   #align(center + horizon, stack(spacing: 3em,
         only("2-", $
-        #dnt(proof-tree(expr-var($Γ$, $p$, $x$, $A$))) = upg(π_x, p)
+        #dnt(proof-tree(expr-var($Γ$, $p$, $x$, $A$))) = dwng(π_x, p)
         $),
         only("3-", $
-        ∀f ∈ cal(C)_q (A, B), upg(f, p) = "if" q < p "then" f^↑ "else" f: cal(C)_p (A, B)
+        ∀f ∈ cal(C)_q (A, B), dwng(f, p) = "if" q > p "then" f^↓ "else" f: cal(C)_p (A, B)
         $),
         only("4-", $
         #dnt(proof-tree(expr-app($Γ tst(p) f med a: B$, $f: arr(p, A, B)$, $Γ tst(1) a: A$))) 
-          = [|f|];upg([|Γ tst(1) a med A|], p)
+          = [|f|];dwng([|Γ tst(1) a med A|], p)
         $),
   ))
 ]
@@ -512,14 +512,14 @@
 ]
 
 #slide[
-  = Call-by-value: Upgrade
+  = Call-by-value: downgrade
   #align(center + horizon, stack(spacing: 3em,
     $
     Γ tst(1) a: A ==> Γ tst(0) a: A
     $,
     only("2-",
     $
-    [|Γ tst(1) a: A|]^↑ = [|Γ tst(0) a: A|]
+    [|Γ tst(1) a: A|]^↓ = [|Γ tst(0) a: A|]
     $)
   ))
 ]
@@ -536,7 +536,7 @@
   [|Γ ⊢ b gto Δ|]: cal(C)_0 ([|Γ|], [|Δ|])
   $,
   $
-  #dnt(proof-tree(bb-nil($Γ$, $Δ$))) = upg([|Γ ↦ Δ|], p)
+  #dnt(proof-tree(bb-nil($Γ$, $Δ$))) = dwng([|Γ ↦ Δ|], p)
   "where"
   [|Γ ↦ Δ|]: cal(C)_1 ([|Γ|], [|Δ|])
   $,
