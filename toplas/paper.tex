@@ -621,15 +621,21 @@ syntactic categories:
   given in Figure \ref{fig:ssa-block-typing}.
 
   \item \textit{Basic blocks} \(\beta\), which are typed via the judgement
-  \(\haslb{\Gamma}{\beta}{\ms{L}}\)...
+  \(\haslb{\Gamma}{\beta}{\ms{L}}\), which says that, given variables \(\Gamma\)
+  live on entry, \(\beta\) only branches to labels in \(\ms{L}\). The rules for
+  this judgement are given in Figure \ref{fig:ssa-block-typing}.
 
   \item \textit{Control-flow graphs} or \textit{CFG}s \(L\), which are typed via
-    the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\) defines a
-    control-flow graph with input labels \(\ms{L}\) and output labels \(\ms{K}\);
-    recursive control flow is allowed. The rules for this judgement are given in
-    Figure \ref{fig:ssa-block-typing}.
+    the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\) defines
+    a control-flow graph with input labels \(\ms{L}\) and output labels
+    \(\ms{K}\); recursive control flow is allowed. The rules for this judgement
+    are given in Figure \ref{fig:ssa-block-typing}.
 
-  \item \textit{Regions} ...
+  \item \textit{Regions}, which are a control-flow graph with a single
+  distinguished entry block \(\beta\), and are typed with the judgement
+  \(\haslb{\Gamma}{R}{\ms{L}}\), which says that, given variables \(\Gamma\)
+  live on entry (which can be viewed as parameters to the region), the region
+  has outputs \(\ms{L}\).
 \end{itemize}
 The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
 the appendix, while the typing judgements themselves are given in Figure
@@ -874,7 +880,7 @@ labels, and \rle{cons-br}, which says that if \(L\) maps \(\ms{L}\) to either
       {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}
       {\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
   \end{gather*}
-  \caption{Typing rules for \isotopessa blocks}
+  \caption{Typing rules for \isotopessa terminators, blocks, and regions}
   \Description{Typing rules for isotope-SSA blocks}
   \label{fig:ssa-block-typing}
 \end{figure}
