@@ -135,8 +135,8 @@
 %% the commands and values with those provided to you when you
 %% complete the rights form.
 \setcopyright{acmcopyright}
-\copyrightyear{2024}
-\acmYear{2024}
+\copyrightyear{2023}
+\acmYear{2023}
 \acmDOI{XXXXXXX.XXXXXXX}
 
 %%
@@ -451,8 +451,6 @@ compositional intepretation in any distributive effectful category (a
 substructural variant of a Freyd category) with an Elgot structure. We use this
 structure to give generic proofs of the soundness of substitution and rewriting
 properties.
-\item We show how our syntax quotiented by our equational theory is an initial model
-of our semantics.
 \item Our abstract semantics justifies a variety of powerful optimisation
 techniques, including inlining, loop fusion, hoisting, and strength reduction. 
 \item We show how Elgot monads give rise to instances of our categorical
@@ -491,17 +489,17 @@ as in Figure \ref{fig:bb-arg}.
   \begin{subfigure}[t]{0.33\textwidth}
     \begin{small}
     \begin{BVerbatim}[baseline=t, gobble=3]
-    ^entry:
+    'entry:
       m = 0
       n = 1
       brz i 'exit 'loop
-    ^loop:
+    'loop:
       t = add m n
       m = n
       n = t
       i = sub i 1
       brz i 'exit 'loop
-    ^exit:
+    'exit:
       ret m
     \end{BVerbatim}
     \end{small}
@@ -511,20 +509,20 @@ as in Figure \ref{fig:bb-arg}.
   \begin{subfigure}[t]{0.32\textwidth}
     \begin{small}
     \begin{BVerbatim}[baseline=t, gobble=3]
-    ^entry:
+    'entry:
       m0 = 0
       n0 = 1
       brz i
-        ^exit (m0) 
-        ^loop (i, m0, n0)
-    ^loop(i0, m1, n1):
+        'exit (m0) 
+        'loop (i, m0, n0)
+    'loop(i0, m1, n1):
       m2 = n1
       n2 = add m1 n1
       i1 = sub i0 1
       brz i1 
-        ^exit (m2) 
-        ^loop (i1, m2, n2)
-    ^exit(m3):
+        'exit (m2) 
+        'loop (i1, m2, n2)
+    'exit(m3):
       ret m3
     \end{BVerbatim}
     \end{small}
@@ -537,20 +535,20 @@ as in Figure \ref{fig:bb-arg}.
     let m0 = 0;
     let n1 = 1;
     if eq i 0 {
-      br ^exit (m0)
+      br 'exit (m0)
     } else {
-      br ^loop (i, m0, n0)
+      br 'loop (i, m0, n0)
     } where
-    ^loop(i0, m1, n1) =>
+    'loop(i0, m1, n1) =>
       let m2 = n1;
       let n2 = add m1 n1;
       let i1 = sub i0 1;
       if eq i1 0 {
-        br ^exit (m2)
+        br 'exit (m2)
       } else {
-        br ^loop (i1, m2, n2)
+        br 'loop (i1, m2, n2)
       }
-    ^exit(m3) => ret m3
+    'exit(m3) => ret m3
     \end{BVerbatim}
     \end{small}
     \caption{Our syntax}
@@ -609,33 +607,17 @@ syntactic categories:
   \textit{pure}. The rules for this judgement are given in Figure
   \ref{fig:ssa-term-typing}.
   
-  \item \textit{Bodies} \(b\), which are typed via the judgement
-  \(\hasty{\Gamma}{p}{b}{\Delta}{}\), which says that, given variables
-  \(\Gamma\) live on entry, the variables \(\Delta\) are live on exit. The rules
-  for this judgement are given in Figure \ref{fig:ssa-block-typing}.
-  
-  \item \textit{Terminators} \(s, t\), which are typed via the judgement
-  \(\haslb{\Gamma}{t}{\ms{L}}\), which says that the terminator \(t\) is
-  well-formed with respect to the context \(\Gamma\) and only branches to
+  \item \textit{Blocks} \(s, t\), which are typed via the judgement
+  \(\haslb{\Gamma}{t}{\ms{L}}\), which says that the block \(t\) is well-formed
+  with respect to the context \(\Gamma\) and only branches to
   ("\textit{targets}") labels in \(\ms{L}\). The rules for this judgement are
   given in Figure \ref{fig:ssa-block-typing}.
 
-  \item \textit{Basic blocks} \(\beta\), which are typed via the judgement
-  \(\haslb{\Gamma}{\beta}{\ms{L}}\), which says that, given variables \(\Gamma\)
-  live on entry, \(\beta\) only branches to labels in \(\ms{L}\). The rules for
-  this judgement are given in Figure \ref{fig:ssa-block-typing}.
-
-  \item \textit{Control-flow graphs} or \textit{CFG}s \(L\), which are typed via
-    the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\) defines
-    a control-flow graph with input labels \(\ms{L}\) and output labels
-    \(\ms{K}\); recursive control flow is allowed. The rules for this judgement
-    are given in Figure \ref{fig:ssa-block-typing}.
-
-  \item \textit{Regions}, which are a control-flow graph with a single
-  distinguished entry block \(\beta\), and are typed with the judgement
-  \(\haslb{\Gamma}{R}{\ms{L}}\), which says that, given variables \(\Gamma\)
-  live on entry (which can be viewed as parameters to the region), the region
-  has outputs \(\ms{L}\).
+\item \textit{Control-flow graphs} or \textit{CFG}s \(L\), which are typed via
+  the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\) defines a
+  control-flow graph with input labels \(\ms{L}\) and output labels \(\ms{K}\);
+  recursive control flow is allowed. The rules for this judgement are given in
+  Figure \ref{fig:ssa-block-typing}.
 \end{itemize}
 The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
 the appendix, while the typing judgements themselves are given in Figure
@@ -880,7 +862,7 @@ labels, and \rle{cons-br}, which says that if \(L\) maps \(\ms{L}\) to either
       {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}
       {\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
   \end{gather*}
-  \caption{Typing rules for \isotopessa terminators, blocks, and regions}
+  \caption{Typing rules for \isotopessa blocks}
   \Description{Typing rules for isotope-SSA blocks}
   \label{fig:ssa-block-typing}
 \end{figure}
