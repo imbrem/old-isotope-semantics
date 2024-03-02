@@ -1,19 +1,4 @@
-#import "@preview/lemmify:0.1.2": default-theorems, display-heading-counter-at
-
-#let (
-  theorem, lemma, corollary,
-  remark, proposition, example,
-  proof, rules: thm-rules
-) = default-theorems(
-    "thm-group", 
-    lang: "en", 
-    thm-numbering: fig => {
-        if fig.numbering != none {
-            display-heading-counter-at(fig.location())
-            numbering(fig.numbering, ..fig.counter.at(fig.location()))
-        }
-    },
-)
+#import "@preview/curryst:0.1.1": rule, proof-tree
 
 #let lbl(labl) = $ #`^`labl$
 #let llet(x, e) = $sans("let") med #x = #e$
@@ -21,6 +6,15 @@
 #let lbr(l, e) = $sans("br") med #l med #e$
 #let lblk(l, a, e) = $#l #a: #e$
 #let lwhere(β, L) = $#β med sans("where") med #L$
+#let lwk(Γ, Δ) = $#Γ ↦ #Δ$
+#let twk(L, K) = $#L ⇝ #K$
+
+#let ltt = $sans("tt")$
+#let lff = $sans("ff")$
+
+#let dprf(tree) = box(baseline: 50%, proof-tree(tree))
+#let entp(p) = $attach(⊢, br: #p)$
+#let intp(p, A, B) = $sans("inst")_(#p)(#A, #B)$
 
 = SSA is Freyd Categories⋆
 
@@ -46,10 +40,137 @@ We can define an SSA program to be given by a _region_: a control-flow graph wit
 - _Basic blocks_ $β$: $b;t$
 - _Control-flow graphs_ $L$: $dot | L, lblk(lbl(ℓ), (x: A), β)$
 - _Regions_ $r$: $lwhere(β, L)$
+To type our syntax, we will need to introduce the following:
+- _Types_ $A, B, C$: $X | A ⊗ B$
+- _Contexts_ $Γ, Δ, Ξ$: $dot | Γ, x: A$
+- _Targets_ $sans(L), sans(K), sans(J): dot | sans(L), lbl(ℓ)[Γ](A)$
+We begin by introducing some structural judgements on contexts and targets as follows:
+#let ctx-rules = (
+  rule(name: "nil-wk", $lwk(dot, dot)$),
+  rule(name: "cons-wk", $lwk(#$Γ, x: A$, #$Δ, x: A$)$, $lwk(Γ, Δ)$),
+  rule(name: "drop-wk", $lwk(#$Γ, x: A$, Δ)$, $lwk(Γ, Δ)$),
+)
+
+#align(center, table(
+  columns: 3,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(ctx-rules.at(0)),
+  proof-tree(ctx-rules.at(1)),
+  proof-tree(ctx-rules.at(2))
+))
+
+#let trg-rules = (
+  rule(name: "nil-twk", $twk(dot, dot)$),
+  rule(name: "cons-twk", $twk(#$L, lbl(ℓ)[Γ](A)$, #$K, lbl(ℓ)[Δ](A)$)$, $twk(L, K)$, $lwk(Γ, Δ)$),
+  rule(name: "drop-twk", $twk(L, #$K, lbl(ℓ)[Δ](A)$)$, $twk(L, K)$),
+)
+
+#align(center, table(
+  columns: 3,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(trg-rules.at(0)),
+  proof-tree(trg-rules.at(1)),
+  proof-tree(trg-rules.at(2))
+))
+
+We can now give typing rules as follows:
+
+#let term-rules = (
+  rule(name: "var", $Γ entp(p) x: A$, $lwk(Γ, #$x: A$)$),
+  rule(name: "app", $Γ entp(p) f med e: B$, $f: intp(p, A, B)$, $Γ entp(1) e: A$),
+  rule(name: "pair", $Γ entp(p) (a, b): A ⊗ B$, $Γ entp(1) a: A$, $Γ entp(1) b: B$),
+  rule(name: "nil", $Γ entp(p) (): bold(1)$),
+  rule(name: "true", $Γ entp(p) ltt: bold(2)$),
+  rule(name: "false", $Γ entp(p) lff: bold(2)$),
+);
+#align(center, table(
+  columns: 3,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(term-rules.at(0)),
+  proof-tree(term-rules.at(1)),
+  proof-tree(term-rules.at(2)),
+))
+#align(center, table(
+  columns: 3,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(term-rules.at(3)),
+  proof-tree(term-rules.at(4)),
+  proof-tree(term-rules.at(5)),
+))
+
+
+#let body-rules = (
+  rule(name: "nil-st", $Γ entp(p) dot: Δ$, $lwk(Γ, Δ)$),
+  rule(name: "let", $Γ entp(p) llet(x, e); b: Δ$, $Γ entp(p) e: A$, $Γ, x: A entp(p) b: Δ$),
+  rule(name: "let2", $Γ entp(p) llet((x, y), e); b: Δ$, $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B entp(p) b: Δ$),
+);
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(body-rules.at(0)),
+  proof-tree(body-rules.at(1)),
+))
+#align(center, proof-tree(body-rules.at(2)))
+
+#let terminator-rules = (
+  rule(name: "br", $Γ ⊢ lbr(lbl(ℓ), e) ▷ sans(L)$, $Γ entp(p) e: A$, $twk(Δ, #$ℓ: A$)$),
+  rule(name: "ite", 
+    $Γ ⊢ lite(e, s, t) ▷ sans(L)$, 
+    $Γ entp(1) e: bold(2)$, 
+    $Γ ⊢ s ▷ sans(L)$, 
+    $Γ ⊢ t ▷ sans(L)$),
+)
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(terminator-rules.at(0)),
+  proof-tree(terminator-rules.at(1)),
+))
+
+#let block-rule = rule(
+  name: "blk", $Γ ⊢ b; t ▷ sans(L)$, $Γ entp(p) b: Δ$, $Δ ⊢ t: sans(L)$)
+#align(center, proof-tree(block-rule))
+#let cfg-rules = (
+  rule(name: "nil-cf", $sans(L) ⊢ dot ▷ sans(K)$, $twk(sans(L), sans(K))$),
+  rule(name: "cons-cf", 
+    $sans(L) ⊢ L, lblk(lbl(ℓ), (x: A), t) ▷ sans(K)$, 
+    $sans(L) ⊢ L ▷ sans(K), lbl(ℓ)[Γ](A)$,
+    $Γ, x: A ⊢ t ▷ L$),
+)
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(cfg-rules.at(0)),
+  proof-tree(cfg-rules.at(1)),
+))
+
+#let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) ▷ sans(L)$, $Γ ⊢ β ▷ sans(L)$, $sans(L) ⊢ L ▷ sans(K)$)
+#align(center, proof-tree(region-rule))
+
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
 - _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
 Note that we remove dependencies on blocks $b$. We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. One may also notice that the given grammar is slightly ambiguous: we can parse
 $llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalence, excusing the ambiguity.
+
+The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
+
+#let gen-reg-rules = ();
+
+...
 
 Operations on bodies, CFGs, etc ...
 
