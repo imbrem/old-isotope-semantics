@@ -8,6 +8,7 @@
 #let lwhere(β, L) = $#β med sans("where") med #L$
 #let lwk(Γ, Δ) = $#Γ ↦ #Δ$
 #let twk(L, K) = $#L ⇝ #K$
+#let lto = $triangle.stroked.small.r$
 
 #let ltt = $sans("tt")$
 #let lff = $sans("ff")$
@@ -123,12 +124,12 @@ We can now give typing rules as follows:
 #align(center, proof-tree(body-rules.at(2)))
 
 #let terminator-rules = (
-  rule(name: "br", $Γ ⊢ lbr(lbl(ℓ), e) ▷ sans(L)$, $Γ entp(p) e: A$, $twk(Δ, #$ℓ: A$)$),
+  rule(name: "br", $Γ ⊢ lbr(lbl(ℓ), e) lto sans(L)$, $Γ entp(p) e: A$, $twk(Δ, #$ℓ: A$)$),
   rule(name: "ite", 
-    $Γ ⊢ lite(e, s, t) ▷ sans(L)$, 
+    $Γ ⊢ lite(e, s, t) lto sans(L)$, 
     $Γ entp(1) e: bold(2)$, 
-    $Γ ⊢ s ▷ sans(L)$, 
-    $Γ ⊢ t ▷ sans(L)$),
+    $Γ ⊢ s lto sans(L)$, 
+    $Γ ⊢ t lto sans(L)$),
 )
 #align(center, table(
   columns: 2,
@@ -140,14 +141,14 @@ We can now give typing rules as follows:
 ))
 
 #let block-rule = rule(
-  name: "blk", $Γ ⊢ b; t ▷ sans(L)$, $Γ entp(p) b: Δ$, $Δ ⊢ t: sans(L)$)
+  name: "blk", $Γ ⊢ b; t lto sans(L)$, $Γ entp(p) b: Δ$, $Δ ⊢ t: sans(L)$)
 #align(center, proof-tree(block-rule))
 #let cfg-rules = (
-  rule(name: "nil-cf", $sans(L) ⊢ dot ▷ sans(K)$, $twk(sans(L), sans(K))$),
+  rule(name: "nil-cf", $sans(L) ⊢ dot lto sans(K)$, $twk(sans(L), sans(K))$),
   rule(name: "cons-cf", 
-    $sans(L) ⊢ L, lblk(lbl(ℓ), (x: A), t) ▷ sans(K)$, 
-    $sans(L) ⊢ L ▷ sans(K), lbl(ℓ)[Γ](A)$,
-    $Γ, x: A ⊢ t ▷ L$),
+    $sans(L) ⊢ L, lblk(lbl(ℓ), (x: A), t) lto sans(K)$, 
+    $sans(L) ⊢ L lto sans(K), lbl(ℓ)[Γ](A)$,
+    $Γ, x: A ⊢ t lto L$),
 )
 #align(center, table(
   columns: 2,
@@ -158,7 +159,7 @@ We can now give typing rules as follows:
   proof-tree(cfg-rules.at(1)),
 ))
 
-#let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) ▷ sans(K)$, $Γ ⊢ β ▷ sans(L)$, $sans(L) ⊢ L ▷ sans(K)$)
+#let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) lto sans(K)$, $Γ ⊢ β lto sans(L)$, $sans(L) ⊢ L lto sans(K)$)
 #align(center, proof-tree(region-rule))
 
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
@@ -167,17 +168,16 @@ Note that we remove dependencies on blocks $b$. We would like to define our equa
 $llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalence, excusing the ambiguity.
 
 The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
-
 #let gen-reg-rules = (
   rule(name: "let", 
-    $Γ ⊢ llet(x, e); t ▷ sans(L)$, 
-    $Γ entp(p) e: A$, $Γ, x: A ⊢ t ▷ sans(L)$),
+    $Γ ⊢ llet(x, e); t lto sans(L)$, 
+    $Γ entp(p) e: A$, $Γ, x: A ⊢ t lto sans(L)$),
   rule(name: "let2", 
-    $Γ ⊢ llet((x, y), e); t ▷ sans(L)$, 
-    $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B ⊢ t ▷ sans(L)$),
+    $Γ ⊢ llet((x, y), e); t lto sans(L)$, 
+    $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B ⊢ t lto sans(L)$),
   rule(name: "reg", 
-    $Γ ⊢ lwhere(t, L) ▷ sans(K)$, 
-    $Γ ⊢ t ▷ sans(L)$, $sans(L) ⊢ L ▷ sans(K)$),
+    $Γ ⊢ lwhere(t, L) lto sans(K)$, 
+    $Γ ⊢ t lto sans(L)$, $sans(L) ⊢ L lto sans(K)$),
 );
 #align(center, table(
   columns: 2,
@@ -197,9 +197,19 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 ))
 #align(center, proof-tree(gen-reg-rules.at(2)))
 
-Operations on bodies, CFGs, etc ...
+We can define the catenation of bodies as follows:
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  $dot;b' = b'$,
+  $(llet(x, e); b);b' = llet(x, e);(b;b')$,
+))
+This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_1;b_2);b_3$. We furthermore have
+#align(center, proof-tree(rule($Γ ⊢ b;b': Ξ$, $Γ ⊢ b: Δ$, $Γ ⊢ b': Ξ$)))
 
-$α$-classes of bodies, CFGs, etc ...
+Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
 
 Structural rewrites on bodies:
 - Congruence
