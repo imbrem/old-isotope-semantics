@@ -158,7 +158,7 @@ We can now give typing rules as follows:
   proof-tree(cfg-rules.at(1)),
 ))
 
-#let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) ▷ sans(L)$, $Γ ⊢ β ▷ sans(L)$, $sans(L) ⊢ L ▷ sans(K)$)
+#let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) ▷ sans(K)$, $Γ ⊢ β ▷ sans(L)$, $sans(L) ⊢ L ▷ sans(K)$)
 #align(center, proof-tree(region-rule))
 
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
@@ -168,9 +168,34 @@ $llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhe
 
 The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
 
-#let gen-reg-rules = ();
-
-...
+#let gen-reg-rules = (
+  rule(name: "let", 
+    $Γ ⊢ llet(x, e); t ▷ sans(L)$, 
+    $Γ entp(p) e: A$, $Γ, x: A ⊢ t ▷ sans(L)$),
+  rule(name: "let2", 
+    $Γ ⊢ llet((x, y), e); t ▷ sans(L)$, 
+    $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B ⊢ t ▷ sans(L)$),
+  rule(name: "reg", 
+    $Γ ⊢ lwhere(t, L) ▷ sans(K)$, 
+    $Γ ⊢ t ▷ sans(L)$, $sans(L) ⊢ L ▷ sans(K)$),
+);
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(terminator-rules.at(0)),
+  proof-tree(terminator-rules.at(1)),
+))
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(gen-reg-rules.at(0)),
+  proof-tree(gen-reg-rules.at(1)),
+))
+#align(center, proof-tree(gen-reg-rules.at(2)))
 
 Operations on bodies, CFGs, etc ...
 
