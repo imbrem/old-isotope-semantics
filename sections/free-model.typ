@@ -12,6 +12,7 @@
 
 #let ltt = $sans("tt")$
 #let lff = $sans("ff")$
+#let Var = $sans("Var")$
 
 #let dprf(tree) = box(baseline: 50%, proof-tree(tree))
 #let entp(p) = $attach(⊢, br: #p)$
@@ -197,50 +198,33 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 ))
 #align(center, proof-tree(gen-reg-rules.at(2)))
 
-We can define the catenation of bodies as follows:
-#align(center, table(
-  columns: 2,
-  gutter: 2em,
-  align: bottom,
-  stroke: none,
-  $dot;b' = b'$,
-  $(llet(x, e); b);b' = llet(x, e);(b;b')$,
+We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
+#align(center, stack(dir: ltr, spacing: 2em,
+  $[ρ]x = ρ(x)$,
+  $[ρ](f med e) = f med [ρ]e$,
+  $[ρ]() = ()$,
+  $[ρ](e, e') = ([ρ]e, [ρ]e')$,
 ))
-This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_1;b_2);b_3$. We furthermore have
-#align(center, proof-tree(rule($Γ ⊢ b;b': Ξ$, $Γ ⊢ b: Δ$, $Γ ⊢ b': Ξ$)))
+Similarly, we can proceed to define the renaming of a _body_ as follows:
+#align(center, stack(dir: ltr, spacing: 2em,
+  $[ρ]dot = dot$,
+  $[ρ](llet(x, e); b) = llet(ρ(x), [ρ]e); [ρ]b$,
+))
+$
+[ρ](llet((x, y), e); b) = llet((ρ(x), ρ(y)), [ρ]e); [ρ]b
+$
+Note that the renaming of a _body_ also changes the variables used in a `let`-binding.
+
+If a renaming $ρ$ is injective, it follows that
+$
+Γ entp(p) e: A ==> [ρ]Γ entp(p) [ρ]e: A quad "and" quad
+Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
+$
+In general, we will consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment.
+
+Capture-avoiding renaming nonsense...
 
 Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
-
-Structural rewrites on bodies:
-- Congruence
-- $α$ renaming; see above
-- Pure $β$ rules (note: this will need to be fixed for sub-structurality)
-- Pure is relevant + affine $==>$ regular $β$
-- Pure is central (?) 
-- $η$ rules
-Want to show that this gives us a Freyd category. Congruence should mean composition always respects these.
-
-Structural rewrites on CFGs:
-- Congruence
-- Block rewrites
-- CFG-level $β$, somehow... this is a combined substitute + eliminate... see below...
-- $α$ renaming; see above
-- Permutation
-
-Semantic rewrites on CFGs:
-- Unreachable code elimination
-- Jump-threading (maybe structural)
-- If-then-else elimination:
-  - `true`/`false` $==>$ unconditional branch
-  - merge equal branches regardless of discriminator
-  - `if e { br ^ℓ true } else { br ^ℓ false } ==> br ^ℓ e`... do we need a primitive negation operator? otherwise, how do we show that
-    `if e { br ^ℓ false } else { br ^ℓ true } ^ℓ(e): ...`... ah, via pushing blocks, which can be pulling blocks
-- Pushing blocks across an if-then-else, which should hopefully do $β$ in the central + relevant + affine model by float-to-bottom, jump-thread, splat, and remerge (maybe structural)
-- Fixpoint
-- Uniformity
-- Codiagonal
-
-We want to show that this gives us a Freyd category with a distributive Elgot structure. And that's SSA! Yay!
 
 == Freyd Categories
 
@@ -265,8 +249,65 @@ Note a traditional Freyd category is given by an identity-on-objects functor $ca
 
 == Freyd Categories are Basic Blocks
 
+TODO: write out semantics here
+
+We can define the catenation of bodies as follows:
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  $dot;b' = b'$,
+  $(llet(x, e); b);b' = llet(x, e);(b;b')$,
+))
+This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_1;b_2);b_3$. We furthermore have
+#align(center, proof-tree(rule($Γ ⊢ b;b': Ξ$, $Γ ⊢ b: Δ$, $Γ ⊢ b': Ξ$)))
+
+TODO: show catenation respects semantics...
+
+Structural rewrites on bodies:
+- Congruence
+- $α$ renaming; see above
+- Pure $β$ rules (note: this will need to be fixed for sub-structurality)
+- Pure is relevant + affine $==>$ regular $β$
+- Pure is central (?) 
+- $η$ rules
+Want to show that this gives us a Freyd category. Congruence should mean composition always respects these.
+
 == Basic Blocks are a Freyd Category
+
+TODO: this denotational semantics is just a compiler pass sending us to A-normal form
+
+== Elgot Distributive Freyd Categories
+
+TODO: write out definition here
 
 == Elgot Distributive Freyd Categories are SSA
 
+TODO: write out semantics here
+
+Structural rewrites on CFGs:
+- Congruence
+- Block rewrites
+- CFG-level $β$, somehow... this is a combined substitute + eliminate... see below...
+- $α$ renaming; see above
+- Permutation
+
+Semantic rewrites on CFGs:
+- Unreachable code elimination
+- Jump-threading (maybe structural)
+- If-then-else elimination:
+  - `true`/`false` $==>$ unconditional branch
+  - merge equal branches regardless of discriminator
+  - `if e { br ^ℓ true } else { br ^ℓ false } ==> br ^ℓ e`... do we need a primitive negation operator? otherwise, how do we show that
+    `if e { br ^ℓ false } else { br ^ℓ true } ^ℓ(e): ...`... ah, via pushing blocks, which can be pulling blocks
+- Pushing blocks across an if-then-else, which should hopefully do $β$ in the central + relevant + affine model by float-to-bottom, jump-thread, splat, and remerge (maybe structural)
+- Fixpoint
+- Uniformity
+- Codiagonal
+
+We want to show that this gives us a Freyd category with a distributive Elgot structure. And that's SSA! Yay!
+
 == SSA is an Elgot Distributive Freyd Category
+
+TODO: for blocks this is still A-normal form; does this do anything to the CFG? maybe...
