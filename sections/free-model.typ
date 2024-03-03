@@ -258,11 +258,20 @@ TODO: pointer to effectful, substructural categories
 
 == Freyd Categories are Basic Blocks
 
-We can interpret well-typed terms in a Freyd category $cal(C)$ as follows:
+We can interpret types and contexts as objects in $cal(C)$ in the obvious manner:
+$
+#tybox($A$, $|cal(C)|$) wide &
+[|X|] = X wide &
+[|A ⊗ B|] = [|A|] ⊗ [|B|] wide &
+[|bold(1)|] = I \
+#tybox($Γ$, $|cal(C)|$) wide &
+[|dot|] = I wide &
+[|Γ, x: A|] = [|Γ|] ⊗ [|A|] wide &
+$
+We may then interpret well-typed terms in a Freyd category $cal(C)$ as follows:
 $
 #tybox($Γ entp(p) e: A$, $cal(C)_p ([|Γ|], [|A|])$)
 $
-//TODO: semantically, should there not be a multi-equation container of sorts...
 $
 [|#dprf(term-rules.at(0))|] = [|Γ ↦ x: A|] wide
 [|#dprf(term-rules.at(1))|] = [|f|] ∘ [|Γ entp(1) e: A|]
@@ -273,12 +282,30 @@ $
   \ &= Δ_([|Γ|]);[|Γ entp(1) a: A|] ⊗ [|Γ entp(1) b: B|]
 $
 $
-[|#dprf(term-rules.at(3))|] = !_([|Γ|])
+[|#dprf(term-rules.at(3))|] = !_([|Γ|]) wide
+[|#dprf(ctx-rules.at(0))|] = id_I wide
+[|#dprf(ctx-rules.at(2))|] = π_l;[|Γ ↦ Δ|]
 $
-Weakening is simply interpreted in the underlying Cartesian structure as follows:
-...
-Well-typed blocks may then be interpreted as follows
-...
+$
+[|#dprf(ctx-rules.at(1))|] = [|Γ ↦ Δ|] ⊗ id_A
+$
+Well-typed block bodies can then be interpreted as follows:
+$
+#tybox($Γ entp(p) b: Δ$, $cal(C)_p ([|Γ|], [|Δ|])$)
+$
+$
+[|#dprf(body-rules.at(0))|] &= [|Γ ↦ Δ|] \
+[|#dprf(body-rules.at(1))|] &= 
+  Δ_[|Γ|];[|Γ|] ⊗ [|Γ entp(p) e: A|];[|Γ, x: A entp(p) b: Δ|] \
+[|#dprf(body-rules.at(2))|] &= Δ_[|Γ|]
+  ;[|Γ|] ⊗ [|Γ entp(p) e: A ⊗ B|]
+  ;α^(-1); \
+  & #h(2em) [|Γ, x: A, y: B entp(p) b: Δ|]
+$
+
+TODO: weakening theorem
+
+TODO: substitution theorem; permutation/renaming
 
 We can define the catenation of bodies as follows:
 #align(center, table(
@@ -360,3 +387,9 @@ TODO: for blocks this is still A-normal form; does this do anything to the CFG? 
 == Substructural SSA is a Substructural Distributive Effectful Category
 
 ...
+
+== Dominator-Tree Syntax
+
+TODO: this
+
+TODO: think about split vs. splat...
