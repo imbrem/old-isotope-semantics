@@ -9,6 +9,7 @@
 #let lwk(Γ, Δ) = $#Γ ↦ #Δ$
 #let twk(L, K) = $#L ⇝ #K$
 #let lto = $triangle.stroked.small.r$
+#let sfor(e, x) = $#e ⧸ #x$
 
 #let ltt = $sans("tt")$
 #let lff = $sans("ff")$
@@ -354,7 +355,100 @@ $
 $
 This can be proved by a relatively trivial induction.
 
-TODO: substitution theorem; permutation/renaming
+TODO: substitution and blocks...
+
+TODO: α-renaming
+
+We may hence define a structural equivalence relation on well-typed terms and block bodies as follows:
+$
+#tybox(
+  $Γ entp(p) e ≅ e': A$, 
+  $[|Γ entp(p) e: A|] = [|Γ entp(p) e': A|]$)
+$
+#let term-struct-rules = (
+  rule(name: "var-cong",
+    $Γ entp(p) x ≃ x: A$, $Γ ↦ x: A$),
+  rule(name: "app-cong",
+    $Γ entp(p) f med e ≅ f med e'$, 
+    $Γ entp(p) e ≅ e'$),
+  rule(name: "pair-cong",
+    $Γ entp(p) (a, b) ≅ (a', b')$, 
+    $Γ entp(p) a ≅ a'$, $Γ entp(p) b ≅ b'$),
+  rule(name: "η-nil",
+    $Γ entp(p) e ≅ e': bold(1)$,
+    $Γ entp(1) e: bold(1)$,
+    $Γ entp(1) e': bold(1)$),
+)
+#align(center, table(
+  columns: 3,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(term-struct-rules.at(0)),
+  proof-tree(term-struct-rules.at(1)),
+  proof-tree(term-struct-rules.at(3)),
+))
+#align(center, proof-tree(term-struct-rules.at(2)))
+$
+#tybox(
+  $Γ entp(p) b ≅ b': Δ$, 
+  $[|Γ entp(p) b: Δ|] = [|Γ entp(p) b': Δ|]$)
+$
+#let body-struct-rules = (
+  rule(name: "symm", 
+    $Γ entp(p) b' ≅ b$, 
+    $Γ entp(p) b ≅ b'$),
+  rule(name: "trans", 
+    $Γ entp(p) b ≅ b''$, 
+    $Γ entp(p) b ≅ b'$, $Γ entp(p) b' ≅ b'': Δ$),
+  rule(name: "nil-cong", $Γ entp(p) dot ≅ dot: Δ$, $Γ ↦ Δ$),
+  rule(name: "let-cong", 
+    $Γ entp(p) llet(x, e); b ≅ llet(x, e'); b': Δ$, 
+    $Γ entp(p) e ≅ e': A$,
+    $Γ, x: A entp(p) b ≅ b': Δ$),
+  rule(name: "let2-cong", 
+    $Γ entp(p) llet((x, y), e); b ≅ llet((x, y), e'); b': Δ$, 
+    $Γ entp(p) e ≅ e' A ⊗ B$,
+    $Γ, x: A, y: B entp(p) b ≅ b': Δ$),
+  rule(name: "α",
+    $Γ entp(p) b ≅ [ρ]b: Δ$, 
+    $Γ entp(p) b: Δ$, $Γ entp(p) [ρ]b: Δ$),
+  rule(name: "β-let",
+    $Γ entp(p) llet(x, e); b ≅ [sfor(e, x)]b: Δ$, 
+    $Γ entp(1) e: A$,
+    $Γ entp(p) llet(x, e); b: Δ$,
+    $Γ entp(p) [sfor(e, x)]b: Δ$),
+  rule(name: "β-let2",
+    $Γ entp(p) llet((x, y), (e, e')) ≅ [sfor(e', y)][sfor(e, x)]b$,
+    $Γ entp(p) llet((x, y), e); b: Δ$,
+    $Γ entp(p) [sfor(e', y)][sfor(e, x)]b: Δ$),
+  rule(name: "η-let2",
+    $Γ entp(p) llet((x, y), e);llet(z, (x, y));b ≅ llet(z, e);b: Δ$,
+    $Γ entp(p) llet(z, e);b: Δ$
+  )
+)
+#align(center, table(
+  columns: 3,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(body-struct-rules.at(0)),
+  proof-tree(body-struct-rules.at(1)),
+  proof-tree(body-struct-rules.at(2)),
+))
+#align(center, proof-tree(body-struct-rules.at(3)))
+#align(center, proof-tree(body-struct-rules.at(4)))
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(body-struct-rules.at(5)),
+  proof-tree(body-struct-rules.at(6)),
+))
+#align(center, proof-tree(body-struct-rules.at(7)))
+#align(center, proof-tree(body-struct-rules.at(8)))
+Note that for β-let2, $Γ entp(p) llet((x, y), (e, e')); b : Δ$ implies that $Γ entp(1) e: A$ and $Γ entp(1) e': B$, so these do not need to be added as hypotheses.
 
 We can define the catenation of bodies as follows:
 #align(center, table(
@@ -365,23 +459,19 @@ We can define the catenation of bodies as follows:
   $dot;b' = b'$,
   $(llet(x, e); b);b' = llet(x, e);(b;b')$,
 ))
-This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_1;b_2);b_3$. We furthermore have
-#align(center, proof-tree(rule($Γ ⊢ b;b': Ξ$, $Γ ⊢ b: Δ$, $Γ ⊢ b': Ξ$)))
-
-TODO: show catenation respects semantics...
-
-TODO: substititution; α-renaming...
-
-TODO: advanced α-renaming?
-
-Structural rewrites on bodies:
-- Congruence
-- $α$ renaming; see above
-- Pure $β$ rules (note: this will need to be fixed for sub-structurality)
-- Pure is relevant + affine $==>$ regular $β$
-- Pure is central (?) 
-- $η$ rules
-Want to show that this gives us a Freyd category. Congruence should mean composition always respects these.
+This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_1;b_2);b_3$. We furthermore have that
+$
+#proof-tree(rule($Γ entp(p) b;b': Ξ$, $Γ entp(p) b: Δ$, $Γ entp(p) b': Ξ$))
+$
+and, in particular,
+$
+[|Γ entp(p) b;b': Ξ|] = [|Γ entp(p) b: Δ|];[|Δ entp(p) b': Ξ|]
+$
+Finally, we have congruence properties
+$
+Δ entp(p) b' ≅ b'': Ξ ==> Γ entp(p) b;b' ≅ b;b'': Ξ wide
+Γ entp(p) b ≅ b': Δ ==> Γ entp(p) b;b'' ≅ b';b'': Ξ
+$
 
 == Basic Blocks are a Freyd Category
 
@@ -448,3 +538,5 @@ TODO: this...
 TODO: this
 
 TODO: think about split vs. splat...
+
+TODO: appendix with proofs? or do we just formalize?
