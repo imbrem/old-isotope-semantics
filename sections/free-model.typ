@@ -203,6 +203,10 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 ))
 #align(center, proof-tree(gen-reg-rules.at(2)))
 
+TODO: syntactic weakening
+
+TODO: syntactic substitution
+
 We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
 #align(center, stack(dir: ltr, spacing: 2em,
   $[ρ]x = ρ(x)$,
@@ -342,8 +346,13 @@ $
   ;α^(-1); \
   & #h(2em) [|Γ, x: A, y: B entp(p) b: Δ|]
 $
-
-TODO: weakening theorem
+A quick sanity check for our semantics so far is that it respects _semantic weakening_; in particular, we want that
+$
+[|Γ ↦ Δ|];[|Δ entp(p) e: A|] &= [|Γ entp(p) e: A|] \
+[|Γ ↦ Δ|];[|Δ ⊢ b: Ξ|] &= [|Γ ⊢ b: Ξ|] \
+[|Γ ⊢ b: Δ|];[|Δ ↦ Ξ|] &= [|Γ ⊢ b: Ξ|]
+$
+This can be proved by a relatively trivial induction.
 
 TODO: substitution theorem; permutation/renaming
 
