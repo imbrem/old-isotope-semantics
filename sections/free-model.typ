@@ -169,10 +169,18 @@ We can now give typing rules as follows:
 #let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) lto sans(K)$, $Γ ⊢ β lto sans(L)$, $sans(L) ⊢ L lto sans(K)$)
 #align(center, proof-tree(region-rule))
 
+In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression.
+
+TODO: Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
+
+TODO: can we define a renaming _to_ something in SSA? Note: this means we can _never_ use a shadowed variable! etc...
+
+TODO: terminology such as SSA term, SSA region, etc...
+
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
 - _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
-Note that we remove dependencies on blocks $b$. We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. One may also notice that the given grammar is slightly ambiguous: we can parse
-$llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalence, excusing the ambiguity.
+Note that we remove dependencies on bodies $b$. One may also notice that the given grammar is slightly ambiguous: we can parse
+$llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalent, excusing the ambiguity.
 
 The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
 #let gen-reg-rules = (
@@ -206,50 +214,9 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 
 TODO: per-rule explanations
 
-TODO: pointers to rest of paper; "metatheory in waves"
+We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about.
 
-TODO: syntactic weakening
-
-TODO: syntactic substitution
-
-TODO: pull down? "Metatheory in waves?"
-
-We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
-#align(center, stack(dir: ltr, spacing: 2em,
-  $[ρ]x = ρ(x)$,
-  $[ρ](f med e) = f med [ρ]e$,
-  $[ρ]() = ()$,
-  $[ρ](e, e') = ([ρ]e, [ρ]e')$,
-))
-Similarly, we can proceed to define the renaming of a _body_ as follows:
-#align(center, stack(dir: ltr, spacing: 2em,
-  $[ρ]dot = dot$,
-  $[ρ](llet(x, e); b) = llet(ρ(x), [ρ]e); [ρ]b$,
-))
-$
-[ρ](llet((x, y), e); b) = llet((ρ(x), ρ(y)), [ρ]e); [ρ]b
-$
-Note that the renaming of a _body_ also changes the variables used in a `let`-binding.
-
-If a renaming $ρ$ is injective, it follows that
-$
-Γ entp(p) e: A ==> [ρ]Γ entp(p) [ρ]e: A quad "and" quad
-Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
-$
-
-TODO: renaming of contexts
-
-TODO: renaming vs substitution
-
-TODO: renaming of terminators, basic blocks, CFGs, regions, targets...
-
-TODO: renaming of generalized regions...
-
-In general, we will consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment.
-
-TODO: Capture-avoiding renaming nonsense...
-
-TODO: Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
+For the rest of this paper, we will analyze the syntactic and semantic metatheory of each syntactic class one-by-one, beginning with terms and block bodies in the setting of Freyd categories. Of course, that means we need to start with defining what a Freyd category is.
 
 == Freyd Categories
 
@@ -316,9 +283,9 @@ Similarly, all categories with this structure must be Cartesian, as we can defin
 
 This alternative characterization makes it clearer how we can generalize our semantics to consider substructurality, which we will  do in @substruct.
 
-== Freyd Categories are Basic Blocks
+== Freyd Categories are Basic Block Bodies
 
-TODO: factor out semantics section
+=== Semantics
 
 We can interpret types and contexts as objects in $cal(C)$ in the obvious manner:
 $
@@ -367,9 +334,11 @@ $
 
 TODO: per-rule explanations
 
+=== Syntactic Metatheory
+
 TODO: factor out metatheory section
 
-TODO: syntactic metatheory of basic blocks (weakening...)
+TODO: syntactic weakening
 
 A quick sanity check for our semantics so far is that it respects _semantic weakening_; in particular, we want that
 $
@@ -379,9 +348,42 @@ $
 $
 This can be proved by a relatively trivial induction.
 
+TODO: syntactic substitution
+
 TODO: substitution and blocks...
 
-TODO: α-renaming
+We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
+#align(center, stack(dir: ltr, spacing: 2em,
+  $[ρ]x = ρ(x)$,
+  $[ρ](f med e) = f med [ρ]e$,
+  $[ρ]() = ()$,
+  $[ρ](e, e') = ([ρ]e, [ρ]e')$,
+))
+Similarly, we can proceed to define the renaming of a _body_ as follows:
+#align(center, stack(dir: ltr, spacing: 2em,
+  $[ρ]dot = dot$,
+  $[ρ](llet(x, e); b) = llet(ρ(x), [ρ]e); [ρ]b$,
+))
+$
+[ρ](llet((x, y), e); b) = llet((ρ(x), ρ(y)), [ρ]e); [ρ]b
+$
+Note that the renaming of a _body_ also changes the variables used in a `let`-binding.
+
+If a renaming $ρ$ is injective, it follows that
+$
+Γ entp(p) e: A ==> [ρ]Γ entp(p) [ρ]e: A quad "and" quad
+Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
+$
+
+TODO: renaming of contexts
+
+TODO: renaming vs substitution
+
+TODO: Capture-avoiding renaming nonsense...
+
+TODO: equivalence class, SSA property nonsense...
+
+=== Equational Theory
 
 We may hence define a structural equivalence relation on well-typed terms and block bodies as follows:
 
@@ -485,10 +487,10 @@ TODO: some of the rules we can prove:
 - Pure operations are central (substitution in the middle)
 - Pure operations are affine
 - Pure operations are relevant
-- "$η$ for let": $f(g(a))$ and $(f(a), f(b))$, relationship to A-normal form
-- Pure operations are 
+- Non-deleting substitution
+- "$η$ for let": $f(g(a))$ and $(f(a), g(b))$, relationship to A-normal form
 
-TODO: factor out syntactic operation section
+=== Operations on Bodies
 
 We can define the catenation of bodies as follows:
 #align(center, table(
@@ -516,7 +518,7 @@ $
 Γ entp(p) b ≅ b': Δ ==> Γ entp(p) b;b'' ≅ b';b'': Ξ
 $
 
-== Basic Blocks are a Freyd Category
+== Basic Block Bodies are a Freyd Category
 
 TODO: define syntax parametrized by types, instructions; quotient by $α$
 
