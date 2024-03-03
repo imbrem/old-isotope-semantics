@@ -204,9 +204,15 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 ))
 #align(center, proof-tree(gen-reg-rules.at(2)))
 
+TODO: per-rule explanations
+
+TODO: pointers to rest of paper; "metatheory in waves"
+
 TODO: syntactic weakening
 
 TODO: syntactic substitution
+
+TODO: pull down? "Metatheory in waves?"
 
 We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
 #align(center, stack(dir: ltr, spacing: 2em,
@@ -230,11 +236,20 @@ $
 Γ entp(p) e: A ==> [ρ]Γ entp(p) [ρ]e: A quad "and" quad
 Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
 $
+
+TODO: renaming of contexts
+
+TODO: renaming vs substitution
+
+TODO: renaming of terminators, basic blocks, CFGs, regions, targets...
+
+TODO: renaming of generalized regions...
+
 In general, we will consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment.
 
-Capture-avoiding renaming nonsense...
+TODO: Capture-avoiding renaming nonsense...
 
-Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
+TODO: Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
 
 == Freyd Categories
 
@@ -303,6 +318,8 @@ This alternative characterization makes it clearer how we can generalize our sem
 
 == Freyd Categories are Basic Blocks
 
+TODO: factor out semantics section
+
 We can interpret types and contexts as objects in $cal(C)$ in the obvious manner:
 $
 #tybox($A$, $|cal(C)|$) wide &
@@ -347,6 +364,13 @@ $
   ;α^(-1); \
   & #h(2em) [|Γ, x: A, y: B entp(p) b: Δ|]
 $
+
+TODO: per-rule explanations
+
+TODO: factor out metatheory section
+
+TODO: syntactic metatheory of basic blocks (weakening...)
+
 A quick sanity check for our semantics so far is that it respects _semantic weakening_; in particular, we want that
 $
 [|Γ ↦ Δ|];[|Δ entp(p) e: A|] &= [|Γ entp(p) e: A|] \
@@ -360,6 +384,11 @@ TODO: substitution and blocks...
 TODO: α-renaming
 
 We may hence define a structural equivalence relation on well-typed terms and block bodies as follows:
+
+TODO: parametrization by (equivalence) relation on terms...
+
+TODO: think about (generalized) peephole rewrites
+
 $
 #tybox(
   $Γ entp(p) e ≅ e': A$, 
@@ -420,7 +449,7 @@ $
     $Γ entp(p) [sfor(e, x)]b: Δ$),
   rule(name: "β-let2",
     $Γ entp(p) llet((x, y), (e, e')) ≅ [sfor(e', y)][sfor(e, x)]b$,
-    $Γ entp(p) llet((x, y), e); b: Δ$,
+    $Γ entp(p) llet((x, y), (e, e')); b: Δ$,
     $Γ entp(p) [sfor(e', y)][sfor(e, x)]b: Δ$),
   rule(name: "η-let2",
     $Γ entp(p) llet((x, y), e);llet(z, (x, y));b ≅ llet(z, e);b: Δ$,
@@ -450,6 +479,17 @@ $
 #align(center, proof-tree(body-struct-rules.at(8)))
 Note that for β-let2, $Γ entp(p) llet((x, y), (e, e')); b : Δ$ implies that $Γ entp(1) e: A$ and $Γ entp(1) e': B$, so these do not need to be added as hypotheses.
 
+TODO: explanation of each rule
+
+TODO: some of the rules we can prove:
+- Pure operations are central (substitution in the middle)
+- Pure operations are affine
+- Pure operations are relevant
+- "$η$ for let": $f(g(a))$ and $(f(a), f(b))$, relationship to A-normal form
+- Pure operations are 
+
+TODO: factor out syntactic operation section
+
 We can define the catenation of bodies as follows:
 #align(center, table(
   columns: 2,
@@ -467,6 +507,9 @@ and, in particular,
 $
 [|Γ entp(p) b;b': Ξ|] = [|Γ entp(p) b: Δ|];[|Δ entp(p) b': Ξ|]
 $
+
+TODO: separate syntactic and semantic results
+
 Finally, we have congruence properties
 $
 Δ entp(p) b' ≅ b'': Ξ ==> Γ entp(p) b;b' ≅ b;b'': Ξ wide
@@ -475,7 +518,19 @@ $
 
 == Basic Blocks are a Freyd Category
 
-TODO: this denotational semantics is just a compiler pass sending us to A-normal form
+TODO: define syntax parametrized by types, instructions; quotient by $α$
+
+TODO: this is a category
+
+TODO: quotient further by structural rules
+
+TODO: this is a Freyd category
+
+TODO: the denotational semantics becomes a compiler pass sending us to A-normal form, when taken from syntax to syntax
+
+TODO: think about (generalized) peephole rewrites, for MLIR-isms
+
+TODO: "what if nothing is pure": still, this is the right model, since tuples are pure, and tuples are nice. With no tuples we don't need Freyd, just premonoidal, and we end up with some strict premonoidal nonsense. 
 
 == Elgot Distributive Freyd Categories
 
@@ -521,13 +576,39 @@ TODO: for blocks this is still A-normal form; does this do anything to the CFG? 
 
 ...
 
-== Substructural Basic Blocks are a Substructural Effectful Category
+== Substructural Basic Blocks is Substructural Effectful Categories
 
 ...
 
-== Substructural SSA is a Substructural Distributive Effectful Category
+== Substructural SSA is Substructural Elgot Effectful Categories
 
 ...
+
+= Substructural SSA is Substructural 2-Posets⋆
+
+== 2-Posets
+
+...
+
+
+== Substructural Effectful 2-Posets
+
+...
+
+== Substructural Basic Blocks is Substructural Effectful 2-Posets
+
+...
+
+== Elgot 2-Posets
+
+...
+
+== Substructural SSA is Substructural Elgot 2-Posets
+
+...
+
+
+TODO: factor into appendix?
 
 == The Optical Category
 
@@ -540,3 +621,7 @@ TODO: this
 TODO: think about split vs. splat...
 
 TODO: appendix with proofs? or do we just formalize?
+
+TODO: fun with projections
+
+TODO: fun with directed centrality: _acquire_ and _release_...
