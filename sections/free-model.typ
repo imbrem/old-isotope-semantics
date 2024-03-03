@@ -21,6 +21,8 @@
   inset: 0.7em, 
   align(horizon, $[|#judgement|]: #typ$))
 
+#set heading (numbering: "1.")
+
 = SSA is Freyd Categories⋆
 
 In this article, we make the argument that SSA corresponds exactly to Freyd categories⋆. We stick a "⋆" after Freyd category since, _depending what we mean by SSA_, we might need a bit of additional structure; we're also going to be using a slightly weird definition of Freyd category. To make this argument, we need to show that
@@ -247,14 +249,52 @@ For our purposes, a Freyd category is a category $cal(C)$, which we will write $
 - The premonoidal structure agrees with the Cartesian structure, i.e. for _pure_ morphisms $f$ in $cal(C)_1$, 
   - $A ⊗ f = A × f = id × f = ⟨π_l;id, π_r;f⟩$ 
   - $f ⊗ A = f × A = f × id = ⟨π_l;f, π_r;id⟩$
-  - There is always a unique morphism $!_A: cal(C)_1(A, I)$.
+  - $I$ is an _initial object_: there is always a unique morphism $!_A: cal(C)_1(A, I)$.
     Note that there may be multiple, different morphisms in $cal(C)_0(A, I)$, but exactly one must be pure.
 
 Note a traditional Freyd category is given by an identity-on-objects functor $cal(V) -> cal(C)$ from a Cartesian category $cal(V)$ to a symmetric premonoidal category $cal(C)$ preserving all symmetric premonoidal structure; we can get one in our sense by simply considering the image of this functor as a wide subcategory. The only additional flexibility the original definitions have is that there can be pure morphisms $f, g$ which are different in $cal(V)$ but equated when passed along the functor into $cal(C)$.
 
-TODO: alternative $Δ-!$ characterization of Cartesian structure...
+We introduce the following notation for premonoidal categories: given morphisms $f: cal(C)(A, B), g: cal(C)(A', B')$,
+- $f ⋉ g = f ⊗ A';B ⊗ g: cal(C)(A ⊗ A', B ⊗ B')$ ("first $f$ then $g$")
+- $f ⋊ g = A ⊗ g;f ⊗ B': cal(C)(A ⊗ A', B ⊗ B')$ ("first $g$ then $f$")
+We say a morphism $f$ is _central_ if,
+$
+∀g. f ⋉ g = f ⋊ g ∧ g ⋉ f = g ⋊ f
+$
+Note that in a symmetric premonoidal category, $f ⋉ g = f ⋊ g <==> g ⋉ f = g ⋊ f$. For such morphisms, we will write
+$
+f ⊗ g = f ⋉ g = f ⋊ g
+$
+Note in particular that
+$f ⊗ A = f ⊗ id$ and $A ⊗ f = id ⊗ f$.
+We say a premonoidal category is _monoidal_ if it satisfies _sliding_, i.e.
+$
+∀f, g. f ⋉ g = f ⋊ g
+$
+i.e. that every morphism is central. Note that every Cartesian category is monoidal, but not every monoidal category is Cartesian.
 
-TODO: pointer to effectful, substructural categories
+We can give an alternative characterization of a Cartesian category $cal(C)_1$ as follows:
+- $cal(C)_1$ is symmetric monoidal
+- There is an _initial object_ $bold(1)$ such that every object $A$ is equipped with a unique morphism $!_A: A -> bold(1)$
+- For all objects $A ∈ |cal(C)_1|$, there is a _diagonal morphism_ $Δ_A: A -> A ⊗ A$
+- For all $f: cal(C)_1 (A, B)$, $g: cal(C)_1 (A, C)$, we have that $Δ_A;f ⊗ g: cal(C)_1(A, B ⊗ C)$ is the unique morphism such that
+  $
+  Δ_A;f ⊗ g;B ⊗ !_C;ρ_B = f wide
+  Δ_A;f ⊗ g;!_B ⊗ C;λ_C = g
+  $
+
+All conventional Cartesian categories have this structure, since we can define 
+- $Δ_A = ⟨id_A, id_A⟩$ 
+- $f ⊗ A = Δ_(B ⊗ A);⟨π_l;f, π_r⟩$, $A ⊗ f = Δ_(A ⊗ B);⟨π_l, π_r;f⟩$
+- $ρ_A = π_l$, $λ_A = π_r$, $α_(A, B, C) = ⟨π_l;π_l, ⟨π_l;π_r, π_r⟩⟩$
+- $σ_(A, B) = ⟨π_r, π_l⟩$
+Note in particular that for a Freyd category $cal(C)$, these definitions for the associators, unitors, and symmetry of $cal(C)_1$ will agree with the corresponding morphisms in $cal(C)_0$.
+
+Similarly, all categories with this structure must be Cartesian, as we can define
+- $π_l = A ⊗ !_B;ρ_A$, $π_r = !_A ⊗ B;λ_B$
+- $⟨f, g⟩ = Δ_A;f ⊗ g$
+
+This alternative characterization makes it clearer how we can generalize our semantics to consider substructurality, which we will  do in @substruct.
 
 == Freyd Categories are Basic Blocks
 
@@ -372,6 +412,8 @@ We want to show that this gives us a Freyd category with a distributive Elgot st
 
 TODO: for blocks this is still A-normal form; does this do anything to the CFG? maybe...
 
+= Substructural SSA is Substructural Effectful Categories⋆ <substruct>
+
 == Effectful Categories
 
 ...
@@ -387,6 +429,10 @@ TODO: for blocks this is still A-normal form; does this do anything to the CFG? 
 == Substructural SSA is a Substructural Distributive Effectful Category
 
 ...
+
+== The Optical Category
+
+TODO: this...
 
 == Dominator-Tree Syntax
 
