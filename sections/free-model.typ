@@ -14,9 +14,12 @@
 #let lff = $sans("ff")$
 #let Var = $sans("Var")$
 
-#let dprf(tree) = box(baseline: 50%, proof-tree(tree))
+#let dprf(tree) = box(baseline: 40%, proof-tree(tree))
 #let entp(p) = $attach(⊢, br: #p)$
 #let intp(p, A, B) = $sans("inst")_(#p)(#A, #B)$
+#let tybox(judgement, typ) = rect(
+  inset: 0.7em, 
+  align(horizon, $[|#judgement|]: #typ$))
 
 = SSA is Freyd Categories⋆
 
@@ -104,8 +107,8 @@ We can now give typing rules as follows:
   align: bottom,
   stroke: none,
   proof-tree(term-rules.at(3)),
-  proof-tree(term-rules.at(4)),
-  proof-tree(term-rules.at(5)),
+  // proof-tree(term-rules.at(4)),
+  // proof-tree(term-rules.at(5)),
 ))
 
 
@@ -228,7 +231,7 @@ Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
 
 == Freyd Categories
 
-For our purposes, a Freyd category is a category $cal(C)$, which we will write $cal(C)_0$, equipped with a wide subcategory $cal(C)_1$ such that:
+For our purposes, a Freyd category is a category $cal(C)$, which we will write $cal(C)_0$, equipped with a wide subcategory $cal(C)_1$ of _pure_ morphisms, such that:
 - $cal(C)$ is equipped with a binary operation $⊗: |cal(C)| × |cal(C)| -> |cal(C)|$ on objects, the _tensor product_
 - $cal(C)_1$ is Cartesian with product $⊗$, i.e.
   - There are morphisms $π_l: A ⊗ B -> A$, $π_r: A ⊗ B -> B$
@@ -244,12 +247,38 @@ For our purposes, a Freyd category is a category $cal(C)$, which we will write $
 - The premonoidal structure agrees with the Cartesian structure, i.e. for _pure_ morphisms $f$ in $cal(C)_1$, 
   - $A ⊗ f = A × f = id × f = ⟨π_l;id, π_r;f⟩$ 
   - $f ⊗ A = f × A = f × id = ⟨π_l;f, π_r;id⟩$
+  - There is always a unique morphism $!_A: cal(C)_1(A, I)$.
+    Note that there may be multiple, different morphisms in $cal(C)_0(A, I)$, but exactly one must be pure.
 
 Note a traditional Freyd category is given by an identity-on-objects functor $cal(V) -> cal(C)$ from a Cartesian category $cal(V)$ to a symmetric premonoidal category $cal(C)$ preserving all symmetric premonoidal structure; we can get one in our sense by simply considering the image of this functor as a wide subcategory. The only additional flexibility the original definitions have is that there can be pure morphisms $f, g$ which are different in $cal(V)$ but equated when passed along the functor into $cal(C)$.
 
+TODO: alternative $Δ-!$ characterization of Cartesian structure...
+
+TODO: pointer to effectful, substructural categories
+
 == Freyd Categories are Basic Blocks
 
-TODO: write out semantics here
+We can interpret well-typed terms in a Freyd category $cal(C)$ as follows:
+$
+#tybox($Γ entp(p) e: A$, $cal(C)_p ([|Γ|], [|A|])$)
+$
+//TODO: semantically, should there not be a multi-equation container of sorts...
+$
+[|#dprf(term-rules.at(0))|] = [|Γ ↦ x: A|] wide
+[|#dprf(term-rules.at(1))|] = [|f|] ∘ [|Γ entp(1) e: A|]
+$
+$
+[|#dprf(term-rules.at(2))|] 
+  &= ⟨[|Γ entp(1) a: A|], [|Γ entp(1) b: B|]⟩
+  \ &= Δ_([|Γ|]);[|Γ entp(1) a: A|] ⊗ [|Γ entp(1) b: B|]
+$
+$
+[|#dprf(term-rules.at(3))|] = !_([|Γ|])
+$
+Weakening is simply interpreted in the underlying Cartesian structure as follows:
+...
+Well-typed blocks may then be interpreted as follows
+...
 
 We can define the catenation of bodies as follows:
 #align(center, table(
@@ -264,6 +293,10 @@ This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_
 #align(center, proof-tree(rule($Γ ⊢ b;b': Ξ$, $Γ ⊢ b: Δ$, $Γ ⊢ b': Ξ$)))
 
 TODO: show catenation respects semantics...
+
+TODO: substititution; α-renaming...
+
+TODO: advanced α-renaming?
 
 Structural rewrites on bodies:
 - Congruence
@@ -311,3 +344,19 @@ We want to show that this gives us a Freyd category with a distributive Elgot st
 == SSA is an Elgot Distributive Freyd Category
 
 TODO: for blocks this is still A-normal form; does this do anything to the CFG? maybe...
+
+== Effectful Categories
+
+...
+
+== Substructural Effectful Categories
+
+...
+
+== Substructural Basic Blocks are a Substructural Effectful Category
+
+...
+
+== Substructural SSA is a Substructural Distributive Effectful Category
+
+...
