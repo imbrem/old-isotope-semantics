@@ -1,5 +1,21 @@
 #import "@preview/curryst:0.1.1": rule, proof-tree
 
+#import "@preview/ctheorems:1.1.2": *
+#show: thmrules.with(qed-symbol: $square$)
+
+#let theorem = thmbox("theorem", "Theorem")
+#let corollary = thmplain(
+  "corollary",
+  "Corollary",
+  base: "theorem",
+  titlefmt: strong
+)
+#let definition = thmbox("definition", "Definition", inset: (x: 1.2em, top: 1em))
+#let lemma = thmbox("lemma", "Lemma")
+
+#let example = thmplain("example", "Example").with(numbering: none)
+#let proof = thmproof("proof", "Proof")
+
 #let lbl(labl) = $ #`^`labl$
 #let llet(x, e) = $sans("let") med #x = #e$
 #let lite(e, s, t) = $sans("if") med #e med { #s } med sans("else") med { #t }$
@@ -694,8 +710,23 @@ We want to show that this gives us a Freyd category with a distributive Elgot st
 
 #todo[think about split vs. splat...]
 
-#todo[appendix with proofs? or do we just formalize?]
-
 #todo[fun with projections]
 
 #todo[fun with directed centrality: _acquire_ and _release_...]
+
+= Proofs
+
+== Syntactic Metatheory
+
+#todo[this should probably just be formalized, with pointers...]
+
+We begin by stating some of the basic properties of weakenings:
+- If $Γ ↦ Δ$ and $Δ ↦ Ξ$, then $Γ ↦ Ξ$
+  #proof[
+    By induction on the derivation of $Γ ↦ Δ$:
+    - (nil-wk): since $Δ = dot$, by inversion, $Ξ = dot$, and hence $Γ ↦ Ξ$ by (nil-wk)
+    - (cons-wk): taking $Γ = Γ', x: A$ and $Δ = Δ', x: A$ and assuming $Γ' ↦ Δ'$, case anaylsis on $Δ', x: A -> Ξ$ yields either
+      - (cons-wk): in which case $Ξ = Ξ', x: A$ and $Δ' ↦ Ξ'$; therefore, $Γ' ↦ Ξ'$ by induction. Applying (cons-wk) yields $Γ = Γ', x: A ↦ Ξ = Ξ', x: A$ as desired
+      - (drop-wk): in which case $Δ' ↦ Ξ$ and $x ∉ Ξ$, therefore $Γ' ↦ Ξ$ by induction. Applying (drop-wk) yields $Γ = Γ', x: A ↦ Ξ$ as desired
+    - (drop-wk): taking $Γ = Γ', x: A$ and assuming $Γ' ↦ Δ$ and $x ∉ Δ$, by induction we have $Γ' ↦ Ξ$; furthermore, since $Δ ↦ Ξ$ we must have $x ∉ Ξ$, and therefore that $Γ = Γ', x: A ↦ Ξ$ by (drop-wk) as desired
+  ]
