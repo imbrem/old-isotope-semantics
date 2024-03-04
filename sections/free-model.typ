@@ -64,7 +64,7 @@ We begin by introducing some structural judgements on contexts and targets as fo
 #let ctx-rules = (
   rule(name: "nil-wk", $lwk(dot, dot)$),
   rule(name: "cons-wk", $lwk(#$Γ, x: A$, #$Δ, x: A$)$, $lwk(Γ, Δ)$),
-  rule(name: "drop-wk", $lwk(#$Γ, x: A$, Δ)$, $lwk(Γ, Δ)$),
+  rule(name: "drop-wk", $lwk(#$Γ, x: A$, Δ)$, $lwk(Γ, Δ)$, $x ∉ Δ$),
 )
 
 #align(center, table(
@@ -76,6 +76,10 @@ We begin by introducing some structural judgements on contexts and targets as fo
   proof-tree(ctx-rules.at(1)),
   proof-tree(ctx-rules.at(2))
 ))
+
+#todo[need to re-prove properties of this kind of weakening, and check coherence...]
+
+#todo[state top usage theorem]
 
 #let trg-rules = (
   rule(name: "nil-twk", $twk(dot, dot)$),
@@ -92,6 +96,8 @@ We begin by introducing some structural judgements on contexts and targets as fo
   proof-tree(trg-rules.at(1)),
   proof-tree(trg-rules.at(2))
 ))
+
+#todo[disallow shadowing for targets? or something...]
 
 We can now give typing rules as follows:
 
@@ -177,13 +183,9 @@ We can now give typing rules as follows:
 #let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) lto sans(K)$, $Γ ⊢ β lto sans(L)$, $sans(L) ⊢ L lto sans(K)$)
 #align(center, proof-tree(region-rule))
 
-In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression.
+In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression. We will formalize this better, at first for bodies, later.
 
-#todo[Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...]
-
-#todo[can we define a renaming _to_ something in SSA? Note: this means we can _never_ use a shadowed variable! etc...]
-
-#todo[terminology such as SSA term, SSA region, etc...]
+#todo[talk about SSA property, $α$-equivalence. start with blocks...]
 
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
 - _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
@@ -222,11 +224,9 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 
 #todo[per-rule explanations]
 
-We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about.
+#todo[SSA-property nonsense...]
 
-#todo[SSA property equivalence class... pull renaming up here?]
-
-#todo[SSA property is preserved by injective renamings; so quotient by these]
+We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. 
 
 For the rest of this paper, we will analyze the syntactic and semantic metatheory of each syntactic class one-by-one, beginning with terms and block bodies in the setting of Freyd categories. Of course, that means we need to start with defining what a Freyd category is.
 
@@ -350,13 +350,38 @@ $
 
 #todo[per-rule explanations]
 
+#todo[coherence only if SSA property holds; otherwise this is a property of _derivations_; note abuse of syntax]
+
+#todo[start talking about renaming here. play "well-defined game" w/ let, let2: can always pick _some_ free variables so that everything works out, _since_ $x$ cannot be redefined by SSA property. note this means we need repetition-free contexts!]
+
+#todo[bad renaming, good renaming...]
+
+#todo[quotienting under renaming...]
+
+#todo[is this part of the metatheory section? maybe separate section for "coherence"?]
+
+#todo[pull up to syntax section]
+
+#todo[play with first-variable use, which should make block composition Always True (TM); then need nicer weakening where we only drop _unshadowed_ variables, leading to "all or nothing drops"]
+
 === Metatheory
+
+#todo[SSA property not quite compositional _enough_; insures for subterms, but is not insured _by_ subterms, Pull down to equational theory section?]
+
+#todo[equational theory holds under renaming, maybe?]
 
 A quick sanity check for our semantics so far is that it respects _semantic weakening_.
 (_Syntactic_) weakening is a property of our type system, provable by a straightforward induction, which says that
 - If $Γ ↦ Δ$ and $Δ entp(p) e: A$, then $Γ entp(p) e: A$
 - If $Γ ↦ Δ$ and $Δ entp(p) b: Ξ$, then $Γ entp(p) b: Ξ$
 - If $Γ entp(p) b: Δ$ and $Δ ↦ Ξ$, then $Γ entp(p) b: Ξ$
+
+#todo[issue: what about renaming. cycle back to previous discussion...]
+
+#todo[option 1: contexts allow repetition, makes things ambiguous, lose _coherence_, but weakening still holds]
+#todo[option 2: contexts do _not_ allow repetition: semantic weakening only holds for terms in SSA form]
+#todo[essentially: weakening-on-derivations vs. weakening-on-terms]
+
 We would like our semantics to be compatible with this property: in particular, we want that
 $
 [|Γ ↦ Δ|];[|Δ entp(p) e: A|] &= [|Γ entp(p) e: A|] \
@@ -365,21 +390,13 @@ $
 $
 This can also be proved by a relatively trivial induction.
 
-Another important property in type theory is _substitution_: that we can replace all uses of a variable with its (pure) definition to get a well-typed term.
+#todo[pull up to coherence section...]
 
-#todo[definition of substitution]
+Another important sanity check is that our semantics does not depend on such details as the names of variables. Of course, this is obvious by inspection, but nonetheless it makes sense to state this formally, as it will help us in formally reasoning about things such as the SSA property later. 
 
-#todo[syntactic substitution for terms]
+#todo[not so obvious now, is it...]
 
-#todo[syntactic substitution for bodies: progress + preservation]
-
-#todo[pointer to nominal nonsense]
-
-#todo[substitution to block; block version of substitution theorem...]
-
-#todo[renaming intro; or pull-up]
-
-We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
+In particular, we can define the _renaming_ of a term under a (partial, injective) map $ρ: Var -> Var$ recursively as follows:
 #align(center, stack(dir: ltr, spacing: 2em,
   $[ρ]x = ρ(x)$,
   $[ρ](f med e) = f med [ρ]e$,
@@ -395,20 +412,40 @@ $
 [ρ](llet((x, y), e); b) = llet((ρ(x), ρ(y)), [ρ]e); [ρ]b
 $
 Note that the renaming of a _body_ also changes the variables used in a `let`-binding.
-
-#todo[renaming of contexts]
-
-If a renaming $ρ$ is injective, it follows that
+Contexts can also be renamed in the obvious fashion:
+#align(center, stack(dir: ltr, spacing: 2em,
+  $[ρ]dot = dot$,
+  $[ρ](Γ, x: A) = [ρ]Γ, ρ(x): A$,
+))
+It follows that
 $
 Γ entp(p) e: A ==> [ρ]Γ entp(p) [ρ]e: A quad "and" quad
 Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
 $
+Semantically, it is quite trivial to show that $[|[ρ]Γ|] = [|Γ|]$ and therefore that
+$
+[|Γ entp(p) e: A|] = [|[ρ]Γ entp(p) [ρ]e: A|] quad "and" quad
+[|Γ entp(p) b: Δ|] = [|[ρ]Γ entp(p) [ρ]b: [ρ]Δ|]
+$
+This is a very important property, as it means that we can reason about the semantics of SSA without having to worry about the names of variables.
+
+#todo[quotienting by _internal renaming_, SSA property preservation]
+
+#todo[pointer to later: quotienting by _external renaming_]
+
+Another important property in type theory is _substitution_: that we can replace all uses of a variable with its (pure) definition to get a well-typed term.
+
+#todo[definition of substitution: insist on _finite support_ for Reasons (TM)]
+
+#todo[syntactic substitution for terms]
+
+#todo[syntactic substitution for bodies: progress + preservation]
+
+#todo[nominal nonsense: define operation on quotient, then _pick_]
+
+#todo[substitution to block; block version of substitution theorem...]
 
 #todo[renaming vs substitution]
-
-#todo[Capture-avoiding renaming (nominal) nonsense...]
-
-#todo[equivalence class, SSA property nonsense...]
 
 === Equational Theory
 
@@ -417,6 +454,8 @@ We may hence define a structural equivalence relation on well-typed terms and bl
 #todo[parametrization by (equivalence) relation on terms...]
 
 #todo[think about (generalized) peephole rewrites]
+
+#todo[is $α$ fine here? Note this generates a PER-family, as does $α$-equivalence...]
 
 $
 #tybox(
@@ -509,6 +548,8 @@ $
 Note that for β-let2, $Γ entp(p) llet((x, y), (e, e')); b : Δ$ implies that $Γ entp(1) e: A$ and $Γ entp(1) e': B$, so these do not need to be added as hypotheses.
 
 #todo[explanation of each rule]
+
+#todo[fix $α$-conversion]
 
 #todo[
   Some of the rules we can prove:
