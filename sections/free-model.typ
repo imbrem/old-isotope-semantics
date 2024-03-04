@@ -224,6 +224,10 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 
 We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about.
 
+#todo[SSA property equivalence class... pull renaming up here?]
+
+#todo[SSA property is preserved by injective renamings; so quotient by these]
+
 For the rest of this paper, we will analyze the syntactic and semantic metatheory of each syntactic class one-by-one, beginning with terms and block bodies in the setting of Freyd categories. Of course, that means we need to start with defining what a Freyd category is.
 
 == Freyd Categories
@@ -346,23 +350,34 @@ $
 
 #todo[per-rule explanations]
 
-=== Syntactic Metatheory
+=== Metatheory
 
-#todo[factor out metatheory section]
-
-#todo[syntactic weakening]
-
-A quick sanity check for our semantics so far is that it respects _semantic weakening_; in particular, we want that
+A quick sanity check for our semantics so far is that it respects _semantic weakening_.
+(_Syntactic_) weakening is a property of our type system, provable by a straightforward induction, which says that
+- If $Γ ↦ Δ$ and $Δ entp(p) e: A$, then $Γ entp(p) e: A$
+- If $Γ ↦ Δ$ and $Δ entp(p) b: Ξ$, then $Γ entp(p) b: Ξ$
+- If $Γ entp(p) b: Δ$ and $Δ ↦ Ξ$, then $Γ entp(p) b: Ξ$
+We would like our semantics to be compatible with this property: in particular, we want that
 $
 [|Γ ↦ Δ|];[|Δ entp(p) e: A|] &= [|Γ entp(p) e: A|] \
-[|Γ ↦ Δ|];[|Δ ⊢ b: Ξ|] &= [|Γ ⊢ b: Ξ|] \
-[|Γ ⊢ b: Δ|];[|Δ ↦ Ξ|] &= [|Γ ⊢ b: Ξ|]
+[|Γ ↦ Δ|];[|Δ entp(p) b: Ξ|] &= [|Γ entp(p) b: Ξ|] \
+[|Γ entp(p) b: Δ|];[|Δ ↦ Ξ|] &= [|Γ entp(p) b: Ξ|]
 $
-This can be proved by a relatively trivial induction.
+This can also be proved by a relatively trivial induction.
 
-#todo[syntactic substitution]
+Another important property in type theory is _substitution_: that we can replace all uses of a variable with its (pure) definition to get a well-typed term.
 
-#todo[substitution and blocks...]
+#todo[definition of substitution]
+
+#todo[syntactic substitution for terms]
+
+#todo[syntactic substitution for bodies: progress + preservation]
+
+#todo[pointer to nominal nonsense]
+
+#todo[substitution to block; block version of substitution theorem...]
+
+#todo[renaming intro; or pull-up]
 
 We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
 #align(center, stack(dir: ltr, spacing: 2em,
@@ -381,17 +396,17 @@ $
 $
 Note that the renaming of a _body_ also changes the variables used in a `let`-binding.
 
+#todo[renaming of contexts]
+
 If a renaming $ρ$ is injective, it follows that
 $
 Γ entp(p) e: A ==> [ρ]Γ entp(p) [ρ]e: A quad "and" quad
 Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
 $
 
-#todo[renaming of contexts]
-
 #todo[renaming vs substitution]
 
-#todo[Capture-avoiding renaming nonsense...]
+#todo[Capture-avoiding renaming (nominal) nonsense...]
 
 #todo[equivalence class, SSA property nonsense...]
 
