@@ -22,9 +22,17 @@
   inset: 0.7em, 
   align(horizon, $[|#judgement|]: #typ$))
 
+#let todos = counter("todos")
+#let todo(message) = align(center, text(red, [
+  #todos.step()
+  *TODO #todos.display():* #message
+]))
+
 #set heading (numbering: "1.")
 
 = SSA is Freyd Categories⋆
+
+#todo[_The_ denotational semantics of SSA]
 
 In this article, we make the argument that SSA corresponds exactly to Freyd categories⋆. We stick a "⋆" after Freyd category since, _depending what we mean by SSA_, we might need a bit of additional structure; we're also going to be using a slightly weird definition of Freyd category. To make this argument, we need to show that
 - *Freyd categories⋆ are SSA*: SSA can be given a semantics in terms of Freyd categories which respects the equations we expect to hold for SSA programs
@@ -171,11 +179,11 @@ We can now give typing rules as follows:
 
 In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression.
 
-TODO: Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...
+#todo[Uniqueness of variables, $α$-classes of bodies, CFGs, etc ...]
 
-TODO: can we define a renaming _to_ something in SSA? Note: this means we can _never_ use a shadowed variable! etc...
+#todo[can we define a renaming _to_ something in SSA? Note: this means we can _never_ use a shadowed variable! etc...]
 
-TODO: terminology such as SSA term, SSA region, etc...
+#todo[terminology such as SSA term, SSA region, etc...]
 
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
 - _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
@@ -212,7 +220,7 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 ))
 #align(center, proof-tree(gen-reg-rules.at(2)))
 
-TODO: per-rule explanations
+#todo[per-rule explanations]
 
 We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about.
 
@@ -283,9 +291,13 @@ Similarly, all categories with this structure must be Cartesian, as we can defin
 
 This alternative characterization makes it clearer how we can generalize our semantics to consider substructurality, which we will  do in @substruct.
 
-== Freyd Categories are Basic Block Bodies
+== Freyd Categories are Basic Blocks
+
+We will start by considering only terms and the bodies of basic blocks. Our goal is to give these a semantics in terms of Freyd categories, for which we will prove an equational theory. We then wish to show that bodies quotiented under this equational theory _themselves_ form a Freyd category, and hence, that Freyd categories are the _initial_, or _canonical_, semantics for SSA.
 
 === Semantics
+
+We begin by attempting to give a semantics for types, contexts, terms, and bodies in terms of an arbitrary Freyd category $cal(C)$.
 
 We can interpret types and contexts as objects in $cal(C)$ in the obvious manner:
 $
@@ -332,13 +344,13 @@ $
   & #h(2em) [|Γ, x: A, y: B entp(p) b: Δ|]
 $
 
-TODO: per-rule explanations
+#todo[per-rule explanations]
 
 === Syntactic Metatheory
 
-TODO: factor out metatheory section
+#todo[factor out metatheory section]
 
-TODO: syntactic weakening
+#todo[syntactic weakening]
 
 A quick sanity check for our semantics so far is that it respects _semantic weakening_; in particular, we want that
 $
@@ -348,9 +360,9 @@ $
 $
 This can be proved by a relatively trivial induction.
 
-TODO: syntactic substitution
+#todo[syntactic substitution]
 
-TODO: substitution and blocks...
+#todo[substitution and blocks...]
 
 We can define the _renaming_ of a term under a map $ρ: Var -> Var$ recursively as follows:
 #align(center, stack(dir: ltr, spacing: 2em,
@@ -375,21 +387,21 @@ $
 Γ entp(p) b: Δ ==> [ρ]Γ entp(p) [ρ]b: [ρ]Δ
 $
 
-TODO: renaming of contexts
+#todo[renaming of contexts]
 
-TODO: renaming vs substitution
+#todo[renaming vs substitution]
 
-TODO: Capture-avoiding renaming nonsense...
+#todo[Capture-avoiding renaming nonsense...]
 
-TODO: equivalence class, SSA property nonsense...
+#todo[equivalence class, SSA property nonsense...]
 
 === Equational Theory
 
 We may hence define a structural equivalence relation on well-typed terms and block bodies as follows:
 
-TODO: parametrization by (equivalence) relation on terms...
+#todo[parametrization by (equivalence) relation on terms...]
 
-TODO: think about (generalized) peephole rewrites
+#todo[think about (generalized) peephole rewrites]
 
 $
 #tybox(
@@ -481,14 +493,16 @@ $
 #align(center, proof-tree(body-struct-rules.at(8)))
 Note that for β-let2, $Γ entp(p) llet((x, y), (e, e')); b : Δ$ implies that $Γ entp(1) e: A$ and $Γ entp(1) e': B$, so these do not need to be added as hypotheses.
 
-TODO: explanation of each rule
+#todo[explanation of each rule]
 
-TODO: some of the rules we can prove:
-- Pure operations are central (substitution in the middle)
-- Pure operations are affine
-- Pure operations are relevant
-- Non-deleting substitution
-- "$η$ for let": $f(g(a))$ and $(f(a), g(b))$, relationship to A-normal form
+#todo[
+  Some of the rules we can prove:
+  - Pure operations are central (substitution in the middle)
+  - Pure operations are affine
+  - Pure operations are relevant
+  - Non-deleting substitution
+  - "$η$ for let": $f(g(a))$ and $(f(a), g(b))$, relationship to A-normal form
+]
 
 === Operations on Bodies
 
@@ -510,7 +524,7 @@ $
 [|Γ entp(p) b;b': Ξ|] = [|Γ entp(p) b: Δ|];[|Δ entp(p) b': Ξ|]
 $
 
-TODO: separate syntactic and semantic results
+#todo[separate syntactic and semantic results]
 
 Finally, we have congruence properties
 $
@@ -520,110 +534,112 @@ $
 
 == Basic Block Bodies are a Freyd Category
 
-TODO: define syntax parametrized by types, instructions; quotient by $α$
+#todo[define syntax parametrized by types, instructions; quotient by $α$]
 
-TODO: this is a category
+#todo[this is a category]
 
-TODO: quotient further by structural rules
+#todo[quotient further by structural rules]
 
-TODO: this is a Freyd category
+#todo[this is a Freyd category]
 
-TODO: the denotational semantics becomes a compiler pass sending us to A-normal form, when taken from syntax to syntax
+#todo[the denotational semantics becomes a compiler pass sending us to A-normal form, when taken from syntax to syntax]
 
-TODO: think about (generalized) peephole rewrites, for MLIR-isms
+#todo[think about (generalized) peephole rewrites, for MLIR-isms]
 
-TODO: "what if nothing is pure": still, this is the right model, since tuples are pure, and tuples are nice. With no tuples we don't need Freyd, just premonoidal, and we end up with some strict premonoidal nonsense. 
+#todo["what if nothing is pure": still, this is the right model, since tuples are pure, and tuples are nice. With no tuples we don't need Freyd, just premonoidal, and we end up with some strict premonoidal nonsense. ]
 
 == Elgot Distributive Freyd Categories
 
-TODO: write out definition here
+#todo[write out definition here]
 
 == Elgot Distributive Freyd Categories are SSA
 
-TODO: write out semantics here
+#todo[write out semantics here]
 
-Structural rewrites on CFGs:
-- Congruence
-- Block rewrites
-- CFG-level $β$, somehow... this is a combined substitute + eliminate... see below...
-- $α$ renaming; see above
-- Permutation
+#todo[
+  Structural rewrites on CFGs:
+  - Congruence
+  - Block rewrites
+  - CFG-level $β$, somehow... this is a combined substitute + eliminate... see below...
+  - $α$ renaming; see above
+  - Permutation
+]
 
-Semantic rewrites on CFGs:
-- Unreachable code elimination
-- Jump-threading (maybe structural)
-- If-then-else elimination:
-  - `true`/`false` $==>$ unconditional branch
-  - merge equal branches regardless of discriminator
-  - `if e { br ^ℓ true } else { br ^ℓ false } ==> br ^ℓ e`... do we need a primitive negation operator? otherwise, how do we show that
-    `if e { br ^ℓ false } else { br ^ℓ true } ^ℓ(e): ...`... ah, via pushing blocks, which can be pulling blocks
-- Pushing blocks across an if-then-else, which should hopefully do $β$ in the central + relevant + affine model by float-to-bottom, jump-thread, splat, and remerge (maybe structural)
-- Fixpoint
-- Uniformity
-- Codiagonal
+#todo[
+  Semantic rewrites on CFGs:
+  - Unreachable code elimination
+  - Jump-threading (maybe structural)
+  - If-then-else elimination:
+    - `true`/`false` $==>$ unconditional branch
+    - merge equal branches regardless of discriminator
+    - `if e { br ^ℓ true } else { br ^ℓ false } ==> br ^ℓ e`... do we need a primitive negation operator? otherwise, how do we show that
+      `if e { br ^ℓ false } else { br ^ℓ true } ^ℓ(e): ...`... ah, via pushing blocks, which can be pulling blocks
+  - Pushing blocks across an if-then-else, which should hopefully do $β$ in the central + relevant + affine model by float-to-bottom, jump-thread, splat, and remerge (maybe structural)
+  - Fixpoint
+  - Uniformity
+  - Codiagonal
+]
 
 We want to show that this gives us a Freyd category with a distributive Elgot structure. And that's SSA! Yay!
 
 == SSA is an Elgot Distributive Freyd Category
 
-TODO: for blocks this is still A-normal form; does this do anything to the CFG? maybe...
+#todo[for blocks this is still A-normal form; does this do anything to the CFG? maybe...]
 
 = Substructural SSA is Substructural Effectful Categories⋆ <substruct>
 
 == Effectful Categories
 
-...
+#todo[this...]
 
 == Substructural Effectful Categories
 
-...
+#todo[this...]
 
 == Substructural Basic Blocks is Substructural Effectful Categories
 
-...
+#todo[this...]
 
 == Substructural SSA is Substructural Elgot Effectful Categories
 
-...
+#todo[this...]
 
 = Substructural SSA is Substructural 2-Posets⋆
 
 == 2-Posets
 
-...
-
+#todo[this...]
 
 == Substructural Effectful 2-Posets
 
-...
+#todo[this...]
 
 == Substructural Basic Blocks is Substructural Effectful 2-Posets
 
-...
+#todo[this...]
 
 == Elgot 2-Posets
 
-...
+#todo[this...]
 
 == Substructural SSA is Substructural Elgot 2-Posets
 
-...
+#todo[this...]
 
-
-TODO: factor into appendix?
+#todo[factor into appendix?]
 
 == The Optical Category
 
-TODO: this...
+#todo[this...]
 
 == Dominator-Tree Syntax
 
-TODO: this
+#todo[this]
 
-TODO: think about split vs. splat...
+#todo[think about split vs. splat...]
 
-TODO: appendix with proofs? or do we just formalize?
+#todo[appendix with proofs? or do we just formalize?]
 
-TODO: fun with projections
+#todo[fun with projections]
 
-TODO: fun with directed centrality: _acquire_ and _release_...
+#todo[fun with directed centrality: _acquire_ and _release_...]
