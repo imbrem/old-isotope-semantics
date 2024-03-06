@@ -39,10 +39,10 @@
   align(horizon, $[|#judgement|]: #typ$))
 
 #let todos = counter("todos")
-#let todo(message) = align(center, text(red, [
+#let todo(message) = text(red, [
   #todos.step()
   *TODO #todos.display():* #message
-]))
+])
 
 #set heading (numbering: "1.")
 
@@ -96,9 +96,7 @@ We begin by introducing some structural judgements on contexts and targets as fo
   proof-tree(ctx-rules.at(2))
 ))
 
-#todo[need to re-prove properties of this kind of weakening, and check coherence...]
-
-#todo[state top usage theorem]
+#todo[state top usage theorem?]
 
 #let trg-rules = (
   rule(name: "nil-twk", $twk(dot, dot)$),
@@ -690,7 +688,63 @@ $
 
 = Substructurality <substruct>
 
-#todo[this...]
+#todo[this... stick blurbs here?]
+
+== Substructural Categories
+
+In a Freyd category $cal(C)$, morphisms in $cal(C)_1$ are _pure_: given $f: cal(C)_1(A, B)$ and $g: cal(C)_0(A', B')$, we have that $f$ is:
+- *central*: $f ⋉ g = f ⋊ g$ and $g ⋉ f = g ⋊ f$
+- *relevant*#footnote[
+    Note that, for simplicity, we will currently ignore the case of relevant but non-central morphisms, which are defined as satisfying $f;Δ = Δ;f ⋉ f = Δ;f ⋊ f$, since this class of morphisms is _not_ closed under composition. For example, consider a morphism $f$ which crashes if a flag is set, and $f'$ which sets the flag. $f$ and $f'$ are both clearly relevant, _but_ $f;f';Δ ≠ Δ;(f;f')⋉(f;f')$, since the former will run fine while the latter will crash, as the $f$ on the right will run after the $f'$ on the left sets the flag.
+    #todo[should we say relevant means relevant + central and then _weakly relevant_ just relevant? Seems inconsistent with affine, though... unless we do the same thing... Or we could do _discardable_ is affine + central and _copyable_ is relevant + central, though we should check @fuhrmann-1999 for precedent.]
+  ]: $f;Δ_B = Δ_A;f ⊗ f$
+- *affine*: $f;!_B = !_A$
+These properties enable us to substitute expressions with pure morphisms for semantics, regardless of how variables are used or where they appear in a program. They are also _sufficient_ conditions for a morphism $f$ to be pure: given a Freyd category $cal(C)$, we can define its _pure center_ $cal(Z)_(a, r)(cal(C))$ to be the subcategory of all morphisms which are central, pure, and affine. This is indeed a subcategory, since
+- Given $f, f'$ central, $f;f'$ is central since
+  - $(f;f') ⋉ g = f ⊗ -;f' ⋉ g = f ⊗ -;f' ⋊ g = f ⋉ g;- ⊗ f' = f ⋊ g;- ⊗ f' = (f;f') ⋊ g$
+  - $g ⋉ (f;f') = g ⋉ f;- ⊗ f' = g ⋊ f;- ⊗ f' = - ⊗ f;g ⋉ f' = - ⊗ f;g ⋊ f' = g ⋊ (f;f')$
+- Given $f, f'$ relevant and central, $f;f'$ is relevant and central since
+  $
+    f;f';Δ = f;Δ;f' ⊗ f' = Δ;f ⊗ f;f' ⊗ f' = Δ;(f;f') ⊗ (f;f')
+  $
+- Given $f, f'$ affine, $f;f'$ is affine since
+  $f;f';! = f;! = !$
+It is similarly trivial to show that $cal(Z)^(a, r)(cal(C))$ is closed under tensor products and contains all associators, unitors, and symmetries, and hence that it satisfies all the properties necessary to be $cal(C)_1$ (though, in general, $cal(C)_1 ⊆ cal(Z)_(a, r)(cal(C))$).
+
+We now ask which of these properties are _necessary_ to be able to reason algebraically aboud expressions. Substituting _non-central_ morphisms does not make sense in general, since moving an instruction to its usage site necessarily requires a change in the order of execution. However, if a variable is used exactly once, since the result is never duplicated or discarded, it should be safe to substitute an expression whose denotation is a morphism that is merely central, rather than pure. Similarly, if a variable is used _at most_ once, it should be safe to substitute an expression whose denotation is a morphism that is merely central and _affine_, while, if a variable is used _at least_ once, it should be safe to substitute an expression whose denotation is a morphism that is merely central and _relevant_. 
+
+#todo[blurb about generalized peephole rewrites and why this matters?]
+
+Since being central/relevant/affine are closed under composition and tensors (for central morphisms), we can define the _center_ of $C$, $cal(Z)(cal(C))$, to be the wide subcategory of central morphisms, the _relevant center_ $cal(Z)^(r)(cal(C))$ to be the wide subcategory of all morphisms which are central and relevant, and the _affine center_ $cal(Z)^(a)(cal(C)) ⊆ cal(Z)(cal(C))$ to be the wide subcategory of all morphisms which are central and affine. We can then write the _pure center_ as follows: $cal(Z)^(a, r)(cal(C)) = cal(Z)^(a)(cal(C)) ∪ cal(Z)^(r)(cal(C))$.
+
+In this spirit, we can generalize the notion of Freyd categories to _substructural Freyd categories_ by postulating the existence of, for each _quantity_ $q ⊆ {a, r}$, wide subcategories $cal(C)_1^q ⊆ cal(Z)^q (cal(C))$, such that:
+- $cal(C)_1 = cal(C)_1^(a, r)$
+- $∀q, cal(C)^q_1 ⊆ cal(Z)^q (cal(C))$
+- $∀q' ⊆ q, cal(C)^q_1 ⊇ cal(C)^(q')_1$
+- $cal(C)_1^q$ is closed under tensor products
+We say a substructural Freyd category is _modular_ if $cal(C)_1^(a, r) = cal(C)_1^a ∩ cal(C)_1^r$, which is true if and only if $∀q, q'. cal(C)_1^(q ∪ q') = cal(C)_1^q ∩ cal(C)_1^(q')$.
+
+Note in particular that _every_ Freyd category $cal(C)$ may be interpreted as substructural in the following ways:
+- Taking $∀q, cal(C)_1^q = cal(C)_1$. This is the _minimal_ substructural Freyd category compatible with $cal(C)$.
+- Taking $cal(C)_1^r = cal(Z)^(r)(cal(C))$, $cal(C)_1^a = cal(Z)^(a)(cal(C))$, and $cal(C)_1^(a, r) = cal(Z)^(a, r)(cal(C))$ This is the _maximal_ substructural Freyd category compatible with $cal(C)$.
+
+#todo[blurb about complete lattice... probably a footnote is best...]
+
+#todo[segue to discuss nonlinear objects, "our typing rules already need to support nonlinearity"...]
+
+#todo[blurb about usefulness in e.g. separation logic. contrast w/ quantifier-free refinement types model...]
+
+Following @premonoidal-string-diagrams-mario-2022, we define an _effectful category_ $cal(C)$ to be a generalization of a Freyd category for which $cal(C)_1$ is not necessarily Cartesian, but rather simply symmetric monoidal. That is, an effecful category $cal(C)$ is a premonoidal category $cal(C)_0$ equipped with a wide subcategory $cal(C)_1 ⊆ cal(Z)(cal(C))$ which contains all symmetric monoidal structure of $cal(Z)(cal(C))$.
+
+#todo[substructural effectful categories]
+
+#todo[Freyd means every object is affine + relevant $==>$ Cartesian]
+
+#todo[in particular, full subcategory of affine + relevant objects would be Cartesian]
+
+#pagebreak()
+
+#bibliography("references.bib")
 
 #pagebreak()
 

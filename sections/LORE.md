@@ -1,0 +1,1 @@
+- On "modular" terminology for intersection of affine/relevant subcategories https://chat.openai.com/share/72aba936-6942-4450-83a7-a92dc39cb61b
