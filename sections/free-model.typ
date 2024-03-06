@@ -46,16 +46,19 @@
 
 #set heading (numbering: "1.")
 
-= SSA is Freyd Categories⋆
 
-#todo[_The_ denotational semantics of SSA]
+#text(2em)[*The Denotational Semantics of SSA*]
 
 In this article, we make the argument that SSA corresponds exactly to Freyd categories⋆. We stick a "⋆" after Freyd category since, _depending what we mean by SSA_, we might need a bit of additional structure; we're also going to be using a slightly weird definition of Freyd category. To make this argument, we need to show that
 - *Freyd categories⋆ are SSA*: SSA can be given a semantics in terms of Freyd categories which respects the equations we expect to hold for SSA programs
 - *SSA is a Freyd category⋆*: SSA programs quotiented over these equations themselves form a Freyd category⋆
 So, two questions come to mind: what is Freyd category, and what is SSA?
 
-== SSA
+#outline()
+
+= Introduction to SSA
+
+== Syntax of SSA
 
 An SSA program consists of 
 
@@ -199,10 +202,6 @@ We can now give typing rules as follows:
 #let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) lto sans(K)$, $Γ ⊢ β lto sans(L)$, $sans(L) ⊢ L lto sans(K)$)
 #align(center, proof-tree(region-rule))
 
-In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression. We will formalize this better, at first for bodies, later.
-
-#todo[talk about SSA property, $α$-equivalence. start with blocks...]
-
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
 - _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
 Note that we remove dependencies on bodies $b$. One may also notice that the given grammar is slightly ambiguous: we can parse
@@ -240,13 +239,29 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 
 #todo[per-rule explanations]
 
-#todo[SSA-property nonsense...]
-
 We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. 
+
+== The SSA Property
+
+In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression. We will formalize this better, at first for bodies, later.
+
+#todo[talk about SSA property, $α$-equivalence. start with blocks...]
+
+#todo[all blocks $α$-equivalent to something in SSA]
+
+#todo[_not_ true for control-flow graphs that are not trees]
+
+#todo[operations on blocks, regions, etc. that preserve SSA property]
+
+#todo[alternative approach: dominator trees]
+
+#todo[pointer to equational theory; rewrite to dominator trees]
+
+= Freyd Categories are Basic Blocks
 
 For the rest of this paper, we will analyze the syntactic and semantic metatheory of each syntactic class one-by-one, beginning with terms and block bodies in the setting of Freyd categories. Of course, that means we need to start with defining what a Freyd category is.
 
-== Freyd Categories
+== Fryed Categories
 
 For our purposes, a Freyd category is a category $cal(C)$, which we will write $cal(C)_0$, equipped with a wide subcategory $cal(C)_1$ of _pure_ morphisms, such that:
 - $cal(C)$ is equipped with a binary operation $⊗: |cal(C)| × |cal(C)| -> |cal(C)|$ on objects, the _tensor product_
@@ -268,6 +283,8 @@ For our purposes, a Freyd category is a category $cal(C)$, which we will write $
     Note that there may be multiple, different morphisms in $cal(C)_0(A, I)$, but exactly one must be pure.
 
 Note a traditional Freyd category is given by an identity-on-objects functor $cal(V) -> cal(C)$ from a Cartesian category $cal(V)$ to a symmetric premonoidal category $cal(C)$ preserving all symmetric premonoidal structure; we can get one in our sense by simply considering the image of this functor as a wide subcategory. The only additional flexibility the original definitions have is that there can be pure morphisms $f, g$ which are different in $cal(V)$ but equated when passed along the functor into $cal(C)$.
+
+#todo[In particular, the subcategory of pure morphisms can be arbitrarily chosen so long as all morphisms within it are pure, and does not need to include all "technically pure" morphisms.]
 
 We introduce the following notation for premonoidal categories: given morphisms $f: cal(C)(A, B), g: cal(C)(A', B')$,
 - $f ⋉ g = f ⊗ A';B ⊗ g: cal(C)(A ⊗ A', B ⊗ B')$ ("first $f$ then $g$")
@@ -298,24 +315,25 @@ We can give an alternative characterization of a Cartesian category $cal(C)_1$ a
   Δ_A;f ⊗ g;!_B ⊗ C;λ_C = g
   $
 
-All conventional Cartesian categories have this structure, since we can define 
+All conventional Cartesian categories can be equipped with this structure, since we can define 
 - $Δ_A = ⟨id_A, id_A⟩$ 
 - $f ⊗ A = Δ_(B ⊗ A);⟨π_l;f, π_r⟩$, $A ⊗ f = Δ_(A ⊗ B);⟨π_l, π_r;f⟩$
 - $ρ_A = π_l$, $λ_A = π_r$, $α_(A, B, C) = ⟨π_l;π_l, ⟨π_l;π_r, π_r⟩⟩$
 - $σ_(A, B) = ⟨π_r, π_l⟩$
-Note in particular that for a Freyd category $cal(C)$, these definitions for the associators, unitors, and symmetry of $cal(C)_1$ will agree with the corresponding morphisms in $cal(C)_0$.
+Note in particular that for a Freyd category $cal(C)$, these definitions for the associators, unitors, and symmetry of $cal(C)_1$ will agree with the corresponding morphisms in $cal(C)_0$. 
 
 Similarly, all categories with this structure must be Cartesian, as we can define
-- $π_l = A ⊗ !_B;ρ_A$, $π_r = !_A ⊗ B;λ_B$
-- $⟨f, g⟩ = Δ_A;f ⊗ g$
+$
+  π_l = A ⊗ !_B;ρ_A wide wide
+  π_r = !_A ⊗ B;λ_B wide wide
+  ⟨f, g⟩ = Δ_A;f ⊗ g
+$
 
-This alternative characterization makes it clearer how we can generalize our semantics to consider substructurality, which we will  do in @substruct.
+This alternative characterization makes it much easier to reason about _substructurality_, and in particular the existence of affine, relevant, and linear objects missing $!$, $Δ$, and both respectively. We will consider categories with such objects in @substruct.
 
-== Freyd Categories are Basic Blocks
+== Semantics of Basic Blocks
 
 We will start by considering only terms and the bodies of basic blocks. Our goal is to give these a semantics in terms of Freyd categories, for which we will prove an equational theory. We then wish to show that bodies quotiented under this equational theory _themselves_ form a Freyd category, and hence, that Freyd categories are the _initial_, or _canonical_, semantics for SSA.
-
-=== Semantics
 
 We begin by attempting to give a semantics for types, contexts, terms, and bodies in terms of an arbitrary Freyd category $cal(C)$.
 
@@ -380,7 +398,7 @@ $
 
 #todo[play with first-variable use, which should make block composition Always True (TM); then need nicer weakening where we only drop _unshadowed_ variables, leading to "all or nothing drops"]
 
-=== Metatheory
+== Metatheory
 
 #todo[SSA property not quite compositional _enough_; insures for subterms, but is not insured _by_ subterms, Pull down to equational theory section?]
 
@@ -463,7 +481,7 @@ Another important property in type theory is _substitution_: that we can replace
 
 #todo[renaming vs substitution]
 
-=== Equational Theory
+== Equational Theory
 
 We may hence define a structural equivalence relation on well-typed terms and block bodies as follows:
 
@@ -576,7 +594,7 @@ Note that for β-let2, $Γ entp(p) llet((x, y), (e, e')); b : Δ$ implies that $
   - "$η$ for let": $f(g(a))$ and $(f(a), g(b))$, relationship to A-normal form
 ]
 
-=== Operations on Bodies
+== Operations on Bodies
 
 We can define the catenation of bodies as follows:
 #align(center, table(
@@ -604,7 +622,7 @@ $
 Γ entp(p) b ≅ b': Δ ==> Γ entp(p) b;b'' ≅ b';b'': Ξ
 $
 
-== Basic Block Bodies are a Freyd Category
+== Basic Blocks are a Freyd Category
 
 #todo[define syntax parametrized by types, instructions; quotient by $α$]
 
@@ -620,11 +638,17 @@ $
 
 #todo["what if nothing is pure": still, this is the right model, since tuples are pure, and tuples are nice. With no tuples we don't need Freyd, just premonoidal, and we end up with some strict premonoidal nonsense. ]
 
-== Elgot Distributive Freyd Categories
+= Elgot Distributive Freyd Categories are SSA
+
+== Elgot Categories
 
 #todo[write out definition here]
 
-== Elgot Distributive Freyd Categories are SSA
+== Distributive Categories
+
+#todo[write out definition here]
+
+== Semantics of Control-Flow Graphs
 
 #todo[write out semantics here]
 
@@ -636,6 +660,12 @@ $
   - $α$ renaming; see above
   - Permutation
 ]
+
+== Metatheory
+
+#todo[this]
+
+== Equational Theory
 
 #todo[
   Semantic rewrites on CFGs:
@@ -652,71 +682,23 @@ $
   - Codiagonal
 ]
 
-We want to show that this gives us a Freyd category with a distributive Elgot structure. And that's SSA! Yay!
-
 == SSA is an Elgot Distributive Freyd Category
+
+#todo[We want to show that this gives us a Freyd category with a distributive Elgot structure. And that's SSA! Yay!]
 
 #todo[for blocks this is still A-normal form; does this do anything to the CFG? maybe...]
 
-= Substructural SSA is Substructural Effectful Categories⋆ <substruct>
-
-== Effectful Categories
+= Substructurality <substruct>
 
 #todo[this...]
 
-== Substructural Effectful Categories
+#pagebreak()
 
-#todo[this...]
-
-== Substructural Basic Blocks is Substructural Effectful Categories
-
-#todo[this...]
-
-== Substructural SSA is Substructural Elgot Effectful Categories
-
-#todo[this...]
-
-= Substructural SSA is Substructural 2-Posets⋆
-
-== 2-Posets
-
-#todo[this...]
-
-== Substructural Effectful 2-Posets
-
-#todo[this...]
-
-== Substructural Basic Blocks is Substructural Effectful 2-Posets
-
-#todo[this...]
-
-== Elgot 2-Posets
-
-#todo[this...]
-
-== Substructural SSA is Substructural Elgot 2-Posets
-
-#todo[this...]
-
-#todo[factor into appendix?]
-
-== The Optical Category
-
-#todo[this...]
-
-== Dominator-Tree Syntax
-
-#todo[this]
-
-#todo[think about split vs. splat...]
-
-#todo[fun with projections]
-
-#todo[fun with directed centrality: _acquire_ and _release_...]
+#set heading(numbering: "A.1.")
+#counter(heading).update(())
+#text(2em)[*Appendix*]
 
 = Proofs
-
-== Syntactic Metatheory
 
 #todo[this should probably just be formalized, with pointers...]
 
