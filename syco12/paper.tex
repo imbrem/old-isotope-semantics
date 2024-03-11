@@ -1,0 +1,2352 @@
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+
+\documentclass[acmsmall,screen]{acmart}
+
+\usepackage{syntax}
+\renewcommand{\syntleft}{\normalfont\itshape}
+\renewcommand{\syntright}{\normalfont\itshape}
+
+\usepackage{prftree}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{fancyvrb}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+%    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\newcounter{todos}
+\newcommand{\TODO}[1]{{
+  \stepcounter{todos}
+  \begin{center}\large{\textcolor{red}{\textbf{TODO \arabic{todos}:} #1}}\end{center}
+}}
+\newcommand{\sorry}{\textcolor{red}{\textbf{sorry}}}
+
+\newcommand{\todo}[1]{\stepcounter{todos} \textcolor{red}{TODO \arabic{todos}: #1}}
+
+% Math fonts
+\newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\mb}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\ms}[1]{\ensuremath{\mathsf{#1}}}
+
+% Math
+\newcommand{\nats}{\mathbb{N}}
+
+% Syntax atoms
+\newcommand{\lbl}[1]{{`#1}}
+\newcommand{\lto}{\Rightarrow}
+\newcommand{\ctt}{\ms{tt}}
+\newcommand{\cff}{\ms{ff}}
+
+% Syntax
+\newcommand{\letexpr}[3]{\ensuremath{\ms{let}\;#1 = #2\;\ms{in}\;#3}}
+\newcommand{\letstmt}[3]{\ensuremath{\ms{let}\;#1 = #2; #3}}
+\newcommand{\brb}[2]{\ms{br}\;#1\;#2}
+\newcommand{\lbrb}[2]{\brb{\lbl{#1}}{#2}}
+\newcommand{\ite}[3]{\ms{if}\;#1\;\{#2\}\;\ms{else}\;\{#3\}}
+\newcommand{\ewhere}[2]{\ms{then}\;#1\;\ms{where}\;#2}
+\newcommand{\where}[2]{#1\;\ms{where}\;#2}
+\newcommand{\wbranch}[3]{#1(#2) \lto #3}
+\newcommand{\lwbranch}[3]{\wbranch{\lbl{#1}}{#2}{#3}}
+\newcommand{\bsplice}[3]{#1(#2)\;\{#3\}}
+%\newcommand{\lbsplice}[3]{\bsplice{\lbl{#1}}{#2}{#3}}
+\newcommand{\csplits}[3]{#1 \mapsto #2;#3}
+\newcommand{\cwk}[2]{#1 \mapsto #2}
+\newcommand{\lwk}[2]{#1 \rightsquigarrow #2}
+\newcommand{\tlin}[2]{#2 \subseteq \ms{lin}(#1)}
+\newcommand{\ltlin}[3]{#3 \subseteq \ms{lin}(#1) \cap #2}
+\newcommand{\thyp}[3]{#1: {#2}^{#3}}
+\newcommand{\lhyp}[3]{#1[#2](#3)}
+\newcommand{\llhyp}[3]{\lhyp{\lbl{#1}}{#2}{#3}}
+\newcommand{\rle}[1]{{\scriptsize\textsf{#1}}}
+\newcommand{\taff}{{\{\ms{a}\}}}
+\newcommand{\trel}{{\{\ms{r}\}}}
+\newcommand{\tint}{{\{\ms{a}, \ms{r}\}}}
+\newcommand{\hasty}[5]{#1 \vdash_{#2} #3: {#4}^{#5}}
+\newcommand{\haslb}[3]{#1 \vdash #2 \rhd #3}
+\newcommand{\lhaslb}[3]{#1 \vdash #2 \rhd #3}
+\newcommand{\issubst}[3]{#1: #2 \mapsto #3}
+\newcommand{\lbsubst}[3]{#1: #2 \rightsquigarrow #3}
+\newcommand{\exprletsubst}[2]{{#1};{#2}}
+\newcommand{\stmtletsubst}[2]{{#1};{#2}}
+\newcommand{\mhole}[1]{{#1}^?}
+\newcommand{\lhole}[1]{?#1}
+\newcommand{\mhasty}[6]{#1;#2 \vdash_{#3} #4: {#5}^{#6}}
+\newcommand{\mhaslb}[4]{#1;#2 \vdash #3 \rhd #4}
+\newcommand{\mlhaslb}[4]{#1;#2 \vdash #3 \rhd #4}
+\newcommand{\tyhole}[5]{#1: #2 \mapsto_{#3} {#4}^{#5}}
+\newcommand{\blkhole}[3]{#1: #2 \mapsto #3}
+\newcommand{\cfghole}[3]{#1: #2 \mapsto #3}
+\newcommand{\substctx}[2]{{#1}^{#2}}
+\newcommand{\substlbs}[2]{{#1}^{#2}}
+\newcommand{\restrictsubst}[2]{{#1}_{#2}}
+\newcommand{\subsubst}[2]{#1 \subseteq #2}
+\newcommand{\isrw}[3]{#1: #2 \mapsto #3}
+\newcommand{\mbind}{\mathbin{{>}\hspace{-0.1em}{>}\hspace{-0.1em}{=}}}
+% \newcommand{\strictlbsubst}[3]{#1: #2 \rightsquigarrow_= #3}
+
+% Denotational semantics
+\newcommand{\dnt}[1]{\llbracket{#1}\rrbracket}
+\newcommand{\ednt}[1]{\left\llbracket{#1}\right\rrbracket}
+\newcommand{\upg}[2]{{#1}^{\uparrow #2}}
+
+% Weak memory
+\newcommand{\bufloc}[1]{\overline{#1}}
+
+% Branding
+\newcommand{\isotopessa}{\ms{isotope_{SSA}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmcopyright}
+\copyrightyear{2023}
+\acmYear{2023}
+\acmDOI{XXXXXXX.XXXXXXX}
+
+%%
+%% These commands are for a JOURNAL article.
+% \acmJournal{JACM}
+% \acmVolume{37}
+% \acmNumber{4}
+% \acmArticle{111}
+% \acmMonth{8}
+
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+\begin{document}
+
+\title{Effectful Semantics for Substructural SSA}
+
+\author{Jad Ghalayini}
+\email{jeg74@cl.cam.ac.uk}
+\orcid{0000-0002-6905-1303}
+
+\author{Neel Krishnaswami}
+\email{nk480@cl.cam.ac.uk}
+\orcid{0000-0003-2838-5865}
+
+\begin{abstract}
+  Static single-assignment form (SSA) is one of the most widely used compiler
+  intermediate representations. In this paper, we build on the observation that
+  SSA can be seen as a language of basic blocks with arguments (or first-order
+  procedures tail-calling one another) to give a type theory for SSA programs.
+  Notably, the type system and equational theory of our language is designed to
+  support substituting impure terms for variables, which makes it easy to
+  validate compiler optimisations such as hoisting assignments out of loops.
+
+  We give a categorical axiomatisation of our type theory and show that our
+  equational theory is sound with respect to it. Our categorical semantics
+  generalises the notions of premonoidal category and Freyd category to support
+  substructural features, including both support for substructural types, as
+  well as F\"{u}hrmann's notion of central, copyable and discardable morphisms.
+  Finally, we exhibit a number of concrete models of our categorical
+  axiomatisation, including in particular a model of TSO-style weak memory based
+  on the semantics of \citet{sparky}. This demonstrates that our approach is
+  strong enough to connect machine models of concurrency to compiler IRs
+  supporting a rich collection of sound rewrites.
+\end{abstract}
+
+\begin{CCSXML}
+  <ccs2012>
+  <concept>
+  <concept_id>10003752.10010124.10010131.10010133</concept_id>
+  <concept_desc>Theory of computation~Denotational semantics</concept_desc>
+  <concept_significance>500</concept_significance>
+  </concept>
+  <concept>
+  <concept_id>10003752.10010124.10010131.10010137</concept_id>
+  <concept_desc>Theory of computation~Categorical semantics</concept_desc>
+  <concept_significance>500</concept_significance>
+  </concept>
+  <concept>
+  <concept_id>10003752.10003790.10011740</concept_id>
+  <concept_desc>Theory of computation~Type theory</concept_desc>
+  <concept_significance>500</concept_significance>
+  </concept>
+  <concept>
+  <concept_id>10003752.10003790.10011742</concept_id>
+  <concept_desc>Theory of computation~Separation logic</concept_desc>
+  <concept_significance>300</concept_significance>
+  </concept>
+  </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Theory of computation~Denotational semantics}
+\ccsdesc[500]{Theory of computation~Categorical semantics}
+\ccsdesc[500]{Theory of computation~Type theory}
+\ccsdesc[300]{Theory of computation~Separation logic}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{SSA, Categorical Semantics, Elgot Structure, Effectful Category}
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+\maketitle
+
+
+\section{Introduction}
+
+Static Single Assignment, or SSA, has been a cornerstone of compiler design ever
+since its introduction by \citet{ssa-original,rosen-gvn-1988} in the late 1980s.
+Older compiler intermediate representations permitted the same local variable to
+be assigned multiple times, whereas SSA requires each variable binding to be
+immutable -- they cannot be modified after initialisation. This makes many
+dataflow analyses easier to compute, and (just as in functional languages) makes
+it much easier to justify compiler optimisations in terms of equational
+rewrites.
+
+In fact, the relationship between SSA form and functional programming has been
+known for decades: \citet{kelsey-ssa-cps} showed that SSA can be seen as a
+subset of continuation-passing style, and \citet{appel-ssa} built on this to
+observe that every SSA program can be viewed as a collection of first-order
+functions which tail-call one another. This makes the equivalence of the
+functional view to the traditional $\phi$-node presentation very easy to see. In
+the functional style, each tail call lists its arguments. In contrast, a
+$\phi$-node collects together the arguments from every callsite, which lets the
+tail-calls/jumps omit their arguments. Thus, the main difference between SSA and
+a functional program is where in the program text the arguments to a tail call
+are listed.
+
+This "basic blocks with arguments" presentation of SSA has become very popular
+in industry, with compiler backends such as Cranelift~\cite{cranelift},
+MLIR~\cite{mlir}, and SIL~\cite{SIL} all using this representation. This tight
+connection might suggest that the semantics of SSA representations is trivial:
+we can just interpret an SSA program as a corresponding functional program, and
+then rewrite SSA programs using the equational theory of functional programs.
+
+While this is a perfectly sound thing to do, it is not strong enough to write a
+good compiler. Compiler IRs like SSA are fundamentally about effectful programs,
+and the equational theory of effectful functional programs is very weak. Instead
+of a full substitution rule, the equational theory of impure functional
+languages only justifies substituting values for variables (the $\beta$-value
+rule). This weak equational rule suffices to validate some basic compiler
+optimisations such as constant propagation and copy propagation, but is not
+strong enough to justify many other essential compiler optimisations. For
+example, hoisting a load out of a loop or conditional involves moving an
+effectful term out of its original position in the program (see Equation
+\ref{eqn:hoist}). As another example, dead store elimination removes an
+effectful term from the program altogether.
+
+%TODO: note that dead store elimination requires refinement, which we're not
+%covering in this paper...
+
+These examples illustrate that many optimisations require taking
+\emph{effectful} terms and moving them around and substituting them for
+variables. Since this is not a generally valid program transformation, we need a
+finer classification of programs than merely value and expression to judge when
+a substitution is allowed.
+
+A useful taxonomy was introduced by \citet{fuhrmann-direct-1999}, classifying
+effects based on (1) whether or not the order of effects mattered, (2) whether
+it was sound to discard an effectful operation, and (3) whether it was sound to
+duplicate an effectful operation. Suppose we substitute \texttt{print("hello")}
+for $x$ in the program below:
+\begin{equation*}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let x = print("hello");
+let y = print("world");
+let z = x;   
+...
+\end{BVerbatim}
+\qquad \qquad \centernot\implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let y = print("world");
+let z = print("hello");
+...
+\end{BVerbatim}
+\end{equation*}
+In this case, substituting a term for a variable changes the order of I/O
+actions, which changes the program's observable behaviour. On the other hand,
+suppose we have an effect which increments a counter. Then in the following
+program the same transformation is sound, since \(x\) is used exactly once:
+\begin{equation*}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let x = increment(a);
+let y = increment(b);
+let z = x;
+...
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let y = increment(b);
+let z = increment(a);
+...
+\end{BVerbatim}
+\end{equation*}
+F\"{u}hrmann called such commutative effects \emph{central}, which we also call
+\emph{linear}. It can also matter whether an effect is performed at all or not.
+For example, consider:
+\begin{equation}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let x = may_loop();
+return 5 
+\end{BVerbatim}
+\qquad \qquad \centernot\implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+return 5
+\end{BVerbatim}
+\end{equation}
+In this example, even though $x$ is not used, the call to \texttt{may_loop()}
+cannot be erased, as the observable behaviour of the program can change if it
+goes into an infinite loop. On the other hand, if the effectful operation is
+merely nondeterministic, then it is safe to discard results:
+\begin{equation}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let x = nondet();
+return 5 
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+return 5
+\end{BVerbatim}
+\end{equation}
+F\"{u}hrmann called these operations \emph{discardable}. In this paper, we use
+his terminology, and also call such effects \emph{affine}. Now consider the
+following example: 
+\begin{equation}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let x = nondet();
+let y = x;
+let z = x;
+return y == z 
+\end{BVerbatim}
+\qquad \qquad \centernot\implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let y = nondet();
+let z = nondet();
+return y == z
+\end{BVerbatim}
+\end{equation}
+In this case, substituting for $x$ duplicates the call to \texttt{nondet()}, and
+can change this from a program which always returns \texttt{true} to one which
+can return either \texttt{true} or \texttt{false}. On the other hand, if the
+effect is the possibility of nontermination, then the substitution is sound.
+\begin{equation}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let x = may_loop();
+let y = x;
+let z = x;
+return y == z 
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+let y = may_loop();
+let z = may_loop();
+return y == z
+\end{BVerbatim}
+\end{equation}
+F\"{u}hrmann called such operations \emph{copyable}. In this paper, we use his
+terminology, and also call such effects \emph{relevant}. With these distinction
+in place, we can \emph{define} a pure term as one which is all three of central,
+copyable, and discardable.
+
+In addition to working with effects, compiler intermediate representations also
+have to track accesses to memory. This information is typically gathered via
+ad-hoc alias analyses, but a compositional alternative to these analyses is to
+track this information via substructural type systems such as linear and affine
+types, which associate aliasing and ownership information with individual
+values. Having aliasing information justifies important optimisations such as
+loop hoisting: 
+\begin{equation}
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+while (e) {
+  x = load(a);
+  body
+}
+\end{BVerbatim}
+\qquad \qquad \implies \qquad \qquad
+\begin{BVerbatim}[baseline=c,fontsize=\small]
+x = load(a);
+while(e) {
+  body
+}
+\end{BVerbatim}
+\label{eqn:hoist}
+\end{equation}
+This transformation is only sound if the body of the loop \texttt{body} does not
+access \texttt{a}, which is precisely the kind of frame condition that linear
+types can track. Moreover, since we already want to track whether effectful
+\emph{expressions} can be duplicated or discarded, the very same machinery can
+be reused to track whether \emph{values} are linear/affine/relevant.
+
+Historically, compiler writers have treated the semantics of their IR quite
+informally, since the "intended model" of the language is a simple sequential
+machine operating over a flat array of bytes. Unfortunately, over time both the
+intended model and the actual hardware have drifted away from this simple mental
+model. Compiler frameworks have to model concurrent accesses to memory in order
+to compile multithreaded code, and furthermore the IR's memory model has to be
+sound with respect to the actual weak memory models supported by hardware.
+
+As a result, it is now much harder to judge whether a particular optimisation is
+sound or not. Moreover, different kinds of hardware such as x86, GPUs, and ARM
+all offer different memory models. This means that we need an abstract semantics
+for compiler IRs, which can permit a separation of concerns. Compiler writers
+can validate their optimisations against the abstract semantics, and we can
+separately show that a particular machine model faithfully implements the
+semantics.
+
+In this paper, we show that this is possible. We give a type system for SSA
+which uses substructural types to both track effects at a fine-grained level,
+and to track ownership of values. We then rigorously justify a variety of
+optimisations by reference to an abstract categorical axiomatisation of this
+language. We then show that our categorical axioms have a variety of concrete
+models, particularly including one of TSO-style weak memory originally
+introduced by \citet{sparky}. This lets us argue that a host of SSA-based
+optimisations are sound with respect to the x86 memory model.
+
+\paragraph{Contributions} 
+
+\begin{itemize}
+\item We give a type system for SSA-style programs, which has a full
+substitution theorem and equational theory for both expressions and control-flow
+graphs. This language includes substructural types, both for controlling effects
+and tracking ownership in values. 
+\item We give an axiomatic semantics for our language, by showing that it has a
+compositional intepretation in any distributive effectful category (a
+substructural variant of a Freyd category) with an Elgot structure. We use this
+structure to give generic proofs of the soundness of substitution and rewriting
+properties.
+\item Our abstract semantics justifies a variety of powerful optimisation
+techniques, including inlining, loop fusion, hoisting, and strength reduction. 
+\item We show how Elgot monads give rise to instances of our categorical
+semantics. We use this to derive semantics from a general trace monad, and show
+that various monad transformers such as state transformers preserve the needed
+Elgot structure. 
+\item We use these tools to demonstrate the existence of a variety of concrete
+models satisfying these categorical axioms. Starting first from simple languages
+such as state plus printing, we also show how more challenging semantics such as
+the TSO semantics for weak memory also fit into our framework. This thus gives
+rise to an SSA-based IR with support for weak memory operations, which is fully
+semantically-justified.
+% \item Our weak memory semantics and our results about Elgot monads are
+% formalised in the Lean theorem prover.
+\end{itemize}
+
+\section{SSA Syntax}
+
+In a standard SSA-based compiler, to represent a function, we begin by
+decomposing it into basic blocks, which can be viewed as \textit{labels},
+followed by a sequence of \textit{instructions}, each defining a
+\textit{variable}, followed by a \textit{terminator}. A program written in this
+manner being in "SSA form" simply means that every variable name is defined
+exactly once. For example, the program in Figure \ref{fig:3-addr} has 3 basic
+blocks, one of which is a distinguished \textit{entry block}, but is
+\textit{not} in SSA form, since the variables \(m, n\) and \(i\) are each
+modified through subsequent assignments .
+% (\(t\) is recomputed on every iteration of the loop, but since it only has one
+% definition, it \textit{is} in SSA form).
+To convert this program to SSA form, we would traditionally use
+\(\phi\)-functions, or, equivalently, annotate each basic block with arguments,
+as in Figure \ref{fig:bb-arg}.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.33\textwidth}
+    \begin{small}
+    \begin{BVerbatim}[baseline=t, gobble=3]
+    'entry:
+      m = 0
+      n = 1
+      brz i 'exit 'loop
+    'loop:
+      t = add m n
+      m = n
+      n = t
+      i = sub i 1
+      brz i 'exit 'loop
+    'exit:
+      ret m
+    \end{BVerbatim}
+    \end{small}
+    \caption{3-address code}
+    \label{fig:3-addr}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.32\textwidth}
+    \begin{small}
+    \begin{BVerbatim}[baseline=t, gobble=3]
+    'entry:
+      m0 = 0
+      n0 = 1
+      brz i
+        'exit (m0) 
+        'loop (i, m0, n0)
+    'loop(i0, m1, n1):
+      m2 = n1
+      n2 = add m1 n1
+      i1 = sub i0 1
+      brz i1 
+        'exit (m2) 
+        'loop (i1, m2, n2)
+    'exit(m3):
+      ret m3
+    \end{BVerbatim}
+    \end{small}
+    \caption{Basic blocks with arguments}
+    \label{fig:bb-arg}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.33\textwidth}
+    \begin{small}
+    \begin{BVerbatim}[baseline=t, gobble=3]
+    let m0 = 0;
+    let n1 = 1;
+    if eq i 0 {
+      br 'exit (m0)
+    } else {
+      br 'loop (i, m0, n0)
+    } where
+    'loop(i0, m1, n1) =>
+      let m2 = n1;
+      let n2 = add m1 n1;
+      let i1 = sub i0 1;
+      if eq i1 0 {
+        br 'exit (m2)
+      } else {
+        br 'loop (i1, m2, n2)
+      }
+    'exit(m3) => ret m3
+    \end{BVerbatim}
+    \end{small}
+    \caption{Our syntax}
+    \label{fig:our-syn}
+  \end{subfigure}
+  \caption{A simple program for computing the \texttt{i}th Fibonacci number,
+  represented as 3-address code, basic-blocks with arguments, and in our SSA
+  syntax} 
+  \Description{}
+  \label{fig:ssa-examples}
+\end{figure}
+
+For our type theoretic presentation of SSA, we will treat a very slight
+generalization of the standard basic blocks with arguments syntax, in that we
+will support \textit{nested scopes} and, in particular, \textit{if-statements}.
+The program in Figure \ref{fig:bb-arg} translated to our syntax is given in
+Figure \ref{fig:our-syn}. This does not introduce any new expressivity: an
+if-statement can be viewed as syntactic sugar for a conditional branch to one of
+two anonymous basic blocks, while nested scopes simply \textit{restrict}
+branching.
+
+We parametrize our syntax by a set of \textit{base types} \(X \in \mc{T}\) and,
+for each pair of types \(A, B\), a set of \textit{instructions} \(f \in
+\mc{I}^q_p(A, B)\) with \textit{centrality} \(p = 1\) if \textit{central} or \(p
+= 0\) otherwise and \textit{quantity} \(q \subseteq \tint\). As discussed above,
+an instruction is considered \textit{central} if execution order does not
+matter. The quantity \(q\) indicates whether it is safe to duplicate an
+instruction, or to delete it an if its result is unused. The instruction is
+\textit{affine} if \(\ms{a} \in q\), \textit{relevant}, and \(\ms{r} \in q\),
+and, if both affine and relevant, \textit{intuitionistic}. An instruction which
+is, central, relevant, and affine is called \textit{pure}. We assume that \(p
+\leq p'\) and \(q \subseteq r\) then \(\mc{I}_p^q(A, B) \supseteq
+\mc{I}_{p'}^{r}(A, B)\). The set of types is generated by base types \(X\), the
+\textit{unit type} \(\mb{1}\), the \textit{boolean type} \(\mb{2}\), and tensor
+products of types \(A \otimes B\). We write \(\otimes\) (rather than \(\times\))
+to underscore the fact that types are allowed to be substructural. For each base
+type \(X\), if we are given a linearity \(\ms{lin}(X) \subseteq \tint\), we can
+lift this to all types by taking \(\ms{lin}(A \otimes B) = \ms{lin}(A) \cap
+\ms{lin}(B)\) and \(\ms{lin}(\mb{1}) = \ms{lin}(\mb{2}) = \tint\). We say a type
+with \(\ms{a} \in \ms{lin}(A)\) is \textit{affine}, while a type with \(\ms{r}
+\in \ms{lin}(A)\) is \textit{relevant}; a type which is both affine and relevant
+is called \textit{intuitionistic}. Our syntax is composed of three main
+syntactic categories:
+\begin{itemize}
+  \item \textit{Terms} \(a, b, c, d, e\), which are typed via the judgement
+  \(\hasty{\Gamma}{p}{a}{A}{q}\), which says that the term \(a\) is of type
+  \(A\) with \textit{centrality} \(p\) and \textit{quantity} \(q \subseteq
+  \{\ms{a}, \ms{r}\}\). Here, the centrality \(p\) indicates whether it is safe
+  to substitute this term for a variable, and \(q\), plus the linearity of
+  \(A\), control how many times that variable can occur: if \(\ms{a} \in q \cap
+  \ms{lin}(A)\) then the variable is called \textit{affine} or
+  \textit{discardable} and it is permissible to leave it unused, whereas if
+  \(\ms{r} \in q \cap \ms{lin}(A)\) it is called \textit{relevant} or
+  \textit{duplicable} and it is permissible to use multiple times. As for
+  instructions, a term which is central, relevant, and affine is called
+  \textit{pure}. The rules for this judgement are given in Figure
+  \ref{fig:ssa-term-typing}.
+  
+  \item \textit{Blocks} \(s, t\), which are typed via the judgement
+  \(\haslb{\Gamma}{t}{\ms{L}}\), which says that the block \(t\) is well-formed
+  with respect to the context \(\Gamma\) and only branches to
+  ("\textit{targets}") labels in \(\ms{L}\). The rules for this judgement are
+  given in Figure \ref{fig:ssa-block-typing}.
+
+\item \textit{Control-flow graphs} or \textit{CFG}s \(L\), which are typed via
+  the judgement \(\lhaslb{\ms{L}}{L}{\ms{K}}\), which says that \(L\) defines a
+  control-flow graph with input labels \(\ms{L}\) and output labels \(\ms{K}\);
+  recursive control flow is allowed. The rules for this judgement are given in
+  Figure \ref{fig:ssa-block-typing}.
+\end{itemize}
+The formal grammar for our syntax is given in Figure \ref{fig:ssa-grammar} in
+the appendix, while the typing judgements themselves are given in Figure
+\ref{fig:ssa-judgements}. 
+
+Here \textit{contexts} \(\Gamma\), consist of a list of variables \(x\) given a
+type \(A\) annotated with a \textit{quantity} \(q \subseteq \tint\) (if \(q\) is
+omitted, we assume \(q = \tint\)). The \textit{linearity} of a variable
+\(\ms{lin}(\thyp{x}{A}{q})\) is defined to be \(\ms{lin}(A) \cap q\). We say a
+variable \(x: A^q\) is \textit{affine} if \(\ms{a} \in
+\ms{lin}(\thyp{x}{A}{q})\), in which case it can be freely ignored. Similarly,
+\(x\) is \textit{relevant} if \(\ms{r} \in \ms{lin}(\thyp{x}{A}{q})\), in which
+case it can be used multiple times. This is formalized in the structural
+judgement \(\csplits{\Gamma}{\Delta}{\Xi}\), which says that \(\Gamma\) can be
+split into subcontexts \(\Delta\) and \(\Xi\) (weakening is simply the special
+case \(\cwk{\Gamma}{\Delta} \iff \csplits{\Gamma}{\Delta}{\cdot}\)), as per the
+typing rules in Figure \ref{fig:ssa-structural}. In particular, the rule
+\rle{split-nil} states that the empty context can be split into two empty
+contexts, while the rules \rle{split-left} and \rle{split-right} send \(x: A^q\)
+to the left or right subcontext respectively; both these rules also allow us to
+reduce the quantity \(q\) to a quantity \(r \subseteq q\), "forgetting" some of
+our capabilities. The rule \rle{split-dup} allows the duplication of a relevant
+variable, with the option to weaken the quantity to \textit{different}
+quantities \(r\) and \(s\) on the left and right respectively. Finally, the rule
+\rle{split-aff} simply allows us to drop an affine variable.
+
+On the other hand, \textit{label-sets} \(\ms{L}\) are defined to consist of a
+list of \textit{labels} \(\lbl{\ell}\) annotated with a context \(\Gamma\)
+(consisting of variables which must be live on entry to \(\lbl{\ell}\)) and an
+argument type \(A\). The judgement \(\lwk{\ms{L}}{\ms{K}}\) states that
+\(\ms{L}\) is a subcontext of \(\ms{K}\), i.e., has more labels with fewer live
+variables, and hence that every program which targets \(\ms{L}\) can also be
+viewed as targeting \(\ms{K}\). The conditions for this are formalized in Figure
+\ref{fig:ssa-structural} as follows: the rule \rle{join-nil} states that the
+empty label-set is a subcontext of itself. The rule \rle{join-cons} says that if
+\(\ms{L}\) is a subcontext of \(\ms{K}\) and \(\Gamma\) is a weakening of
+\(\Delta\), then \(\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K},
+\llhyp{\ell}{\Delta}{A}}\), allowing us to "forget" any extra (affine) variables
+dropped by \(\cwk{\Gamma}{\Delta}\). Finally, the rule \rle{join-zero} simply
+says that if \(\lwk{\ms{L}}{\ms{K}}\), then \(\ms{L}\) is also a subcontext of
+any extension of \(\ms{K}\).
+% Note that this judgement is "backwards," in that the "larger" context is on
+% the \textit{right}; this corresponds to the placement of the label context on
+% the right-hand side of the typing judgement for blocks, and is by analogy to
+% our semantics for blocks and CFGs in Section \ref{sec:semantics}.
+
+\begin{figure}
+  \begin{center}        
+    \begingroup
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{2em}
+    \begin{tabular}{rl}
+        \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
+        \(\hasty{\Gamma}{p}{a}{A}{q}\) & \(a\) is a term of type \(A\) in
+        context \(\Gamma\) with centrality \(p\) and quantity \(q\) \\
+        \(\haslb{\Gamma}{t}{\ms{L}}\) & \(t\) is a block targeting label-set
+        \(\ms{L}\) in context \(\Gamma\) \\
+        \(\lhaslb{\ms{L}}{L}{\ms{K}}\) & The control-flow graph \(L\) sends
+        input labels \(\ms{L}\) to output labels \(\ms{K}\) \\
+        \(\csplits{\Gamma}{\Delta}{\Xi}\) & The context \(\Gamma\) splits into
+        \(\Delta\) and \(\Xi\) \\
+        \(\lwk{\ms{L}}{\ms{K}}\) & The label-set \(\ms{L}\) weakens to the
+        label-set \(\ms{K}\) \\
+        % \(\tlin{A}{q}\) & The type \(A\) can be used with linearity \(q\) \\
+        % \(\ltlin{A}{r}{q}\) & The type \(A\) can be used with linearity \(q
+        % \subseteq r\) (i.e. \(\tlin{A}{q} \land q \subseteq r\)) \\
+        % \(\tlin{\Gamma}{q}\) & The context \(\Gamma\) has linearity \(q\) \\
+        \(\cwk{\Gamma}{\Delta}\) & \(\Gamma\) is a weakening of \(\Delta\) (i.e.
+        \(\csplits{\Gamma}{\Delta}{\cdot}\))
+    \end{tabular}
+    \endgroup
+  \end{center}
+  \caption{Typing judgements for \isotopessa}
+  \Description{Typing judgements for isotope-SSA}
+  \label{fig:ssa-judgements}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}    
+    % \prftree[r]{\rle{base-lin}}{q \subseteq \ms{lin}(X)}{\tlin{X}{q}} \qquad
+    % \prftree[r]{\rle{unit-lin}}{}{\tlin{\mathbf{1}}{q}} 
+    % \qquad
+    % \prftree[r]{\rle{bool-lin}}{}{\tlin{\mathbf{2}}{q}} 
+    % \qquad
+    % \prftree[r]{\rle{pair-lin}}{\tlin{A}{q}}{\tlin{B}{q}}{\tlin{A \otimes B}{q}} 
+    % \\
+    % \prftree[r]{\rle{nil-lin}}{\tlin{\cdot}{q}} \qquad
+    % \prftree[r]{\rle{cons-lin}}{\ltlin{A}{r}{q}}{\tlin{\Gamma}{q}}
+    %   {\tlin{\Gamma, \thyp{x}{A}{r}}{q}} \\
+    \prftree[r]{\rle{split-nil}}{\csplits{\cdot}{\cdot}{\cdot}} \qquad
+    \prftree[r]{\rle{split-left}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {r \subseteq q}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta, \thyp{x}{A}{r}}{\Xi}} \qquad
+    \prftree[r]{\rle{split-right}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {r \subseteq q}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta}{\Xi, \thyp{x}{A}{r}}} \\
+    \prftree[r]{\rle{split-dup}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\ms{r} \in \ms{lin}(\thyp{x}{A}{q})}
+      {r, s \subseteq q}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta, \thyp{x}{A}{r}}{\Xi, \thyp{x}{A}{s}}}
+      \qquad
+    \prftree[r]{\rle{split-drop}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\ms{a} \in \ms{lin}(\thyp{x}{A}{q})}
+      {\csplits{\Gamma, \thyp{x}{A}{q}}{\Delta}{\Xi}}
+      \\
+    \prftree[r]{\rle{join-nil}}{\lwk{\cdot}{\cdot}} \qquad
+    \prftree[r]{\rle{join-cons}}
+      {\lwk{\ms{L}}{\ms{K}}}
+      {\cwk{\Gamma}{\Delta}}
+      {\lwk{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}, \llhyp{\ell}{\Delta}{A}}} 
+      \qquad
+    \prftree[r]{\rle{join-zero}}
+      {\lwk{\ms{L}}{\ms{K}}}
+      {\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}} 
+  \end{gather*}
+  \caption{Structural rules for \isotopessa}
+  \Description{Structural rules for isotope-SSA}
+  \label{fig:ssa-structural}
+\end{figure}
+
+We can now get to the typing judgement for expressions in Figure
+\ref{fig:ssa-term-typing}. \rle{var} states that \(\thyp{x}{A}{q}\) is
+well-typed in \(\Gamma\) if all other variables are affine and \(q \subseteq
+q'\), where \(\thyp{x}{A}{q'} \in \Gamma\); allowing us to \textit{forget}
+capabilities, but not \textit{add} them. \rle{app} states that, given an
+instruction \(f \in \mc{I}_p^q(A, B)\) and a \textit{central} term
+\(\hasty{\Gamma}{1}{a}{A}{q}\), we can type \(\hasty{\Gamma}{p}{f\;a}{B}{q}\).
+The \rle{pair} rule says that we can type a pair \((a, b)\) in \(\Gamma\) if
+\(\csplits{\Gamma}{\Delta}{\Xi}\) where \(\Delta\) types \(a\) and \(\Xi\) types
+\(b\), both as central terms. The quantity of a pair is simply the intersection
+of the quantity of its components (expressed by allowing any quantity which
+types \textit{both} components). Finally, \rle{let} and \rle{let2}, allow us to
+type (destructuring) let-bindings. In both cases, we split the context
+\(\Gamma\) into subcontexts \(\Delta, \Xi\), then, \(\Xi\) is used to type a
+central term \(a\), which is bound to fresh variables appearing in a potentially
+non-central term \(e\) which may also depend on variables in \(\Delta\).
+
+\begin{figure}
+  \begin{gather*}    
+    \prftree[r]{\rle{var}}
+      {\cwk{\Gamma}{\thyp{x}{A}{q}}}
+      {\hasty{\Gamma}{p}{x}{A}{q}} \qquad
+    \prftree[r]{\rle{app}}
+      {f \in \mc{I}_p^q(A, B)}
+      {\hasty{\Gamma}{1}{a}{A}{q}}
+      {\hasty{\Gamma}{p}{f\;a}{B}{q}} \qquad
+    \prftree[r]{\rle{pair}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta}{1}{a}{A}{q}}
+      {\hasty{\Xi}{1}{b}{B}{q}}
+      {\hasty{\Gamma}{p}{(a, b)}{A \otimes B}{q}} \\
+    \prftree[r]{\rle{true}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{p}{\ctt}{\mb{2}}{q}} \qquad
+    \prftree[r]{\rle{false}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{p}{\cff}{\mb{2}}{q}} \qquad
+    \prftree[r]{\rle{let}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta, \thyp{x}{A}{}}{p}{e}{B}{q}}
+      {\hasty{\Xi}{1}{a}{A}{q}}
+      {\hasty{\Gamma}{p}{\letexpr{x}{a}{e}}{B}{q}} \qquad
+    % \prftree[r]{\rle{blk}}
+    %   {\haslb{\Gamma}{t}{\llhyp{\ell}{\cdot}{A}}}
+    %   {\hasty{\Gamma}{0}{\lbsplice{\ell}{A}{t}}{A}{\varnothing}} 
+      \\
+    \prftree[r]{\rle{unit}}
+      {\cwk{\Gamma}{\cdot}}
+      {\hasty{\Gamma}{p}{()}{\mb{1}}{q}} \qquad
+    \prftree[r]{\rle{let2}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{e}{C}{q}}
+      {\hasty{\Xi}{1}{a}{A \otimes B}{q}}
+      {\hasty{\Gamma}{p}{\letexpr{(x, y)}{a}{e}}{C}{q}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa expressions}
+  \Description{Typing rules for isotope-SSA expressions}
+  \label{fig:ssa-term-typing}
+\end{figure}
+
+The rules for block typing are given in Figure \ref{fig:ssa-block-typing}.
+Blocks do not have a type; instead, we judge which label-set \(\ms{L}\) a block
+can branch to given that \(\Gamma\) is live on entry. In particular, \rle{br}
+says that if \(\lwk{\lhyp{\ell}{\Delta}{A}}{\ms{L}}\), \(\Gamma\) splits into
+\(\Delta\) and \(\Xi\), and \(a\) is a pure term which typechecks in \(\Xi\),
+then \(\lbrb{\ell}{a}\) targets \(\ms{L}\) given \(\Gamma\) is live on entry.
+\rle{ite} states that, if \(\Gamma\) splits into \(\Delta\) and \(\Xi\), \(e\)
+typechecks as a pure, boolean term in \(\Xi\), and that, given all variables in
+\(\Delta\) are live on entry, \(s, t\) both target \(\ms{L}\), then the
+if-statement \(\ite{e}{s}{t}\) targets \(\ms{L}\) given \(\Gamma\) is live on
+entry. \rle{let-blk} and \rle{let2-blk} are quite similar to their term
+analogues, except that the bound term \(e\) is allowed to be impure (otherwise,
+programs could only make use of pure functions!). Finally, \rle{where} says
+that, given a block \(t\) which targets \(\ms{L}\), and a CFG \(L\) with inputs
+\(\ms{L}\) and outputs \(\ms{K}\), \(\ewhere{t}{L}\) targets \(\ms{K}\). CFGs
+are typed using the typing rules \rle{nil-br}, which says that an empty
+control-flow graph simply forwards the input labels directly to the output
+labels, and \rle{cons-br}, which says that if \(L\) maps \(\ms{L}\) to either
+\(\ms{K}\) or \(\lbl{\ell}[\Gamma](A)\), and \(t\) targets \(\ms{L}\) given that
+\(\Gamma, \thyp{x}{A}{}\) is live on entry, then \(L\) maps \(\ms{L}\) to
+\(\ms{K}\), having (potentially recursively) defined \(\lbl{\ell}\).
+
+\begin{figure}
+  \begin{gather*}    
+    \prftree[r]{\rle{br}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}}
+      {\hasty{\Xi}{1}{a}{A}{\tint}}
+      {\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}} 
+    \quad
+    \prftree[r]{\rle{let-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
+      {\hasty{\Xi}{0}{a}{A}{q}}
+      {\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}} 
+    \\
+    \prftree[r]{\rle{ite}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\hasty{\Xi}{1}{e}{\mb{2}}{\tint}}
+      {\haslb{\Delta}{s}{\ms{L}}}
+      {\haslb{\Delta}{t}{\ms{L}}}
+      {\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}} 
+    \\
+    \prftree[r]{\rle{let2-blk}}
+      {\csplits{\Gamma}{\Delta}{\Xi}}
+      {\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
+      {\hasty{\Xi}{0}{a}{A \otimes B}{q}}
+      {\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}} \qquad
+    \prftree[r]{\rle{where}}
+      {\haslb{\Gamma}{t}{\ms{L}}}
+      {\lhaslb{\ms{L}}{L}{\ms{K}}}
+      {\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}}
+    \\
+    \prftree[r]{\rle{nil-br}}
+      {\lhaslb{\ms{L}}{\cdot}{\ms{L}}} \qquad
+    \prftree[r]{\rle{cons-br}}
+      {\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      {\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}
+      {\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
+  \end{gather*}
+  \caption{Typing rules for \isotopessa blocks}
+  \Description{Typing rules for isotope-SSA blocks}
+  \label{fig:ssa-block-typing}
+\end{figure}
+
+\subsection{Weakening and Substitution}
+
+We can now state some of the basic metatheoretic properties of \isotopessa. We
+begin with weakening, which states that we can add unused \textit{affine}
+variables to a context, \textit{reduce} the quantity of an term's type, add
+arbitrary unused labels, and remove \textit{affine} variables from existing
+labels and still keep our typing judgements valid, i.e.
+\begin{lemma}[Weakening] 
+  Given \(\cwk{\Gamma}{\Delta}\) and \(q \subseteq r\),
+  \(\hasty{\Delta}{p}{a}{A}{r} \implies \hasty{\Gamma}{p}{a}{A}{q}\) and
+  \(\haslb{\Delta}{t}{\ms{L}} \implies \haslb{\Gamma}{t}{\ms{L}}\). Similarly,
+  if \(\lwk{\ms{L}}{\ms{K}}\) then \(\haslb{\Gamma}{t}{\ms{L}} \implies
+  \haslb{\Gamma}{t}{\ms{K}}\).
+\end{lemma}
+
+\begin{figure}
+  \begin{center}        
+    \begingroup
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{2em}
+    \begin{tabular}{rl}
+        \multicolumn{1}{c}{Judgment} & \multicolumn{1}{c}{Meaning} \\ \hline
+        \(\issubst{\gamma}{\Theta}{\Gamma}\) &
+        \(\gamma: \ms{Var} \to \ms{Expr}\) is a substitution taking \(\Theta\) to \(\Gamma\) \\
+        \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) &
+        \(\mc{L}: \ms{Label} \to \ms{Expr} \to \ms{Block}\) is a label substitution taking \(\ms{L}\) to \(\ms{K}\)
+    \end{tabular}
+    \endgroup
+  \end{center}
+  \caption{Metatheoretic typing judgements for \isotopessa}
+  \Description{Metatheoretic typing judgements for isotope-SSA}
+  \label{fig:ssa-meta-judgements}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}
+    % \boxed{\gamma: \ms{Var} \to \ms{Expr}}
+    % \\
+    \prftree[r]{\rle{subst-nil}}
+      {\issubst{\gamma}{\cdot}{\cdot}}
+      \qquad
+    \prftree[r]{\rle{subst-cons}}
+      {\issubst{\gamma}{\Theta_\Gamma}{\Gamma}}
+      {\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}}
+      {\tlin{\Theta_x}{q}}
+      {\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}
+      {\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+    \\
+    % \boxed{\mc{L}: \ms{Label} \to \ms{Expr} \to \ms{Block} \text{ s.t. for fresh } x, [a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)}
+    % \\
+    \prftree[r]{\rle{lb-subst-nil}}
+    {\lbsubst{\mc{L}}{\cdot}{\ms{K}}}
+      \qquad
+    \prftree[r]{\rle{lb-subst-cons}}
+      {\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+      {\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}
+      {\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+  \end{gather*}
+  \caption{ Typing rules for \isotopessa substitutions. The linearity of a
+    context is defined recursively to be the intersection of the linearities of
+    its variables: \(\ms{lin}(\cdot) = \tint\), \(\ms{lin}(\Gamma,
+    \thyp{x}{A}{q}) = \ms{lin}(\Gamma) \cap \ms{lin}(\thyp{x}{A}{q})\). We
+    assume that a substitution \(\ms{L}\) satisfies, for fresh \(x\),
+    \([a/x]\mc{L}(\lbl{\ell}, x) = \mc{L}(\lbl{\ell}, a)\).
+    % We generally assume that for all but finitely many variables \(x\) and
+    % labels \(\lbl{\ell}\), \(\gamma(x) = x\) and \(\mc{L}(\lbl{\ell}, x) =
+    % \lbrb{\ell}{x}\). 
+  }
+  \Description{Typing rules for isotope-SSA substitutions}
+  \label{fig:ssa-subst-typing}
+\end{figure}
+
+To state our primary syntactic metatheorems, \textit{substitution} and
+\textit{label-substitution}, we will need to introduce some new metatheoretic
+judgements, which we do in Figure \ref{fig:ssa-meta-judgements}. In particular,
+the judgement \(\issubst{\gamma}{\Theta}{\Gamma}\) says that \(\gamma\), which
+is taken to be a map from variable names to expressions, takes each variable
+\(\thyp{x}{A}{q}\) in \(\Gamma\) to a \textit{central} term \(\gamma(x)\). Due
+to linearity, the resources \(\Theta\) must be split into subcontexts
+\(\Theta_x\) which allow us to interpret each \(\gamma(x)\) as a term of type
+\(A\) with quantity \(q\). This is described formally via the typing rules
+\rle{subst-nil}, which says that any function \(\gamma\) takes the empty context
+to itself, and \rle{subst-cons}, which says that if \(\gamma\) takes
+\(\Theta_\Gamma\) to \(\Gamma\), \(\hasty{\Theta_x}{1}{\gamma(x)}{A}{q}\), \(q
+\subseteq \ms{lin}(\Theta_x)\) (to avoid necessating the duplication/dropping of
+substructural variables), and \(\Theta\) splits into \(\Theta_\Gamma\) and
+\(\Theta_x\), then \(\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}\).
+
+Given such a substitution \(\gamma\), there are two ways to use it. The first is
+standard capture-avoiding substitution, which we denote \([\gamma]e\) for
+expressions, \([\gamma]t\) for blocks, and \([\gamma]L\) for CFGs, as is
+standard. The second is to use the substitution to generate a set of
+let-bindings for a context \(\Gamma\), written
+\(\exprletsubst{\substctx{\gamma}{\Gamma}}{e}\) for expressions and
+\(\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}\) for blocks, as defined in Figure
+\ref{fig:ssa-subst-ops}.
+%
+% Note that this operation cannot be easily defined for CFGs. 
+%
+% In Section \ref{sec:semantics}, we will show that this is semantically
+% equivalent to regular capture-avoiding substitution, due to the fact that all
+% terms in a substitution are central \textit{and} that only affine computations
+% can be used in a term substituting for an affine variable, and only relevant
+% computationbs can be used in a term substituting for a relevant variable.
+%
+With these definitions, we can now state substitution for terms in a
+straightforward way: if \(\issubst{\gamma}{\Theta}{\Gamma}\) and
+\(\hasty{\Gamma}{p}{e}{A}{q}\), then \(\hasty{\Theta}{p}{[\gamma]e}{A}{q}\) and
+\(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{e}}{A}{q}\).
+
+\begin{figure}
+  \begin{gather*}
+    % \restrictsubst{\gamma}{\Gamma}(x) 
+    %   =
+    %   (\ms{if}\; x \in \Gamma
+    %   \;\ms{then}\;\gamma(x)
+    %   \;\ms{else}\;x)
+    % \\
+    \stmtletsubst{\substctx{\gamma}{\cdot}}{t} = t
+    \qquad
+    \stmtletsubst{\substctx{\gamma}{\Gamma, x: A^q}}{t} 
+      = \letstmt{x}{\gamma(x)}{\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}}
+    \qquad
+    \exprletsubst{\cdot}{e} = e
+    \qquad
+    \exprletsubst{\substctx{\gamma}{\Gamma, x: A^q}}{e} 
+      = \letstmt{x}{\gamma(x)}{\substctx{\gamma}{\Gamma}}
+    \\
+    \substlbs{\gamma}{\cdot}(\lbl{\ell}, x) = \lbrb{\ell}{x}
+    \qquad
+    \substlbs{\gamma}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}(\lbl{k}, x)
+      = 
+      (\ms{if}\; \lbl{k} = \lbl{\ell} 
+      \;\ms{then}\;\stmtletsubst{\substctx{\gamma}{\Gamma}}{\lbrb{\ell}{x}}
+      \;\ms{else}\;\substlbs{\gamma}{\ms{L}}(\lbl{\ell}, x))
+    \\
+    [\mc{L}](\lbrb{\ell}{a}) = \mc{L}(\lbl{\ell}, a)
+    \qquad
+    [\mc{L}]\ite{e}{s}{t} = \ite{e}{[\mc{L}]s}{[\mc{L}]t}
+    \\
+    [\mc{L}](\letstmt{x}{a}{t}) = (\letstmt{x}{a}{[\mc{L}]t})
+    \qquad
+    [\mc{L}](\letstmt{(x, y)}{a}{t}) = (\letstmt{(x, y)}{a}{[\mc{L}]t})
+    \\
+    [\mc{L}]\ewhere{t}{L} = \ewhere{[\mc{L}]t}{[\mc{L}]L}
+    \\
+    [\mc{L}]\cdot = \cdot
+    \qquad
+    [\mc{L}](\lwbranch{\ell}{x: A}{t})
+    = (\lwbranch{\ell}{x: A}{[\mc{L}]t})
+  \end{gather*}
+  \caption{Operations on \isotopessa substitutions.}
+  \Description{Operations on isotope-SSA substitutions}
+  \label{fig:ssa-subst-ops}
+\end{figure}
+
+Unfortunately, substitution for blocks is a little more complicated: the naive
+choice of attempting to show \(\haslb{\Gamma}{t}{\ms{L}} \implies
+\haslb{\Theta}{[\gamma]t}{\ms{L}}\) does not work, since \(\ms{L}\) may require
+variables from \(\Gamma\) to be live which simply do not exist in \(\Theta\). To
+solve this problem, we need to bind the terms in \(\gamma\) to variables with
+the correct names for the live variable sets of desired targets. To do this, we
+introduce the concept of a \textit{label-substitution} \(\mc{L}\), which we
+define as a function that takes labels \(\lbl{\ell}\) and variables \(x\) to
+blocks \(t\) such that, for any fresh variable \(x\), \([a/x]\mc{L}(\lbl{\ell},
+x) = \mc{L}(\lbl{\ell}, a)\). We introduce the judgement
+\(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) to mean that for each
+\(\lbl{\ell}[\Gamma](x: A) \in \ms{L}\), we have that \(\mc{L}(\lbl{\ell}, x)\)
+targets \(\ms{K}\). Formally, \rle{lb-subst-nil} states that this is vacuously
+true for \(\ms{L} = \cdot\), while \rle{lb-subst-cons} says that if
+\(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\) and \(\haslb{\Gamma,
+\thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}\) then \(\lbsubst{\mc{L}}{(\ms{L},
+\lhyp{\lbl{\ell}}{\Gamma}{A})}{\ms{K}}\). Given a context \(\gamma\) and a
+label-set \(\ms{L}\), we can define an associated label-substitution
+\(\substlbs{\gamma}{\ms{L}}\) using the definition in Figure
+\ref{fig:ssa-subst-ops}: using this, we can state the full substitution lemma as
+follows:
+\begin{lemma}[Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item If \(\hasty{\Gamma}{p}{a}{A}{q}\), then
+    \(\hasty{\Theta}{p}{[\gamma]a}{A}{q}\) and
+    \(\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}\)
+    \item If \(\haslb{\Gamma}{t}{\ms{L}}\), then there exists \(\ms{K}\) such
+    that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\) and
+    \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\) and
+    \(\haslb{\Theta}{\stmtletsubst{\substctx{\gamma}{\Gamma}}{t}}{\ms{K}}\)
+    % \item If \(\lhaslb{\ms{W}}{L}{\ms{L}}\), then there exists \(\ms{K},
+    % \ms{W}'\) such that \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
+    % \(\lbsubst{\substlbs{\gamma}{\ms{W}'}}{\ms{W}}{\ms{W}'}\), and
+    % \(\lhaslb{\ms{W}'}{[\gamma]L}{\ms{K}}\)
+  \end{itemize}
+  Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\), we have that for all
+  \(\haslb{\Gamma}{t}{\ms{L}}\), \(\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}\)
+\end{lemma}
+
+\section{SSA Semantics}
+
+\label{sec:semantics}
+
+In this section, we will give a categorical semantics for \isotopessa. Starting
+with Freyd categories, we will generalize to \textit{substructural effectful
+categories} to support substructurality. We will then require our substructural
+effectful category to have \textit{distributive coproducts} to implement
+branching. Finally, we will require an \textit{Elgot structure} to implement
+potentially nonterminating control flow.
+
+\subsection{Substructural Categories}
+
+\label{ssec:substruct}
+
+We begin with some standard definitions from the literature:
+\begin{definition}[Binoidal Category] 
+  A \textbf{binoidal category} \(\mc{C}\) is a category equipped with a binary
+  operation on objects \(\otimes: \mc{C} \times \mc{C} \to \mc{C}\) which is
+  independently functorial in each argument (i.e., for each object \(A\), \(A
+  \otimes -\) and \(- \otimes A\) are functors). 
+  Given \(f: \mc{C}(A, B)\), \(g: \mc{C}(A', B')\) in a binoidal category, we
+  write \(f \ltimes g = f \otimes A';B \otimes g\) and \(f \rtimes g = A \otimes
+  g;f \otimes B'\); we say \(f\) is \textbf{central} if, for all \(g\), \(f
+  \ltimes g = f \rtimes g\) and \(g \ltimes f = g \rtimes f\), in which case we
+  simply write \(f \otimes g\), \(g \otimes f\) respectively.
+\end{definition}
+\begin{definition}[Premonoidal Category] 
+  A \textbf{premonoidal category} is a binoidal category with an identity object
+  \(I: \mc{C}\) such that there exist central natural isomorphisms \(\lambda_A:
+  I \otimes A \simeq A\) (the \textbf{left unitor}), \(\rho_A: A \otimes I
+  \simeq A\) (the \textbf{right unitor}), and \(\alpha_{A, B, C}: (A \otimes B)
+  \otimes C \simeq A \otimes (B \otimes C)\) (the \textbf{associator})
+  satisfying the \textit{pentagon} and \textit{triangle laws} (see e.g.
+  \citet{maclane:71}). We say a premonoidal category is \textbf{symmetric} if it
+  is equipped with a central natural isomorphism \(\sigma_{A, B}: A \otimes B
+  \simeq B \otimes A\) (the \textbf{symmetry}) satisfying the \textit{hexagon
+  law} (see \cite{maclane:71}). We say a premonoidal category is
+  \textbf{monoidal} if every morphism is central.
+\end{definition}
+One issue with the notion of a premonoidal category is that it is unclear what
+exactly a premonoidal functor should be: if we want them to compose, we need to
+preserve central morphisms, but trying to preserve \textit{all} central
+morphisms rules out many important examples. We therefore would to be able to
+distinguish morphisms that are truly "pure" from those which are simply
+"accidentally" central. To do that, we introduce the notion of an
+\textit{effectful category} as follows:
+\begin{definition}[Effectful Category] 
+  An \textbf{effectful category} \(\mc{V} \to \mc{C}\) is an identity on objects
+  functor \(\upg{\cdot}{}: \mc{V} \to \mc{C}\) from a monoidal category
+  \(\mc{V}\) to a premonoidal category \(\mc{C}\) which preserves all
+  premonoidal structure (i.e. sends associators to associators, unitors to
+  unitors, and tensor products to tensor products). It is \textbf{symmetric} if
+  both \(\mc{V}\) and \(\mc{C}\) are, and \(\upg{\cdot}{}\) preserves the
+  symmetry. A \textbf{Freyd category} is an effectful category where \(\mc{V}\)
+  is Cartesian.
+\end{definition}
+As is, this definition presents us with two extreme options: we can either
+assume \(\mc{V}\) is simply monoidal, and hence that "pure" morphisms are merely
+central, or that \(\mc{V}\) is Cartesian, and hence that all pure morphisms are
+truly \textit{pure}. We would like, however, to make a finer distinction between
+morphisms which are merely \textit{central} and those which are also
+\textit{relevant} and/or \textit{affine}, as defined in the introduction. Doing
+so also allows us to add the capability of define what it means for an
+\textit{object} to be affine or relevant as well. With this aim in mind, we
+introduce the notion of a \textit{symmetric premonoidal subcategory}, as
+follows:
+\begin{definition}[(Symmetric) Premonoidal Subcategory]
+  Given a (symmetric) premonoidal category \(\mc{C}\), we say a wide subcategory
+  \(\mc{S} \subseteq \mc{C}\) is \textbf{(symmetric) premonoidal} if it is
+  closed under whiskering and contains all associators, unitors, and symmetries.
+  We say a subcategory is \textbf{monoidal} if, for all \(f: \mc{S}(A, B)\),
+  \(g: \mc{S}(A', B')\), \(f \ltimes g = f \rtimes g\); we say it is
+  \textbf{central} if this generalizes to the case where only one of \(f, g\) is
+  in \(\mc{S}\) (i.e., if all morphisms in \(\mc{S}\) are central).
+\end{definition} 
+Note that the symmetric premonoidal subcategories, monoidal subcategories, and
+central subcategories of a category \(\mc{C}\) are all closed under
+intersections of hom-sets, forming a complete meet-semilattice.
+%
+% and therefore, in particular, form a complete meet-semilattice with shared
+% bottom element \(\ms{Skeleton}(\mc{C})\), where \(\ms{Skeleton}(C)\) is the
+% smallest possible symmetric premonodial subcategory. The largest symmetric
+% premonoidal subcategory is of course \(\mc{C}\), while the largest central
+% subcategory is the center of \(\mc{C}\), \(Z(\mb{C})\).
+%
+% ; the existence of a top-element means that in these cases we may induce the
+% structure of a complete lattice in the usual manner.
+%
+We can now define a \textit{substructural premonoidal category}, which is simply
+a premonoidal category equipped with premonoidal subcategories of relevant and
+affine morphisms:
+\begin{definition}[Substructural (Pre)monoidal Category]
+  A \textbf{substructural (pre)monoidal category} is a symmetric premonoidal
+  category \(\mc{C}\) equipped with
+  \begin{itemize}
+    \item Wide symmetric premonoidal subcategories \(\mc{C}^{\ms{a}},
+    \mc{C}^{\ms{r}}\). We define \(\mc{C}^q = \bigcap_{\ell \in q}\mc{C}^\ell\),
+    where \(\mc{C}^\varnothing = \mc{C}\)
+    \item A set of \textbf{affine} objects \(\ms{Aff}(\mc{C}) = \mc{A} \subseteq
+    |\mc{C}|\) closed under tensors, such that \(\mb{1} \in \mc{A}\) and
+    \begin{itemize}
+      \item Every \(A\) in \(\mc{A}\) is equipped with a central morphism
+      \(\ms{drop}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, \mb{1})\) satisfying
+      \item \(\forall A, B \in \mc{A}. \ms{drop}(A \otimes B) = \ms{drop}(A) \otimes \ms{drop}(B);\lambda_I\), \(\forall f: \mc{C}^{\ms{a}}(A, B). f;\ms{drop}(B) = \ms{drop}(A)\)
+    \end{itemize}
+    \item A set of \textbf{relevant} objects \(\ms{Rel}(\mc{C}) = \mc{R}
+    \subseteq |\mc{C}|\) closed under tensors, such that \(\mb{1} \in \mc{R}\)
+    and
+    \begin{itemize}
+      \item Every \(A\) in \(\mc{R}\) is equipped with a central morphism
+      \(\ms{split}(A): \mc{C}^{\{\ms{a}, \ms{r}\}}(A, A \otimes A)\) satisfying
+      \item \(\forall A, B \in \mc{R}, \ms{split}(A \otimes B) = \ms{split}(A) \otimes \ms{split}(B);\alpha;A \otimes \sigma_{A, B} \otimes B;\alpha\)
+      \item Associativity: \(\forall A \in \mc{R}, \ms{split}(A);\ms{split}(A) \otimes A;\alpha = \ms{split}(A);A \otimes \ms{split}(A)\)
+      \item Commutativity: \(\forall A \in \mc{R}, \ms{split}(A);\sigma = \ms{split}(A)\)
+      \item Comonoid: \(\forall A \in \mc{A} \cap \mc{R}, \ms{split}(A);A \otimes \ms{drop}(A) = \rho_A^{-1} \quad \ms{split}(A);\ms{drop}(A) \otimes A = \lambda_A^{-1}\)
+      \item \(\forall A, B \in \mc{R}, \forall f: \mc{C}^{\ms{r}}(A, B), f;\ms{split}(B) = \ms{split}(A);f \ltimes f = \ms{split}(A);f\rtimes f\)
+    \end{itemize}
+  \end{itemize}
+  We call the morphisms in \(\mc{C}^{\ms{a}}\) \textbf{affine}, the morphisms in
+  \(\mc{C}^{\ms{r}}\) \textbf{relevant}, and the morphisms in
+  \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) \textbf{intuitionistic}. 
+  % We call the morphisms in \(\mc{C}^\varnothing\) but not necessarily in any
+  % of the other \(\mc{C}^q\) \textbf{linear}. 
+  We call a substructural \textit{monoidal} category a \textbf{substructural
+  Cartesian category} if \(\mc{A} = \mc{R} = |\mc{C}|\), in which case
+  \(\mc{C}^{\{\ms{a}, \ms{r}\}}\) is Cartesian.
+\end{definition}
+
+\paragraph{Example}
+
+A simple example of a substructural Cartesian category is the category of
+relations \(\ms{Rel}\), viewed as the Kleisli category of the power-set monad
+with morphisms of the form \(\ms{Rel}(A, B) = A \to \mc{P}(B)\). In particular,
+we can define:
+\begin{equation}
+  \begin{aligned}
+    \ms{Rel}^{\ms{a}}(A, B) 
+    &= \{R \in \ms{Rel}(A, B) \mid \forall a, |R(a)| \geq 1\} 
+    &&= A \to \mc{P}^+(B) \\
+    \ms{Rel}^{\ms{r}}(A, B) 
+    &= \{R \in \ms{Rel}(A, B) \mid \forall a, |R(a)| \leq 1\} 
+    &&= A \to \ms{Option}(B) \\
+    \implies \ms{Rel}^{\{\ms{a}, \ms{r}\}}(A, B) 
+    &= \{R \in \ms{Rel}(A, B) \mid \forall a, |R(a)| = 1\} 
+    &&= A \to B
+  \end{aligned}
+\end{equation}
+Here, \(\ms{split}(A)\) is just the copy operator \(a \mapsto (a, a)\) and
+\(\ms{drop}(A)\) the deletion operator \(a \mapsto ()\); it is quite trivial to
+prove that these lie in \(\ms{Rel}^{\{\ms{a}, \ms{r}\}}\), being functions, and
+that they satisfy the axioms of a commutative comonoid, as desired. 
+
+Note that we cannot simply have \(\ms{Rel}^{\ms{a}} = \ms{Rel}\), since, for any
+morphism \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, R(a) =
+\varnothing\), we have \((R;\ms{drop}(B))(a) = \varnothing \neq \ms{drop}(A)(a)
+= \{()\} \). We will see that this corresponds to the fact that "\(\ms{let}\;x =
+\ms{loop}(); e\)" is not semantically equal to "\(e\)" even where \(x \notin
+\ms{fv}(e)\). Similarly, we cannot simply have \(\ms{Rel}^{\ms{r}} = \ms{Rel}\),
+since, for any \(R: \ms{Rel}(A, B)\) such that \(\exists a \in A, |R(a)| > 1\),
+\(
+  (R;\ms{split}(B))(a) = \{(b, b) \mid b \in R(a)\} \neq (\ms{split}(A);R)(a) = R(a) \times R(a) 
+\). This corresponds
+to the fact that the program "\(\ms{let}\;x = \ms{nondet}(); (x, x)\)" is not
+semantically equal to "\((\ms{nondet}(), \ms{nondet}())\)".
+
+% To get a substructural premonoidal category, we can apply the state monad
+% transformer to the power set monad to obtain the Kleisli category with morphisms
+% of the form \(\ms{Set}_{\ms{St}\;\mc{P}\;S}(A, B) = A \to S \to \mc{P}(B \times
+% S)\). It is clear that all objects have split and drop morphisms inherited from
+% \(\ms{Set}\), and therefore are affine and relevant.
+
+Just like for regular premonoidal categories, we would like to distinguish
+between those morphisms that are "truly" central versus those which are just
+central "by accident". We can do this the same way, by simply extending the
+notion of effectful category appropriately as follows:
+\begin{definition}[Susbtructural Effectful Category]
+  An effectful category \(\mc{C}_1 \to \mc{C}_0\) is said to be
+  \textbf{substructural} if \(\mc{C}_0, \mc{C}_1\) are substructural and
+  \(\upg{\cdot}{}: \mc{C}_1 \to \mc{C}_0\) preserves all drops and splits and
+  sends \(\mc{C}_1^q\) to \(\mc{C}_0^q\). In particular, restricting
+  \(\upg{\cdot}{}\) appropriately makes all \(\mc{C}_1^q \to \mc{C}_0^q\) into
+  effectful categories.  We call a morphism in \(\mc{C}_1\) \textbf{central},
+  and a central intuitionistic morphism \textbf{pure}.
+  % Morphisms in \(\mc{C}_p^{\ms{r}}\) are called \textbf{copyable}, morphisms
+  % in \(\mc{C}_p^{\ms{a}}\) are called \textbf{discardable}, while morphisms in
+  % \(\mc{C}_1^{\ms{a}}, \mc{C}_1^{\ms{r}}, \mc{C}_1^{\{\ms{a}, \ms{r}\}}\)
+  % specifically are called \textbf{affine}, \textbf{relevant}, and
+  % \textbf{intuitionistic} or \textbf{pure} respectively.
+\end{definition}
+
+\paragraph{Example}
+
+Applying the FP-style state transformer to the power-set monad yields the
+Kliesli category with morphisms of the form \(\mc{C}_0(A, B) = A \to S \to
+\mc{P}(A \times S)\). Taking \(\mc{C}_1\) to be the original category
+\(\ms{Rel}\), where \(\upg{R}{} = \lambda a, s. R(a) \times \{s\}\) is the
+standard lifting operator, and taking \(\mc{C}_1^q = \ms{Rel}^q\), we can verify
+that this gives us the axioms of a substructural effectful category. Note that
+here the \textit{central} morphisms are precisely those which do not read from
+or write to the state, and therefore which commute with all other morphisms. In
+general,
+\begin{proposition}
+  If \(\mc{C}\) is a substructural monoidal category and \(\mb{T}\) is a strong
+  monad on \(\mc{C}\) then we can make the Kleisli category \(\mc{C}_{\mb{T}}\)
+  into a substructural effectful category \(\upg{\cdot}{}: \mc{C} \to
+  \mc{C}_{\mb{T}}\) by taking \(\ms{Aff}(\mc{C}_{\mb{T}}) = \ms{Aff}(\mc{C})\),
+  \(\ms{Rel}(\mc{C}_{\mb{T}}) = \ms{Rel}(\mc{C})\), and \(\mc{C}_{\mb{T}}^q(A,
+  B) = \upg{\mc{C}^q(A, B)}{}\), where \(\upg{f}{} = f;\eta\), and defining
+  drops \(\upg{\ms{drop}(A)}{}\) and splits \(\upg{\ms{split}(A)}{}\).
+\end{proposition}
+Moreover, \textit{every} premonoidal category \(\mc{C}\) can be viewed a
+substructural premonoidal category, taking \(\mc{C}^{\ms{a}}\) and
+\(\mc{C}^{\ms{r}}\) to be the subcategory consisting only of the associators,
+unitors, and symmetry, and only the identity object to be affine and relevant.
+Similarly, every \textit{Cartesian} category \(\mc{C}\) can be viewed as a
+substructural Cartesian category with all morphisms and objects both relevant
+and affine; in fact, this is the case \textit{if and only if} a category is
+Cartesian.
+
+
+\subsection{Distributivity}
+
+To support branching, we need a bit more structure:
+\begin{definition}[Distributive (pre)monoidal category] 
+  A \textbf{distributive (pre)monoidal category} is a (pre)monoidal category
+  with all finite coproducts equipped with a natural family of central
+  isomorphisms (the \textbf{distributor}) \(\delta_{A, B, C}: (A + B) \otimes C
+  \simeq A \otimes C + B \otimes C\). This isomorphism is subject to rather
+  complex coherence conditions, worked out in full for the more general case of
+  \textit{rig categories} by \citet{laplaza-distributivity}, but for our
+  purposes we will only make use of the following:
+  \begin{equation*}
+    \delta_{A, B, C}^{-1} = [\iota_0 \otimes C, \iota_1 \otimes C] 
+    \qquad
+    \sigma^+_{A, B} \otimes C;\delta_{B, A, C} = \delta_{A, B, C};\sigma^+_{A \otimes C, B \otimes C}
+  \end{equation*}
+  Note in particular that this implies that \(\iota_i \otimes C;\delta_{A, B, C}
+  = \iota_i\). A substructural (pre)monodial category is \textbf{distributive}
+  if it is distributive as a (pre)monoidal category, and its distributor is
+  \textit{pure}. A substructural effectful category \(\mc{C}_1 \to \mc{C}_0\) is
+  \textbf{distributive} if \(\mc{C}_1, \mc{C}_0\) are distributive (as a
+  substructural (pre)monoidal category) and \(\upg{\cdot}{}\) strictly preserves
+  all coproducts.
+\end{definition}
+Many (pre)monoidal categories are distributive, including of course
+\(\ms{Set}\), but also categories which can be derived from monads on more
+primitive categories such as \(\ms{PFun}\) and \(\ms{Rel}\), as can be deduced
+from the following proposition:
+\begin{proposition}
+  If \(\mc{C}\) is a distributive substructural monoidal category and \(\mb{T}\)
+  is a strong monad on \(\mc{C}\), then the Kleisli category \(\mc{C}_{\mb{T}}\)
+  is a distributive substructural effectful category (with affine and relevant
+  objects and morphisms lifted from \(\mc{C}\)).
+\end{proposition}
+% \begin{proof}
+%   Let \(\delta_{A, B, C}: \mc{C}((A + B) \otimes C, A \otimes C + B \otimes C)\) denote \(\mc{C}\)'s distributor. We will write composition in \(\mc{C}\) as "\(;\)" and composition in the Kleisli category \(\mb{T}\) as "\(\gg\)".
+%   We will show that
+%   \(\upg{\delta_{A, B, C}}{}: \mc{C}_{\mb{T}}((A + B) \otimes C, A \otimes C + B \otimes C)\) satisfies the desired properties of a distributor. In particular, it is:
+%   \begin{itemize}
+%     \item Central: this follows immediately from being the image of a pure morphism
+%     \item Affine: \(\upg{\delta}{} \gg \upg{\ms{drop}}{} = \upg{(\delta;\ms{drop})}{} = \upg{\ms{drop}}{}\)
+%     \item Relevant: \(\upg{\delta}{} \gg \upg{\ms{split}}{} = \upg{(\delta;\ms{split})}{} = \upg{(\ms{split};\delta \otimes \delta)}{} = \upg{\ms{split}}{} \gg \upg{\delta}{} \otimes \upg{\delta}{}\)
+%     \item Left inverse: \(\upg{\delta}{} \gg \upg{[\iota_0 \otimes C, \iota_1
+%     \otimes C]}{} = \upg{\delta;[\iota_0 \otimes C, \iota_1 \otimes C]}{} =
+%     \ms{id}\)
+%     \item Right inverse: \(\upg{[\iota_0 \otimes C, \iota_1 \otimes C]}{} \gg \upg{\delta}{} = \upg{[\iota_0 \otimes C, \iota_1 \otimes C];\delta}{} = \ms{id}\)
+%     \item Symmetric: \(\upg{\sigma^+}{} \otimes C \gg \upg{\delta}{} =
+%     \upg{\sigma^+ \otimes C;\delta}{} = \upg{\delta;\sigma^+}{} = \upg{\delta}{}
+%     \gg \upg{\sigma^+}{}\)
+%   \end{itemize}
+% \end{proof}
+
+\subsection{Elgot Categories}
+
+The structures we've developed so far are enough to support non-looping control
+flow, but to allow general, potentially nonterminating control flow, we need a
+way to reason about iteration. To do so, we introduce the notion of an
+\textit{Elgot category} as follows:
+\begin{definition}[Elgot category] 
+  An \textbf{Elgot category} is a category \(\mc{C}\) with coproducts equipped
+  with an operator \(\cdot^\dagger: \mc{C}(A, B + A) \to \mc{C}(A, B)\)
+  satisfying the following properties:
+  \begin{itemize}
+    \item \textbf{Fixpoint:} \(f;[\ms{id}, f^\dagger] = f^\dagger\)
+    \item \textbf{Naturality:} \((f;g + \ms{id})^\dagger = f^\dagger;g\)
+    \item \textbf{Codiagonal:} \(\forall f \in \mc{C}(A, (B + A) + A), (f^\dagger)^\dagger = (f;[\ms{id}, \iota_1])^\dagger\)
+    \item \textbf{Uniformity:}
+    \(
+      h;f = g;\ms{id} + h \implies h;f^\dagger = g^\dagger
+    \)
+  \end{itemize}
+  % A monad \(\mb{T}\) on \(\mc{C}\) such that its Kleisli cateogry
+  % \(\mc{C}_{\mb{T}}\) is Elgot is called an \textbf{Elgot monad}.
+\end{definition}
+% Some important properties which hold for all Elgot categories include:
+% \begin{itemize}
+%   \item \textbf{Dinaturality:} \((g;[\iota_0, h])^\dagger = g;[\ms{id},
+%   (h;[\iota_0, g])^\dagger]\)
+%   \item \textbf{Squaring:} \((f;[\iota_0, f])^\dagger = f^\dagger\)
+% \end{itemize}
+% Proofs can be found in Lemma 31 of \cite{goncharov-squaring}.
+A monad \(\mb{T}\) whose Kliesli category \(\mb{C}_{\mb{T}}\) is Elgot is called
+an \textbf{Elgot monad}. Examples of Elgot monads include \(\ms{Option}\) (where
+nontermination is \(\ms{None}\)), the powerset monad (where nontermination is
+the empty set), which can both be viewed as special cases of the trace monads we
+will explore in Section \ref{ssec:trace-monads}. It turns out that various monad
+transformers preserve Elgot structure, allowing us to build up Elgot monads in a
+composable fashion via a monad stack. In particular,
+\begin{proposition}
+  If \(\mb{T}\) is an Elgot monad on \(\ms{Set}\), then \(\ms{StateT}\;S\;\mb{T}
+  = \lambda A. S \to \ms{T}(A \times S)\), \(\ms{ReaderT}\;\mb{T}\;S = \lambda
+  A. S \to \ms{T}(A)\), and \(\ms{WriterT}\;\mb{T}\;S = \lambda A. \ms{T}(A
+  \times S)\) are all Elgot, with iteration operators lifted from \(\mb{T}\) in
+  the obvious manner.
+\end{proposition}
+
+\subsection{Denotational Semantics}
+
+We can now give a semantics for an \isotopessa dialect with types
+\(\mc{T}\) and instructions \(\mc{I}\). We'll need:
+\begin{itemize}
+  \item A \textit{substructural effectful category} \(\mc{C} = \mc{C}_1 \to
+  \mc{C}_0\) such that \(\mc{C}_0\) is \textit{distributive} and \textit{Elgot}
+  \item A function \(\ms{base}(X)\) from base types \(X \in \mc{T}\) to objects
+  in \(|\mc{C}|\), such that \(\ms{a} \in \ms{lin}(X) \implies \ms{base}(X) \in
+  \ms{Aff}(\mc{C})\) and \(\ms{r} \in \ms{lin}(X) \implies \ms{base}(X) \in
+  \ms{Rel}(\mc{C})\)
+  \item A function \(\ms{inst}(f)\) from instructions \(f \in \mc{I}_p^q(A, B)\)
+  to morphisms in \(\mc{C}_p^q(\dnt{A}, \dnt{B})\)
+\end{itemize}
+We begin by giving a semantics for types and contexts in terms of objects in
+Figure \ref{fig:ssa-type-semantics}: we map tensor products to tensor products,
+the unit type to the monoidal unit, and booleans to \(\mb{1} + \mb{1}\).
+Contexts are simply interpreted as the tensor products of the variable types
+which appear in them; in particular, quantity annotations have \textit{no}
+effect on a context's semantics. We proceed to give semantics for structural
+judgements in Figure \ref{fig:ssa-structural-semantics}. In particular, we
+interpret a context split \(\csplits{\Gamma}{\Delta}{\Xi}\) as a pure morphism
+\(\mc{C}^\tint_1(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})\) which
+partitions the variables as appropriate, splitting and dropping as necessary; a
+weakening \(\cwk{\Gamma}{\Delta}\) is interpreted as the associated split
+\(\dnt{\csplits{\Gamma}{\Delta}{\cdot}}\) postcomposed with a unitor. Finally, a
+label-set weakening \(\lwk{\ms{L}}{\ms{K}}\) is interpreted as a pure morphism
+\(\mc{C}^\tint_1(\dnt{\ms{L}}, \dnt{\ms{K}})\), where \rle{join-nil} is the
+identity, \rle{join-cons} is the sum of \(\dnt{\lwk{\ms{L}}{\ms{K}}}\) and
+\(\dnt{\cwk{\Gamma}{\Delta}}\), and \rle{join-zero} is
+\(\dnt{\lwk{\ms{L}}{\ms{K}}}\) postcomposed with the left injection.
+
+\begin{figure}
+  \begin{align*}
+    \boxed{\dnt{A}: |\mc{C}|} & \qquad  
+    \dnt{X} = \ms{base}(X) 
+    \qquad
+    \dnt{\mb{1}} = \mb{1}
+    \qquad
+    \dnt{\mb{2}} = \mb{2} = \mb{1} + \mb{1}
+    \qquad \dnt{A \otimes B} = \dnt{A} \otimes \dnt{B} \\
+    \boxed{\dnt{\Gamma}: |\mc{C}|} & \qquad 
+    \dnt{\cdot} = \mb{1} \qquad 
+    \dnt{\Gamma, \thyp{x}{A}{q}} = \dnt{\Gamma} \otimes \dnt{A} 
+    \\
+    \boxed{\dnt{\ms{L}}: |\mc{C}|} & \qquad 
+    \dnt{\cdot} = \mb{0} \qquad
+    \dnt{\ms{L}, \llhyp{\ell}{\Gamma}{A}} = 
+      \dnt{\ms{L}} + \dnt{\Gamma} \otimes \dnt{A}
+  \end{align*}
+  \caption{Semantics for \isotopessa types and contexts}
+  \Description{Semantics for isotope-SSA types and contexts}
+  \label{fig:ssa-type-semantics}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}
+    % \boxed{\dnt{\tlin{A}{\taff}: \mc{C}_1^\tint(\dnt{A}, \mb{1})}}
+    %   \\
+    %   \dnt{\tlin{A}{\taff}} = \ms{drop}(\dnt{A})
+    %   % \dnt{\tlin{X}{\taff}} = \ms{drop}(X) \qquad
+    %   % \dnt{\tlin{A \otimes B}{\taff}} 
+    %   %   = \dnt{\tlin{A}{\taff}} \otimes \dnt{\tlin{B}{\taff}}
+    %   %   ; \lambda 
+    %   \\
+    % \boxed{\dnt{\tlin{A}{\trel}}
+    %   : \mc{C}_1^\tint(\dnt{A}, \dnt{A} \otimes \dnt{A})}
+    %   \\
+    %   \dnt{\tlin{A}{\trel}} = \ms{split}(\dnt{A})
+    %   % \dnt{\tlin{X}{\trel}} = \ms{split}(X) \qquad
+    %   % \dnt{\tlin{A \otimes B}{\trel}} = 
+    %   %   \dnt{\tlin{A}{\trel}} \otimes \dnt{\tlin{B}{\trel}}
+    %   %   ;\alpha;\dnt{A} \otimes \sigma \otimes \dnt{B};\alpha 
+    %   \\
+    \boxed{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+      : \mc{C}_1^\tint(\dnt{\Gamma}, \dnt{\Delta} \otimes \dnt{\Xi})}
+      \\
+    \dnt{\csplits{\cdot}{\cdot}{\cdot}} = \lambda^{-1} \qquad
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta, \thyp{x}{A}{q}}
+      {\Xi}} 
+      = \dnt{\csplits{\Gamma}{\Delta}{\Xi}} \otimes \dnt{A};\alpha;\dnt{\Delta} \otimes \sigma;\alpha 
+      \\
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta}
+      {\Xi, \thyp{x}{A}{q}}} 
+      = \dnt{\csplits{\Gamma}{\Delta}{\Xi}} \otimes \dnt{A};\alpha 
+      \\
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta}
+      {\Xi, \thyp{x}{A}{q}}} \
+      = \dnt{\Gamma} \otimes \ms{split}(\dnt{A});
+        \alpha;
+        \dnt{\Delta} \otimes \sigma \otimes \dnt{A};
+        \alpha 
+        \\
+    \dnt{\csplits
+      {\Gamma, \thyp{x}{A}{q}}
+      {\Delta}
+      {\Xi}}
+      = \dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+        \otimes \ms{drop}(\dnt{A})
+      ; \rho 
+      \\
+    \boxed{\dnt{\cwk{\Gamma}{\Delta}}
+      : \mc{C}_1^\tint(\dnt{\Gamma}, \dnt{\Delta})} 
+      \qquad \qquad
+      \dnt{\cwk{\Gamma}{\Delta}} 
+      = \dnt{\csplits{\Gamma}{\Delta}{\cdot}};\rho 
+      \\
+    \boxed{\dnt{\lwk{\ms{L}}{\ms{K}}}
+      : \mc{C}_1^\tint(\dnt{\ms{L}}, \dnt{\ms{K}})} 
+      \\
+    \dnt{\lwk{\cdot}{\cdot}} = \ms{id} \qquad
+    \dnt{\lwk
+      {\ms{L}, \llhyp{\ell}{\Gamma}{A}}
+      {\ms{K}, \llhyp{\ell}{\Delta}{A}}}
+      = \dnt{\lwk{\ms{L}}{\ms{K}}} + \upg{(\dnt{\cwk{\Gamma}{\Delta}} \otimes \dnt{A})}{} 
+      \\
+    \dnt{\lwk{\ms{L}}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      = \dnt{\lwk{\ms{L}}{\ms{K}}};\iota_0
+  \end{gather*}
+  \caption{Semantics for \isotopessa structural judgements}
+  \Description{Semantics for isotope-SSA structural judgements}
+  \label{fig:ssa-structural-semantics}
+\end{figure}
+
+\begin{figure}
+  \begin{gather*}
+    \boxed{\dnt{\hasty{\Gamma}{p}{a}{A}{q}}
+      : \mc{C}_p^q(\dnt{\Gamma}, \dnt{A})} 
+      \\
+    \dnt{\hasty{\Gamma}{p}{x}{A}{q}} 
+      = \dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}
+      \qquad
+    \dnt{\hasty{\Gamma}{p}{f\;a}{B}{q}}
+      = \upg{\dnt{\hasty{\Gamma}{1}{a}{A}{q}}}{p}
+      ; \ms{inst}_p(f) 
+      \\
+    \dnt{\hasty{\Gamma}{p}{(a, b)}{A \otimes B}{q}}
+      = \upg{(
+        \dnt{\csplits{\Gamma}{\Delta}{\Xi}};
+        \dnt{\hasty{\Delta}{1}{a}{A}{q}} \otimes
+        \dnt{\hasty{\Xi}{1}{b}{B}{q}}
+      )}{p} 
+      \\
+    \dnt{\hasty{\Gamma}{p}{()}{\mb{1}}{q}}
+      = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p} 
+      \quad
+    \dnt{\hasty{\Gamma}{p}{\ctt}{\mb{2}}{q}}
+      = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p};\iota_0
+      \quad
+    \dnt{\hasty{\Gamma}{p}{\cff}{\mb{2}}{q}}
+      = \upg{\dnt{\cwk{\Gamma}{\cdot}}}{p};\iota_1 
+      \\
+    \dnt{\hasty{\Gamma}{p}{\letexpr{x}{a}{e}}{B}{q}}
+      = \upg{(
+        \dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+        ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{a}{A}{q}}
+      )}{p};\dnt{\hasty{\Delta, \thyp{x}{A}{}}{p}{e}{B}{q}} 
+      \\
+    \dnt{\hasty{\Gamma}{p}{\letexpr{(x, y)}{a}{e}}{C}{q}}
+      = \upg{(
+        \dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+        ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{a}{A \otimes B}{q}}
+      )}{p}
+      ; 
+      \\ \qquad \qquad \qquad \qquad \qquad \alpha
+      ; \dnt{\hasty{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{p}{e}{C}{q}}
+    %   \\
+    % \dnt{\hasty{\Gamma}{0}{\lbsplice{\ell}{A}{t}}{A}{\varnothing}}
+    %   = \dnt{\haslb{\Gamma}{t}{\llhyp{\ell}{\cdot}{A}}};\alpha_+
+  \end{gather*}
+  \caption{Semantics for \isotopessa expressions}
+  \Description{Semantics for isotope-SSA expressions}
+  \label{fig:ssa-term-semantics}
+\end{figure}
+
+We can now interpret a term \(\hasty{\Gamma}{p}{a}{A}{q}\) as a
+\textit{morphism} taking \(\dnt{\Gamma}\) into \(\dnt{A}\) with
+\textit{centrality} \(p\) and \textit{quantity} \(q\) (i.e., lying in
+\(\mc{C}_p^q\)); our rules for doing so are given in Figure
+\ref{fig:ssa-term-semantics}. We will abuse syntax slightly and write
+\(\dnt{\text{"judgement"}}\) for \(\dnt{D}\), where \(D\) is a derivation of
+"judgement"; in general, it can be proven that the semantics of any two such
+derivations are equal. We also define the syntax sugar \(\upg{f}{p}\), where
+\(\upg{f}{0}\) is \(\upg{f}{}\) for morphisms in \(\mc{C}_1\) and simply \(f\)
+for morphisms in \(\mc{C}_0\), and \(\upg{f}{1}\) is the identity functor on
+\(\mc{C}_1\).
+
+Our treatment of \rle{var} is quite standard: semantics of \(x\) is simply
+discarding all other variables in \(\Gamma\), i.e.
+\(\dnt{\cwk{\Gamma}{\thyp{x}{A}{q}}}\). Similarly, to type a function
+application \rle{app}, we first take \(\dnt{\hasty{\Gamma}{1}{a}{A}{q}}\), which
+is guaranteed to be central, lift to \(\mc{C}_p\), and then simply postcompose
+with \(f\). \rle{pair} is handled by precomposing the context split
+\(\csplits{\Gamma}{\Delta}{\Xi}\) with the tensor product of the components
+\(\dnt{\hasty{\Delta}{1}{a}{A}{q}}\), \(\dnt{\hasty{\Xi}{1}{b}{B}{q}}\); this is
+well-defined since both components are central and \(\mc{C}_1\) is monoidal. The
+semantics of \rle{unit} is simply dropping the entire context, while \rle{true}
+and \rle{false} are interpreted as first dropping the context and then injecting
+into the appropriate branch of the boolean type. Finally, \rle{let} and
+\rle{let2} are handled by first splitting the context, then passing the right
+hand component to the semantics of the bound term
+\(\dnt{\hasty{\Xi}{1}{a}{A}{q}}\) or \(\dnt{\hasty{\Xi}{1}{a}{A \otimes
+B}{q}}\), and then, lifting to \(\mc{C}_p\) as necessary, after reassociating
+with \(\alpha\), passing everything to the inner term \(\dnt{\hasty{\Delta,
+\thyp{x}{A}{q}}{p}{e}{B}{q}}\) or \(\dnt{\hasty{\Delta, \thyp{x}{A}{q},
+\thyp{y}{B}{q}}{p}{e}{C}{q}}\).
+% Note that this inner term is not necessarily central, unlike the bound term!
+
+\begin{figure}
+  \begin{gather*}
+    \boxed{\dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      : \mc{C}_0^\varnothing(\dnt{\Gamma}, \dnt{\ms{L}})} \\
+    \dnt{\haslb{\Gamma}{\lbrb{\ell}{a}}{\ms{L}}}
+      = \upg{(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{a}{A}{\tint}})}{}
+      ; \dnt{\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}} \\
+    \dnt{\haslb{\Gamma}{\ite{e}{s}{t}}{\ms{L}}}
+      = \upg{(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}{}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Xi}{1}{e}{\mb{2}}{\tint}})}
+      ; \delta ;
+      \\ \qquad \qquad \qquad \qquad
+      [
+        \dnt{\haslb{\Delta}{s}{\ms{L}}}, 
+        \dnt{\haslb{\Delta}{t}{\ms{L}}} 
+      ]
+      \\
+    \dnt{\haslb{\Gamma}{\letstmt{x}{a}{t}}{\ms{L}}}
+      = \upg{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}}{}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Gamma}{0}{a}{A}{q}}
+      ; \dnt{\haslb{\Delta, \thyp{x}{A}{}}{t}{\ms{L}}}
+      \\
+    \dnt{\haslb{\Gamma}{\letstmt{(x, y)}{a}{t}}{\ms{L}}}
+      = \upg{\dnt{\csplits{\Gamma}{\Delta}{\Xi}}}{}
+      ; \dnt{\Delta} \otimes \dnt{\hasty{\Gamma}{0}{a}{A \otimes B}{q}}
+      ; \alpha
+      ; \dnt{\haslb{\Delta, \thyp{x}{A}{}, \thyp{y}{B}{}}{t}{\ms{L}}}
+      \\
+    \dnt{\haslb{\Gamma}{\ewhere{t}{L}}{\ms{K}}}
+      = \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      ; \dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}^\dagger
+      \\
+    \boxed{\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}
+      : \mc{C}_0^\varnothing(\dnt{\ms{L}}, \dnt{\ms{K}} + \dnt{\ms{L}})}
+      \\
+    \dnt{\lhaslb{\ms{L}}{L, \lwbranch{\ell}{x: A}{t}}{\ms{K}}}
+      = \dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}
+      ; [\dnt{\ms{K}} + \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{t}{\ms{L}}}, \iota_1]
+      \\
+    \dnt{\lhaslb{\ms{L}}{\cdot}{\ms{L}}}
+      = \iota_0
+  \end{gather*}
+  \caption{Semantics for \isotopessa blocks}
+  \Description{Semantics for isotope-SSA blocks}
+  \label{fig:ssa-block-semantics}
+\end{figure}
+
+We interpret \textit{blocks} \(\haslb{\Gamma}{t}{\ms{L}}\) as \textit{impure}
+morphisms from \(\dnt{\Gamma}\) to \(\dnt{\ms{L}}\). \(\Gamma\) represents all
+the variables live on entry to the block, while \(\ms{L}\) represents all valid
+targets, each annotated with live variables and an argument type; our semantics
+are given in Figure \ref{fig:ssa-block-semantics}. \rle{br} is interpreted by
+first splitting the context via \(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\), and
+then using \(\Xi\) to compute the target's argument. The result, along with the
+unchanged live variables \(\Delta\), is then passed to
+\(\lwk{\llhyp{\ell}{\Delta}{A}}{\ms{L}}\) to obtain the desired target.
+Similarly, we interpret \rle{ite} by first splitting the context via
+\(\dnt{\csplits{\Gamma}{\Delta}{\Xi}}\) and using \(\Xi\) to compute the
+discriminant. The "if" statement itself is then simply an application of the
+distributor \(\delta: \dnt{\Delta} \otimes (\mb{1} + \mb{1}) \to \dnt{\Delta} +
+\dnt{\Delta}\); we pass the left of the coproduct to the true branch
+\(\dnt{\haslb{\Xi}{s}{\ms{L}}}\) and the right to the false branch
+\(\dnt{\haslb{\Xi}{t}{\ms{L}}}\). The semantics of \rle{let-blk} and
+\rle{let2-blk} are analogous to those of \rle{let} and \rle{let2}, except that
+now the bound term \(a\) is allowed to be impure.
+
+Finally, we must give semantics for \rle{where}. To do so, we interpret a
+control-flow graph \(\lhaslb{\ms{L}}{L}{\ms{K}}\) as a morphism from
+\(\dnt{\ms{L}}\) to \(\dnt{\ms{K}} + \dnt{\ms{L}}\), where the left of the
+coproduct denotes branching to one of the labels in \(\ms{K}\) (the
+\textit{output}), while the right of the coproduct denotes a recursive call to a
+label in \(\ms{L}\) (the \textit{recursive input}). In particular, \rle{nil-br}
+simply forwards all calls to one of \(\ms{L}\) to the output unchanged.
+\rle{cons-br} is a little bit more complicated: first we execute
+\(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}, \llhyp{\ell}{\Gamma}{A}}}\), which yields
+either an output \(\dnt{\ms{K}, \llhyp{\ell}{\Gamma}{A}}\) or a recursive input
+\(\dnt{\ms{L}}\), which we pass through unchanged as a recursive input. In the
+former case, we can interpret this as either a value of \(\dnt{\ms{K}}\), which
+we pass through unchanged as output, or \(\dnt{\Gamma} \otimes \dnt{A}\); which
+we can pass as input to \(\dnt{\haslb{\Gamma, \thyp{x}{A}{q}}{t}{\ms{L}}}\),
+giving us a value of \(\ms{L}\) we can use as recursive input. Note that, even
+if \(t\) yields an output label in \(\ms{K}\), we still return a
+\textit{recursive input}, not an output; in this case, the \textit{next}
+iteration will return it as an output. We can now quite easily state the
+semantics of \rle{where}: we simply precompose the semantics of the entry block
+\(\dnt{\haslb{\Gamma}{t}{\ms{L}}}\) with the \textit{iterated} semantics of the
+associated control-flow graph, \(\dnt{\lhaslb{\ms{L}}{L}{\ms{K}}}^\dagger\).
+
+\subsection{Semantic Metatheory}
+
+Now that we have a semantics for \isotopessa programs, we can show that it
+matches the syntax by showing that the syntactic and semantic notions of
+substitution coincide. We begin by giving a semantics for
+\(\issubst{\gamma}{\Theta}{\Gamma}\) in Figure \ref{fig:ssa-subst-semantics},
+which we will interpret as a pure morphism taking \(\dnt{\Theta}\) to
+\(\dnt{\Gamma}\). This morphism can simply be viewed as computing all
+\(\gamma(x)\) for \(\thyp{x}{A}{q}\) in \(\Gamma\); in particular, we interpret
+\rle{subst-cons} by splitting the context via
+\(\dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}}\), passing
+\(\dnt{\Theta_\Gamma}\) to the remainder of the substitution
+\(\dnt{\issubst{\gamma}{\Gamma}{\Theta_\Gamma}}\) to compute the rest of the
+\(\gamma(y)\) in \(\Gamma\) recursively, and using \(\dnt{\Theta_x}\) to compute
+\(\gamma(x)\). Similarly, we interpret label-substitutions as morphisms from
+\(\dnt{\ms{L}}\) to \(\dnt{\ms{K}}\) which, for each input label in \(\ms{L}\),
+performs a computation targeting \(\ms{K}\). In particular, \rle{lb-subst-nil}
+is interpreted as the zero morphism \(0_{\dnt{\ms{K}}}:
+\mc{C}_0^\varnothing(\mb{0}, \dnt{\ms{K}})\), while \rle{lb-subst-cons} takes in
+the coproduct \(\dnt{\ms{L}} + \dnt{\Gamma} \otimes \dnt{A}\), sending the
+former to \(\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{A}}}\) and the latter to the
+denotation of \(\mc{L}(\lbl{\ell}, x)\).
+
+\begin{figure}
+  \begin{gather*}
+    \boxed{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}: \mc{C}_1^\varnothing(\dnt{\Theta}, \dnt{\Gamma})} 
+    \\
+    \dnt{\issubst{\cdot}{\cdot}{\cdot}} = \ms{id}
+    \qquad
+    \dnt{\issubst{\gamma}{\Theta}{\Gamma, \thyp{x}{A}{q}}}
+      = \dnt{\csplits{\Theta}{\Theta_\Gamma}{\Theta_x}};\dnt{\issubst{\gamma}{\Theta_\Gamma}{\Gamma}} \otimes \dnt{\hasty{\Theta_x}{1}{a}{A}{q}}
+    \\
+    \boxed{\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}: \mc{C}_0^\varnothing(\dnt{\ms{L}}, \dnt{\ms{K}})} 
+    \\
+    \dnt{\lbsubst{\mc{L}}{\cdot}{\ms{K}}} = 0_{\ms{K}}
+    \qquad
+    \dnt{\lbsubst{\mc{L}}{\ms{L}, \llhyp{\ell}{\Gamma}{A}}{\ms{K}}}
+    = [\dnt{\lbsubst{\ms{L}}{\ms{L}}{\ms{K}}}, \dnt{\haslb{\Gamma, \thyp{x}{A}{}}{\mc{L}(\lbl{\ell}, x)}{\ms{K}}}]
+  \end{gather*}
+  \caption{Semantics for \isotopessa substitutions}
+  \Description{Semantics for isotope-SSA substitutions}
+  \label{fig:ssa-subst-semantics}
+\end{figure}
+
+We can now state the theorem of semantic substitution, which essentially states
+that the semantics of a substituted term or block is the same as the semantics
+of that term or block preceded by let-bindings corresponding to the variables in
+the substitution, which is the same as the semantics of the original term or
+block precomposed with the semantics of the substitution. Similarly, the
+semantics of a \textit{label-substituted} block is the same as the semantics of
+the original block \textit{postcomposed} with the semantics of that
+label-substitution. Stated formally, we obtain:
+\begin{theorem}[Semantic Substitution] 
+  Given \(\issubst{\gamma}{\Theta}{\Gamma}\),
+  \begin{itemize}
+    \item For all \(\hasty{\Gamma}{p}{a}{A}{q}\), 
+    \(
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{p}
+      ;\dnt{\hasty{\Gamma}{p}{a}{A}{q}} 
+      = \dnt{\hasty{\Theta}{p}{\exprletsubst{\substctx{\gamma}{\Gamma}}{a}}{A}{q}}
+      = \dnt{\hasty{\Theta}{p}{[\gamma]a}{A}{q}}
+    \)
+    \item For all 
+      \(\haslb{\Gamma}{t}{\ms{L}}\), 
+      \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\), 
+      \(\haslb{\Theta}{[\gamma]t}{\ms{K}}\),
+    \[
+      \upg{\dnt{\issubst{\gamma}{\Theta}{\Gamma}}}{}
+      ; \dnt{\haslb{\Gamma}{t}{\ms{L}}}
+      = \dnt{\haslb{\Theta}{\exprletsubst{\substctx{\gamma}{\Gamma}}{t}}{\ms{K}}} 
+      ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
+      = \dnt{\haslb{\Theta}{[\gamma]t}{\ms{K}}} 
+      ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{K}}}{\ms{K}}{\ms{L}}}
+    \]
+    % \item For all 
+    %   \(\lhaslb{\ms{W}}{L}{\ms{L}}\), 
+    %   \(\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}\),
+    %   \(\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}\),
+    %   \[
+    %     \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+    %     ; \dnt{\lhaslb{\ms{W'}}{[\gamma]L}{\ms{K}}}
+    %     = \dnt{\lhaslb{\ms{W}}{L}{\ms{L}}}
+    %     ; \dnt{\lbsubst{\substlbs{\gamma}{\ms{L}}}{\ms{K}}{\ms{L}}}
+    %     + \dnt{\lbsubst{\substlbs{\gamma}{\ms{W'}}}{\ms{W}}{\ms{W'}}}
+    %   \]
+  \end{itemize}  
+  % Similarly, given \(\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}\),
+  % \begin{itemize} 
+  %   \item For all \(\haslb{\Gamma}{t}{\ms{L}}\), we have
+  %   \(
+  %     \dnt{\haslb{\Gamma}{t}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+  %     = \dnt{\haslb{\Gamma}{[\mc{L}]t}{\ms{K}}}
+  %   \)
+  %   \item For all \(\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}\), we have
+  %   \[
+  %     \dnt{\lhaslb{\ms{W}_{\ms{L}}}{L}{\ms{L}}};\dnt{\lbsubst{\mc{L}}{\ms{L}}{\ms{K}}}
+  %     + \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}}
+  %     = \dnt{\lbsubst{\mc{L}}{\ms{W}_{\ms{L}}}{\ms{W}_{\ms{K}}}};\dnt{\lhaslb{\ms{W}_{\ms{K}}}{[\mc{L}]L}{\ms{K}}}
+  %   \]
+  %   where all variables in \(\ms{W}\) not in \(\ms{L}\) are fresh w.r.t \(\mc{L}\).
+  % \end{itemize}
+\end{theorem}
+
+\subsection{Optimisations}
+
+Because we have a denotational semantics, it is easy to validate equations
+between terms, blocks, and CFGs. Even the basic proof of the soundness of
+substitution already lets us prove the soundness of many fundamental compiler
+optimisations, such as global value numbering (let-introduction for pure
+expressions), some forms of dead code elimination (i.e., eliminating unused
+affine bindings), and strength reduction with loop hoisting (let-introduction
+for relevant expressions). 
+
+Substitution only applies to central terms, because those are the only terms for
+which substitution is sound. Furthermore, there are many other optimisations
+that follow from the beta-eta theory of the language, as well as specific
+properties of model-dependent operations (such as memory operations). Because we
+have a compositional denotational semantics, equations automatically lift into a
+full congruence. This lets us justify optimisations such as scalar replacement
+of aggregates, eliminating redundant writes, reordering independent memory
+operations, and memory-to-register transformations.
+
+Because we have a type-theoretic presentation of control-flow graphs, we also
+have a substitution principle and equational theory for them. This lets us show
+the soundness of inlining, loop unrolling, loop fusion, dead-code elimination,
+and other optimisations which change the structure of the control-flow graph.
+Note that we have not yet proved anything about the dataflow analyses used to
+find the rewrites -- we have only shown that the rewrites themselves are
+semantically justified.
+
+\section{Concrete Models}
+
+In this section, we give cncrete models of the axiomatisation given in Section
+\ref{sec:semantics} to with successively more sophisticated features such as
+weak memory and separation logic.
+
+\subsection{Trace Models}
+
+\label{ssec:trace-monads}
+
+We will begin by giving a useful foundation for a wide class of \isotopessa
+models: the "trace models" over \(\mb{Set}\), which accumulate a (potentially
+infinite) nondeterministic trace of monoidal "events". These will later come in
+handy for reasoning about output behaviour and weak memory. We start with some
+definitions:
+\begin{definition}[Relevant, Affine Monad]
+  A monad \(\mb{T}\) on \(\ms{Set}\) is \textbf{relevant} if its Kleisli
+  category satisfies \(f;\ms{split} = \ms{split};f \ltimes f = \ms{split};f
+  \rtimes f\), where \(\ms{split} = \upg{\lambda a. (a, a)}{}\). \(\mb{T}\) is
+  \textbf{affine} if its Kleisli category satisfies \(f;\ms{drop} = \ms{drop}\),
+  where \(\ms{drop} = \upg{\lambda a.()}{}\). A monad is \textbf{intuitionistic}
+  if it is both relevant and affine.
+\end{definition}
+\begin{definition}[Submonad] 
+  A \textbf{submonad} \(\mb{S}\) of a monad \(\mb{T}\) on \(\ms{Set}\) is a
+  collection of sets such that, for all \(A\), \(\mb{S}\;A \subseteq
+  \mb{T}\;A\), \(\forall a \in A, \eta\;a \in \mb{S}\;A\), and, for all \(s \in
+  \mb{S}\;A\), \(f: A \to \mb{S}\;B\), \(\ms{bind}\;s\;f \in \mb{S}\;A\). We say
+  that a submonad of \(\mb{T}\) is \textbf{Elgot} if \(\mb{T}\) is Elgot and,
+  for all \(f: A \to \mb{S}(B + A)\), \(f^\dagger: A \to \mb{S}\;B\) where
+  \(f^\dagger\) is computed as in \(\mb{T}\). Note that \(\mb{S}\) is also an
+  (Elgot) monad in its own right, inheriting \(\mu, \eta\) and \(\cdot^\dagger\)
+  from \(\mb{T}\). The \textbf{unit submonad} \(\eta\) of every monad \(\mb{T}\)
+  is given by the map \(\eta(A) = \{\eta_A\;a \mid a \in A\}\). Given submonads
+  \(\mb{S}_i\) of \(\mb{T}\), their elementwise intersections
+  \(\bigwedge_i\mb{S}_i = \lambda A. \bigcap_i \mb{S}_i\;A\) are submonads,
+  forming a complete meet-semilattice with bottom \(\eta\) and top \(\mb{T}\).
+  In particular, the intersection of a relevant/affine/commutative submonad and
+  another submonad is relevant/affine/commutative respectively.
+\end{definition}
+\begin{definition}[Stream Action]
+  A \textbf{stream action} of a monoid \(M\) on a set \(I\) equipped with a
+  monoid action \(\cdot: M \times I \to I\) is a function \(\Theta: M^\omega \to
+  I\) mapping (infinite) streams of \(M\) to elements of \(I\) satisfying
+  \(
+    m \cdot \Theta(\ell) = \Theta(m \colon \ell)
+  \),
+  where \(m \colon \ell\) denotes the stream formed by prefixing \(m\) to the
+  stream \(\ell\).
+  Some basic examples include:
+  \begin{enumerate}
+    \item For any monoid \(M\), the unique map \(\Theta: M^\omega \to \mathbf{1}\)
+    forms a stream action on the unit set.
+    % \item In particular, given monoids \(M_i\) acting on sets \(I_i\) with action
+    % \(\cdot_i\) and stream actions \(\Theta_i: M_i^\omega \to I_i\), \(\Theta =
+    % \langle \Theta_i \circ \ms{fmap}\;\pi_i\rangle_i: (\Pi_iM_i)^\omega \to
+    % \Pi_iI_i\) is a stream action compatible with the action \(m \cdot l = (m_i
+    % \cdot_i l_i)_i\).
+    \item The concatenation map \(\Theta: (A^*)^\omega \to A^\omega\) is a
+    stream action of \(A^*\), the set of (finite) lists of \(A\), on \(A^{\leq
+    \omega}\), the set of (\textit{potentially} infinite) sequences of \(A\),
+    where \(\ell \cdot s\) prepends the \(\ell\) to \(s\).
+    % \item The sum map \(\Sigma: \nats^\omega \to \nats \cup \{\infty\}\) is a
+    % stream action of \(\nats\) on \(\nats \cup \{\infty\}\), where \(\nats\) acts
+    % on \(\nats \cup \{\infty\}\) by addition.
+    % \item Given a monoid \(M\) acting on sets \(I_i\) with action \(\cdot_i\) and
+    % stream actions \(\Theta_i: M^\omega \to I_i\), \(\Theta =
+    % \langle\Theta_i\rangle_i: M^\omega \to \Pi_iI_i\) is a stream action
+    % compatible with the action \(m \cdot l = (m \cdot_i l_i)_i\).
+  \end{enumerate}
+\end{definition}
+% We define the \textbf{stream center} of \(M\) with respect to \(I\), denoted
+% \(\mc{SZ}(M, I)\), as the subset of the center of \(M\), \(Z(M)\), consisting of
+% those elements \(m \in Z(M)\) such that for all \(i \in I\), \(m \cdot i = i\).
+% For instance, \(\mc{SZ}(M, \mathbf{1}) = Z(M)\), and \(\mc{SZ}(A^*, A^{\leq
+% \omega}) = \{[\,]\}\). Generally, \(\mc{SZ}(M, I)\) always contains
+% the unit of \(M\). 
+Using stream actions to determine what it means to perform a monoidal action
+"infinitely many times," we can now define the \textit{trace monad} of a stream
+action as follows:
+\begin{definition}[Trace Monad]
+  Given a stream action \(\Theta: M^\omega \to I\), we can define the
+  \textbf{nondeterministic trace monad} \(\ms{Traces}\;\Theta\;A = \mc{P}^+(A
+  \times M + I)\) with unit \(\eta_A = \lambda a.\iota_0 (a, 1)\) and
+  multiplication
+  \(
+    \mu_A\;T = \{[\lambda (a, m). m \cdot a, \ms{id}](t) \mid t \in T\}
+  \),
+  where the action of \(M\) on traces is given by \(m \cdot \iota_0 (a, m') =
+  \iota_0 (a, mm')\) and \(m \cdot \iota_1 t = \iota_1 (m \cdot t)\). We can
+  equip this monad with an iteration operator \(f^\dagger(a) = f^\infty(a) \cup
+  \bigcup_{n \in \nats}\{\iota_0 (\iota_0\;b, m) \in f_n(a)\} \cup \{\iota_1 t
+  \in f_n(a)\}\), yielding an Elgot structure, where
+  \[
+    f_0 = f, \quad f_{n + 1} = f \gg [\upg{\iota_0}{}, f_n], \quad
+    f^\infty(a) = \{\Theta (\lambda n. m_n) \mid a_0 = a \land \forall n, \exists a_{n + 1}. \iota_0 (\iota_1\;a_{n + 1}, m_n) \in f(a_n)\}
+  \]
+\end{definition}
+We can use the trace monad described above to derive some interesting examples
+of submonads:
+\begin{enumerate}
+  \item If \(C \subseteq Z(M)\) is submonoid of \(M\), then \(A \mapsto
+  \mc{P}^+(A \times C + \mb{0}) \subseteq \ms{Traces}\;\Theta\;A\) is a submonad.
+  \item In particular, if \(M_C \subseteq Z(M)\) is a central submonoid of \(M\)
+  such that \(\forall m \in M_C, \forall i \in I, m \cdot i = i\), then \(A
+  \mapsto \mc{P}^+(A \times M_C + \mb{0}) \subseteq \ms{Traces}\;\Theta\;A\) is
+  a submonad whose Kleisli category is a central subcategory of the Kleisli
+  category of \(\ms{Traces}\;\Theta\;A\). Note \(M_C = \{1\}\) is always such a
+  submonoid.
+  \label{item:central-submonad}
+  \item Similarly, if \(M_R \subseteq M_C\) is a submonoid such that \(\forall m
+  \in M_R, m \cdot m = m\), then \(A \mapsto \{S \in \mc{P}^+(A \times M_R + I)
+  \mid |S| = 1\} \subseteq \ms{Traces}\;\Theta\;A\) is a \textit{relevant}
+  submonad. Note \(M_R = \{1\}\) is always such a submonoid.
+  \label{item:relevant-submonad}
+  \item Finally, \(A \mapsto \mc{P}^+(A \times \{1\} + \mb{0}) \subseteq
+  \ms{Traces}\;\Theta\;A\) is an \textit{affine} submonad.
+  \label{item:affine-submonad}
+\end{enumerate}
+Since every commutative submonad induces a central subcategory of the Kleisli
+category of the parent monad, it follows that a triple of a relevant, affine,
+and commutative submonad make the Kleisli category of a monad \(\mb{T}\) into a
+substructural effectful category with all objects both affine and relevant. In
+particular, \ref{item:central-submonad}, \ref{item:relevant-submonad},
+\ref{item:affine-submonad} equip the Kleisli category of
+\(\ms{Traces}\;\Theta\;A\) with the structure of a substructural effectful
+category given choices of \(M_C\), \(M_R\).
+
+\subsection{Heaps, Printing, and Separation Logic}
+
+\label{ssec:separation}
+
+We can now introduce the \textbf{printing monad}, which is simply defined as
+\(\ms{Print}\;A \equiv \ms{Traces}\;\Sigma\), where \(\Sigma:
+(\ms{Byte}^*)^\omega \to \ms{Byte}^{\leq \omega}\) denotes concatenation of
+bytestrings into a potentially infinite bytestream. This can be made into a
+substructural effectful category by choosing \(M_C = M_R = \{[]\}\), giving us
+an \isotopessa model supporting instructions \(\ms{print} \in
+\mc{I}^\varnothing_0(\ms{Byte}^*, \mb{1})\) and \(\ms{nondet} \in
+\mc{I}^\taff_1(\mb{1}, A)\) (for \(A\) nonempty), with semantics
+\(\dnt{\ms{print}} = \lambda b.\{\iota_0 ((), b)\}\), \(\dnt{\ms{nondet}} =
+\lambda (). \{\iota_0 (a, []) \mid a \in A\}\).
+
+We can make things a little more interesting by adding a heap to the mix,
+defining our monad \(\ms{Comp} = \ms{StateT}\;\ms{Heap}\;\ms{Print}\), where
+\(\ms{Heap} = \nats \rightharpoonup \nats\) is simply a partial function with
+finite support. The Kleisli category of this monad is a substructural effectful
+category and inherits an Elgot structure from that on \(\ms{Set}_{\ms{Print}}\);
+we therefore have an \isotopessa model supporting the instructions \(\ms{set}:
+\mc{I}^\varnothing_0(\nats \times \nats, \mb{1})\), \(\ms{get}:
+\mc{I}^\varnothing_0(\nats, \nats)\), \(\ms{alloc}: \mc{I}^\varnothing_0(\nats,
+\nats)\), and \(\ms{free}: \mc{I}^\varnothing_0(\nats, \mb{1})\). We can assign
+semantics to \(\ms{set}\) in the standard fashion, with \(\dnt{\ms{set}} =
+\lambda (p, v)\;h. \{\iota_0((), [p \mapsto v]h, [])\}\). \(\ms{get}\) is a bit
+more tricky, since it is unclear what to do when we try to access uninitialized
+memory: one option is simply to return an arbitrary value, with \(\dnt{\ms{get}}
+= \lambda p\;h. \{\iota_0(v, h, []) \mid v = h\;p \lor p \notin h\}\). Finally,
+\(\dnt{\ms{alloc}} = \lambda v\;h.\{\iota_0\;(p, h', []) \mid h' = h \sqcup p
+\mapsto v\}\) simply fills a random empty heap cell with the provided value,
+returning a pointer to the cell, while \(\dnt{\ms{free}} = \lambda p\;h.
+\{\iota_0\;((), h \setminus p, [])\}\).
+
+Building on the ideas in \citet{mellies-ftrs}, we show how a simple separation
+logic based on \citet{reynolds-separation-2002} slightly adapted to the
+categorical setting gives us a very rich \isotopessa model supporting a basic
+notion of refinement types. Taking as objects pairs \((A, \Phi)\), where \(\Phi: A \to
+\ms{Heap} \to \ms{Prop}\), we can define the category \(\ms{Sep}\) to have
+morphisms
+\begin{equation}
+  \ms{Sep}((A, \Phi), (B, \Psi)) = \{f: A \to \ms{Comp}\;B 
+    \mid \forall \phi: \ms{Heap} \to \ms{Prop}, \ms{hoare}\;f\;(\Phi \ast \phi)\;(\Psi \ast \phi)\}
+\end{equation}
+where
+\(
+  \ms{hoare}\;f\;\Phi\;\Psi = \forall a\;h. \Phi\;a\;h \implies \forall \iota_0\;(b, h') \in f\;a\;h. \Psi\;b\;h'
+\)
+corresponds to the usual notion of a partial correctness triple, and the
+separating conjunction of heap-predicates is defined as
+\begin{equation}
+  \begin{gathered}
+  \varphi \ast \psi = \lambda h. \exists h_1, h_2. h = h_1 \sqcup h_2 \land \varphi h_1 \land \psi h_2 
+  \qquad
+  \varphi \ast \Phi = \lambda a. \varphi \ast \Phi\;a
+  \qquad
+  \Phi \ast \varphi = \lambda a. \Phi\;a \ast \varphi \\
+  \Phi \ast \Psi = \lambda (a, b). \Phi\;a \ast \Psi\;b: A \times B \to \ms{Heap} \to \ms{Prop}
+  \end{gathered}
+\end{equation}
+We can naturally define a tensor product on objects \((A, \Phi) \otimes (B,
+\Psi) = (A \times B, \Phi \ast \Psi)\), making \(\ms{Sep}\) into a substructural
+effectful category with:
+\begin{itemize}
+  \item Monoidal unit \((\mb{1}, \ms{emp})\), where \(\ms{emp}\) is the
+  predicate which holds only for the empty heap
+  \item Associators and inverse associators given by \(\alpha_{(A, \Phi), (B,
+  \Psi), (C, \Theta)} = \alpha_{A, B, C}\)
+  %, which are valid since \(\ast\) is associative
+  \item Unitors and inverse unitors given by \(\lambda_{(A, \Phi)} =
+  \lambda_A\), \(\rho_{(A, \Phi)} = \rho_A\)
+  %, which are valid since \(\ms{emp}\)
+  is the unit of \(\ast\)
+  \item \((C, \Theta) \otimes f = C \times f\) and \(f \otimes (C, \Theta) = f
+  \times C\), which are valid definitions by the frame rule
+  \item Affine objects those for which \(\ms{drop} = \upg{\lambda a. ()}{} \in
+  \ms{Sep}((A, \Phi), (\mb{1}, \ms{emp}))\), and relevant objects those for
+  which \(\ms{split} = \upg{\lambda a. (a, a)} \in \ms{Sep}((A, \Phi), (A, \Phi
+  * \Phi))\), which for this logic means pairs \((A, \Phi)\) where \(\Phi\) does
+  not depend on the heap.
+  \item Central morphisms to be those which do not print, diverge, \textit{or}
+  modify the heap. % We will consider how to relax this condition later.
+  \item Relevant and affine morphisms to be the lifts of relevant/affine
+  morphisms in \(\ms{Print}\)
+\end{itemize}
+\(\ms{Sep}\) also has coproducts given by \((A, \Phi) + (B, \Psi) = (A + B, [\Phi, \Psi])\), which allow us to equip it with an Elgot structure by taking advantage of the fact that
+\begin{equation}
+  f \in \ms{Sep}((A, \Phi), (B + A, [\Psi, \Phi])) \implies f^\dagger \in \ms{Sep}((A, \Phi), (B, \Psi))
+\end{equation}
+This implies that \(\ms{Sep}\) is an \isotopessa model supporting the following
+interesting operations:
+\begin{itemize}
+  \item \(\ms{coe}: \mc{I}^\tint_1((A, \Phi), (A, \Psi))\) where \(\forall a,
+  \Phi\;a \implies \Psi\;a\), implemented by the identity morphism
+  \item \(\ms{print}: \mc{I}^\varnothing_0((\ms{Byte}^*, \ms{emp}), (\mb{1},
+  \ms{emp}))\) and \(\ms{nondet}: \mc{I}^\taff_1((\mb{1}, \ms{emp}), (A, \ms{emp}))\) for
+  \(A\) nonempty
+  \item \(\ms{set}: \mc{I}^\varnothing_0((\nats \times \nats, \lambda (\ell,
+  \cdot). \exists v. \ell \mapsto v), (\nats, \lambda \ell. \exists v. \ell
+  \mapsto v))\) and \(\ms{get}: \mc{I}^\varnothing_0((\nats \times \nats,
+  \lambda (-, \ell). \exists v. \ell \mapsto v), (\nats, \lambda \ell. \exists
+  v. \ell \mapsto v))\), which are modified slightly to return the input address.
+  \item \(\ms{alloc}: \mc{I}^\varnothing_0((\nats, \ms{emp}), (\nats, \lambda
+  \ell. \exists v. \ell \mapsto v))\) and \(\ms{free}: \mc{I}^\varnothing_0((\nats, \lambda \ell. \exists v. \ell \mapsto v), (\mb{1}, \ms{emp}))\)
+\end{itemize}
+We can clearly see that this is a refinement type system in the sense of
+\citet{mellies-ftrs}: in particular, there is a forgetful functor \((A, \Phi)
+\mapsto A\) which is simply the identity on morphisms. Unfortunately, this means
+that our notion of equality is a little too stringent, since we need to consider
+equality on inputs which do not match our preconditions. Thankfully, we can fix
+this problem quite easily by quotienting morphisms over the equivalence relation
+\begin{equation}
+  \forall f, g: \ms{Sep}((A, \Phi), (B, \Psi)).
+  f \simeq g \iff \forall a, h. \Phi\;a\;h \implies f\;a\;h = g\;a\;h
+\end{equation}
+yielding the new category \(\ms{SComp}\). In particular, this allows us to widen
+our definition of central morphisms to include all morphisms which do not print
+or diverge, including in particular \(\ms{set}, \ms{get}, \ms{alloc}\) and
+\(\ms{free}\), which we can in fact mark relevant and affine as well, allowing
+us, for example, to make use of intermediate allocations in an otherwise pure
+computation.
+
+\subsection{Weak Memory}
+
+Another interesting use of the trace monad to build a sophisticated \isotopessa
+model is to build a model of TSO-style weak memory based on \citet{sparky}. For
+simplicity, we will consider an infinite set of named locations \(x, y, z \in
+\ms{Loc}\) which are subject to concurrent modification by all threads via TSO
+reads, writes, and fences. We begin with the following definitions:
+\begin{definition}[Pomset] 
+  A \textbf{pomset} \(\alpha\) over a set of actions \(\mc{A}\) with a
+  distinguished null action "\textbf{tick}" \(\delta \in \mc{A}\) is a
+  \textit{nonempty} partially-ordered \textbf{carrier set} \(P\) such that every
+  \(p \in P\) has finitely many predecessors equipped with a mapping \(\alpha: P
+  \to \mc{A}\) quotiented over the removal of \(\delta\) such that cardinality
+  is preserved. A pomset is \textbf{finite} if its carrier set is. We will write
+  unordered pomsets using multiset notation, e.g. \(\{a, a, b\}\), and linearly
+  ordered pomsets using list notation, e.g. \([a, a, b]\).
+\end{definition}
+(Finite) pomsets form a monoid under sequential composition \(\alpha;\beta\),
+which is defined by the function \([\alpha, \beta]: \ms{trim}(P + Q) \to
+\mc{A}\), where \(P + Q\) is given the lexicographic ordering and
+\(\ms{trim}(R)\) removes all elements of \(R\) with infinitely many
+predecessors. They also form a monoid under parallel composition, defining
+\(\alpha || \beta = [\alpha, \beta]: P + Q \to \mc{A}\) where \(P + Q\) is given
+the standard partial ordering (with elements of \(P\) and \(Q\) incomparable).
+Note in both cases the monoidal unit is \(\{\delta\}\), since we only consider
+nonempty pomsets but allow the removal of finitely many ticks. Given any
+partially ordered set \(N\) and a family of pomsets \(\alpha_n\) for \(n \in
+N\), we can define their \textit{sum} \(\Sigma_n\alpha_n\) to be given by the
+function \((n, a) \mapsto \alpha_n\;a: \ms{trim}(\Sigma_nP_n) \to \mc{A}\),
+where the dependent product \(\Sigma_nP_n\) is given the lexicographic order. In
+particular, choosing \(N = \nats\) makes \(\Sigma: \ms{Pom}_{\ms{fin}}^\omega
+\to \ms{Pom}\) into a stream action w.r.t the sequential composition monoid on
+finite pomsets. 
+
+We define a \textbf{program order pomset} to be a pomset with \(\mc{A}_{\ms{PO}}
+= \mc{A}_w \cup \mc{A}_r \cup \{\delta\}\), where \(\mc{A}_r\) consists of
+\textit{reads} of the form \(x = v\) and \(\mc{A}_w\) consists of
+\textit{writes} of the form \(x := v\) for locations \(x\) and values \(v \in
+\ms{Word}\). We define the \textbf{program order monad} \(\ms{PO}\;A =
+\ms{Traces}\;\Sigma\;A\), where \(\Sigma\) is taken as a stream action on finite
+program order pomsets. This yields an \isotopessa model with support for
+concurrent read and write operations \(\ms{read}_x: \mc{I}^\varnothing_0(\mb{1},
+\ms{Word})\), \(\ms{write}_x: \mc{I}^\varnothing_0(\ms{Word}, \mb{1})\) with
+semantics
+\(
+  \dnt{\ms{read}_x} = R_x^{\ms{PO}} = \lambda (). \{(v, \{x = v\}) | v \in \ms{Word}\}
+\),
+\(
+  \dnt{\ms{write}_x} = W_x^{\ms{PO}} =  \lambda v. \{((), \{x := v\})\}
+\).
+% The semantics of \(\ms{read}\) in particular give a hint as to how this model
+% works: rather than tracking the state of the heap, we simply \textit{emit} a
+% pomset of the events that would have be generated by a given execution (in the
+% case of a read, a read event \(x = v\) whenever the read returns \(v\), and in
+% the case of a write, the single write event \(x := v\) for a write of \(v\)),
+% and later post-filter to obtain a set of valid executions. By doing so, our
+% semantics remains compositional, allowing us to reason about each program
+% fragment individually, while still allowing other program fragments to perform
+% concurrent operations affecting our potential executions. 
+% On that note, 
+We can define the \textit{parallel execution} of two morphisms as follows:
+\begin{equation}
+  \begin{aligned}
+  f_0 || f_1 = \lambda (a_0, a_1). 
+  & \{\iota_0 ((b_0, b_1), \alpha_0 || \alpha_1) 
+    \mid \iota_0 (b_i, \alpha_i) \in f_i\;a_i\} 
+  \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid (\iota_0 (b_0, \alpha_0) \in f_0\;a \lor \iota_0\;\alpha_0 \in f_0\;a_0) \land \iota_1 \alpha_1 \in f_1\;a_1\} 
+  \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid \iota_1\;\alpha_0 \in f_0\;a_0 \land \iota_0 (a_1, \alpha_1) \in f_1\;a_1\}: \ms{Set}_{\ms{PO}}(A \otimes A', B \otimes B')
+  \end{aligned}
+\end{equation}
+It's tempting to try to use this as a tensor product of morphisms to obtain a
+monoidal (rather than preomonoidal) category, but unfortunately, sliding still
+fails: \((W_x^{\ms{PO}} || \ms{id}) ; (\ms{id} || W_y^{\ms{PO}})\) emits the
+pomset \([x := a, y := b]\), while \((\ms{id} || W_y^{\ms{PO}}) ; (W_x^{\ms{PO}}
+|| \ms{id})\) emits the pomset \([y := b, x := a]\). 
+% If we did want this behaviour, we'd need to have a significantly more
+% sophisticated model of composition which effectively takes nontermination into
+% account, which we will leave to future work.
+
+To graduate from sequential consistency to a genuine, if maximally simple, weak
+memory model, we introduce \textit{load buffering} of write actions. We will
+implement TSO ordering by buffering all our writes, in which case they are only
+visible to the local thread. On the other hand, read events will first attempt
+to read from the buffer, and, if there is no corresponding write in the buffer,
+will read an arbitrary value, in both cases pushing an event to the global
+pomset. At any point, we may choose to \textit{flush} some of the buffered
+writes. We introduce the set \(\mc{A}_b = \{(\bufloc{x} := v)\}\) of
+\textit{buffer write actions}, where an action \(\bufloc{x} := v\) by a thread
+denotes adding a write \(x := v\) to the thread's write buffer. We may then
+define the set of TSO actions \(\mc{A}_{\ms{TSO}} = \mc{A}_{\ms{PO}} \cup
+\mc{A}_b\); a pomset over this set is called a \textbf{TSO pomset}. A buffer
+will be defined to be a list of write actions \(\ms{Buf} = \mc{A}_b^*\), which
+we will interpret as linear pomsets over \(\mc{A}_{\ms{TSO}}\) ordered by index
+(with the empty list corresponding to \(\{\delta\}\)). In particular, we define
+the monad \(\ms{TSO} = \ms{StateT}\;\ms{Buf}\;(\ms{Trace}\;\Sigma)\), where
+\(\Sigma\) is taken as a the stream action of finite TSO pomsets on TSO pomsets.
+We can view \(\ms{PO}\) as a submonad of this monad.
+
+Given a buffer \(\ms{Buf}\), we can define the result of reads \([\cdot]_x:
+\ms{Buf} \to \ms{Word} \sqcup \{\bot\}\) from the buffer by induction to be:
+\(
+  (L;\{\bufloc{x} := v\})[x] = v,
+\),
+\(
+  (L;\{\bufloc{y} := v\})[x] = L[x]
+\),
+\(
+  [][x] = \bot
+\).
+% Note that writes at the \textit{end} of the buffer are prioritized, since
+% later writes overwrite earlier ones! 
+The semantics of reads and writes can then be given by
+\begin{equation}
+  \begin{aligned}
+  \dnt{\ms{read}_x} = R_x^{\ms{TSO}} 
+    &= \ms{pflush};(\lambda ()\;L. \{(v, L, \{x = v\}) \mid L[x] = v \lor L[x] = \bot\});\ms{pflush} \\
+  \dnt{\ms{write}_x} = W_x^{\ms{TSO}}
+    &= \ms{pflush};(\lambda v\;L. \{(v, (L;\{\bufloc{x} := v\}), \{x := v\})\});\ms{pflush}
+  \end{aligned}
+\end{equation}
+where buffer flushing is implemented via the morphism 
+\(
+  \ms{pflush}_A = \lambda a\;L. \{(a, R, \alpha) | L = \alpha;R\}
+  : \ms{Set}_{\ms{TSO}}(A, A)
+\)
+(called \(\ms{split}\) in \cite{sparky}). To be able to perform synchronization,
+we will also need to introduce a \(\ms{fence}: \mc{I}^\varnothing_0(\mb{1},
+\mb{1})\) instruction, which simply causes all actions before the fence to be
+observed before any actions after the fence. For \(\ms{TSO}\), implementing this
+is as simple as flushing the buffer, i.e., we define
+\(
+  \dnt{\ms{fence}} = \lambda ()\;L. \{((), [], L;\{\delta\})\}
+\).
+We can now define the parallel composition of morphisms in a "fork-join" style
+as follows: we first flush the buffer completely (i.e., taking it and sticking
+it at the beginning of our pomset), then execute \(f\) and \(g\) in parallel
+with separate buffers, \textit{filtering out executions which completely flush
+the buffer}. Since both threads end up with an empty buffer, the resulting
+joined buffer is also empty, giving us the following definition:
+\begin{equation}
+  \begin{aligned}
+    f_0 || f_1 = \lambda (a_0, a_1)\;L. 
+    & \{\iota_0 ((b_0, b_1), [], L;(\alpha_0 || \alpha_1)) 
+      \mid \iota_0 (b_i, [], \alpha_i) \in f_i\;a_i\;[]\} 
+    \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid (\iota_0 (b_0, [], \alpha_0) \in f_0\;a \lor \iota_0\;\alpha_0 \in f_0\;a_0\;[]) \land \iota_1 \alpha_1 \in f_1\;a_1\;[]\} 
+    \\ & \cup \{\iota_1 (\alpha_0 || \alpha_1) \mid \iota_1\;\alpha_0 \in f_0\;a_0\;[] \land \iota_0 (a_1, [], \alpha_1) \in f_1\;a_1\;[]\}
+    \end{aligned}
+\end{equation}
+
+\section{Related Work and Discussion}
+
+For space reasons we, restrict our discussion to the most closely related work
+on SSA. 
+
+Originally, \citet{kelsey-ssa-cps} showed how to embed SSA into a CPS
+representation, and \citet{appel-ssa} showed informally how SSA can be seen as a
+collection of mutually-tail-recursive procedures.
+\citet{chakravarty-functional-ssa-2003} made Appel's observation formal, by
+showing how to translate SSA into A-normal form~\cite{anf}, and used it to prove
+the correctness of a constant propagation analysis. These translations were for
+an untyped source and target language, and
+\citet{typed-effect-ssa-rigon-torrens-vasconcellos-20} give a typed translation
+from SSA into the lambda calculus, into a type-and-effect system. In contrast,
+we directly track the centrality and duplicability of terms, without tracking
+specific effects.
+
+All of these papers give SSA semantics by translation -- that is, they defined
+the semantics of an SSA program to be the semantics of the image of the
+translation, with the idea that the simpler semantics of the functional language
+can make proofs easier. The Grail language of \citet{beringer-imp-fun} makes
+this idea explicit by giving both a functional and imperative semantics to a
+low-level language, and showing the conditions under which they coincide.
+\citet{schneider-imp-fun} prove a similar result, and further mechanise the
+proof in Coq.
+
+There have also been a number of papers which have studied the semantics of SSA
+directly.
+
+\citet{ssa-types-matsuno-ohori-06} give a type theory for what appear to be
+ordinary three-address code programs. However, every well-typed program can be
+placed into SSA-form by inserting $\phi$-nodes in a fully type-directed way.
+This lets them model SSA without any $\phi$-nodes, lets them use the standard
+semantics for three-address code.
+%
+\citet{hua-explicit-ssa-2010} give another type system and direct operational
+semantics for SSA, and prove type safety for it. 
+
+Many operational semantics for SSA have arisen from compiler verification
+efforts. \citet{barthe-compcert-ssa-2014} give an operational semantics as part
+of the CompCertSSA project, and give a semantics-preserving translation from
+three-address code into SSA. \citet{herklotz-gsa-2023} formalise "gated SSA" and
+give semantics-preserving translations between it and ordinary SSA. Going beyond
+CompCertSSA, \citet{vellum} have studied the semantics of the LLVM IR itself.
+
+There has been much less work on denotational semantics for SSA, or directly on
+its equational theory. \citet{pop-ssa-inout-2009} give an unusual denotational
+model of SSA in terms of the iteration structure of a program, which they use to
+better understand the loop-closing $\phi$-nodes found both in the gated SSA
+representation as well as practical compilers such as GCC.
+\citet{garbuzov-structural-cfg-2018} exhibit a correspondence between an
+operational semantics for SSA, and an operational semantics for
+call-by-push-value~\cite{cbpv}. They use the normal-form bisimulations of
+\citet{lassen-bisim} to derive an equational theory for use in justifying
+optimisations. Their operational semantics is effect-free, which means that it
+cannot justify optimisations such as eliminating redundant writes.
+
+Our work is the first to validate the equational theory of SSA against a weak
+memory semantics. We focused on denotational models of weak memory, since they
+make it easier to establish equational properties. However, we need a number of
+features of the semantics which are sometimes difficult to establish in the weak
+memory world. First, sequencing must be associative (i.e., $(t_1; t_2); t_3
+\equiv t_1; (t_2; t_3)$).  Second, the semantics must support loops, including
+the equation that a while-loop is equal to its unrolling. Finally, sums need to
+be distributive (e.g., in the boolean case, $(A \otimes \mb{2}) \simeq (A +
+A)$).
+
+As a result, we focused on the TSO semantics of \citet{sparky}, which validates
+the properties we need. For ARM-style concurrency, which admits load buffering,
+we only found models which are "near misses": they have a subset of the
+properties we need. The event structure model of
+\citet{paviotti-modular-relaxed-dep-20} is formulated in terms of step-indexing,
+so satisfies all of our needed properties except the loop unrolling property --
+step-indexing means it is a refinement rather than an equation. The pomsets with
+preconditions model of \citet{jagadeesan-pwp-20} does not exactly satisfy the
+associativity of semicolon, and while the pomsets with predicate transformers
+model of \citet{leaky-semicolon} does satisfy associativity, it does not yet
+support loops.
+
+We do not think it would be prohibitively difficult to extend these models to
+support the required features, and we believe our results suggest that it would
+be have a high payoff: those features would suffice to build a model of our IR,
+giving us tight results validating the transformations compilers want against
+the low-level specification of the actual machine. 
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\clearpage 
+
+\appendix
+
+\begin{figure}
+  \begin{center}
+    \begin{grammar}
+      <\(A, B, C\)> ::= 
+      \(X\)
+      \;|\; \(\mathbf{1}\)
+      \;|\; \(\mathbf{2}\)
+      \;|\; \(A \otimes B\)
+
+      <\(a, b, c, e\)> ::= \(x\) 
+      \;|\; \(f\;a\)
+      \;|\; \((a, b)\) 
+      \;|\; \(()\) 
+      \;|\; \(\ctt\) 
+      \;|\; \(\cff\)
+      \;|\; \(\letexpr{x}{a}{e}\)
+      \;|\; \(\letexpr{(x, y)}{a}{e}\)
+      % \;|\; \(\lbsplice{\ell}{x: A}{t}\)
+      
+      <\(s, t\)> ::= \(\lbrb{\ell}{a}\) 
+      \;|\; \(\ite{e}{s}{t}\)
+      \;|\; \(\letstmt{x}{a}{t}\)
+      \;|\; \(\letstmt{(x, y)}{a}{t}\)
+      \;|\; \(\ewhere{t}{L}\)
+
+      <\(L\)> ::= \(\cdot\) \;|\; \(\lwbranch{\ell}{x: A}{t}, L\)
+
+      <\(\Gamma\)> ::= \(\cdot\) \;|\; \(\Gamma, \thyp{x}{A}{q}\)
+
+      <\(\ms{L}\)> ::= \(\cdot\) \;|\; \(\ms{L}, \lbl{\ell}[\Gamma](x: A)\)
+
+      <\(p\)> ::= 0 \;|\; 1
+
+      <\(q\)> ::= \(\varnothing\) 
+      \;|\; \(\taff\) 
+      \;|\; \(\trel\) 
+      \;|\; \(\tint\)
+    \end{grammar}
+  \end{center}
+  \caption{Grammar for \isotopessa, parametrized over a set of instructions \(f \in \mc{I}\)}
+  \Description{Grammar for isotope-SSA}
+  \label{fig:ssa-grammar}
+\end{figure}
+
+\end{document}
+\endinput
