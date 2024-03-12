@@ -17,11 +17,11 @@
 #let proof = thmproof("proof", "Proof")
 
 #let lbl(labl) = $ #`^`labl$
-#let llet(x, e) = $sans("let") med #x = #e$
+#let llet(x, e) = $/*sans("let") med*/ #x = #e$
 #let lite(e, s, t) = $sans("if") med #e med { #s } med sans("else") med { #t }$
 #let lbr(l, e) = $sans("br") med #l med #e$
 #let lblk(l, a, e) = $#l #a: #e$
-#let lwhere(β, L) = $#β med sans("where") med #L$
+#let lwhere(β, L) = $#β /*med sans("where")*/ med #L$
 #let lwk(Γ, Δ) = $#Γ ↦ #Δ$
 #let twk(L, K) = $#L ⇝ #K$
 #let lto = $triangle.stroked.small.r$
@@ -96,8 +96,6 @@ We begin by introducing some structural judgements on contexts and targets as fo
   proof-tree(ctx-rules.at(2))
 ))
 
-#todo[state top usage theorem?]
-
 #let trg-rules = (
   rule(name: "nil-twk", $twk(dot, dot)$),
   rule(name: "cons-twk", $twk(#$L, lbl(ℓ)[Γ](A)$, #$K, lbl(ℓ)[Δ](A)$)$, $twk(L, K)$, $lwk(Γ, Δ)$),
@@ -114,7 +112,9 @@ We begin by introducing some structural judgements on contexts and targets as fo
   proof-tree(trg-rules.at(2))
 ))
 
-#todo[disallow shadowing for targets? or something...]
+#todo[note that derivations for regular weakening are _unique_]
+
+#todo[disallow shadowing for targets? for cons targets? or something else for uniqueness?]
 
 We can now give typing rules as follows:
 
@@ -235,21 +235,62 @@ The rules for terms remain unchanged; while the rules for generalized regions ca
 ))
 #align(center, proof-tree(gen-reg-rules.at(2)))
 
+We can recover standard SSA syntax by dropping "$sans("let")$" and "$sans("where")$" from our syntax
+
 #todo[per-rule explanations]
+
+#todo[let and where or nah?]
 
 We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. 
 
 == The SSA Property
 
-In general, we will often consider blocks and regions satisfying the _SSA property_; namely, that no variable is ever "shadowed." In particular, no two `let`-bindings may write to the same variable, and no `let`-binding may overwrite a variable from the environment. This assumption will make reasoning significantly simpler. One useful fact about the SSA property is that, if it holds for a given expression, it also holds for all sub-expressions of that expression. We will formalize this better, at first for bodies, later.
+So far, we've given a grammar not for SSA per se, but rather for _three-address code_. In particular, non-SSA programs such as
+$
+#```
+x = 0;
+x = x + 1
+```
+$
+are perfectly well-representable. This is a feature, not a bug, since it allows us to assign such programs a semantics and reason about transformations such as conversions to SSA form, as well as, potentially, optimizations and transformations defined on three-address code. For basic blocks, this poses little theoretical difficulty, since any non-SSA program is $α$-equivalent to a program in SSA form; for example, the above program can be rewritten as
+$
+#```
+x0 = 0;
+x1 = x0 + 1
+```
+$
+Unfortunately, this does _not_ hold for programs containing general contral flow. For example, the program fragment
+$
+#```
+^entry:
+  x = 0;
+  if b { br ^middle } else { br ^exit }
+^middle:
+  x = 1;
+  br ^exit
+^exit:
+  x = x + 1
+```
+$
+is _not_ $α$-equivalent to any program in SSA, since there are _two_ definitions for $x$ reaching the final assignment `x = x + 1`. Indeed; this is the motivation behind introducing arguments/$ϕ$-nodes in the first place, as it allows us to rewrite the above in SSA form as
+$
+#```
+^entry:
+  x0 = 0;
+  if b { br ^middle } else { br ^exit(x0) }
+^middle:
+  x1 = 1;
+  br ^exit(x1)
+^exit(x2: i64):
+  x3 = x2 + 1
+```
+$
 
-#todo[talk about SSA property, $α$-equivalence. start with blocks...]
-
-#todo[all blocks $α$-equivalent to something in SSA]
-
-#todo[_not_ true for control-flow graphs that are not trees]
+#todo[pointer to "generalized $α$-equivalence"; will need a parameter context for this? or should this be subsumed by $η$-rules anyways?]
 
 #todo[operations on blocks, regions, etc. that preserve SSA property]
+
+#todo[actually define $α$-equivalence]
 
 #todo[alternative approach: dominator trees]
 
