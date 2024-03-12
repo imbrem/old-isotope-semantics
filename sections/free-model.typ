@@ -285,12 +285,18 @@ $
   x3 = x2 + 1
 ```
 $
+To be able to reason about this more formally, we have to give a formal definition of $α$-equivalence for our expressions. To do so, we must first introduce a notion of $α$-equivalence of _weakenings_, as follows:
+#todo[this]
+#todo[explain what this is...]
+We can then define $α$-equivalence inductively as follows:
+#todo[this]
+#todo[note on context differences]
+#todo[equal contexts]
+#todo[interaction with weakening...]
 
 #todo[pointer to "generalized $α$-equivalence"; will need a parameter context for this? or should this be subsumed by $η$-rules anyways?]
 
 #todo[operations on blocks, regions, etc. that preserve SSA property]
-
-#todo[actually define $α$-equivalence]
 
 #todo[alternative approach: dominator trees]
 
