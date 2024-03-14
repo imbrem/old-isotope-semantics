@@ -38,6 +38,9 @@
   inset: 0.7em, 
   align(horizon, $[|#judgement|]: #typ$))
 
+#let αiso = $attach(≅, br: α)$
+#let αeq = $attach(≃, br: α)$
+
 #let todos = counter("todos")
 #let todo(message) = text(red, [
   #todos.step()
@@ -200,52 +203,84 @@ We can now give typing rules as follows:
 #let region-rule = rule(name: "reg", $Γ ⊢ lwhere(β, L) lto sans(K)$, $Γ ⊢ β lto sans(L)$, $sans(L) ⊢ L lto sans(K)$)
 #align(center, proof-tree(region-rule))
 
-We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
-- _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
-Note that we remove dependencies on bodies $b$. One may also notice that the given grammar is slightly ambiguous: we can parse
-$llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalent, excusing the ambiguity.
-
-The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
-#let gen-reg-rules = (
-  rule(name: "let", 
-    $Γ ⊢ llet(x, e); t lto sans(L)$, 
-    $Γ entp(p) e: A$, $Γ, x: A ⊢ t lto sans(L)$),
-  rule(name: "let2", 
-    $Γ ⊢ llet((x, y), e); t lto sans(L)$, 
-    $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B ⊢ t lto sans(L)$),
-  rule(name: "reg", 
-    $Γ ⊢ lwhere(t, L) lto sans(K)$, 
-    $Γ ⊢ t lto sans(L)$, $sans(L) ⊢ L lto sans(K)$),
-);
-#align(center, table(
-  columns: 2,
-  gutter: 2em,
-  align: bottom,
-  stroke: none,
-  proof-tree(terminator-rules.at(0)),
-  proof-tree(terminator-rules.at(1)),
-))
-#align(center, table(
-  columns: 2,
-  gutter: 2em,
-  align: bottom,
-  stroke: none,
-  proof-tree(gen-reg-rules.at(0)),
-  proof-tree(gen-reg-rules.at(1)),
-))
-#align(center, proof-tree(gen-reg-rules.at(2)))
-
-We can recover standard SSA syntax by dropping "$sans("let")$" and "$sans("where")$" from our syntax
-
 #todo[per-rule explanations]
 
-#todo[let and where or nah?]
+#todo[coherence, but _not_ for blocks and therefore regions]
 
-We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. 
+#todo[weakening theorems, "maximal blocks"]
 
-== The SSA Property
+#todo[CFGs don't weaken nicely, "one sidedness": "maximal cfgs"]
 
-So far, we've given a grammar not for SSA per se, but rather for _three-address code_. In particular, non-SSA programs such as
+#todo[substitution and weakening for CFGs/blocks just got a lot more !FUN!]
+
+== Equational Theory of SSA
+
+We now want to equip our syntax with an _equational theory_. We will want:
+- $α$-rules, which allow us to rename bound variables, since naming should not effect semantics
+- $β$-rules, which allow us to perform substitution of pure terms
+- $η$-rules, which allow us to decompose and recompose products
+- $δ$-rules, which will allow us to manipulate control-flow
+
+=== $α$-Equivalence, Weakening, and SSA
+
+Let's start by defining $α$-equivalence. While our final $α$-equivalence relation will be over terms defined in the same context, it is easier to define it in terms of the independently useful notion of _generalized $α$-equivalence_, in which we are also able to rename variables in the input and output contexts. In particular, we say two _contexts_ are $α$-equivalent if they are the same up to renaming of variables, i.e.
+#let ctx-α-rules = (
+  rule(name: "nil-α", $dot αeq dot$),
+  rule(name: "cons-α", $Γ, x: A αeq Γ', x': A$, $Γ αeq Γ'$),
+)
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(ctx-α-rules.at(0)),
+  proof-tree(ctx-α-rules.at(1)),
+))
+We say two _weakenings_ are equivalent if their derivations are isomorphic, i.e.
+#let wk-α-rules = (
+  rule(name: "nil-α", $dot ↦ dot αeq dot ↦ dot$),
+  rule(name: "skip-α", $Γ, x: A ↦ Δ αeq Γ', x': A ↦ Δ'$, $Γ ↦ Δ αeq Γ' ↦ Δ'$, $x ∉ Δ$, $x' ∉ Δ'$),
+  rule(name: "cons-α", $Γ, x: A ↦ Δ, x: A αeq Γ', x': A ↦ Δ', x': A$, $Γ ↦ Δ αeq Γ' ↦ Δ'$),
+)
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(wk-α-rules.at(0)),
+  proof-tree(wk-α-rules.at(1)),
+))
+$
+  #proof-tree(wk-α-rules.at(2))
+$
+
+#todo[also note derivations are unique...]
+
+Note in particular that if $Γ ↦ Δ αeq Γ' ↦ Δ'$, then $Δ αeq Δ'$ but $Γ$ is not necessarily $α$-equivalent to $Γ'$, since they may differ on dropped variables. 
+// However, if $Γ αeq Γ'$ and $Δ αeq Δ'$, then $Γ ↦ Δ ∧ Γ' ↦ Δ' ==> Γ ↦ Δ αeq Γ' ↦ Δ'$. TODO: check this...
+
+We can now define the $α$-equivalence of well-typed terms in a trivial manner: we have...
+
+Note that, leaving the context invariant, this is just the identity relation. However, the ability to vary the context is useful, as it allows us to define $α$-equivalence for well-typed bodies as follows ...
+
+Even for invariant input and output contexts, this is not merely the identity relation, since, for example, we have...
+
+We can similarly define $α$-equivalence for well-typed terminators and basic blocks as follows:
+...
+
+#todo[too weak, does not consider weakening: distinguish $α$-isomorphism from $α$-equivalence, introduce weakening? note this is not an issue for generalized regions... try "maximal blocks"?]
+
+Well-typed CFGs and regions can be deemed $α$-equivalent in a similar manner, as follows:
+...
+
+On the other hand, determining whether untyped expressions are $α$-equivalent is quite challenging, since, when renaming a variable, we have to consider whether that variable is shadowed or not, and if so, where it is shadowed. 
+
+#todo[footnote on "minimal typing" or "well-formedness"]
+
+For example
+...
+
+One observation we can make, however, is that so far, we've given a grammar not for SSA per se, but rather for _three-address code_. In particular, non-SSA programs such as
 $
 #```
 x = 0;
@@ -285,28 +320,91 @@ $
   x3 = x2 + 1
 ```
 $
-To be able to reason about this more formally, we have to give a formal definition of $α$-equivalence for our expressions. To do so, we must first introduce a notion of $α$-equivalence of _weakenings_, as follows:
-#todo[this]
-#todo[explain what this is...]
-We can then define $α$-equivalence inductively as follows:
-#todo[this]
-#todo[note on context differences]
-#todo[equal contexts]
-#todo[interaction with weakening...]
+$α$-equivalence for untyped program fragments in SSA form can be easily defined, since
+...
 
-#todo[pointer to "generalized $α$-equivalence"; will need a parameter context for this? or should this be subsumed by $η$-rules anyways?]
+#todo[somewhere: "everything weakens to a duplicate-free context"]
 
-#todo[operations on blocks, regions, etc. that preserve SSA property]
+#todo[somewhere: "everything is $α$-equivalent to a duplicate-free context"]
+
+#todo[somewhere: "being duplicate free is preserved by weakening"]
+
+=== $β$-Equivalence and Substitution
+
+#todo[this]
+
+=== $η$-Equivalence
+
+#todo[this]
+
+=== Generalized Regions
+
+#todo[intro, why we want generalized regions]
+
+We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
+- _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
+Note that we remove dependencies on bodies $b$. One may also notice that the given grammar is slightly ambiguous: we can parse
+$llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalent, excusing the ambiguity.
+
+The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
+#let gen-reg-rules = (
+  rule(name: "let", 
+    $Γ ⊢ llet(x, e); t lto sans(L)$, 
+    $Γ entp(p) e: A$, $Γ, x: A ⊢ t lto sans(L)$),
+  rule(name: "let2", 
+    $Γ ⊢ llet((x, y), e); t lto sans(L)$, 
+    $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B ⊢ t lto sans(L)$),
+  rule(name: "reg", 
+    $Γ ⊢ lwhere(t, L) lto sans(K)$, 
+    $Γ ⊢ t lto sans(L)$, $sans(L) ⊢ L lto sans(K)$),
+);
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(terminator-rules.at(0)),
+  proof-tree(terminator-rules.at(1)),
+))
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(gen-reg-rules.at(0)),
+  proof-tree(gen-reg-rules.at(1)),
+))
+#align(center, proof-tree(gen-reg-rules.at(2)))
+
+We would like to define our equational theory in this generalized setting, and then show that via our equational theory every term can be normalized to standard SSA; this trivially induces an equational theory on standard SSA while making operations which modify control-flow much easier to define and reason about. 
+
+#todo[$α$]
+
+#todo[$β$]
+
+#todo[$η$]
+
+=== $δ$-Equivalence
+
+#todo[this]
+
+== Dominator Trees
 
 #todo[alternative approach: dominator trees]
 
-#todo[pointer to equational theory; rewrite to dominator trees]
+#todo[
+  STUFF TO PROVE:
+  - every well-typed dominator tree well-typed as a generalized region, and $α$-equivalent to SSA
+  - dominator trees allow us untyped $α$, and therefore in particular de-Bruijn indices
+  - if a generalized region is $α$-equivalent to SSA, it is $α δ$-equivalent to a dominator tree, but like only weak $δ$s ("κ"?)
+  - so can just define our equational theory over dominator trees for Freyd case, _but_ dominator trees don't do linearity so well :(. Need region nonsense, "optical morphisms" or "optical trains" or smt :(.
+]
 
 = Freyd Categories are Basic Blocks
 
 For the rest of this paper, we will analyze the syntactic and semantic metatheory of each syntactic class one-by-one, beginning with terms and block bodies in the setting of Freyd categories. Of course, that means we need to start with defining what a Freyd category is.
 
-== Fryed Categories
+== Freyd Categories
 
 For our purposes, a Freyd category is a category $cal(C)$, which we will write $cal(C)_0$, equipped with a wide subcategory $cal(C)_1$ of _pure_ morphisms, such that:
 - $cal(C)$ is equipped with a binary operation $⊗: |cal(C)| × |cal(C)| -> |cal(C)|$ on objects, the _tensor product_
@@ -329,7 +427,7 @@ For our purposes, a Freyd category is a category $cal(C)$, which we will write $
 
 Note a traditional Freyd category is given by an identity-on-objects functor $cal(V) -> cal(C)$ from a Cartesian category $cal(V)$ to a symmetric premonoidal category $cal(C)$ preserving all symmetric premonoidal structure; we can get one in our sense by simply considering the image of this functor as a wide subcategory. The only additional flexibility the original definitions have is that there can be pure morphisms $f, g$ which are different in $cal(V)$ but equated when passed along the functor into $cal(C)$.
 
-#todo[In particular, the subcategory of pure morphisms can be arbitrarily chosen so long as all morphisms within it are pure, and does not need to include all "technically pure" morphisms.]
+Note that $cal(C)_1$ does _not_ have to be the maximal Cartesian subcategory of $cal(C)_0$; it can even be as small as just the projections $π_l, π_r$, associators, unitors, symmetry, and initial morphisms $!$.
 
 We introduce the following notation for premonoidal categories: given morphisms $f: cal(C)(A, B), g: cal(C)(A', B')$,
 - $f ⋉ g = f ⊗ A';B ⊗ g: cal(C)(A ⊗ A', B ⊗ B')$ ("first $f$ then $g$")
@@ -428,10 +526,6 @@ $
 $
 
 #todo[per-rule explanations]
-
-#todo[coherence only if SSA property holds; otherwise this is a property of _derivations_; note abuse of syntax]
-
-#todo[start talking about renaming here. play "well-defined game" w/ let, let2: can always pick _some_ free variables so that everything works out, _since_ $x$ cannot be redefined by SSA property. note this means we need repetition-free contexts!]
 
 #todo[bad renaming, good renaming...]
 
