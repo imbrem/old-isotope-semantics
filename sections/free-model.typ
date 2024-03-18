@@ -326,19 +326,94 @@ Unlike for terms, for invariant input and output contexts, this is not merely th
   ),
 ))
 
-We can similarly define $α$-equivalence for well-typed terminators as follows:
+For the case of control-flow, we can define the $α$-equivalence of targets to consist of renaming both labels and live variables, as follows:
+#todo[reflow the above]
+#let trg-α-rules = (
+  rule(name: "nil-α", $dot αeq dot$),
+  rule(name: "cons-α", $L, lbl(ℓ)[Γ](A) αeq L', lbl(ℓ')[Γ'](A)$, $L αeq L'$, $Γ αeq Γ'$)
+)
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(trg-α-rules.at(0)),
+  proof-tree(trg-α-rules.at(1)),
+))
 
-#todo[copy over rules]
+Target weakening $α$-equivalence can then be defined as follows:
+#let twk-α-rules = (
+  rule(name: "nil-α", $twk(dot, dot) αeq twk(dot, dot)$),
+  rule(name: "cons-α", $twk(#$L, lbl(ℓ)[Γ](A)$, #$K, lbl(ℓ)[Δ](A)$) αeq twk(#$L', lbl(ℓ')[Γ'](A)$, #$K', lbl(ℓ')[Δ'](A)$)$, $twk(L, K) αeq twk(L', K')$, $Γ ↦ Δ αeq Γ' ↦ Δ'$),
+  rule(name: "drop-α", $twk(L, #$K, lbl(ℓ)[Δ](A)$) αeq twk(L', #$K', lbl(ℓ')[Δ'](A)$)$, $twk(L, K) αeq twk(L', K')$, $lbl(ℓ) ∉ K$, $lbl(ℓ') ∉ K'$)
+)
 
-Naively, one may use the above definitions to define $α$-equivalence for regions as follows:
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(twk-α-rules.at(0)),
+  proof-tree(twk-α-rules.at(1)),
+))
+$
+#proof-tree(twk-α-rules.at(2)),
+$
 
-#todo[splat...]
+#todo[stick some properties here?]
 
-#todo[too weak, does not consider weakening: distinguish $α$-isomorphism from $α$-equivalence, introduce weakening? note this is not an issue for generalized regions... try "maximal blocks"?]
+Using this, we may define $α$-equivalence for well-typed terminators as follows:
+#let term-α-rules = (
+  rule(name: "br-α", $Γ ⊢ lbr(ℓ, e) lto sans(L) αeq Γ' ⊢ lbr(ℓ', e) lto sans(L')$, 
+    $Γ ⊢ e : A αeq Γ' ⊢ e : A$,
+    $lbr(ℓ, e) lto sans(L) αeq lbr(ℓ', e) lto sans(L')$),
+  rule(name: "ite-α", $Γ ⊢ lite(e, s, t) lto sans(L) αeq Γ ⊢ lite(e', s', t') lto sans(L')$, $Γ ⊢ e : bold(2) αeq Γ' ⊢ e' : bold(2)$, $Γ ⊢ s lto sans(L) αeq Γ' ⊢ s' lto sans(L')$, $Γ ⊢ t lto sans(L) αeq Γ' ⊢ t' lto sans(L')$),
+)
+$
+#proof-tree(term-α-rules.at(0))
+$
+$
+#proof-tree(term-α-rules.at(1))
+$
 
-Well-typed CFGs and regions can be deemed $α$-equivalent in a similar manner, as follows:
+Naïvely, one may use the above definitions to define $α$-equivalence for basic blocks as follows:
+#let naive-bb-α-rule = rule(name: "blk-α", $Γ ⊢ b; t lto sans(L) αeq Γ' ⊢ b'; t' lto sans(L')$, $Γ entp(p) b lto Δ αeq Γ' entp(p) b' lto Δ'$, $Δ ⊢ t lto sans(L) αeq Δ' ⊢ t' lto sans(L')$)
+$
+#proof-tree(naive-bb-α-rule)
+$
 
-#todo[this]
+#todo[
+  This definition, however, seems a little too strong, since the choice of $Δ,Δ'$ adds an extra degree of freedom to the above derivation. Indeed, this extra degree of freedom is present in the typing rules for basic blocks as well, since coherence fails here ... try "maximal blocks"? Not an issue for regions and generalized regions
+]
+
+Well-typed CFGs and regions can then be deemed $α$-equivalent as follows:
+
+#let cfg-α-rules = (
+  rule(name: "nil-cf-α", 
+    $sans(L) ⊢ dot lto sans(K) αeq sans(L') ⊢ dot lto sans(K')$, 
+    $twk(sans(L), sans(K)) αeq twk(sans(L'), sans(K'))$),
+  rule(name: "cons-cf-α", 
+    $sans(L) ⊢ L, lblk(lbl(ℓ), (x: A), β) lto sans(K) 
+      αeq sans(L') ⊢ L', lblk(lbl(ℓ'), (x': A), β') lto sans(K')$, 
+    $sans(L) ⊢ L lto sans(K), lbl(ℓ)[Γ](A) αeq sans(L') ⊢ L' lto sans(K), lbl(ℓ')[Γ'](A)$,
+    $Γ ⊢ β lto sans(L) αeq Γ' ⊢ β' lto sans(L')$),
+)
+#let naive-reg-α-rule = rule(name: "reg-α",
+  $Γ ⊢ lwhere(β, L) lto sans(K) αeq Γ' ⊢ lwhere(β', L') lto sans(K')$,
+  $Γ ⊢ β lto sans(L) αeq Γ' ⊢ β' lto sans(L')$,
+  $sans(L) ⊢ L lto sans(K) αeq sans(L') ⊢ L' lto sans(K')$
+)
+$
+#proof-tree(cfg-α-rules.at(0))
+$
+$
+#proof-tree(cfg-α-rules.at(1))
+$
+$
+#proof-tree(naive-reg-α-rule)
+$
+
+#todo[this has the same problem with too many degrees of freedom]
 
 On the other hand, determining whether untyped expressions are $α$-equivalent is quite challenging, since, when renaming a variable, we have to consider whether that variable is shadowed or not, and if so, where it is shadowed. 
 
