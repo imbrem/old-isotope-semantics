@@ -17,7 +17,8 @@
 #let proof = thmproof("proof", "Proof")
 
 #let lbl(labl) = $ #`^`labl$
-#let llet(x, e) = $/*sans("let") med*/ #x = #e$
+#let let1(x, e) = $/*sans("let") med*/ #x = #e$
+#let let2(x, y, e) = $/*sans("let") med*/ #x, #y = #e$
 #let lite(e, s, t) = $sans("if") med #e med { #s } med sans("else") med { #t }$
 #let lbr(l, e) = $sans("br") med #l med #e$
 #let lblk(l, a, e) = $#l #a: #e$
@@ -73,7 +74,7 @@ For now, we will restrict ourselves to the basic terminators necessary to implem
 
 We can define an SSA program to be given by a _region_: a control-flow graph with a distinguished, single _entry block_ and (potentially) multiple _exit blocks_. We'll make our life a little bit easier and generalize instructions to _terms_, which will allow us to have nested _pure_ expressions in an instruction and to implement multi-argument instructions using tuples. Then, we obtain
 - _Terms_ $e$: $x | f med e | () | (e, e')$
-- _Bodies_ $b$: $dot | llet(x, e); dot | llet((x, y), e); dot$
+- _Bodies_ $b$: $dot | let1(x, e); dot | let2(x, y, e); dot$
 - _Terminators_ $s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t)$
 - _Basic blocks_ $β$: $b;t$
 - _Control-flow graphs_ $L$: $dot | L, lblk(lbl(ℓ), (x: A), β)$
@@ -148,9 +149,9 @@ We can now give typing rules as follows:
 
 
 #let body-rules = (
-  rule(name: "nil-st", $Γ entp(p) dot: Δ$, $lwk(Γ, Δ)$),
-  rule(name: "let", $Γ entp(p) llet(x, e); b: Δ$, $Γ entp(p) e: A$, $Γ, x: A entp(p) b: Δ$),
-  rule(name: "let2", $Γ entp(p) llet((x, y), e); b: Δ$, $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B entp(p) b: Δ$),
+  rule(name: "nil-st", $Γ entp(p) dot lto Δ$, $lwk(Γ, Δ)$),
+  rule(name: "let", $Γ entp(p) let1(x, e); b lto Δ$, $Γ entp(p) e: A$, $Γ, x: A entp(p) b lto Δ$),
+  rule(name: "let2", $Γ entp(p) let2(x, y, e); b lto Δ$, $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B entp(p) b lto Δ$),
 );
 #align(center, table(
   columns: 2,
@@ -254,8 +255,6 @@ $
   #proof-tree(wk-α-rules.at(2))
 $
 
-#todo[also note derivations are unique...]
-
 Note in particular that if $Γ ↦ Δ αeq Γ' ↦ Δ'$, then $Δ αeq Δ'$ but $Γ$ is not necessarily $α$-equivalent to $Γ'$, since they may differ on dropped variables; however, $sans("len")(Γ) = sans("len")(Γ')$.
 
 We can now define the $α$-equivalence of well-typed terms in a trivial manner:
@@ -263,7 +262,7 @@ We can now define the $α$-equivalence of well-typed terms in a trivial manner:
   rule(name: "var-α", $Γ ⊢ x : A αeq Γ' ⊢ x' : A$, $Γ ↦ x : A αeq Γ' ↦ x' : A$),
   rule(name: "app-α", $Γ ⊢ f med e : A αeq Γ' ⊢ f med e' : A$, $f : intp(p, A, B)$, $Γ ⊢ e : A αeq Γ' ⊢ e' : A$),
   rule(name: "pair-α", $Γ ⊢ (l, r) : A ⊗ B αeq Γ' ⊢ (l', r') : A ⊗ B$, $Γ ⊢ l : A αeq Γ' ⊢ l' : A$, $Γ ⊢ r : B αeq Γ' ⊢ r' : B$),
-  rule(name: "unit-α", $Γ ⊢ () : bold(1) αeq Γ' ⊢ () : bold(1)$, $sans("len")(Γ) = sans("len")(Γ')$)
+  rule(name: "unit-α", $Γ ⊢ () : bold(1) αeq Γ' ⊢ () : bold(1)$/*, $sans("len")(Γ) = sans("len")(Γ')$*/)
 )
 #align(center, table(
   columns: 2,
@@ -281,32 +280,59 @@ We can now define the $α$-equivalence of well-typed terms in a trivial manner:
   proof-tree(tm-α-rules.at(2)),
   proof-tree(tm-α-rules.at(3)),
 ))
-
-Note that, leaving the context invariant, this is just the identity relation. However, the ability to vary the context is useful, as it allows us to define $α$-equivalence for well-typed bodies as follows 
-
-#todo[copy over rules]
-
-Even for invariant input and output contexts, this is not merely the identity relation, since, for example, we have
+In general, we have that if $Γ ⊢ e : A αeq Γ' ⊢ e' : A$ then $∃Δ, Δ'$ such that $Γ ↦ Δ αeq Γ' ↦ Δ'$, $Δ αeq Δ'$ and $Δ ⊢ e : A αeq Δ' ⊢ e' : A$.
+Note that, leaving the context invariant, $αeq$ on terms is just the identity relation. 
+The ability to vary the context, however, allows us to define α-equivalence of well-typed bodies as
+follows:
+#let blk-α-rules = (
+  rule(name: "nil-α", $Γ ⊢ () lto Δ αeq Γ' ⊢ () lto Δ'$, $Γ ↦ Δ αeq Γ' ↦ Δ'$),
+  rule(name: "let1-α", $Γ ⊢ let1(x, e); b lto Δ αeq Γ' ⊢ let1(x', e'); b' lto Δ'$, $Γ ⊢ e : A αeq Γ' ⊢ e' : A$, $Γ, x : A ⊢ b lto Δ αeq Γ', x' : A ⊢ b' lto Δ'$),
+  rule(name: "let2-α", $Γ ⊢ let2(x, y, e); b lto Δ αeq Γ' ⊢ let2(x', y', e'); b' lto Δ'$, $Γ ⊢ e : A αeq Γ' ⊢ e' : A ⊗ B$, $Γ, x : A, y : B ⊢ b lto Δ αeq Γ', x' : A, y' : B ⊢ b' lto Δ'$),
+)
+$
+#proof-tree(blk-α-rules.at(0))
+$
+$
+#proof-tree(blk-α-rules.at(1))
+$
+$
+#proof-tree(blk-α-rules.at(2))
+$
+Unlike for terms, for invariant input and output contexts, this is not merely the identity relation, since, for example, we have
 #align(center + horizon, table(
   columns: 3,
   gutter: 2em,
   stroke: none,
-  ```
-  x = 5;
-  y = x + 2;
-  z = y + 7
-  ```,
+  stack(dir: ltr, spacing: 1em,
+    $⊢$,
+    ```
+    x = 5;
+    y = x + 2;
+    z = y + 7
+    ```,
+    $lto$,
+    `z : i64`
+  ),
   $αeq$,
-  ```
-  x = 5;
-  y' = x + 2;
-  z = y' + 7
-  ```
+  stack(dir: ltr, spacing: 1em,
+    $⊢$,
+    ```
+    x = 5;
+    y' = x + 2;
+    z = y' + 7
+    ```,
+    $lto$,
+    `z : i64`
+  ),
 ))
 
-We can similarly define $α$-equivalence for well-typed terminators and basic blocks as follows:
+We can similarly define $α$-equivalence for well-typed terminators as follows:
 
-#todo[this]
+#todo[copy over rules]
+
+Naively, one may use the above definitions to define $α$-equivalence for regions as follows:
+
+#todo[splat...]
 
 #todo[too weak, does not consider weakening: distinguish $α$-isomorphism from $α$-equivalence, introduce weakening? note this is not an issue for generalized regions... try "maximal blocks"?]
 
@@ -384,17 +410,17 @@ $α$-equivalence for untyped program fragments in SSA form can be easily defined
 #todo[intro, why we want generalized regions]
 
 We can generalize this slightly by fusing terminators, basic blocks, and regions into a single syntactic category, the _generalized region_, as follows:
-- _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | llet(x, e); t | llet((x, y), e); t | lwhere(t, L)$
+- _Generalized regions_ $r, s, t$: $lbr(lbl(ℓ), e) | lite(e, s, t) | let1(x, e); t | let2(x, y, e); t | lwhere(t, L)$
 Note that we remove dependencies on bodies $b$. One may also notice that the given grammar is slightly ambiguous: we can parse
-$llet(x, e); lwhere(t, L)$ as $lwhere((llet(x, e); t), L)$ or $llet(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalent, excusing the ambiguity.
+$let1(x, e); lwhere(t, L)$ as $lwhere((let1(x, e); t), L)$ or $let1(x, e); (lwhere(t, L))$. We will always do the former, however, when both are well-typed, our equational theory should validate that these parses are equivalent, excusing the ambiguity.
 
 The rules for terms remain unchanged; while the rules for generalized regions can be derived straightforwardly as follows:
 #let gen-reg-rules = (
   rule(name: "let", 
-    $Γ ⊢ llet(x, e); t lto sans(L)$, 
+    $Γ ⊢ let1(x, e); t lto sans(L)$, 
     $Γ entp(p) e: A$, $Γ, x: A ⊢ t lto sans(L)$),
   rule(name: "let2", 
-    $Γ ⊢ llet((x, y), e); t lto sans(L)$, 
+    $Γ ⊢ let1((x, y), e); t lto sans(L)$, 
     $Γ entp(p) e: A ⊗ B$, $Γ, x: A, y: B ⊢ t lto sans(L)$),
   rule(name: "reg", 
     $Γ ⊢ lwhere(t, L) lto sans(K)$, 
@@ -577,8 +603,6 @@ $
 
 #todo[pull up to syntax section]
 
-#todo[play with first-variable use, which should make block composition Always True (TM); then need nicer weakening where we only drop _unshadowed_ variables, leading to "all or nothing drops"]
-
 == Metatheory
 
 #todo[SSA property not quite compositional _enough_; insures for subterms, but is not insured _by_ subterms, Pull down to equational theory section?]
@@ -621,10 +645,10 @@ In particular, we can define the _renaming_ of a term under a (partial, injectiv
 Similarly, we can proceed to define the renaming of a _body_ as follows:
 #align(center, stack(dir: ltr, spacing: 2em,
   $[ρ]dot = dot$,
-  $[ρ](llet(x, e); b) = llet(ρ(x), [ρ]e); [ρ]b$,
+  $[ρ](let1(x, e); b) = let1(ρ(x), [ρ]e); [ρ]b$,
 ))
 $
-[ρ](llet((x, y), e); b) = llet((ρ(x), ρ(y)), [ρ]e); [ρ]b
+[ρ](let1((x, y), e); b) = let1((ρ(x), ρ(y)), [ρ]e); [ρ]b
 $
 Note that the renaming of a _body_ also changes the variables used in a `let`-binding.
 Contexts can also be renamed in the obvious fashion:
@@ -715,28 +739,28 @@ $
     $Γ entp(p) b ≅ b'$, $Γ entp(p) b' ≅ b'': Δ$),
   rule(name: "nil-cong", $Γ entp(p) dot ≅ dot: Δ$, $Γ ↦ Δ$),
   rule(name: "let-cong", 
-    $Γ entp(p) llet(x, e); b ≅ llet(x, e'); b': Δ$, 
+    $Γ entp(p) let1(x, e); b ≅ let1(x, e'); b': Δ$, 
     $Γ entp(p) e ≅ e': A$,
     $Γ, x: A entp(p) b ≅ b': Δ$),
   rule(name: "let2-cong", 
-    $Γ entp(p) llet((x, y), e); b ≅ llet((x, y), e'); b': Δ$, 
+    $Γ entp(p) let2(x, y, e); b ≅ let2(x, y, e'); b': Δ$, 
     $Γ entp(p) e ≅ e' A ⊗ B$,
     $Γ, x: A, y: B entp(p) b ≅ b': Δ$),
   rule(name: "α",
     $Γ entp(p) b ≅ [ρ]b: Δ$, 
     $Γ entp(p) b: Δ$, $Γ entp(p) [ρ]b: Δ$),
   rule(name: "β-let",
-    $Γ entp(p) llet(x, e); b ≅ [sfor(e, x)]b: Δ$, 
+    $Γ entp(p) let1(x, e); b ≅ [sfor(e, x)]b: Δ$, 
     $Γ entp(1) e: A$,
-    $Γ entp(p) llet(x, e); b: Δ$,
+    $Γ entp(p) let1(x, e); b: Δ$,
     $Γ entp(p) [sfor(e, x)]b: Δ$),
   rule(name: "β-let2",
-    $Γ entp(p) llet((x, y), (e, e')) ≅ [sfor(e', y)][sfor(e, x)]b$,
-    $Γ entp(p) llet((x, y), (e, e')); b: Δ$,
+    $Γ entp(p) let2(x, y, (e, e')) ≅ [sfor(e', y)][sfor(e, x)]b$,
+    $Γ entp(p) let2(x, y, (e, e')); b: Δ$,
     $Γ entp(p) [sfor(e', y)][sfor(e, x)]b: Δ$),
   rule(name: "η-let2",
-    $Γ entp(p) llet((x, y), e);llet(z, (x, y));b ≅ llet(z, e);b: Δ$,
-    $Γ entp(p) llet(z, e);b: Δ$
+    $Γ entp(p) let2(x, y, e);let1(z, (x, y));b ≅ let1(z, e);b: Δ$,
+    $Γ entp(p) let1(z, e);b: Δ$
   )
 )
 #align(center, table(
@@ -760,7 +784,7 @@ $
 ))
 #align(center, proof-tree(body-struct-rules.at(7)))
 #align(center, proof-tree(body-struct-rules.at(8)))
-Note that for β-let2, $Γ entp(p) llet((x, y), (e, e')); b : Δ$ implies that $Γ entp(1) e: A$ and $Γ entp(1) e': B$, so these do not need to be added as hypotheses.
+Note that for β-let2, $Γ entp(p) let2(x, y, (e, e')); b : Δ$ implies that $Γ entp(1) e: A$ and $Γ entp(1) e': B$, so these do not need to be added as hypotheses.
 
 #todo[explanation of each rule]
 
@@ -784,7 +808,7 @@ We can define the catenation of bodies as follows:
   align: bottom,
   stroke: none,
   $dot;b' = b'$,
-  $(llet(x, e); b);b' = llet(x, e);(b;b')$,
+  $(let1(x, e); b);b' = let1(x, e);(b;b')$,
 ))
 This satisfies the expected equations, e.g. $b;dot = b$ and $b_1;(b_2;b_3) = (b_1;b_2);b_3$. We furthermore have that
 $
