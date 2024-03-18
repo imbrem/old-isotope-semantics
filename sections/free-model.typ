@@ -102,7 +102,7 @@ We begin by introducing some structural judgements on contexts and targets as fo
 #let trg-rules = (
   rule(name: "nil-twk", $twk(dot, dot)$),
   rule(name: "cons-twk", $twk(#$L, lbl(ℓ)[Γ](A)$, #$K, lbl(ℓ)[Δ](A)$)$, $twk(L, K)$, $lwk(Γ, Δ)$),
-  rule(name: "drop-twk", $twk(L, #$K, lbl(ℓ)[Δ](A)$)$, $twk(L, K)$),
+  rule(name: "drop-twk", $twk(L, #$K, lbl(ℓ)[Δ](A)$)$, $twk(L, K)$, $ℓ ∉ K$),
 )
 
 #align(center, table(
@@ -116,8 +116,6 @@ We begin by introducing some structural judgements on contexts and targets as fo
 ))
 
 #todo[note that derivations for regular weakening are _unique_]
-
-#todo[disallow shadowing for targets? for cons targets? or something else for uniqueness?]
 
 We can now give typing rules as follows:
 
@@ -213,6 +211,8 @@ We can now give typing rules as follows:
 
 #todo[substitution and weakening for CFGs/blocks just got a lot more !FUN!]
 
+#todo[match-statements?]
+
 == Equational Theory of SSA
 
 We now want to equip our syntax with an _equational theory_. We will want:
@@ -256,22 +256,63 @@ $
 
 #todo[also note derivations are unique...]
 
-Note in particular that if $Γ ↦ Δ αeq Γ' ↦ Δ'$, then $Δ αeq Δ'$ but $Γ$ is not necessarily $α$-equivalent to $Γ'$, since they may differ on dropped variables. 
-// However, if $Γ αeq Γ'$ and $Δ αeq Δ'$, then $Γ ↦ Δ ∧ Γ' ↦ Δ' ==> Γ ↦ Δ αeq Γ' ↦ Δ'$. TODO: check this...
+Note in particular that if $Γ ↦ Δ αeq Γ' ↦ Δ'$, then $Δ αeq Δ'$ but $Γ$ is not necessarily $α$-equivalent to $Γ'$, since they may differ on dropped variables; however, $sans("len")(Γ) = sans("len")(Γ')$.
 
-We can now define the $α$-equivalence of well-typed terms in a trivial manner: we have...
+We can now define the $α$-equivalence of well-typed terms in a trivial manner:
+#let tm-α-rules = (
+  rule(name: "var-α", $Γ ⊢ x : A αeq Γ' ⊢ x' : A$, $Γ ↦ x : A αeq Γ' ↦ x' : A$),
+  rule(name: "app-α", $Γ ⊢ f med e : A αeq Γ' ⊢ f med e' : A$, $f : intp(p, A, B)$, $Γ ⊢ e : A αeq Γ' ⊢ e' : A$),
+  rule(name: "pair-α", $Γ ⊢ (l, r) : A ⊗ B αeq Γ' ⊢ (l', r') : A ⊗ B$, $Γ ⊢ l : A αeq Γ' ⊢ l' : A$, $Γ ⊢ r : B αeq Γ' ⊢ r' : B$),
+  rule(name: "unit-α", $Γ ⊢ () : bold(1) αeq Γ' ⊢ () : bold(1)$, $sans("len")(Γ) = sans("len")(Γ')$)
+)
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(tm-α-rules.at(0)),
+  proof-tree(tm-α-rules.at(1)),
+))
+#align(center, table(
+  columns: 2,
+  gutter: 2em,
+  align: bottom,
+  stroke: none,
+  proof-tree(tm-α-rules.at(2)),
+  proof-tree(tm-α-rules.at(3)),
+))
 
-Note that, leaving the context invariant, this is just the identity relation. However, the ability to vary the context is useful, as it allows us to define $α$-equivalence for well-typed bodies as follows ...
+Note that, leaving the context invariant, this is just the identity relation. However, the ability to vary the context is useful, as it allows us to define $α$-equivalence for well-typed bodies as follows 
 
-Even for invariant input and output contexts, this is not merely the identity relation, since, for example, we have...
+#todo[copy over rules]
+
+Even for invariant input and output contexts, this is not merely the identity relation, since, for example, we have
+#align(center + horizon, table(
+  columns: 3,
+  gutter: 2em,
+  stroke: none,
+  ```
+  x = 5;
+  y = x + 2;
+  z = y + 7
+  ```,
+  $αeq$,
+  ```
+  x = 5;
+  y' = x + 2;
+  z = y' + 7
+  ```
+))
 
 We can similarly define $α$-equivalence for well-typed terminators and basic blocks as follows:
-...
+
+#todo[this]
 
 #todo[too weak, does not consider weakening: distinguish $α$-isomorphism from $α$-equivalence, introduce weakening? note this is not an issue for generalized regions... try "maximal blocks"?]
 
 Well-typed CFGs and regions can be deemed $α$-equivalent in a similar manner, as follows:
-...
+
+#todo[this]
 
 On the other hand, determining whether untyped expressions are $α$-equivalent is quite challenging, since, when renaming a variable, we have to consider whether that variable is shadowed or not, and if so, where it is shadowed. 
 
@@ -321,7 +362,8 @@ $
 ```
 $
 $α$-equivalence for untyped program fragments in SSA form can be easily defined, since
-...
+
+#todo[consistent assignment of variables]
 
 #todo[somewhere: "everything weakens to a duplicate-free context"]
 
